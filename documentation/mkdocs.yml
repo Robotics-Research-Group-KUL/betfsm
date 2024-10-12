@@ -1,0 +1,50 @@
+site_name: "Python documentation"
+site_author: "Erwin Aertbelien"
+copyright: "LGPL-3.0-only"
+theme:
+  name: "readthedocs"
+
+
+
+
+nav:
+  - "Documentation":
+    - "Home": 'index.md'
+    - "Yasmin":
+        - "TickingState" : "tickingstate.md"
+        - "Generator" : "generator.md"
+        - "Sequence" : "sequence.md"
+        - "ConcurrentSequence" : "concurrentsequence.md"
+        - "Fallback" : "fallback.md"
+        - "ConcurrentFallback" : "concurrentfallback.md"
+        - "WaitFor" : 'waitfor.md'
+        - "ConditionWhile" : 'conditionwhile.md'
+        - "Repeat" : 'repeat.md'
+        - "TimedRepeat" : timedrepeat.md
+        - "TimedWait" : 'timedwait.md'
+        - "ServiceClient" : 'serviceclient.md'
+        - "LifeCycle" : 'lifecycle.md'
+    - "Utilities" : 'utils.md'
+    - "About": 'about.md'
+    - "Todo list" : "TODO.md"
+
+
+
+plugins:
+  - search
+  - mermaid2
+  - mkdocstrings:
+      handlers:
+        options:
+          show_source: false
+          show_root_heading: true 
+          docstring_style: google
+   
+extra_css:
+- css/mkdocstrings.css
+
+markdown_extensions:
+    - mkdocs_graphviz
+
+extra_javascript:
+  - https://cdn.jsdelivr.net/gh/rod2ik/cdn@main/mkdocs/javascripts/mkdocs-graphviz.js

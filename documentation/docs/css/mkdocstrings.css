@@ -1,0 +1,6 @@
+/* Indentation. */
+div.doc-contents:not(.first) {
+    padding-left: 55px;
+    border-left: .5rem solid rgba(200, 200, 200, 0.2);
+  }
+
