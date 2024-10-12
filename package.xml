@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>yasmin_etasl</name>
+  <version>0.0.0</version>
+  <description>Package that implements "ticking" states and an interface to eTaSL </description>
+  <maintainer email="Erwin.Aertbelien@kuleuven.be">ros2</maintainer>
+  <license>LGPL-3.0-only</license>
+
+  <exec_depend>yasmin_action_server</exec_depend>
+  <exec_depend>yasmin_action_interfaces</exec_depend>
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>etasl_ros2_application_template</exec_depend>
+  <test_depend>ament_copyright</test_depend>
+  <test_depend>ament_flake8</test_depend>
+  <test_depend>ament_pep257</test_depend>
+  <test_depend>python3-pytest</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>
