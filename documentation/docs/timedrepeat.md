@@ -1,4 +1,4 @@
-::: yasmin_experiments.etasl_yasmin_utils_ea.TimedRepeat
+::: yasmin_etasl.yasmin_ticking_ros.TimedRepeat
     options:
       show_source: false
       show_root_heading: true   

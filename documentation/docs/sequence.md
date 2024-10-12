@@ -1,5 +1,5 @@
 
-::: yasmin_experiments.etasl_yasmin_utils_ea.Sequence
+::: yasmin_etasl.yasmin_ticking.Sequence
     options:
       show_source: false
       show_root_heading: true 
