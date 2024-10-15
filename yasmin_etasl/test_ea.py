@@ -13,9 +13,9 @@ from yasmin_ros.basic_outcomes import SUCCEED, ABORT
 from yasmin_viewer import YasminViewerPub
 from yasmin_action_server.yasmin_action_server import YasminActionServer,get_logger,set_logger, action_state_cb, CancelState,EmptyStateMachine
 from yasmin_viewer import YasminViewerPub
-#from .yasmin_ticking import *
-#from .yasmin_ticking_ros import *
-from yasmin_ticking_etasl import *
+from .yasmin_ticking import *
+from .yasmin_ticking_ros import *
+from .yasmin_ticking_etasl import *
 
 
 
@@ -191,7 +191,7 @@ class YasminRunner:
 
     def timer_cb(self):
         outcome = self.sm(self.bm)
-        print("---")
+        print("---"),
         if outcome!=TICKING:
             self.timer.cancel()
             self.set_outcome(outcome)

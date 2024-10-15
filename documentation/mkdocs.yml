@@ -23,7 +23,9 @@ nav:
         - "Repeat" : 'repeat.md'
         - "TimedRepeat" : timedrepeat.md
         - "TimedWait" : 'timedwait.md'
+        - "Timeout" : "timeout.md"
         - "ServiceClient" : 'serviceclient.md'
+        - "TopicState" : 'topicstate.md'
         - "LifeCycle" : 'lifecycle.md'
     - "Utilities" : 'utils.md'
     - "About": 'about.md'

@@ -41,6 +41,11 @@ import traceback
 from rclpy import qos
 from rclpy.duration import Duration
 
+from abc import ABC, abstractmethod
+from yasmin.blackboard import Blackboard
+
+
+
 #
 # blackboard.task[taskname].parameters = dict with task parameters
 #
@@ -351,6 +356,175 @@ class TickingState(State):
 
 
 
+class Queue(ABC):
+    @abstractmethod
+    def push_outcome(self, priority:int, count:int, outcome:str,msg)->None:
+        """
+        pushes an outcome to the queue, using a standard set of parameters (not always used for every 
+        type of Queue)
+
+        Parameters:
+            - priority: 
+                Priority level, lower is higher priority, 0 is the priority level of the current outcome of a state.
+            - int:
+                sequence number of messages
+            - outcome:
+                outcome 
+            - msg:
+                the message structure (for extra processing for payload)
+        """                
+        raise Exception("abstract method not implemented")
+    
+    # @abstractmethod
+    # def pop_outcome(self, outcomes:List[str])  -> tuple[int, int, str,Type]:
+    #     raise Exception("abstract method not implemented")
+
+    @abstractmethod
+    def adapt_outcome(self, outcome:str,outcomes:List[str]) -> tuple[str,Type]:
+        """
+        Adapts the outcome of a state according to the policy of the queue
+        Parameters:
+            outcome:
+                current outcome of the current state
+            outcomes:
+                list of allowable outcomes for the current state.
+        Returns:
+            tuple: with following members
+             - outcome
+             - message structure (can be None if outcome is not originating from a message)
+        """        
+        raise Exception("abstract method not implemented")
+    
+    # @abstractmethod
+    # def head(self, outcomes:List[str]) -> tuple[str,Type]:
+    #     raise Exception("abstract method not implemented")    
+
+    @abstractmethod
+    def size(self):
+        raise Exception("abstract method not implemented") 
+
+from collections import deque 
+class QueueFIFO(Queue):
+    def __init__(self, maxsize=100):
+        self.maxsize=maxsize
+        self.q = deque()
+
+    def push_outcome(self, priority: int, count: int, outcome: str, msg) -> None:
+
+        if len(self.q)==self.maxsize:
+            self.q.popleft()
+        self.q.append((priority, count, outcome,msg))
+        
+
+
+    def adapt_outcome(self, outcome:str,outcomes:List[str]) -> tuple[str,Type]:
+
+        # lookup candidate
+        if len(self.q)>0:
+            candidate = self.q[0]
+        else:
+        # if no candidate pass through outcome
+            return (outcome, None)
+
+
+        # if candidate has higher priority (lower number):
+        if (outcome==TICKING) or (candidate[0]<0):
+            return (candidate[2],candidate[3])        
+        else:
+            return (outcome,None)
+
+
+
+
+    def size(self):
+        """
+        size of the queue
+        """
+        return len(self.q)
+
+
+
+class QeueuFIFOfilter(Queue):
+    def __init__(self, maxsize=100):
+        """
+        A message queue with first in first out policy
+        It filters the result using an outcomes list, but does not throw away the element if it does not
+        matches.
+
+        Parameters:
+            maxsize:
+                maximum size, if longer the queue starts to forget the oldest elements.        
+        """
+        self.maxsize=maxsize
+        self.q = deque(self.maxsize)
+
+    def push_outcome(self, priority: int, count: int, outcome: str, msg) -> None:
+        if len(self.q)==self.maxsize:
+            self.q.popleft()        
+        self.q.append((priority, count,outcome,msg))
+
+    def adapt_outcome(self, outcome:str,outcomes:List[str]) -> tuple[str,Type]:
+        if outcome==TICKING:
+            # lookup candidate
+            count=0
+            while count < len(self.q):
+                r = self.q[count]
+                count=count+1
+                if r[2] in outcomes:
+                    # candidate found
+                    del self.q[count]
+                    return (r[2],r[3])
+            return (TICKING,None)
+        else:
+            # lookup candidate (taking into account priority)
+            count=0
+            while count < len(self.q):
+                r = self.q[count]
+                count=count+1
+                if (r[2] in outcomes) and (r[0] < 0):
+                    # candidate found
+                    del self.q[count]
+                    return (r[2],r[3])
+            return (outcome,None)
+
+    
+    def size(self):
+        return len(self.q)
+
+
+
+
+
+
+class Listener(ABC):
+
+    def __init__(self,outcomes: List[str],queue:Queue=QueueFIFO):
+        """
+        maintains a heap (priority, entrycount, outcome7)
+
+        prioriities: lower is higher priority, negative is more priority than current outcome
+
+        - Only the adapt_outcome method is used by the statemachine
+        - set_payload is overwritten by the subclass and and push_outcome can be used by subclasses
+        """        
+        self.outcomes = outcomes
+        self.queue = queue
+        pass
+
+    def adapt_outcome(self, blackboard: Blackboard, outcome:str,outcomes:List[str]) -> str:
+        outcome, msg = self.queue.adapt_outcome(outcome,outcomes)
+        if msg is not None:
+            self.set_payload(self,blackboard,msg)
+        return outcome
+        
+    @abstractmethod
+    def set_payload(self, blackboard: Blackboard, msg):
+        """
+        uses the currently used message to set the payload in the blackboard
+        (method only to be used by subclasses)
+        """
+        raise NotImplementedError("set_payload abstract method is not implemented by subclass")
+
 
 class cbStateMachine(TickingState):
     """
@@ -589,7 +763,7 @@ class Generator(TickingState):
     - if TICKING is yielded, expects to be called again, otherwise expects that this is
       the end of the task.
     """
-    def __init__(self, name,outcomes: List[str], execute_cb= default_coroutine) -> None:
+    def __init__(self, name:str,outcomes: List[str], execute_cb= default_coroutine) -> None:
         """
         parameters:
             name:

@@ -2,7 +2,7 @@
 Yasmin_Ticking states related to eTaSL
 """
 
-from yasmin_ticking_ros import *
+from .yasmin_ticking_ros import *
 
 from etasl_interfaces.srv import TaskSpecificationFile
 from etasl_interfaces.srv import TaskSpecificationString
@@ -10,8 +10,6 @@ from etasl_interfaces.srv import TaskSpecificationString
 
 import json
 from jsonschema import validate, exceptions
-
-
 
 
 def get_task(blackboard:Blackboard,task_name:str) -> List[str|List]:
@@ -108,7 +106,7 @@ class SetTaskParameters(ServiceClient):
 
 
 
-class SetRobotSpecification(ServiceClient):
+class ReadRobotSpecification(ServiceClient):
     def __init__(self,
                  task_name:str,
                  srv_name:str = "/etasl_node",
@@ -117,19 +115,20 @@ class SetRobotSpecification(ServiceClient):
         outcomes=[SUCCEED]  # ABORT + TIMEOUT added
         super().__init__(
             srv_name+"/readTaskSpecificationFile",
-            TaskSpecificationString, outcomes, timeout,node)
+            TaskSpecificationFile, outcomes, timeout,node)
         self.task_name = task_name
 
     def fill_in_request(self, blackboard: Blackboard, request) -> None:
         # lookup task.
         for task in blackboard["tasks"]:
             if task["name"]==self.task_name:
-                specfile = task.get["robot_specification_file"]
+                specfile = task.get("robot_specification_file")
                 if specfile is None or specfile=="":
                     specfile = blackboard["default_robot_specification"]
                     if specfile is None or specfile=="":
                         raise Exception("No robot_specification_file defined")
-                request.str  = specfile
+                # we do expand refs, etasl_node does this already in his own ROS2 workspace
+                request.file_path  = specfile
                 print("robot specification file ",specfile)
                 return request
             
@@ -142,8 +141,85 @@ class SetRobotSpecification(ServiceClient):
             return ABORT
 
 
+class ReadTaskSpecification(ServiceClient):
+    def __init__(self,
+                 task_name:str,
+                 srv_name:str = "/etasl_node",
+                 timeout:Duration = Duration(seconds=1.0), 
+                 node:Node = None):
+        outcomes=[SUCCEED]  # ABORT + TIMEOUT added
+        super().__init__(
+            srv_name+"/readTaskSpecificationFile",
+            TaskSpecificationFile, outcomes, timeout,node)
+        self.task_name = task_name
+
+    def fill_in_request(self, blackboard: Blackboard, request) -> None:
+        # lookup task.
+        task = get_task(blackboard,self.task_name)
+        # extract file_path, and expand references    
+        # # we do expand refs, etasl_node does this already in his own ROS2 workspace    
+        request.file_path = task["parameters"]["file_path"]
+        return request
+    
+    def process_result(self, blackboard: Blackboard, response) -> str:
+        if response.success:
+            return SUCCEED
+        else: 
+            return ABORT
 
 
+class eTaSLEventTopicListener(EventTopicListener):
+    def __init__(
+            self,topic:str,
+            outcomes: List[str],
+            msg_queue :int = 30,
+            priority: int = 1,
+            node : Node = None
+            ):
+        """
+        An EventTopicListener that listens to a String topic and uses the string as outcomes
+        with the given `priority` (and no payload)
+
+        Parameters:
+            topic: 
+                topic to listen to
+            outcomes:
+                allowable outcomes
+            msg_queue:
+                maximum size of the queue (last will be forgotten)
+            priority:
+                priority assigned to all outcome events (0= priority state, negative
+                is more important than the state, positive is less important than state 
+                output
+        """
+        super().__init__(topic,String,outcomes,msg_queue,node)
+        self.priority=priority
+
+    def set_payload(self, blackboard: Blackboard, msg):
+        pass
+    
+    def process_message(self, msg) -> tuple[str, int]:
+        return (self.priority, msg.data)
+
+
+
+    
+# class Executing(EventState):
+#     def __init__(self, name: str) -> None:
+#         super().__init__(
+#                          topic_name="fsm/events",  # topic name
+#                          outcomes=["e_finished@etasl_node",],  # explicitly list the events that can be received through the topic. Events that are not specified are ignored
+#                          entry_handler = None,  # entry handler callback, called once when entering
+#                          monitor_handler = None,  # monitor handler callback, called several times. If omitted or set to None, the default behavior is to match the topic msg to the outcome
+#                          exit_handler = self.exit_handler,  # exit handler callback, called once when exiting
+#                          state_name = name, #If omitted or set to None, no printing in colors when entering/exiting state
+#                          )
+    
+
+#     def exit_handler(self, blackboard: Blackboard):
+#         # YasminNode.get_instance().get_logger().info("exit handler called")
+#         return
+#         # time.sleep(1)
 
  
 # def nested_etasl_state(name: str, file_path: str, robot_path: str, display_in_viewer: bool= False):
@@ -193,29 +269,27 @@ class eTaSL_StateMachine(cbStateMachine):
                                                     node=node
                                                     ),
                        transitions={
-                           SUCCEED: name+".CONFIG_ETASL"
+                           SUCCEED: name+".ROBOT_SPECIFICATION"
                        })
         # self.add_state(name+".PARAMETER_CONFIG", ReadTaskParametersCB(task,setparamcb),
         #         transitions={SUCCEED: name+".ROBOT_SPECIFICATION",
         #                     ABORT: ABORT,
         #                     TIMEOUT: ABORT})
 
-        # self.add_state(name+".ROBOT_SPECIFICATION", ReadRobotSpecificationFile(task),
-        #         transitions={SUCCEED: name+".TASK_SPECIFICATION",
-        #                     ABORT: ABORT,
-        #                     TIMEOUT: ABORT})
+        self.add_state(name+".ROBOT_SPECIFICATION", ReadRobotSpecification(task_name),
+                transitions={SUCCEED: name+".TASK_SPECIFICATION",
+                            ABORT: ABORT,
+                            TIMEOUT: ABORT})
 
-        # self.add_state(name+".TASK_SPECIFICATION", ReadTaskSpecificationFile(name),
-        #         transitions={SUCCEED: name+".CONFIG_ETASL",
-        #                     ABORT: ABORT,
-        #                     TIMEOUT: ABORT})
+        self.add_state(name+".TASK_SPECIFICATION", ReadTaskSpecification(task_name),
+                transitions={SUCCEED: name+".CONFIG_ETASL",
+                            ABORT: ABORT,
+                            TIMEOUT: ABORT})
 
         self.add_state(name+".CONFIG_ETASL", LifeCycle(transition=Transition.CONFIGURE),
                 transitions={SUCCEED: name+".ACTIVATE_ETASL",
                             ABORT: ABORT,
                             TIMEOUT: ABORT})
-
-        #state_name = f"RUNNING_{name}" 
 
         self.add_state(name+".ACTIVATE_ETASL", LifeCycle(transition=Transition.ACTIVATE),
                 transitions={

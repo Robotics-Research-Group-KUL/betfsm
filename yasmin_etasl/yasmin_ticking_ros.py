@@ -1,4 +1,5 @@
-from yasmin_ticking import *
+
+from .yasmin_ticking import *
 
 from rclpy.node import Node
 from yasmin_ros.yasmin_node import YasminNode
@@ -7,6 +8,14 @@ from lifecycle_msgs.srv import ChangeState
 import re
 import ament_index_python as aip
 
+from rclpy.qos import QoSHistoryPolicy, QoSProfile, QoSReliabilityPolicy, QoSDurabilityPolicy
+
+from abc import ABC, abstractmethod
+
+import heapq
+
+
+from std_msgs.msg import String
 
 class TimedWait(Generator):
     """Node that waits for a given time and then returns succeed
@@ -121,14 +130,11 @@ class TimedRepeat(Generator):
         Note:
             if the underlying state returns later than `timeout` with a non-ticking outcome, an exception will be raised 
             and abort is called.
-
-        Note:
-            if no underlying state is set, will just return SUCCEED after timeout
         """
         if node is None:
             self.node = YasminNode.get_instance()
         else:
-            self.node = None
+            self.node = node
         if state is not None:
             outcomes = state.get_outcomes()
         else:
@@ -147,10 +153,7 @@ class TimedRepeat(Generator):
         count = 0
         while (self.maxcount==0) or (count < self.maxcount):
             # execute underlying state while ticking if necessary
-            if self.state is not None:
-                outcome = self.state(blackboard)
-            else:
-                yield SUCCEED
+            outcome = self.state(blackboard)
             while outcome==TICKING:
                 yield TICKING
                 outcome = self.state(blackboard)
@@ -173,6 +176,58 @@ class TimedRepeat(Generator):
         if isinstance(self.state,TickingState):
             self.state.reset()
     
+
+class Timeout(Generator):
+    """
+    Timeout
+    """
+    def __init__(
+            self,
+            timeout: Duration,
+            state: TickingState,
+            node : Node = None  
+        ):
+        """
+        Timeout passes through the outcomes of the underlying state, finishes if the outcome is not Ticking,
+        and returns TIMEOUT when `timeout` duration is reached during execution.
+        
+        Parameters:
+            timeout: 
+                underlying state is triggered every `timeout` duration
+            state:
+                underlying state
+            node: 
+                ROS2 node, if None, YasminNode.get_instance() is used 
+
+        Warning:
+            assumes that the underlying state sufficiently yields TICKING!
+            Don't use this if the underlying state completely blocks!
+        """
+        if node is None:
+            self.node = YasminNode.get_instance()
+        else:
+            self.node = node
+        outcomes = state.get_outcomes()
+        outcomes.append("TIMEOUT")
+        super().__init__("Timeout",outcomes,execute_cb=Timeout.co_execute)
+        self.state=state
+        self.timeout = timeout
+        self.log  = self.node.get_logger()
+        self.clock = self.node.get_clock()        
+        pass
+
+    def co_execute(self,blackboard):        
+        starttime = self.clock.now()
+        timeout = starttime + self.timeout
+        while (self.clock.now() <= timeout):
+            outcome = self.state(blackboard)
+            yield outcome
+        yield TIMEOUT
+
+    def reset(self):  
+        "reset itself and the underlying state"
+        if isinstance(self.state,TickingState):
+            self.state.reset()
 
 class ServiceClient(Generator):
     """
@@ -247,6 +302,7 @@ class ServiceClient(Generator):
         self.timeout   = timeout
 
     def co_execute(self,blackboard:Blackboard):
+        self.log.info(f"calling ROS2 service {self.srv_name} ({self.srv_type.__name__})")
         starttime = self.clock.now()
         while not self.srvclient.service_is_ready():
             if self.timeout!=Duration():
@@ -263,6 +319,7 @@ class ServiceClient(Generator):
                     yield TIMEOUT            
             yield TICKING
         result = future.result()
+        self.log.info(f"received results from {self.srv_name}({self.srv_type.__name__})")
         yield self.process_result(blackboard, result)        
 
 
@@ -299,6 +356,198 @@ class ServiceClient(Generator):
                 the outcome to give back (should be final outcome, i.e. TICKING not allowed)
         """
         return SUCCEED
+
+
+
+
+
+
+# class TopicState(Generator):
+#     """
+#     timeout using a composition with a Timeout() class, not implemented here.
+
+#     - messages queued and list passed to callback `cb` (that will determine policy of dealing with multiple messages)
+#     - `cb` can change blackboard
+#     - `cb` can determine outcome
+#     - after `cb` the queue is cleared.
+#     - TICKING if no topics received, outcome returned by `cb` otherwise.34
+
+
+#     Todo:
+#         - finish implementation
+#         - clears queue of messages before state is started. ?? (risk of losing messages
+#           when used in a statemachine that loops and reacts to outcomes ?) ;
+#             an entry_cb,doo_cb ? where entry_cb receives all previous messages.
+#         - do we need an underlying state/statemachine
+#         - when CALL outcome, call underlying state?
+#         - a bool variable to only store when state is active (controlled from cb's ? entry, doo, exit ?)
+#         - A topic state that contains an underlying state, together with a queuing mechanism and a state that the underlying state can
+#           use to transition.  Decoupling the receiving messages scope from the point(s) of generating transitions.
+
+#     2nd generation of design:
+#         - A state machine that additionally listens and can inject additional transitions. (closest to rFSM)
+#         - ? This state machine before returninG TICKING, listens to a queue and checks with a policy the transitions. The states outcomes have priority
+#         - ? the qeuue is a priority queue where each record has an outcome and a priority.  lowest number first, state itself is zero. positive only when ticking
+#           negative will push outcome of state and  interrupting with higher priority. (better of abort scenario's)
+#         - queue:
+#             - has a name and stored in blackboard, can be used with multiple statemachines.
+#             - has a list of allowable outcomes
+#             - an element of the queue has an outcome, priority and payload
+#         - Queue state:
+#             - defines queue
+#             - registers multiple listeners
+
+#     3th generation of design:
+#         - Priority,  
+#             - a non-ticking outcome of a state has priority zero, 
+#             - TICKING always yield to the queue (lowest priority possible)
+#             - highest priority number has the priority.
+#             - by default outcomes put in the queue externally will have priority -10,
+#         - specialisation of cbStateMachine:
+#             - that additionally registers Listeners and calls them just after the underlying states return an outcome
+#             - are "shallow": only deal with outcomes of the state machine, not inside the underlying states/state machine.
+#             - many other classes needs such a listener input during construction
+#         - Each listener:
+#             - contains a queue (from queue import PriorityQueue, customers.put((2, "Harry")), customers.get()   )
+#                 - with outcome
+#                 - with priority
+#                 - the priorityqueue can deal with concurrency.
+#             - can be used with multiple state machines.
+#             - can be chained together
+#             - if an outcome is used, it is consumed. only be used once!
+#             - if it only wants to adapt the blackboard, it leaves the queue empty.
+#             - it has a callback:
+#                 - to transform the received topic messages to the queue.
+#                 - to write payload to blackboard.
+#                 - processes all topic messages received after last call of callback.
+#     """
+#     def __init__(
+#             self, 
+#             topic_name:str, 
+#             topic_type: Type,
+#             outcomes: List[str],
+#             cb: Callable,            
+#             queue_size: int = 30,
+#             state : TickingState = None,
+#             node: Node = None
+#             ):
+#         """
+#         Parameters:
+#             topic_name:
+#                 name of the topic
+#             topic_type:
+#                 type of the topic
+#             outcomes:
+#                 allowable outcomes.
+#             cb:
+#                 a callback function with signature `def cb(self,blackboard, msg_queue)`, will be synchronously called
+#                 at each call of the state (i.e. while ticking). msg_queue can contain multiple messages.
+#                 the callback function returns an outcome that will be yielded.                
+#             queue_size:
+#                 max. queue size for the msg_queue passed in the callback (and indicated to middleware)
+#             state:
+#                 underlying state, can be None if there is no underlying state.
+#             node:
+#                 ROS2 node, by default YasminNode.get_instance()
+#         """
+#         super().__init__("TopicState",outcomes, TopicState.co_execute)
+#         qos_profile = QoSProfile(
+#             history=QoSHistoryPolicy.KEEP_LAST, #Keeps the last msgs received in case buffer is fulll
+#             depth=queue_size, #Buffer size
+#             reliability=QoSReliabilityPolicy.RELIABLE, #Uses TCP for reliability instead of UDP
+#             durability=QoSDurabilityPolicy.VOLATILE #Volatile, may not use first msgs if subscribed late (will not happen in this context)
+#         )
+#         if node is None:
+#             self.node = YasminNode.get_instance()
+#         else:
+#             self.node = node
+#         self.monitoring=False
+#         self.subscription = self.node.create_subscription(
+#             topic_type, topic_name, self.topic_callback, qos_profile)
+
+#     def callback_msg(self, msg) -> None:
+
+#         if self.monitoring:
+#             self.msg_list.append(msg)
+
+#             if len(self.msg_list) >= self.msg_queue:
+#                 self.msg_list.pop(0)
+
+
+#     def take_msgs(self) -> List:
+#         # protect with lock?
+#         msgs = self.msg_list.copy()
+#         self.msg_list.clear();
+#         return msgs
+
+
+#     def topic_co_execute(self,blackboard, msgs):
+#         pass
+
+
+#     def co_execute(self,blackboard):
+#         pass
+
+
+
+
+
+class EventTopicListener(Listener):
+    """
+    Following queuing policy:
+        - either warn if max queue is reached or silently forget the oldest
+        - filtered using the available transitions in state and state machine, and take the oldest one.
+
+    """
+    def __init__(
+            self,
+            topic: str,
+            topic_type:Type,
+            outcomes: List[str],
+            msg_queue: int = 30,
+            node: Node = None,
+        ) -> None:
+        if node==None:
+            self.node = YasminNode.get_instance()
+        else:
+            self.node = node
+        super().__init__(outcomes)
+        self.count = 0
+
+        qos_profile = QoSProfile(
+            history=QoSHistoryPolicy.KEEP_LAST, #Keeps the last msgs received in case buffer is fulll
+            depth=msg_queue, #Buffer size
+            reliability=QoSReliabilityPolicy.RELIABLE, #Uses TCP for reliability instead of UDP
+            durability=QoSDurabilityPolicy.VOLATILE #Volatile, may not use first msgs if subscribed late (will not happen in this context)
+        )
+        self.subscription = self.node.create_subscription(
+            topic_type,topic,self.__callback,qos_profile)
+        
+    def __callback(self,msg) -> None:
+        priority, outcome = self.process_message(msg)
+        self.queue.push_outcome(priority, self.count,outcome,msg)
+        self.count = self.count + 1
+
+    
+    @abstractmethod
+    def process_message(self,msg) -> tuple[int,str]:
+        """
+        is called when a message on the topic is received. Processes the message into
+        an (outcome, priority) tuple
+        """
+        raise NotImplementedError("set_payload abstract method is not implemented by subclass")
+    
+    @abstractmethod
+    def set_payload(self, blackboard: Blackboard, msg):
+        """
+        is called when the outcome is returned.
+        """
+        pass
+
+
+
+
+
 
 # configure
 # shutdown
