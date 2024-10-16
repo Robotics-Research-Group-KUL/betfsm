@@ -15,7 +15,7 @@
                 "joint_5": -90,
                 "joint_6": 45,
                 "maxacc": 0.4,
-                "maxvel": 0.4
+                "maxvel": 0.8
             }
         },
         {
@@ -29,7 +29,7 @@
                 "delta_z": 0.1,
                 "eq_r": 0.08,
                 "maxacc": 0.1,
-                "maxvel": 0.1
+                "maxvel": 0.3
             }
         },
         {
@@ -51,8 +51,8 @@
                 "delta_y": 0,
                 "delta_z": -0.2,
                 "eq_r": 0.08,
-                "maxacc": 0.5,
-                "maxvel": 0.1
+                "maxacc": 2,
+                "maxvel": 0.3
             }
         },
         {
@@ -65,8 +65,8 @@
                 "delta_y": 0,
                 "delta_z": 0.2,
                 "eq_r": 0.08,
-                "maxacc": 0.5,
-                "maxvel": 0.1
+                "maxacc": 2,
+                "maxvel": 0.3
             }
         }
     ]

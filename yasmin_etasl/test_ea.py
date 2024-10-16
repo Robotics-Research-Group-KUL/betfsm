@@ -165,20 +165,24 @@ class ParallelStates(ConcurrentSequence):
         super().__init__("ParallelStates",outcomes=[SUCCEED,CANCEL])
         #self.add_state("SM1", MyStateMachine("SM1",1,15))
         #self.add_state("SM2", MyStateMachine("SM2",2,5))
-        #self.add_state("Timer", TimedWait(Duration(seconds=2.5)))
+        self.add_state("Timer", TimedWait(Duration(seconds=2.5)))
         #self.add_state("MySequence", MySequence())
         #self.add_state("SM3", MyStateMachine2("SM3",5))
         #self.add_state("Repeat", Repeat(10,MyMessage("repeated item")))
-        self.add_state("my_sequence",Sequence("my_sequence",["SUCCEED","TIMEOUT","ABORT"]).add_state(
+        self.add_state("my_sequence",Sequence("my_sequence").add_state(
                 "movinghome",eTaSL_StateMachine("MovingHome")
             ).add_state(
                 "movingup",eTaSL_StateMachine("MovingUp")
-            ).add_state(
+            )
+            .add_state(
                 "movingdown",eTaSL_StateMachine("MovingDown")
             ).add_state(
                 "movingup",eTaSL_StateMachine("MovingUp")
+            ).add_state(
+                "my_message",MyMessage("Hello world")
             )
         )
+            
         #self.add_state("TimedRepeat", 
         #               TimedRepeat(
         #                   maxcount=5,
@@ -200,7 +204,7 @@ class YasminRunner:
 
     def timer_cb(self):
         outcome = self.sm(self.bm)
-        print("---"),
+        #resetprint("---"),
         if outcome!=TICKING:
             self.timer.cancel()
             self.set_outcome(outcome)
@@ -227,6 +231,30 @@ def main(args=None):
     load_task_list("$[yasmin_etasl]/tasks/my_tasks.json",blackboard)
     
     sm = ParallelStates()
+
+
+    sm = Sequence("my_sequence").add_state(
+                "movinghome",eTaSL_StateMachine("MovingHome")
+            ).add_state(
+                "movingup",eTaSL_StateMachine("MovingUp")
+            ).add_state(
+                "movingdown",eTaSL_StateMachine("MovingDown")
+            ).add_state(
+                "movingup",eTaSL_StateMachine("MovingUp")
+            ).add_state(
+                "my_message",MyMessage("Hello world")
+            )
+
+
+
+
+
+
+
+
+
+
+
     YasminViewerPub("Complete FSM", sm)
     runner = YasminRunner(my_node,sm,blackboard,0.5)
     

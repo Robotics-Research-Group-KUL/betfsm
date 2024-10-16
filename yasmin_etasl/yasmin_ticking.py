@@ -45,6 +45,12 @@ from abc import ABC, abstractmethod
 from yasmin.blackboard import Blackboard
 
 
+def cleanup_outcomes(outcomes):
+    """
+    cleans up a list of outcomes by elliminating duplicates
+    """
+    return [ e for e in {e for e in outcomes}];
+
 
 
 def default_transitioncb(statemachine,blackboard,source,outcome):
@@ -311,6 +317,8 @@ class Generator(TickingState):
                 return outcome
         
     def exit(self) -> str:
+        if self.outcome is None:
+            raise Exception("outcome should not be None")
         return self.outcome
     
     def reset(self):
@@ -371,7 +379,7 @@ class Sequence(Generator):
             class TIMEOUT abortClass
     ```
     """
-    def __init__(self, name:str,outcomes: List[str]) -> None:
+    def __init__(self, name:str) -> None:
         """
         parameters:
             name: 
@@ -379,7 +387,7 @@ class Sequence(Generator):
             outcomes: 
                 all the allowable outcomes of the Sequence. TICKING and ABORT will be added
         """
-        super().__init__(name,outcomes)
+        super().__init__(name,[])
         self.states=[]
         self.count = 0
         #self.log = YasminNode.get_instance().get_logger()
@@ -396,6 +404,9 @@ class Sequence(Generator):
             Sequence object (to allow method chaining)
         """
         self.states.append({"name":name,"state":state})  
+        self.outcomes = cleanup_outcomes(self.outcomes + state.get_outcomes())
+        self._outcomes = self.outcomes  # dirty hack to fix a bug
+        print("sequence outcomes: ",self.outcomes)
         return self 
     
     def reset(self):  # general rule, if you own states, you have to reset them
@@ -408,14 +419,16 @@ class Sequence(Generator):
                 s["state"].reset()
         super().reset()    
 
-    def co_execute(self,blackboard):
+    def co_execute(self,blackboard):        
         for s in self.states:                
+            print("Sequence: state : ",s["state"])
             outcome = s["state"](blackboard)
             while outcome==TICKING:
                 yield TICKING
                 outcome = s["state"](blackboard)
             if outcome!=SUCCEED:
-                yield outcome                            
+                yield outcome            
+        print("sequence finished")                
         yield SUCCEED
 
 
