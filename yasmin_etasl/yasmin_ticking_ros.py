@@ -364,7 +364,6 @@ class ServiceClient(Generator):
 
 
 
-
 class EventTopicListener(Listener):
     """
     Following queuing policy:
@@ -385,6 +384,9 @@ class EventTopicListener(Listener):
         else:
             self.node = node
         super().__init__(outcomes)
+        self.topic_type = topic_type
+        self.topic = topic
+        self.msg_queue = msg_queue
         self.count = 0
 
         # qos_profile = QoSProfile(
@@ -396,12 +398,14 @@ class EventTopicListener(Listener):
         # self.subscription = self.node.create_subscription(
         #     topic_type,topic,self.__callback,qos_profile)
         self.subscription = self.node.create_subscription(
-             topic_type,topic,self.__callback)
+             self.topic_type,self.topic,self.__callback,self.msg_queue)
+        self.monitoring=False        
         
     def __callback(self,msg) -> None:
-        priority, outcome = self.process_message(msg)
-        self.queue.push_outcome(priority, self.count,outcome,msg)
-        self.count = self.count + 1
+        if self.monitoring:
+            priority, outcome = self.process_message(msg)
+            self.queue.push_outcome(priority, self.count,outcome,msg)
+            self.count = self.count + 1
 
     
     @abstractmethod
@@ -419,6 +423,12 @@ class EventTopicListener(Listener):
         """
         pass
 
+    def start(self):
+        self.queue.clear()
+        self.monitoring=True
+
+    def stop(self):
+        self.monitoring=False
 
 
 

@@ -211,7 +211,7 @@ class TickingState(State):
             self.outcome = self.exit()
             self.status = TickingState_Status.ENTRY
             return self.outcome
-        self.log.info("at end of execute")
+        print("at end of execute")
         return self.outcome # in case of ABORT
 
     def entry(self, blackboard: Blackboard) -> str:
@@ -231,7 +231,7 @@ class TickingState(State):
             can raise exception, equivalent to returning ABORT. In that case exit() is called.
             If one likes more detailed behavior, entry needs to catch the exception itself.
         """
-        return TickingState_Status.DOO;
+        return CONTINUE;
 
     def doo(self, blackboard: Blackboard) -> str:
         """

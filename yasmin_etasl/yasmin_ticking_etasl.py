@@ -199,7 +199,7 @@ class eTaSLEventTopicListener(EventTopicListener):
         pass
     
     def process_message(self, msg) -> tuple[str, int]:
-        print("received message : {msg}")
+        print(f"received message {self.count} : {msg}")
         return (self.priority, msg.data)
 
 

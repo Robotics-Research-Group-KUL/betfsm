@@ -89,16 +89,27 @@ class Queue(ABC):
         """        
         raise Exception("abstract method not implemented")
     
-    # @abstractmethod
-    # def head(self, outcomes:List[str]) -> tuple[str,Type]:
-    #     raise Exception("abstract method not implemented")    
+    @abstractmethod
+    def clear(self):
+        """
+        Empties the queue.
+        """
+        raise Exception("abstract method not implemented") 
 
     @abstractmethod
     def size(self):
+        """
+        Returns the length of the queue.
+        """
         raise Exception("abstract method not implemented") 
+
 
 from collections import deque 
 class QueueFIFO(Queue):
+    """
+    A pure first in first out queue that a `Listener` can use to store received messages.
+    If the maximum size is exceeded, the oldest messages will be thrown away.
+    """
     def __init__(self, maxsize=100):
         self.maxsize=maxsize
         self.q = deque()
@@ -123,8 +134,8 @@ class QueueFIFO(Queue):
         else:
             return (outcome,None)
 
-
-
+    def clear(self):
+        self.q.clear()
 
     def size(self):
         """
@@ -135,6 +146,13 @@ class QueueFIFO(Queue):
 
 
 class QeueuFIFOfilter(Queue):
+    """
+    A pure first in first out queue that a `Listener` can use to store received messages.
+    It filters the reults using an outcomes list, but does not throw away elements that did not match, leaving 
+    them for later use by a state that does recognize the outcome of these elements.
+
+    If the maximum size is exceeded, the oldest messages will be thrown away.
+    """    
     def __init__(self, maxsize=100):
         """
         A message queue with first in first out policy
@@ -176,7 +194,9 @@ class QeueuFIFOfilter(Queue):
                     del self.q[count] # consume message
                     return (r[2],r[3])
             return (outcome,None)
-
+    
+    def clear(self):
+        self.q.clear()
     
     def size(self):
         return len(self.q)
@@ -187,24 +207,40 @@ class QeueuFIFOfilter(Queue):
 
 
 class Listener(ABC):
-
+    """
+    The abstract base class Listener encapsulates an object than can listens for messages and put it on a queue.
+    The state machine can use this to inject additional transitions into the state machine.
+    """
     def __init__(self,outcomes: List[str],queue:Queue=QueueFIFO()):
         """
         maintains a heap (priority, entrycount, outcome7)
 
-        prioriities: lower is higher priority, negative is more priority than current outcome
+        prioriities: 0 is the priority of the outcome of the current state, 
+        negative is more priority than current outcome, 
+        positive is lower priority than the current outcome (but still used when outcome==TICKING)
 
-        - Only the adapt_outcome method is used by the statemachine
-        - set_payload is overwritten by the subclass and and push_outcome can be used by subclasses
+        Note:
+         - Only the adapt_outcome(), start() and stop() methods are used by the statemachine
+         - set_payload is overwritten by the subclass and and push_outcome can be used by subclasses, 
+           it it is called by adapt_outcome()
 
-        TODO:
-          outcomes not used !
         """        
         self.outcomes = outcomes
         self.queue = queue
         pass
 
     def adapt_outcome(self, blackboard: Blackboard, outcome:str,outcomes:List[str]) -> str:
+        """
+        Possibly adapts the outcome of a state depending on priority rules and queuing pollicy of the underlying queue.
+
+        Parameters:
+            blackboard:
+                blackboard
+            outcome:
+                current outcome, can be ignored if there is a higher priority message.
+            outcomes:
+                list of eligible outcomes.
+        """
         outcome, msg = self.queue.adapt_outcome(outcome,outcomes)
         if msg is not None:
             self.set_payload(blackboard,msg)
@@ -218,8 +254,20 @@ class Listener(ABC):
         """
         raise NotImplementedError("set_payload abstract method is not implemented by subclass")
 
+    @abstractmethod
+    def start(self):
+        """
+        starts listening for messages from a source
+        """
+        raise NotImplementedError("start() abstract method is not implemented by subclass")
 
-
+    @abstractmethod
+    def stop(self):
+        """
+        stops listening for messages from a source
+        """
+        raise NotImplementedError("stop() method is not implemented by subclass")
+    
 
 
 class cbStateMachine(TickingState):
@@ -300,8 +348,12 @@ class cbStateMachine(TickingState):
             self.__current_state = self._start_state
         super().reset()
 
-    def execute(self, blackboard: Blackboard) -> str:
 
+    def entry(self, blackboard: Blackboard) -> str:
+        self.listener.start()
+        return CONTINUE
+
+    def doo(self, blackboard: Blackboard) -> str:
         #with self.__current_state_lock:
         #    self.__current_state = self._start_state
         while True:
@@ -352,7 +404,17 @@ class cbStateMachine(TickingState):
                 raise Exception(f"""State {name} has outcome ({outcome}) without transition
                                     transitions {state['transitions']}
                                     outcomes state machine {self.get_outcomes()} """)
-
+    
+    def exit(self) -> str:
+        self.listener.stop()
+        with self.__current_state_lock:
+            state = self.__current_state
+            if isinstance(state,TickingState):
+                state["state"].reset()
+            self.__current_state = self._start_state
+        return super().exit()
+    
+        
     def get_states(self) -> Dict[str, Union[State, Dict[str, str]]]:
         return self._states
 
