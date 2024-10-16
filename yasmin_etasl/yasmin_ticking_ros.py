@@ -1,5 +1,6 @@
 
 from .yasmin_ticking import *
+from .tickingstatemachine import *
 
 from rclpy.node import Node
 from yasmin_ros.yasmin_node import YasminNode
@@ -359,135 +360,7 @@ class ServiceClient(Generator):
 
 
 
-
-
-
-# class TopicState(Generator):
-#     """
-#     timeout using a composition with a Timeout() class, not implemented here.
-
-#     - messages queued and list passed to callback `cb` (that will determine policy of dealing with multiple messages)
-#     - `cb` can change blackboard
-#     - `cb` can determine outcome
-#     - after `cb` the queue is cleared.
-#     - TICKING if no topics received, outcome returned by `cb` otherwise.34
-
-
-#     Todo:
-#         - finish implementation
-#         - clears queue of messages before state is started. ?? (risk of losing messages
-#           when used in a statemachine that loops and reacts to outcomes ?) ;
-#             an entry_cb,doo_cb ? where entry_cb receives all previous messages.
-#         - do we need an underlying state/statemachine
-#         - when CALL outcome, call underlying state?
-#         - a bool variable to only store when state is active (controlled from cb's ? entry, doo, exit ?)
-#         - A topic state that contains an underlying state, together with a queuing mechanism and a state that the underlying state can
-#           use to transition.  Decoupling the receiving messages scope from the point(s) of generating transitions.
-
-#     2nd generation of design:
-#         - A state machine that additionally listens and can inject additional transitions. (closest to rFSM)
-#         - ? This state machine before returninG TICKING, listens to a queue and checks with a policy the transitions. The states outcomes have priority
-#         - ? the qeuue is a priority queue where each record has an outcome and a priority.  lowest number first, state itself is zero. positive only when ticking
-#           negative will push outcome of state and  interrupting with higher priority. (better of abort scenario's)
-#         - queue:
-#             - has a name and stored in blackboard, can be used with multiple statemachines.
-#             - has a list of allowable outcomes
-#             - an element of the queue has an outcome, priority and payload
-#         - Queue state:
-#             - defines queue
-#             - registers multiple listeners
-
-#     3th generation of design:
-#         - Priority,  
-#             - a non-ticking outcome of a state has priority zero, 
-#             - TICKING always yield to the queue (lowest priority possible)
-#             - highest priority number has the priority.
-#             - by default outcomes put in the queue externally will have priority -10,
-#         - specialisation of cbStateMachine:
-#             - that additionally registers Listeners and calls them just after the underlying states return an outcome
-#             - are "shallow": only deal with outcomes of the state machine, not inside the underlying states/state machine.
-#             - many other classes needs such a listener input during construction
-#         - Each listener:
-#             - contains a queue (from queue import PriorityQueue, customers.put((2, "Harry")), customers.get()   )
-#                 - with outcome
-#                 - with priority
-#                 - the priorityqueue can deal with concurrency.
-#             - can be used with multiple state machines.
-#             - can be chained together
-#             - if an outcome is used, it is consumed. only be used once!
-#             - if it only wants to adapt the blackboard, it leaves the queue empty.
-#             - it has a callback:
-#                 - to transform the received topic messages to the queue.
-#                 - to write payload to blackboard.
-#                 - processes all topic messages received after last call of callback.
-#     """
-#     def __init__(
-#             self, 
-#             topic_name:str, 
-#             topic_type: Type,
-#             outcomes: List[str],
-#             cb: Callable,            
-#             queue_size: int = 30,
-#             state : TickingState = None,
-#             node: Node = None
-#             ):
-#         """
-#         Parameters:
-#             topic_name:
-#                 name of the topic
-#             topic_type:
-#                 type of the topic
-#             outcomes:
-#                 allowable outcomes.
-#             cb:
-#                 a callback function with signature `def cb(self,blackboard, msg_queue)`, will be synchronously called
-#                 at each call of the state (i.e. while ticking). msg_queue can contain multiple messages.
-#                 the callback function returns an outcome that will be yielded.                
-#             queue_size:
-#                 max. queue size for the msg_queue passed in the callback (and indicated to middleware)
-#             state:
-#                 underlying state, can be None if there is no underlying state.
-#             node:
-#                 ROS2 node, by default YasminNode.get_instance()
-#         """
-#         super().__init__("TopicState",outcomes, TopicState.co_execute)
-#         qos_profile = QoSProfile(
-#             history=QoSHistoryPolicy.KEEP_LAST, #Keeps the last msgs received in case buffer is fulll
-#             depth=queue_size, #Buffer size
-#             reliability=QoSReliabilityPolicy.RELIABLE, #Uses TCP for reliability instead of UDP
-#             durability=QoSDurabilityPolicy.VOLATILE #Volatile, may not use first msgs if subscribed late (will not happen in this context)
-#         )
-#         if node is None:
-#             self.node = YasminNode.get_instance()
-#         else:
-#             self.node = node
-#         self.monitoring=False
-#         self.subscription = self.node.create_subscription(
-#             topic_type, topic_name, self.topic_callback, qos_profile)
-
-#     def callback_msg(self, msg) -> None:
-
-#         if self.monitoring:
-#             self.msg_list.append(msg)
-
-#             if len(self.msg_list) >= self.msg_queue:
-#                 self.msg_list.pop(0)
-
-
-#     def take_msgs(self) -> List:
-#         # protect with lock?
-#         msgs = self.msg_list.copy()
-#         self.msg_list.clear();
-#         return msgs
-
-
-#     def topic_co_execute(self,blackboard, msgs):
-#         pass
-
-
-#     def co_execute(self,blackboard):
-#         pass
-
+    
 
 
 
@@ -514,14 +387,16 @@ class EventTopicListener(Listener):
         super().__init__(outcomes)
         self.count = 0
 
-        qos_profile = QoSProfile(
-            history=QoSHistoryPolicy.KEEP_LAST, #Keeps the last msgs received in case buffer is fulll
-            depth=msg_queue, #Buffer size
-            reliability=QoSReliabilityPolicy.RELIABLE, #Uses TCP for reliability instead of UDP
-            durability=QoSDurabilityPolicy.VOLATILE #Volatile, may not use first msgs if subscribed late (will not happen in this context)
-        )
+        # qos_profile = QoSProfile(
+        #     history=QoSHistoryPolicy.KEEP_LAST, #Keeps the last msgs received in case buffer is fulll
+        #     depth=msg_queue, #Buffer size
+        #     reliability=QoSReliabilityPolicy.RELIABLE, #Uses TCP for reliability instead of UDP
+        #     durability=QoSDurabilityPolicy.VOLATILE #Volatile, may not use first msgs if subscribed late (will not happen in this context)
+        # )
+        # self.subscription = self.node.create_subscription(
+        #     topic_type,topic,self.__callback,qos_profile)
         self.subscription = self.node.create_subscription(
-            topic_type,topic,self.__callback,qos_profile)
+             topic_type,topic,self.__callback)
         
     def __callback(self,msg) -> None:
         priority, outcome = self.process_message(msg)

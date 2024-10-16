@@ -46,93 +46,6 @@ from yasmin.blackboard import Blackboard
 
 
 
-#
-# blackboard.task[taskname].parameters = dict with task parameters
-#
-
-#
-# For now, this  is a copy of cb_state_machine.py from yasmin_action.
-#
-#
-# def default_parameter_setter(blackboard:Blackboard, parameters:dict) -> dict:
-#     """
-#     default do-nothing callback function to set parameters.
-
-#     Input
-#     -----
-#     - blackboard: the blackboard, in case additional information is needed to construct the parameters
-#     - parameters: parameters as read from tasks-schema.json
-
-#     Output:
-#     -------
-#     - updated parameters
-#     """
-#     return parameters
-
-# class ReadTaskParametersCB(ServiceState):
-#     """Instructs the eTaSL node to read in parameters for the given task with a callback function
-    
-#        could replace the original ReadTaskParameters without much compatibility issues.
-#     """
-#     def __init__(self, task_name: str, setparamcb: default_parameter_setter) -> None:
-#         super().__init__(
-#             TaskSpecificationString,  # srv type
-#             "/etasl_node/readTaskSpecificationString",  # service name
-#             self.create_request_handler,  # cb to create the request
-#             [],  # outcomes. Includes SUCCEED, ABORT, TIMEOUT by default
-#             self.response_handler,  # cb to process the response
-#             timeout = 2.5 #seconds 
-#         )
-#         self.task_name = task_name
-#         self.setparamcb = setparamcb
-#         # self.file_path = file_path
-
-#     def create_request_handler(self, blackboard: Blackboard) -> TaskSpecificationString.Request:
-
-#         req = TaskSpecificationString.Request()
-
-#         task = get_task(self.task_name,blackboard)
-
-#         # filter and copy task["parameters"]
-#         param = {}
-#         for key,value in task["parameters"].items():
-#             if (key[:3]!="is-") and (key!="file_path"):
-#                 param[key] = value
-#         paramdef = param.copy()
-#         param = self.setparamcb(blackboard, param)
-#         param_string = ""
-#         # parameter checking using paramdef
-#         for key,value in param.items():
-#             if key not in paramdef:
-#                 raise ValueError(f"callback sets {key} parameter that is not in schema ")
-#             if value == "external":
-#                 raise ValueError(f"parameter declared 'external' is not set by callback")
-#         for key,_ in paramdef.items():
-#             if key not in param:
-#                 raise ValueError(f"required parameter {key} is not defined" )
-        
-#         # lua script setting parameters:
-#         for key, value in param.items():
-#             if isinstance(value,bool):
-#                 param_string = param_string + f"{key} = {str(value).lower()}\n"
-#             else:
-#                 param_string = param_string + f"{value}"
-
-#         req.str = param_string
-
-#         print(f"{param_string=}")
-#         # print("ReadTaskSpecificationString")
-#         return req
-
-#     def response_handler(self,blackboard: Blackboard,response: TaskSpecificationString.Response) -> str:
-
-#         # print("Service response success: " + str(response.success))
-#         blackboard.success = response.success
-#         if not response.success:
-#             return ABORT
-#         # time.sleep(1)
-#         return SUCCEED
-
 
 def default_transitioncb(statemachine,blackboard,source,outcome):
     """
@@ -287,7 +200,7 @@ class TickingState(State):
             try:
                 self.outcome = self.doo(blackboard)
             except Exception as e:
-                self.log.info("exception occured : "+ traceback.format_exc())
+                print("exception occured : "+ traceback.format_exc())
                 self.outcome = ABORT
                 self.status = TickingState_Status.EXIT
             if self.outcome == TICKING:
@@ -356,402 +269,10 @@ class TickingState(State):
 
 
 
-class Queue(ABC):
-    @abstractmethod
-    def push_outcome(self, priority:int, count:int, outcome:str,msg)->None:
-        """
-        pushes an outcome to the queue, using a standard set of parameters (not always used for every 
-        type of Queue)
-
-        Parameters:
-            - priority: 
-                Priority level, lower is higher priority, 0 is the priority level of the current outcome of a state.
-            - int:
-                sequence number of messages
-            - outcome:
-                outcome 
-            - msg:
-                the message structure (for extra processing for payload)
-        """                
-        raise Exception("abstract method not implemented")
-    
-    # @abstractmethod
-    # def pop_outcome(self, outcomes:List[str])  -> tuple[int, int, str,Type]:
-    #     raise Exception("abstract method not implemented")
-
-    @abstractmethod
-    def adapt_outcome(self, outcome:str,outcomes:List[str]) -> tuple[str,Type]:
-        """
-        Adapts the outcome of a state according to the policy of the queue
-        Parameters:
-            outcome:
-                current outcome of the current state
-            outcomes:
-                list of allowable outcomes for the current state.
-        Returns:
-            tuple: with following members
-             - outcome
-             - message structure (can be None if outcome is not originating from a message)
-        """        
-        raise Exception("abstract method not implemented")
-    
-    # @abstractmethod
-    # def head(self, outcomes:List[str]) -> tuple[str,Type]:
-    #     raise Exception("abstract method not implemented")    
-
-    @abstractmethod
-    def size(self):
-        raise Exception("abstract method not implemented") 
-
-from collections import deque 
-class QueueFIFO(Queue):
-    def __init__(self, maxsize=100):
-        self.maxsize=maxsize
-        self.q = deque()
-
-    def push_outcome(self, priority: int, count: int, outcome: str, msg) -> None:
-
-        if len(self.q)==self.maxsize:
-            self.q.popleft()
-        self.q.append((priority, count, outcome,msg))
-        
-
-
-    def adapt_outcome(self, outcome:str,outcomes:List[str]) -> tuple[str,Type]:
-
-        # lookup candidate
-        if len(self.q)>0:
-            candidate = self.q[0]
-        else:
-        # if no candidate pass through outcome
-            return (outcome, None)
-
-
-        # if candidate has higher priority (lower number):
-        if (outcome==TICKING) or (candidate[0]<0):
-            return (candidate[2],candidate[3])        
-        else:
-            return (outcome,None)
-
-
-
-
-    def size(self):
-        """
-        size of the queue
-        """
-        return len(self.q)
-
-
-
-class QeueuFIFOfilter(Queue):
-    def __init__(self, maxsize=100):
-        """
-        A message queue with first in first out policy
-        It filters the result using an outcomes list, but does not throw away the element if it does not
-        matches.
-
-        Parameters:
-            maxsize:
-                maximum size, if longer the queue starts to forget the oldest elements.        
-        """
-        self.maxsize=maxsize
-        self.q = deque(self.maxsize)
-
-    def push_outcome(self, priority: int, count: int, outcome: str, msg) -> None:
-        if len(self.q)==self.maxsize:
-            self.q.popleft()        
-        self.q.append((priority, count,outcome,msg))
-
-    def adapt_outcome(self, outcome:str,outcomes:List[str]) -> tuple[str,Type]:
-        if outcome==TICKING:
-            # lookup candidate
-            count=0
-            while count < len(self.q):
-                r = self.q[count]
-                count=count+1
-                if r[2] in outcomes:
-                    # candidate found
-                    del self.q[count]
-                    return (r[2],r[3])
-            return (TICKING,None)
-        else:
-            # lookup candidate (taking into account priority)
-            count=0
-            while count < len(self.q):
-                r = self.q[count]
-                count=count+1
-                if (r[2] in outcomes) and (r[0] < 0):
-                    # candidate found
-                    del self.q[count]
-                    return (r[2],r[3])
-            return (outcome,None)
-
-    
-    def size(self):
-        return len(self.q)
-
-
-
-
-
-
-class Listener(ABC):
-
-    def __init__(self,outcomes: List[str],queue:Queue=QueueFIFO):
-        """
-        maintains a heap (priority, entrycount, outcome7)
-
-        prioriities: lower is higher priority, negative is more priority than current outcome
-
-        - Only the adapt_outcome method is used by the statemachine
-        - set_payload is overwritten by the subclass and and push_outcome can be used by subclasses
-        """        
-        self.outcomes = outcomes
-        self.queue = queue
-        pass
-
-    def adapt_outcome(self, blackboard: Blackboard, outcome:str,outcomes:List[str]) -> str:
-        outcome, msg = self.queue.adapt_outcome(outcome,outcomes)
-        if msg is not None:
-            self.set_payload(self,blackboard,msg)
-        return outcome
-        
-    @abstractmethod
-    def set_payload(self, blackboard: Blackboard, msg):
-        """
-        uses the currently used message to set the payload in the blackboard
-        (method only to be used by subclasses)
-        """
-        raise NotImplementedError("set_payload abstract method is not implemented by subclass")
-
-
-class cbStateMachine(TickingState):
-    """
-    A version of StateMachine that calls a callback function before entering a state and/or at each transition.
-    extended version of the cbStateMachine from yasmin_action
-
-    Constructor(outcomes,transitioncb,statecb) :
-        - outcomes: the allowed outcomes of the state machine, cause the state machine to exit and return one of these outcomes   
-        - transitioncb: callback function called at each transition. 
-          Signature transitioncb(source_state:str, transtion:str, target_state:str)
-        - statecb: callback function called before entering each state. 
-          Signature statecb(name)
-
-    *In the case of a multithreaded application, it is assumed that the callback functions are reentrant or protected with a lock*
-
-    This class is useful but not necessary when using it with an ROS2 Action Server. Examples of usage:
-     - log transitions to ros2's logger 
-     - published action feedback on transitions
-    
-     
-    This statemachine is capable of working together with TickingState:
-      - will exit when TICKING outcome is given by one of the substates, but then if it is called again,
-        it will have remembered the state that had the TICKING outcome and start from that state.
-      - if returning with any other outcome, will start next time from the start state.
-      - should be drop in replacement of Yasmin StateMachine, (as long as nobody uses TICKING as outcome.)
-    """    
-    def __init__(self, outcomes: List[str], transitioncb=default_transitioncb, statecb=default_statecb) -> None:
-        outcomes.append(TICKING)
-        super().__init__(outcomes)
-
-        self._states = {}
-        self._start_state = None
-        self.__current_state = None
-        self.__current_state_lock = Lock()
-        self.statecb = statecb
-        self.transitioncb = transitioncb
-
-    def add_state(
-        self,
-        name: str,
-        state: State,
-        transitions: Dict[str, str] = None
-    ) -> None:
-        if not transitions:
-            transitions = {}
-        self._states[name] = {
-            "state": state,
-            "transitions": transitions
-        }
-        if not self._start_state:
-            self._start_state = name
-            self.__current_state = name
-
-    def set_start_state(self, name: str) -> None:
-        self._start_state = name
-        self.__current_state = name
-
-    def get_start_state(self) -> str:
-        return self._start_state
-
-    def cancel_state(self) -> None:
-        super().cancel_state()
-        with self.__current_state_lock:
-            if self.__current_state:
-                self._states[self.__current_state]["state"].cancel_state()
-
-    def reset(self):
-        with self.__current_state_lock:
-            state = self.__current_state
-            if isinstance(state,TickingState):
-                state["state"].reset()
-            self.__current_state = self._start_state
-        super().reset()
-
-    def execute(self, blackboard: Blackboard) -> str:
-
-        #with self.__current_state_lock:
-        #    self.__current_state = self._start_state
-        while True:
-            with self.__current_state_lock:
-                state = self._states[self.__current_state]
-                name = self.__current_state
-            self.statecb(self,blackboard,name)
-            outcome = state["state"](blackboard)
-
-            # check outcome belongs to state
-            if outcome not in state["state"].get_outcomes():
-                with self.__current_state_lock:
-                    self.__current_state = self._start_state
-                raise Exception(
-                    f"Outcome ({outcome}) is not register in state {self.__current_state}")
-
-
-            outcome = self.transitioncb(self,blackboard,self.__current_state, outcome)
-            # translate outcome using transitions
-            if outcome in state["transitions"]:              
-                outcome = state["transitions"][outcome]
-            if outcome == TICKING:                # outcome is TICKING and exits state machine but keeps current state                                                 
-                return outcome
-            elif outcome in self.get_outcomes():      # outcome is an outcome of the sm, reset current state
-                with self.__current_state_lock:
-                    self.__current_state = self._start_state
-                return outcome 
-            elif outcome in self._states:           # outcome is a state
-                with self.__current_state_lock:
-                    self.__current_state = outcome
-            else:                                   # outcome is not in the sm
-                with self.__current_state_lock:
-                    self.__current_state = self._start_state                                                                            
-                raise Exception(f"Outcome ({outcome}) without transition")
-
-    def get_states(self) -> Dict[str, Union[State, Dict[str, str]]]:
-        return self._states
-
-    def get_current_state(self) -> str:
-        with self.__current_state_lock:
-            if self.__current_state:
-                return self.__current_state
-
-        return ""
-
-    def __str__(self) -> str:
-        return f"StateMachine: {self._states}"
-    
-
-
-#
-#
-# End copied part from yasmin_action
-#
-
-
-# def nested_etasl_state(name: str, file_path: str, robot_path: str, display_in_viewer: bool= False):
-# class eTaSL_StateMachine(cbStateMachine):
-#     """
-#     A sub statemachine that:
-#     - uses cbStateMachine to provide callbaxks for transtions and state changes
-#     - uses a feedback to set parameters
-#     - scopes the names of the state, such that the feedback trace is understandable.
-#     - separate name of the state from the name of the task
-#     """
-#     def __init__(self,name: str,  
-#                  task: str = None,
-#                 display_in_viewer: bool= False, 
-#                 setparamcb = default_parameter_setter,
-#                 transitioncb=default_transitioncb, 
-#                 statecb=default_statecb):
-#         super().__init__(outcomes=[SUCCEED, ABORT],transitioncb=transitioncb,statecb=statecb)
-
-#         if task is None:
-#             task = name
-
-#         self.add_state(name+".DEACTIVATE_ETASL", DeactivateEtasl(),
-#                 transitions={SUCCEED: name+".CLEANUP_ETASL",
-#                             ABORT: name+".CLEANUP_ETASL",
-#                             TIMEOUT: ABORT}) #This state is just added in case that etasl is already running. If not possible (ABORT) still the task continues
-
-#         self.add_state(name+".CLEANUP_ETASL", CleanupEtasl(),
-#                 transitions={SUCCEED: name+".PARAMETER_CONFIG",
-#                             ABORT: name+".PARAMETER_CONFIG",
-#                             TIMEOUT: ABORT}) #This state is just added in case that etasl is already running. If not possible (ABORT) still the task continues
-
-#         self.add_state(name+".PARAMETER_CONFIG", ReadTaskParametersCB(task,setparamcb),
-#                 transitions={SUCCEED: name+".ROBOT_SPECIFICATION",
-#                             ABORT: ABORT,
-#                             TIMEOUT: ABORT})
-
-#         self.add_state(name+".ROBOT_SPECIFICATION", ReadRobotSpecificationFile(task),
-#                 transitions={SUCCEED: name+".TASK_SPECIFICATION",
-#                             ABORT: ABORT,
-#                             TIMEOUT: ABORT})
-
-#         self.add_state(name+".TASK_SPECIFICATION", ReadTaskSpecificationFile(name),
-#                 transitions={SUCCEED: name+".CONFIG_ETASL",
-#                             ABORT: ABORT,
-#                             TIMEOUT: ABORT})
-
-#         self.add_state(name+".CONFIG_ETASL", ConfigureEtasl(),
-#                 transitions={SUCCEED: name+".ACTIVATE_ETASL",
-#                             ABORT: ABORT,
-#                             TIMEOUT: ABORT})
-
-#         #state_name = f"RUNNING_{name}" 
-
-#         self.add_state(name+".ACTIVATE_ETASL", ActivateEtasl(),
-#                 transitions={SUCCEED: name+".RUNNING",
-#                             ABORT: ABORT,
-#                             TIMEOUT: ABORT})
-
-#         self.add_state(name+".RUNNING", Executing(name),
-#                 transitions={"e_finished@etasl_node": SUCCEED,
-#                             ABORT: ABORT})
-
-#         if display_in_viewer:
-#             YasminViewerPub('{} (nested FSM)'.format(name), self)
-
-  
-
-# ## some experimentation:
-
-# class TestState(State):
-#     def __init__(self) -> None:
-#         super().__init__([SUCCEED,"iterate"])
-#         self.count = 0
-
-#     def execute(self, blackboard: Blackboard) -> str:
-
-#         return SUCCEED
-    
-
-
-# def monitor( blackboard:Blackboard):
-#     # initialisation
-#     for i in range(10):
-#         # do work
-#         yield "continue"
-#     # cleanup
-#     yield "success"
-
-
 
 def default_coroutine(self, blackboard:Blackboard):
     yield SUCCEED
 
-# class DummyLogger:
-#     def info(s:str):
-#         pass
 
 class Generator(TickingState):
     """
@@ -805,68 +326,6 @@ class Generator(TickingState):
         pass
 
 
-
-# class Sequence(TickingState):
-#     """
-#     Implements a behaviortree-like Sequence
-#     SUCCESS=SUCCEED outcome,
-#     FAILURE=any other outcome
-
-#     minimizes the number of ticks.
-#     """
-#     def __init__(self, name,outcomes: List[str], statecb=default_statecb) -> None:
-#         super().__init__(outcomes)
-#         self.states=[]
-#         self.statecb = statecb  # NOT IMPLEMENTED, NEED TO REDEFINE statecb SIGNATURE (not depend on StateMachine)
-#         self.count = 0
-#         self.log = YasminNode.get_instance().get_logger()
-#         self.name = name
-
-#     def add_state(self, name:str, state: State) -> None:
-#         self.states.append({"name":name,"state":state})        
-
-#     def cancel_state(self) -> None:
-#         super().cancel_state()
-
-#     def entry(self, blackboard: Blackboard) -> str:
-#         self.log.info(f"{self.name} : start sequence")
-#         self.count=0
-#         if len(self.states)==0:
-#             return SUCCEED
-#         return CONTINUE
-
-#     def doo(self,blackboard:Blackboard) -> str:
-#         state = self.states[self.count]["state"]
-#         while True:
-#             #self.log.info(f"{self.name} : sequence {self.count}")
-#             outcome=state(blackboard)
-#             if outcome==TICKING:
-#                 return outcome
-#             elif outcome==SUCCEED:
-#                 self.count = self.count+1                
-#                 if self.count >= len(self.states):
-#                     self.outcome=SUCCEED
-#                     return SUCCEED
-#                 state=self.states[self.count]["state"]                
-#             else:
-#                 self.outcome=outcome
-#                 return outcome
-        
-
-#     def exit(self) -> str:
-#         self.log.info(f"{self.name} : sequence finished with outcome {self.outcome}")
-#         return self.outcome
-    
-#     def reset(self):
-#         for s in self.states:
-#             if isinstance(s["state"],TickingState):
-#                 print("reset state : " + s["name"])
-#                 s["state"].reset()
-#         super().reset()
-
-
-#     def __str__(self) -> str:
-#         pass
 
 
 class Sequence(Generator):
@@ -923,7 +382,7 @@ class Sequence(Generator):
         super().__init__(name,outcomes,execute_cb=Sequence.co_execute)
         self.states=[]
         self.count = 0
-        self.log = YasminNode.get_instance().get_logger()
+        #self.log = YasminNode.get_instance().get_logger()
 
     def add_state(self, name:str, state: State):
         """
@@ -1354,6 +813,32 @@ class WaitFor(Generator):
 
 
 
+class WaitForever(Generator):
+    """
+    A state that waits forever (while yielding TICKING)
+
+    """
+    def __init__(self):
+        """
+        Ticks forever, yielding TICKING (can be interrupted by e.g. a state machine with a listener)
+
+        """
+        outcomes = []
+        super().__init__("WaitForever",outcomes, execute_cb = WaitForever.co_execute)
+
+    def co_execute(self,blackboard):
+        while True:
+            yield TICKING
+
+
+    def reset(self):  # general rule, if you own states, you have to reset them
+        if self.state is not None and isinstance(self.state,TickingState):
+            self.state.reset()
+        super().reset()    
+
+
+
+
 class ConditionWhile(Generator):
     """
     State that contiuously evaluates an underlying state as long as a condition is satisfied.
@@ -1470,129 +955,3 @@ class Repeat(Generator):
 
 
 
-
-# class JoinStateMachines(TickingState):
-#     """
-#     executes state machines in parallel and waits for both of them to exit ("Join")
-#     Synchronous execution, starting in the order of adding
-#     The outcome TICKING will be executed in an interleaved way.
-#     only has a statecb, because it does not perform any transitions (underlying statemachine however do)
-#     still checks for outcomes to conform spec.
-
-
-#     outcome of the join:
-#         wait until all state machines return SUCCEED and return SUCCEED
-#         TICKING outcome of underlying statemachines propagates the tick as outcome of this class
-#         any other outcome that first arrives cancels the others and returns this outcome
-#           (e.g. failure)
-#     """    
-#     def __init__(self, outcomes: List[str], statecb=default_statecb) -> None:
-#         #outcomes.append(TICKING)
-#         super().__init__(outcomes)
-
-#         self.states = []
-#         self.statecb = statecb
-#         self.count=0
-#         self.countActive=0
-#         self.log = YasminNode.get_instance().get_logger()
-
-#     def add_state(
-#         self,
-#         name: str,
-#         state: State
-#     ):
-#         self.states.append( {"name":name, "state":state,'active':True})
-#         return self
-
-#     def cancel_state(self) -> None:
-#         for s in self.states: 
-#             s["state"].cancel_state()
-#         super().cancel_state()
-
-
-#     def entry(self, blackboard: Blackboard) -> str:
-#         #self.log.info(f"JoinStateMachines: entry called")
-#         if len(self.states)==0:
-#             raise RuntimeError("At least one state should be added to JoinStateMachines")
-#         self.count=0
-#         for s in self.states:
-#             s["active"] = True
-#         #self.countActive = len(self.states)
-#         return CONTINUE;
-
-#     def doo_old(self, blackboard: Blackboard) -> str:
-#         #self.log.info(f"JoinStateMachines: doo() called ({len(self.states)=},{self.count=},{self.countActive=})")
-#         while self.countActive>0:
-#             if self.states[self.count]["active"]:
-#                 self.outcome = self.states[self.count]["state"](blackboard)
-#                 if self.outcome==TICKING:
-#                     self.count = (self.count + 1) % len(self.states)
-#                     return self.outcome
-#                 elif self.outcome==SUCCEED:
-#                     self.states[self.count]["active"]=False
-#                     self.countActive = self.countActive - 1
-#                 else:
-#                     # other outcome than SUCCEED, return (exit will reset the rest of the states)
-#                     self.states[self.count]["active"]=False
-#                     self.countActive = self.countActive - 1
-#                     return self.outcome                    
-#             self.count = (self.count + 1) % len(self.states)
-#         return SUCCEED
-
-#     def doo(self,blackboard:Blackboard) -> str:
-#         """
-#         execute in parallel while avoiding **all** unnecessary ticks:
-#         - go through all the states:
-#             if active==True, execute and if outcome== :
-#             - TICKING : active=True,
-#             - SUCCEED or other : active=False,
-#         - if any other outcome, return first other outcome (the other parallel states are still executed once)
-#         - if any TICKING, return TICKING
-#         - otherwise (if all SUCCEED): return SUCCEED
-#         """
-#         ticking=0        
-#         other=0
-#         for s in self.states:
-#             if s["active"]:
-#                 outcome = s["state"](blackboard)
-#                 if outcome==TICKING:    # ticking
-#                     ticking=ticking+1
-#                 elif outcome!=SUCCEED:  # other outcome:
-#                     if other==0:
-#                         self.outcome=outcome
-#                     s["active"] = False
-#                     other=other+1
-#                 else:                   # SUCCEED
-#                     s["active"] = False
-#         # if any other outcome, we consider this a failure and return this outcome 
-#         #    (even if somebody else is TICKING)
-#         #    (self.outcome will the outcome of first state failing )
-#         #    (TickingState.execute() will exit)
-#         if other!=0 :
-#             return self.outcome
-#         # if any is ticking, return TICKING 
-#         #    (TickingState.execute() will call us back to continue in the next tick)
-#         if ticking != 0:
-#             self.outcome=TICKING
-#             return TICKING
-#         # otherwise, all was succesfull and we can return SUCCEED
-#         #    (TickingState.execute() will exit)
-#         self.outcome = SUCCEED
-#         return SUCCEED
-
-#     def exit(self) -> str:
-#         self.log.info(f"JoinStateMachines: exit called")
-#         # returns by default the outcome of entry or doo method.
-#         for s in self.states:
-#             s["state"].reset()        
-#         return self.outcome
-    
-#     def reset(self) -> str:
-#         for s in self.states:
-#             if isinstance(s["state"],TickingState):
-#                 s["state"].reset()                
-#         super().reset()
-
-#     def __str__(self) -> str:
-#         return f"JoinStateMachine: {self.states}"
-    

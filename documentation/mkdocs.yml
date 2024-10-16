@@ -19,6 +19,7 @@ nav:
         - "Fallback" : "fallback.md"
         - "ConcurrentFallback" : "concurrentfallback.md"
         - "WaitFor" : 'waitfor.md'
+        - "WaitForever" : 'waitforever.md'
         - "ConditionWhile" : 'conditionwhile.md'
         - "Repeat" : 'repeat.md'
         - "TimedRepeat" : timedrepeat.md

@@ -169,7 +169,16 @@ class ParallelStates(ConcurrentSequence):
         #self.add_state("MySequence", MySequence())
         #self.add_state("SM3", MyStateMachine2("SM3",5))
         #self.add_state("Repeat", Repeat(10,MyMessage("repeated item")))
-        self.add_state("etasl",eTaSL_StateMachine("MovingHome"))
+        self.add_state("my_sequence",Sequence("my_sequence",["SUCCEED","TIMEOUT","ABORT"]).add_state(
+                "movinghome",eTaSL_StateMachine("MovingHome")
+            ).add_state(
+                "movingup",eTaSL_StateMachine("MovingUp")
+            ).add_state(
+                "movingdown",eTaSL_StateMachine("MovingDown")
+            ).add_state(
+                "movingup",eTaSL_StateMachine("MovingUp")
+            )
+        )
         #self.add_state("TimedRepeat", 
         #               TimedRepeat(
         #                   maxcount=5,
