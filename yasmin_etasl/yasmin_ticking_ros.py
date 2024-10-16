@@ -58,7 +58,7 @@ class TimedWait(Generator):
         else:
             self.node = None
         outcomes = [SUCCEED,ABORT]
-        super().__init__("TimedWait",outcomes,execute_cb=TimedWait.co_execute)
+        super().__init__("TimedWait",outcomes)
         self.clock = self.node.get_clock()
         self.log   = self.node.get_logger()
         self.timeout = timeout
@@ -140,7 +140,7 @@ class TimedRepeat(Generator):
             outcomes = state.get_outcomes()
         else:
             outcomes = [SUCCEED]
-        super().__init__("TimedRepeat",outcomes,execute_cb=TimedRepeat.co_execute)
+        super().__init__("TimedRepeat",outcomes)
         self.state=state
         self.maxcount = maxcount
         self.timeout = timeout
@@ -210,7 +210,7 @@ class Timeout(Generator):
             self.node = node
         outcomes = state.get_outcomes()
         outcomes.append("TIMEOUT")
-        super().__init__("Timeout",outcomes,execute_cb=Timeout.co_execute)
+        super().__init__("Timeout",outcomes)
         self.state=state
         self.timeout = timeout
         self.log  = self.node.get_logger()
@@ -293,7 +293,7 @@ class ServiceClient(Generator):
         else:
             self.node = None        
         outcomes.append(TIMEOUT) #TickingState will add TICKING
-        super().__init__(srv_name,outcomes,ServiceClient.co_execute)
+        super().__init__(srv_name,outcomes)
         self.log       = self.node.get_logger()      
         self.clock     = self.node.get_clock()  
         self.srv_type  = srv_type

@@ -270,9 +270,6 @@ class TickingState(State):
 
 
 
-def default_coroutine(self, blackboard:Blackboard):
-    yield SUCCEED
-
 
 class Generator(TickingState):
     """
@@ -280,11 +277,9 @@ class Generator(TickingState):
     the given callback function (which is a python generator that can return intermediate results usig `yield`).  This makes
     it easy to specify a TickingState.
 
-    The callback that needs to be defined yields strings representing outcomes:
-    - if TICKING is yielded, expects to be called again, otherwise expects that this is
-      the end of the task.
+    Subclasses need to implement/override the abstract method co_execute(self, blackboard:Blackboard)
     """
-    def __init__(self, name:str,outcomes: List[str], execute_cb= default_coroutine) -> None:
+    def __init__(self, name:str,outcomes: List[str]) -> None:
         """
         parameters:
             name:
@@ -297,13 +292,12 @@ class Generator(TickingState):
         """
         super().__init__(outcomes)
         self.name = name
-        self.co_execute = execute_cb
 
     def cancel_state(self) -> None:
         super().cancel_state()
 
     def entry(self, blackboard: Blackboard) -> str:
-        self.generator = self.co_execute(self,blackboard)
+        self.generator = self.co_execute(blackboard)
         self.outcome = SUCCEED
         return CONTINUE
 
@@ -321,6 +315,12 @@ class Generator(TickingState):
     
     def reset(self):
         super().reset()
+
+
+    def co_execute(self,blackboard:Blackboard) -> str:
+        raise NotImplementedError("abstract method `co_execute` not implemented")
+        # yield SUCCEED
+
 
     def __str__(self) -> str:
         pass
@@ -379,7 +379,7 @@ class Sequence(Generator):
             outcomes: 
                 all the allowable outcomes of the Sequence. TICKING and ABORT will be added
         """
-        super().__init__(name,outcomes,execute_cb=Sequence.co_execute)
+        super().__init__(name,outcomes)
         self.states=[]
         self.count = 0
         #self.log = YasminNode.get_instance().get_logger()
@@ -485,7 +485,7 @@ class ConcurrentSequence(Generator):
             outcomes: 
                 all the allowable outcomes of the Sequence. TICKING and ABORT will be added
         """
-        super().__init__(name,outcomes,execute_cb=ConcurrentSequence.co_execute)
+        super().__init__(name,outcomes)
         self.states=[]
         self.count = 0
         #self.log = YasminNode.get_instance().get_logger()
@@ -600,10 +600,10 @@ class Fallback(Generator):
             outcomes: 
                 all the allowable outcomes of the Sequence. TICKING and ABORT will be added
         """        
-        super().__init__(name,outcomes,execute_cb=Fallback.co_execute,statecb=statecb)
+        super().__init__(name,outcomes)
         self.states=[]
         self.count = 0
-        self.log = YasminNode.get_instance().get_logger()
+        #self.log = YasminNode.get_instance().get_logger()
         
     def add_state(self, name:str, state: State):
         """
@@ -703,10 +703,10 @@ class ConcurrentFallback(Generator):
             outcomes: 
                 all the allowable outcomes of the Sequence. TICKING and ABORT will be added
         """
-        super().__init__(name,outcomes,execute_cb=ConcurrentSequence.co_execute)
+        super().__init__(name,outcomes)
         self.states=[]
         self.count = 0
-        self.log = YasminNode.get_instance().get_logger()
+        #self.log = YasminNode.get_instance().get_logger()
 
     def add_state(self, name:str, state: State):
         """
@@ -798,7 +798,7 @@ class WaitFor(Generator):
 
         """
         outcomes = ["SUCCEED"]
-        super().__init__("WaitFor",outcomes, execute_cb = WaitFor.co_execute)
+        super().__init__("WaitFor",outcomes)
         self.condition_cb = condition_cb
 
     def co_execute(self,blackboard):
@@ -824,7 +824,7 @@ class WaitForever(Generator):
 
         """
         outcomes = []
-        super().__init__("WaitForever",outcomes, execute_cb = WaitForever.co_execute)
+        super().__init__("WaitForever",outcomes)
 
     def co_execute(self,blackboard):
         while True:
@@ -879,7 +879,7 @@ class ConditionWhile(Generator):
         """
         outcomes = state.get_outcomes()
         outcomes.append(CANCEL)  # Generator will add TICKING and ABORT
-        super().__init__("ConditionWhile",outcomes, execute_cb = ConditionWhile.co_execute)
+        super().__init__("ConditionWhile",outcomes)
         self.condition_cb = condition_cb
         self.state=state
     
@@ -935,10 +935,10 @@ class Repeat(Generator):
                 underlying state
         """         
         outcomes = state.get_outcomes()
-        super().__init__("Repeat",outcomes,execute_cb=Repeat.co_execute)
+        super().__init__("Repeat",outcomes)
         self.state = state
         self.maxcount = maxcount
-        self.log = YasminNode.get_instance().get_logger()
+        #self.log = YasminNode.get_instance().get_logger()
     def co_execute(self,blackboard):        
         for c in range(self.maxcount):
             outcome = self.state(blackboard)
