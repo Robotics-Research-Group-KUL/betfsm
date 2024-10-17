@@ -9,6 +9,7 @@ from yasmin import StateMachine
 from yasmin.state import State
 from typing import Dict, List, Union, Callable
 
+from yasmin_etasl.yasmin_ticking import Visitor
 from yasmin_ros.basic_outcomes import SUCCEED, ABORT, TIMEOUT, CANCEL
 #from yasmin_ros import ServiceState
 
@@ -269,6 +270,19 @@ class Listener(ABC):
         raise NotImplementedError("stop() method is not implemented by subclass")
     
 
+class StateMachineElement:
+    """
+    Just to have a type that a visitor could recognize
+    """
+    def __init__(self,name,state,transitions):
+        self.name = name
+        self.state = state
+        self.transitions = transitions
+
+    def accept(self, visitor: Visitor):
+        if visitor.pre(self):
+            self.state.accept(visitor)
+        visitor.post(self)
 
 class TickingStateMachine(TickingState):
     """
@@ -295,9 +309,9 @@ class TickingStateMachine(TickingState):
       - if returning with any other outcome, will start next time from the start state.
       - should be drop in replacement of Yasmin StateMachine, (as long as nobody uses TICKING as outcome.)
     """    
-    def __init__(self, outcomes: List[str], listener:Listener=None, transitioncb=default_transitioncb, statecb=default_statecb) -> None:
+    def __init__(self, name:str, outcomes: List[str], listener:Listener=None, transitioncb=default_transitioncb, statecb=default_statecb) -> None:
         outcomes.append(TICKING)
-        super().__init__(outcomes)
+        super().__init__(name,outcomes)
 
         self._states = {}
         self._start_state = None
@@ -348,6 +362,11 @@ class TickingStateMachine(TickingState):
             self.__current_state = self._start_state
         super().reset()
 
+    def accept(self, visitor: Visitor):
+        if visitor.pre(self):
+            for k,v in self._states.items():
+                StateMachineElement(k,v["state"],v["transitions"]).accept(visitor)
+        visitor.post(self)
 
     def entry(self, blackboard: Blackboard) -> str:
         self.listener.start()

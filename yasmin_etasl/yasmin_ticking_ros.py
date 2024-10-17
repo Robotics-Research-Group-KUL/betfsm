@@ -73,7 +73,7 @@ class TimedWait(Generator):
 
 
 
-class TimedRepeat(Generator):
+class TimedRepeat(GeneratorWithState):
     """
     Repeats an underlying state for a given number of times and a given time interval.
     ```mermaid
@@ -136,12 +136,7 @@ class TimedRepeat(Generator):
             self.node = YasminNode.get_instance()
         else:
             self.node = node
-        if state is not None:
-            outcomes = state.get_outcomes()
-        else:
-            outcomes = [SUCCEED]
-        super().__init__("TimedRepeat",outcomes)
-        self.state=state
+        super().__init__("TimedRepeat",[SUCCEED],state)
         self.maxcount = maxcount
         self.timeout = timeout
         self.log  = self.node.get_logger()
@@ -171,14 +166,9 @@ class TimedRepeat(Generator):
             looptime = looptime + self.timeout
             count    = count + 1
         yield SUCCEED
-
-    def reset(self):  
-        "reset itself and the underlying state"
-        if isinstance(self.state,TickingState):
-            self.state.reset()
     
 
-class Timeout(Generator):
+class Timeout(GeneratorWithState):
     """
     Timeout
     """
@@ -207,15 +197,11 @@ class Timeout(Generator):
         if node is None:
             self.node = YasminNode.get_instance()
         else:
-            self.node = node
-        outcomes = state.get_outcomes()
-        outcomes.append("TIMEOUT")
-        super().__init__("Timeout",outcomes)
-        self.state=state
+            self.node = node        
+        super().__init__("Timeout",[TIMEOUT],state)
         self.timeout = timeout
         self.log  = self.node.get_logger()
         self.clock = self.node.get_clock()        
-        pass
 
     def co_execute(self,blackboard):        
         starttime = self.clock.now()
@@ -225,10 +211,6 @@ class Timeout(Generator):
             yield outcome
         yield TIMEOUT
 
-    def reset(self):  
-        "reset itself and the underlying state"
-        if isinstance(self.state,TickingState):
-            self.state.reset()
 
 class ServiceClient(Generator):
     """

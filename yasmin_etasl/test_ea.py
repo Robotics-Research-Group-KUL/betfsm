@@ -16,7 +16,7 @@ from yasmin_viewer import YasminViewerPub
 from .yasmin_ticking import *
 from .yasmin_ticking_ros import *
 from .yasmin_ticking_etasl import *
-
+from .graphviz_visitor import *
 
 
 class Counter(TickingState):
@@ -56,18 +56,18 @@ class Counter(TickingState):
 
 
 
-class MyMessage(State):
+class MyMessage(Generator):
     """
     Message(msg) returns a State that displays a message
     """
     def __init__(self,msg) -> None:
-        super().__init__([SUCCEED,])
+        super().__init__("message",[SUCCEED,])
         self.msg = msg
-    def execute(self,blackboard: Blackboard)-> str:
+    def co_execute(self,blackboard: Blackboard)-> str:
         my_node = YasminNode.get_instance()
         log = my_node.get_logger()
         log.info(f'Entering MyMessage : {self.msg}')
-        return SUCCEED
+        yield SUCCEED
 
 class Waiting(TickingState):
     """
@@ -105,7 +105,7 @@ class Waiting(TickingState):
         return SUCCEED
 
     
-class MyStateMachine(cbStateMachine):
+class MyStateMachine(TickingStateMachine):
     """
     A small state machine to demonstrated the above implemented nodes
     """
@@ -142,7 +142,7 @@ class MySequence(Sequence):
 
 
 
-class MyStateMachine2(cbStateMachine):
+class MyStateMachine2(TickingStateMachine):
     def __init__(self,name,maxcount=5):
         super().__init__(outcomes=[SUCCEED])
         def cb(self,blackboard):
@@ -162,7 +162,7 @@ class MyStateMachine2(cbStateMachine):
 
 class ParallelStates(ConcurrentSequence):
     def __init__(self):
-        super().__init__("ParallelStates",outcomes=[SUCCEED,CANCEL])
+        super().__init__("ParallelStates")
         #self.add_state("SM1", MyStateMachine("SM1",1,15))
         #self.add_state("SM2", MyStateMachine("SM2",2,5))
         self.add_state("Timer", TimedWait(Duration(seconds=2.5)))
@@ -232,31 +232,56 @@ def main(args=None):
     
     sm = ParallelStates()
 
+    # alternative way of specifying:
+    # sm = Sequence("my_sequence").add_state(
+    #             "movinghome",eTaSL_StateMachine("MovingHome")
+    #         ).add_state(
+    #             "movingup",eTaSL_StateMachine("MovingUp")
+    #         ).add_state(
+    #             "movingdown",eTaSL_StateMachine("MovingDown")
+    #         ).add_state(
+    #             "movingup",eTaSL_StateMachine("MovingUp")
+    #         ).add_state(
+    #             "my_message",MyMessage("Hello world")
+    #         )
 
-    sm = Sequence("my_sequence").add_state(
-                "movinghome",eTaSL_StateMachine("MovingHome")
-            ).add_state(
-                "movingup",eTaSL_StateMachine("MovingUp")
-            ).add_state(
-                "movingdown",eTaSL_StateMachine("MovingDown")
-            ).add_state(
-                "movingup",eTaSL_StateMachine("MovingUp")
-            ).add_state(
-                "my_message",MyMessage("Hello world")
+
+    # SOME BUG: 
+    sm = ConcurrentSequence("parallel", children=[
+            ("task1", Sequence("my_sequence", children=[
+                        ("movinghome",eTaSL_StateMachine("MovingHome") ),
+                        ("movingup",eTaSL_StateMachine("MovingUp") ),
+                        ("movingdown",eTaSL_StateMachine("MovingDown") ),            
+                        ("movingup",eTaSL_StateMachine("MovingUp")),
+                        ("my_message",MyMessage("Hello world"))
+                      ]) 
+            ),
+            ("task2",Sequence("timer", children=[
+                        ("timer",TimedWait(Duration(seconds=3.0) ) ),
+                        ("hello",MyMessage("Timer went off!"))
+                    ])
             )
+    ])
+
+    # sm = Sequence("my_sequence", children=[
+    #                     ("movinghome",eTaSL_StateMachine("MovingHome") ),
+    #                     ("movingup",eTaSL_StateMachine("MovingUp") ),
+    #                     ("movingdown",eTaSL_StateMachine("MovingDown") ),            
+    #                     ("movingup",eTaSL_StateMachine("MovingUp")),
+    #                     ("my_message",MyMessage("Hello world"))
+    #                   ]) 
 
 
 
-
-
-
-
-
-
+    vis = GraphViz_Visitor()
+    sm.accept(vis)
+    vis.print()
+    # rclpy.shutdown()
+    # return
 
 
     YasminViewerPub("Complete FSM", sm)
-    runner = YasminRunner(my_node,sm,blackboard,0.5)
+    runner = YasminRunner(my_node,sm,blackboard,0.01)
     
     try:
         while (runner.get_outcome()=="TICKING"):

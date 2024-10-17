@@ -21,7 +21,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'test_ea = ' + package_name + ".test_ea:main"
+            'test_ea = ' + package_name + ".test_ea:main",
+            'example_graphviz = ' +package_name + ".example_graphviz:main"
         ],
     }
 )

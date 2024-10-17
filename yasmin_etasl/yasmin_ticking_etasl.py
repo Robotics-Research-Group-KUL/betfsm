@@ -247,8 +247,9 @@ class eTaSL_StateMachine(TickingStateMachine):
         """
         
         """
-        super().__init__(outcomes=[SUCCEED, ABORT,TIMEOUT],transitioncb=transitioncb,statecb=statecb)
         name = "etasl_"+task_name
+        super().__init__(name,outcomes=[SUCCEED, ABORT,TIMEOUT],transitioncb=transitioncb,statecb=statecb)
+        
         if listener is None:
             listener = eTaSLEventTopicListener()
         self.listener = listener

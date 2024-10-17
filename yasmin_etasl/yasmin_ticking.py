@@ -85,33 +85,58 @@ EXIT="exit"
 # TIMEOUT="timout"  #already defined
 
 TickingState_Status = Enum("TickingState_Status",["ENTRY","DOO","EXIT"])
+# """
+#     ```graphviz
 
-"""
-    ```graphviz
-
-        digraph monitoringstate{
-            //node [shape=point] start;      
-            //node [shape=point] end;
-            node [shape=point] start
-            node [shape=box, style=rounded];
+#         digraph monitoringstate{
+#             //node [shape=point] start;      
+#             //node [shape=point] end;
+#             node [shape=point] start
+#             node [shape=box, style=rounded];
         
 
-            node [label= "  entry()\n if TICK return TICK\n if exception return ABORT"] Entry;
+#             node [label= "  entry()\n if TICK return TICK\n if exception return ABORT"] Entry;
 
-            node [label= "  doo()\n if TICK return TICK\n if exception return ABORT"] Doo;
-            node [label= "  exit()\n return outcome \n if exception return ABORT"] Exit;
-            start->Entry
+#             node [label= "  doo()\n if TICK return TICK\n if exception return ABORT"] Doo;
+#             node [label= "  exit()\n return outcome \n if exception return ABORT"] Exit;
+#             start->Entry
 
-            Entry -> Doo [label="CONTINUE\nor TICK"]
+#             Entry -> Doo [label="CONTINUE\nor TICK"]
 
-            Entry -> Exit [label="≠TICK and\n ≠CONTINUE\nor ABORT"]
-            Doo -> Exit [label="≠TICK\nor ABORT"]
-            Doo -> Doo [label="TICK"]
-            Exit -> Entry 
+#             Entry -> Exit [label="≠TICK and\n ≠CONTINUE\nor ABORT"]
+#             Doo -> Exit [label="≠TICK\nor ABORT"]
+#             Doo -> Doo [label="TICK"]
+#             Exit -> Entry 
         
-        }
-    ```
-"""
+#         }
+#     ```
+# """
+
+class Visitor(ABC):
+    """
+    Visitor pattern, see https://en.wikipedia.org/wiki/Visitor_pattern
+
+    *Erich Gamma, Richard Helm, Ralph Johnson, John Vlissides (1994). Design Patterns: Elements of Reusable Object-Oriented Software. Addison Wesley.* (Gang of Four book)
+
+
+    Called by accept() methods of TickingState and its subclasses
+    """
+    @abstractmethod
+    def pre(self,state) -> bool:
+        """
+        Processing done by visitor before visiting the children of the state.
+
+        returns true if children needs to be explored
+        """
+        raise NotImplementedError("Visitor.pre() method not implemented")
+    
+    def post(self,state):
+        """
+        Processing done by the visitor after visiting the children.
+
+        returns nothing.
+        """
+        raise NotImplementedError("Visitor.pre() method not implemented")
 
 class TickingState(State):
     """
@@ -160,15 +185,18 @@ class TickingState(State):
         if not, the user needs to call reset() before using the state again.
 
     """
-    def __init__(self,outcomes: List[str]):
+    def __init__(self,name:str, outcomes: List[str]):
         """
         parameters:
+            name:
+                name of the TickingState
             outcomes:
                 all possible outcomes of the state, TICKING and ABORT will be added.
         """
         self.outcomes = outcomes
         self.outcomes.append(TICKING)
         self.outcomes.append(ABORT)
+        self.name = name
         super().__init__(self.outcomes)
         self.status = TickingState_Status.ENTRY
         self.outcome = "" # will contain the last used outcome
@@ -273,6 +301,16 @@ class TickingState(State):
         # returns by default the outcome of entry or doo method.
         return self.outcome
 
+    def accept(self, visitor:Visitor):
+        """
+        calls the visitor with itself and possibly iterates over its children.
+
+        See also:
+            Visitor        
+        """
+        visitor.pre(self)
+        # no children
+        visitor.post(self)
 
 
 
@@ -287,17 +325,14 @@ class Generator(TickingState):
     """
     def __init__(self, name:str,outcomes: List[str]) -> None:
         """
-        parameters:
+        Parameters:
             name:
                 name of the node
             outcomes:
                 a list of strings indicating the expected outcomes,  TICKING and ABORT will be
                 automatically added.
-            executecb:
-                callback function, is a python generator function (i.e. containing `yield`)
         """
-        super().__init__(outcomes)
-        self.name = name
+        super().__init__(name,outcomes)        
 
     def cancel_state(self) -> None:
         super().cancel_state()
@@ -382,6 +417,13 @@ class GeneratorWithList(Generator):
                 print("reset state : " + s["name"])
                 s["state"].reset()
         super().reset()  
+
+    
+    def accept(self, visitor:Visitor):
+        if visitor.pre(self):
+            for s in self.states:
+                s["state"].accept(visitor)
+        visitor.post(self)        
 
 class Sequence(GeneratorWithList):
     """
@@ -772,10 +814,6 @@ class WaitFor(Generator):
             yield TICKING
         yield SUCCEED
 
-    def reset(self):  # general rule, if you own states, you have to reset them
-        if self.state is not None and isinstance(self.state,TickingState):
-            self.state.reset()
-        super().reset()    
 
 
 
@@ -797,15 +835,41 @@ class WaitForever(Generator):
             yield TICKING
 
 
+
+
+class GeneratorWithState(Generator):
+    """
+    A Generator with one underlying states
+    """
+    def __init__(self, name: str, outcomes: List[str], state: TickingState):
+        """
+        Parameters:
+            name:
+                name of the node
+            outcomes:
+                a list of strings indicating the expected outcomes, the outcomes of the underlying
+                state are automatically added.        
+            state:
+                underlying state
+        """
+        if state is not None:
+            outcomes = cleanup_outcomes(outcomes + state.get_outcomes())
+        super().__init__(name,outcomes)
+        self.state=state
+
+
+    def accept(self, visitor:Visitor):
+        if visitor.pre(self):
+            self.state.accept(visitor)
+        visitor.post(self)    
+
     def reset(self):  # general rule, if you own states, you have to reset them
         if self.state is not None and isinstance(self.state,TickingState):
             self.state.reset()
-        super().reset()    
+        super().reset()  
 
 
-
-
-class ConditionWhile(Generator):
+class ConditionWhile(GeneratorWithState):
     """
     State that contiuously evaluates an underlying state as long as a condition is satisfied.
     ```mermaid
@@ -843,25 +907,20 @@ class ConditionWhile(Generator):
             state:
                 at each tick of the underlying state, the condition_cb is checked 
         """
-        outcomes = state.get_outcomes()
+        outcomes = [CANCEL]
         outcomes.append(CANCEL)  # Generator will add TICKING and ABORT
-        super().__init__("ConditionWhile",outcomes)
+        super().__init__("ConditionWhile",outcomes,state)
         self.condition_cb = condition_cb
-        self.state=state
     
     def co_execute(self,blackboard):        
         while self.condition_cb(self,blackboard):
             outcome = self.state(blackboard)
             yield outcome
         yield CANCEL
-
-    def reset(self):  # general rule, if you own states, you have to reset them
-        if self.state is not None and isinstance(self.state,TickingState):
-            self.state.reset()
-        super().reset()    
+  
 
 
-class Repeat(Generator):
+class Repeat(GeneratorWithState):
     """
     Repeats underlying state for *maxcount* times or until an outcome other than SUCCEED is reached.
     ```mermaid
@@ -900,11 +959,9 @@ class Repeat(Generator):
             state:
                 underlying state
         """         
-        outcomes = state.get_outcomes()
-        super().__init__("Repeat",outcomes)
-        self.state = state
+        super().__init__("Repeat",[],state)
         self.maxcount = maxcount
-        #self.log = YasminNode.get_instance().get_logger()
+        
     def co_execute(self,blackboard):        
         for c in range(self.maxcount):
             outcome = self.state(blackboard)
@@ -914,10 +971,6 @@ class Repeat(Generator):
             if outcome!=SUCCEED:
                 yield outcome
         yield SUCCEED
-    def reset(self):  # general rule, if you own states, you have to reset them
-        if isinstance(self.state,TickingState):
-            self.state.reset()
-        super().reset()    
-
+    
 
 
