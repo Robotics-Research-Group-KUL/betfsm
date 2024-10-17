@@ -376,6 +376,7 @@ class EventTopicListener(Listener):
             topic: str,
             topic_type:Type,
             outcomes: List[str],
+            queue:Queue=QueueFIFO(),
             msg_queue: int = 30,
             node: Node = None,
         ) -> None:
@@ -383,7 +384,7 @@ class EventTopicListener(Listener):
             self.node = YasminNode.get_instance()
         else:
             self.node = node
-        super().__init__(outcomes)
+        super().__init__(outcomes,queue=queue)
         self.topic_type = topic_type
         self.topic = topic
         self.msg_queue = msg_queue

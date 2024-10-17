@@ -1,4 +1,4 @@
-site_name: "Python documentation"
+site_name: "Yasmin_eTaSL documenttaion"
 site_author: "Erwin Aertbelien"
 repo_url: "https://gitlab.kuleuven.be/rob-expressiongraphs/ros2/yasmin_etasl"
 copyright: "LGPL-3.0-only"
@@ -12,6 +12,7 @@ nav:
   - "Documentation":
     - "Home": 'index.md'
     - "Yasmin":
+      - "Tickingstates":
         - "TickingState" : "tickingstate.md"
         - "Generator" : "generator.md"
         - "Sequence" : "sequence.md"
@@ -21,13 +22,17 @@ nav:
         - "WaitFor" : 'waitfor.md'
         - "WaitForever" : 'waitforever.md'
         - "ConditionWhile" : 'conditionwhile.md'
-        - "Repeat" : 'repeat.md'
+        - "Repeat" : 'repeat.md'        
+      - "TickingStateMachine": 'tickingstatemachine.md'
+      - "ROS 2":  
+        - "ServiceClient" : 'serviceclient.md'
+        - "LifeCycle" : 'lifecycle.md'
+        - "TopicState" : 'topicstate.md'
         - "TimedRepeat" : timedrepeat.md
         - "TimedWait" : 'timedwait.md'
         - "Timeout" : "timeout.md"
-        - "ServiceClient" : 'serviceclient.md'
-        - "TopicState" : 'topicstate.md'
-        - "LifeCycle" : 'lifecycle.md'
+      - "eTaSL":
+        - "eTaSL_StateMachine": 'etaslstatemachine.md'
     - "Utilities" : 'utils.md'
     - "About": 'about.md'
     - "Todo list" : "TODO.md"

@@ -334,9 +334,56 @@ class Generator(TickingState):
         pass
 
 
+class GeneratorWithList(Generator):
+    """
+    A generator with some facilities to maintain an ordered list of children
+    """
+    def __init__(self, name:str, outcomes:List[str], children: List[tuple[str,TickingState]]=[]) -> None:
+        """
+        parameters:
+            name: 
+                name 
+            outcomes:
+                list of possible outcomes (in addition to the outcomes of the underlying states)
+            children:
+                a list of tuples (name, state). 
+                you can use add_state(...) to add children.
+        """
+        super().__init__(name,outcomes)
+        self.states=[]
+        for c in children:
+            self.add_state(c[0],c[1])
 
+    def add_state(self, name:str, state: State):
+        """
+        adds a state to the sequence
+        parameters:
+            name:
+                name of the state
+            state:
+                state intance
+        returns:
+            self (to allow method chaining)
+        """
+        if not isinstance(state,State):
+            raise Exception("add_state expects as second argument an instance of a subclass of State")
+        if not isinstance(name,str):
+            raise Exception("add_state expects as first argument a string")
+        self.states.append({"name":name,"state":state})  
+        self.outcomes = cleanup_outcomes(self.outcomes + state.get_outcomes())
+        self._outcomes = self.outcomes  # dirty hack to fix a bug
+        return self 
+    def reset(self):  # general rule, if you own states, you have to reset them
+        """
+        resets the sequence and ensures tht the underlying states are also reset.
+        """
+        for s in self.states:
+            if isinstance(s["state"],TickingState):
+                print("reset state : " + s["name"])
+                s["state"].reset()
+        super().reset()  
 
-class Sequence(Generator):
+class Sequence(GeneratorWithList):
     """
     Implements a behaviortree-like Sequence node:
       - success is SUCCEED outcome,
@@ -379,60 +426,36 @@ class Sequence(Generator):
             class TIMEOUT abortClass
     ```
     """
-    def __init__(self, name:str) -> None:
+    def __init__(self, name:str, children: List[tuple[str,TickingState]]=[]) -> None:
         """
         parameters:
             name: 
                 name of the sequence
-            outcomes: 
-                all the allowable outcomes of the Sequence. TICKING and ABORT will be added
+            children:
+                a list of tuples (name, state). 
+                you can use add_state(...) to add children.
         """
-        super().__init__(name,[])
-        self.states=[]
+        super().__init__(name,[],children)        
         self.count = 0
         #self.log = YasminNode.get_instance().get_logger()
 
-    def add_state(self, name:str, state: State):
-        """
-        adds a state to the sequence
-        parameters:
-            name:
-                name of the state
-            state:
-                state intance
-        returns:
-            Sequence object (to allow method chaining)
-        """
-        self.states.append({"name":name,"state":state})  
-        self.outcomes = cleanup_outcomes(self.outcomes + state.get_outcomes())
-        self._outcomes = self.outcomes  # dirty hack to fix a bug
-        print("sequence outcomes: ",self.outcomes)
-        return self 
     
-    def reset(self):  # general rule, if you own states, you have to reset them
-        """
-        resets the sequence and ensures tht the underlying states are also reset.
-        """
-        for s in self.states:
-            if isinstance(s["state"],TickingState):
-                print("reset state : " + s["name"])
-                s["state"].reset()
-        super().reset()    
+  
 
     def co_execute(self,blackboard):        
         for s in self.states:                
-            print("Sequence: state : ",s["state"])
+            #print("Sequence: state : ",s["state"])
             outcome = s["state"](blackboard)
             while outcome==TICKING:
                 yield TICKING
                 outcome = s["state"](blackboard)
             if outcome!=SUCCEED:
                 yield outcome            
-        print("sequence finished")                
+        #print("sequence finished")                
         yield SUCCEED
 
 
-class ConcurrentSequence(Generator):
+class ConcurrentSequence(GeneratorWithList):
     """
     Implements a behaviortree-like Sequence node:
       - success is SUCCEED outcome,
@@ -490,42 +513,18 @@ class ConcurrentSequence(Generator):
     ```
         
     """
-    def __init__(self, name:str,outcomes: List[str]) -> None:
+    def __init__(self, name:str, children: List[tuple[str,TickingState]]=[]) -> None:
         """
         parameters:
             name: 
                 name of the sequence
-            outcomes: 
-                all the allowable outcomes of the Sequence. TICKING and ABORT will be added
+            children:
+                a list of tuples (name, state). 
+                you can use add_state(...) to add children.
         """
-        super().__init__(name,outcomes)
-        self.states=[]
+        super().__init__(name,[],children)
         self.count = 0
-        #self.log = YasminNode.get_instance().get_logger()
-
-    def add_state(self, name:str, state: State):
-        """
-        adds a state to the sequence
-        parameters:
-            name:
-                name of the state
-            state:
-                state intance
-        returns:
-            Sequence object (to allow method chaining)
-        """
-        self.states.append({"active": True,"name":name,"state":state})  
-        return self 
-    
-    def reset(self): 
-        """
-        resets the sequence and ensures tht the underlying states are also reset.
-        """
-        for s in self.states:
-            if isinstance(s["state"],TickingState):
-                s["state"].reset()
-        super().reset()    
-
+               
     def co_execute(self,blackboard):
         """
         executes the underlying states in sequence, as much as possible concurrently.
@@ -561,7 +560,7 @@ class ConcurrentSequence(Generator):
 
 
 
-class Fallback(Generator):
+class Fallback(GeneratorWithList):
     """    
     Implements a behaviortree-like Fallback node:
       - success any other outcome,
@@ -605,42 +604,18 @@ class Fallback(Generator):
             class CANCEL abortClass
     ```    
     """
-    def __init__(self, name:str, outcomes, statecb=default_statecb) -> None:
+    def __init__(self, name:str, children: List[tuple[str,TickingState]]=[]) -> None:
         """
         parameters:
             name: 
                 name of the sequence
-            outcomes: 
-                all the allowable outcomes of the Sequence. TICKING and ABORT will be added
-        """        
-        super().__init__(name,outcomes)
-        self.states=[]
+            children:
+                a list of tuples (name, state). 
+                you can use add_state(...) to add children.
+        """
+        super().__init__(name,[], children)
         self.count = 0
-        #self.log = YasminNode.get_instance().get_logger()
         
-    def add_state(self, name:str, state: State):
-        """
-        adds a state to the fallback node
-        parameters:
-            name:
-                name of the state
-            state:
-                state intance
-        returns:
-            Sequence object (to allow method chaining)
-        """        
-        self.states.append({"name":name,"state":state})  
-        return self 
-    
-    def reset(self): 
-        """
-        resets the sequence and ensures tht the underlying states are also reset.
-        """        
-        for s in self.states:
-            if isinstance(s["state"],TickingState):
-                print("reset state : " + s["name"])
-                s["state"].reset()
-        super().reset()    
 
     def co_execute(self,blackboard):
         for s in self.states:                
@@ -654,7 +629,7 @@ class Fallback(Generator):
 
 
 
-class ConcurrentFallback(Generator):
+class ConcurrentFallback(GeneratorWithList):
     """
     Implements a behaviortree-like Fallback node:
       - success is any other outcome,
@@ -708,41 +683,19 @@ class ConcurrentFallback(Generator):
     ```
         
     """
-    def __init__(self, name:str,outcomes: List[str]) -> None:
+    def __init__(self, name:str, children: List[tuple[str,TickingState]]=[]) -> None:
         """
         parameters:
             name: 
                 name of the sequence
-            outcomes: 
-                all the allowable outcomes of the Sequence. TICKING and ABORT will be added
+            children:
+                a list of tuples (name, state). 
+                you can use add_state(...) to add children.
         """
-        super().__init__(name,outcomes)
-        self.states=[]
+        super().__init__(name,[],children)
         self.count = 0
-        #self.log = YasminNode.get_instance().get_logger()
 
-    def add_state(self, name:str, state: State):
-        """
-        adds a state to the sequence
-        parameters:
-            name:
-                name of the state
-            state:
-                state intance
-        returns:
-            Sequence object (to allow method chaining)
-        """
-        self.states.append({"active": True,"name":name,"state":state})  
-        return self 
-    
-    def reset(self): 
-        """
-        resets the sequence and ensures tht the underlying states are also reset.
-        """
-        for s in self.states:
-            if isinstance(s["state"],TickingState):
-                s["state"].reset()
-        super().reset()    
+   
 
     def co_execute(self,blackboard):
         """

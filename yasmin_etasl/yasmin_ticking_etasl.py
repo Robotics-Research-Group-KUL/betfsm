@@ -172,6 +172,7 @@ class eTaSLEventTopicListener(EventTopicListener):
     def __init__(
             self,topic:str = "/fsm/events",
             outcomes: List[str] = ["e_finished@etasl_node"],
+            queue:Queue=QueueFIFO(),
             msg_queue :int = 30,
             priority: int = 1,
             node : Node = None
@@ -192,7 +193,7 @@ class eTaSLEventTopicListener(EventTopicListener):
                 is more important than the state, positive is less important than state 
                 output
         """
-        super().__init__(topic,String,outcomes,msg_queue,node)
+        super().__init__(topic,String,outcomes,queue,msg_queue,node)
         self.priority=priority
 
     def set_payload(self, blackboard: Blackboard, msg):
@@ -224,7 +225,7 @@ class eTaSLEventTopicListener(EventTopicListener):
 
  
 # def nested_etasl_state(name: str, file_path: str, robot_path: str, display_in_viewer: bool= False):
-class eTaSL_StateMachine(cbStateMachine):
+class eTaSL_StateMachine(TickingStateMachine):
     """
     A sub statemachine that:
     - uses cbStateMachine to provide callbaxks for transtions and state changes
@@ -256,16 +257,16 @@ class eTaSL_StateMachine(cbStateMachine):
 
         #This state is just added in case that etasl is already running. If not possible (ABORT) still the task continues:
         # I am not so sure that the transition will fail if inappropriate, only when there is an error for an appropriate transition.
-        self.add_state(name+".DEACTIVATE_ETASL", LifeCycle(transition=Transition.DEACTIVATE),
-                transitions={SUCCEED: name+".CLEANUP_ETASL",
-                            ABORT: name+".CLEANUP_ETASL",
+        self.add_state("DEACTIVATE_ETASL", LifeCycle(transition=Transition.DEACTIVATE,timeout=timeout),
+                transitions={SUCCEED: "CLEANUP_ETASL",
+                            ABORT: "CLEANUP_ETASL",
                             TIMEOUT: ABORT}) 
         
         #This state is just added in case that etasl is already running. If not possible (ABORT) still the task continues
-        self.add_state(name+".CLEANUP_ETASL", LifeCycle(transition=Transition.CLEANUP),
-                transitions={SUCCEED: name+".PARAMETER_CONFIG",
-                            ABORT: name+".PARAMETER_CONFIG"}) 
-        self.add_state(name+".PARAMETER_CONFIG", SetTaskParameters(
+        self.add_state("CLEANUP_ETASL", LifeCycle(transition=Transition.CLEANUP,timeout=timeout),
+                transitions={SUCCEED: "PARAMETER_CONFIG",
+                            ABORT: "PARAMETER_CONFIG"}) 
+        self.add_state("PARAMETER_CONFIG", SetTaskParameters(
                                                     task_name=task_name,
                                                     srv_name = srv_name,
                                                     cb = setparamcb,
@@ -273,21 +274,21 @@ class eTaSL_StateMachine(cbStateMachine):
                                                     node=node
                                                     ),
                        transitions={
-                           SUCCEED: name+".ROBOT_SPECIFICATION"
+                           SUCCEED: "ROBOT_SPECIFICATION"
                        })
-        self.add_state(name+".ROBOT_SPECIFICATION", ReadRobotSpecification(task_name),
-                transitions={SUCCEED: name+".TASK_SPECIFICATION"})
+        self.add_state("ROBOT_SPECIFICATION", ReadRobotSpecification(task_name),
+                transitions={SUCCEED: "TASK_SPECIFICATION"})
 
-        self.add_state(name+".TASK_SPECIFICATION", ReadTaskSpecification(task_name),
-                transitions={SUCCEED: name+".CONFIG_ETASL"})
+        self.add_state("TASK_SPECIFICATION", ReadTaskSpecification(task_name),
+                transitions={SUCCEED: "CONFIG_ETASL"})
 
-        self.add_state(name+".CONFIG_ETASL", LifeCycle(transition=Transition.CONFIGURE),
-                transitions={SUCCEED: name+".ACTIVATE_ETASL"})
+        self.add_state("CONFIG_ETASL", LifeCycle(transition=Transition.CONFIGURE,timeout=timeout),
+                transitions={SUCCEED: "ACTIVATE_ETASL"})
 
-        self.add_state(name+".ACTIVATE_ETASL", LifeCycle(transition=Transition.ACTIVATE),
-                transitions={SUCCEED: name+".EXECUTING"})
+        self.add_state("ACTIVATE_ETASL", LifeCycle(transition=Transition.ACTIVATE,timeout=timeout),
+                transitions={SUCCEED: "EXECUTING"})
 
-        self.add_state(name+".EXECUTING", WaitForever(),
+        self.add_state("EXECUTING", WaitForever(),
                        transitions= {"e_finished@etasl_node": SUCCEED})
 
         # self.add_state(name+".RUNNING", Executing(name),

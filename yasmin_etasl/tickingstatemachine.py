@@ -270,7 +270,7 @@ class Listener(ABC):
     
 
 
-class cbStateMachine(TickingState):
+class TickingStateMachine(TickingState):
     """
     A version of StateMachine that calls a callback function before entering a state and/or at each transition.
     extended version of the cbStateMachine from yasmin_action
@@ -381,9 +381,9 @@ class cbStateMachine(TickingState):
                                     [ sname for sname,s in self._states.items() ]
                 old_outcome=outcome
                 outcome = self.listener.adapt_outcome(blackboard,outcome, allowable_outcomes  )
-                if outcome !=old_outcome:
-                    print(f"queue size {self.listener.queue.size()}")
-                    print(f"calling adapt_outcome with {old_outcome}\n\t\t\t{allowable_outcomes}\nresulting in {outcome}")
+                #if outcome !=old_outcome:
+                #    print(f"queue size {self.listener.queue.size()}")
+                #    print(f"calling adapt_outcome with {old_outcome}\n\t\t\t{allowable_outcomes}\nresulting in {outcome}")
 
             outcome = self.transitioncb(self,blackboard,self.__current_state, outcome)
             # translate outcome using transitions
