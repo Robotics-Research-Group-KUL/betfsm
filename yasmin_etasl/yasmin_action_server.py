@@ -38,15 +38,13 @@ from yasmin_viewer import YasminViewerPub
 
 from .yasmin_ticking_etasl import *
 
-import rclpy 
-# # still needed for ros_transition_cb
-def set_logger(node):
-    global logger
-    logger=node.get_logger()
 
-def get_logger():
-    global logger
-    return logger
+from .logger import get_logger,set_logger
+
+from .sm_up_and_down import Up_and_down_as_a_class
+
+
+import rclpy 
 
 
 
@@ -330,21 +328,37 @@ def main(args=None):
     rclpy.init(args=args)
     blackboard = Blackboard()
 
+
+
+    load_task_list("$[yasmin_etasl]/tasks/my_tasks.json",blackboard)
+
+
+
     # BUGFIX :executed second time, it starts from the previous execution.
     # fixed by calling reset() in the action!!
     # ath the highest level somebody has to reset() manually!
-    sm1 = ConditionWhile(lambda bm : not bm["cancel_goal"], 
-        Sequence("timer", children=[
-            ("timer",TimedWait(Duration(seconds=5.0) ) ),
-            ("hello",MyMessage("Timer went off!"))
-        ])
-    )
-    statemachines = {"assembly":sm1}
+    # sm1 = ConditionWhile(lambda bm : not bm["cancel_goal"], 
+    #     Sequence("timer", children=[
+    #         ("timer",TimedWait(Duration(seconds=5.0) ) ),
+    #         ("hello",MyMessage("Timer went off!"))
+    #     ])
+    # )
+
+
+    # adapt to directly react to a CANCEL of the action:    
+    sm1 = ConditionWhile(lambda bm: not bm["cancel_goal"], Up_and_down_as_a_class() )
+
+    statemachines = {"up_and_down": sm1 }
     empty_statemachine = EmptyStateMachine()
     action_server = YasminActionServer(blackboard,statemachines)
+
+    set_logger("default",action_server.get_logger())
+    #set_logger("service",my_node.get_logger())
+    #set_logger("state",my_node.get_logger())
+
+
     pub = YasminViewerPub("error", empty_statemachine,10,node=action_server)
-    action_server.set_viewer(pub)
-    set_logger(action_server)
+    action_server.set_viewer(pub)    
     
 
     # We use a MultiThreadedExecutor to handle incoming goal requests concurrently

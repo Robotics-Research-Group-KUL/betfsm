@@ -408,7 +408,6 @@ class GeneratorWithList(Generator):
         """
         super().__init__(name,outcomes)
         self.states=[]
-        print(children)
         if (children is not None) and (children != []):
             for c in children:
                 self.add_state(c[0],c[1])
