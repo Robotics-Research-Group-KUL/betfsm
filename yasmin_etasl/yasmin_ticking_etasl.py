@@ -1,3 +1,22 @@
+# yasmin_ticking_etasl.py
+#
+# Copyright (C) Erwin Aertbeliën, Santiago Iregui, 2024
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program; if not, write to the Free Software Foundation,
+# Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+
 """
 Yasmin_Ticking states related to eTaSL
 """
@@ -62,7 +81,7 @@ class SetTaskParameters(ServiceClient):
                  timeout:Duration = Duration(seconds=1.0), 
                  node:Node = None):
         outcomes=[SUCCEED]  # ABORT + TIMEOUT added
-        super().__init__(srv_name+"/readTaskSpecificationString",TaskSpecificationString,outcomes,timeout,node)
+        super().__init__("setTaskParameters",srv_name+"/readTaskSpecificationString",TaskSpecificationString,outcomes,timeout,node)
         self.task_name = task_name
         self.cb = cb
 
@@ -114,6 +133,7 @@ class ReadRobotSpecification(ServiceClient):
                  node:Node = None):
         outcomes=[SUCCEED]  # ABORT + TIMEOUT added
         super().__init__(
+            "ReadRobotSpecification",
             srv_name+"/readTaskSpecificationFile",
             TaskSpecificationFile, outcomes, timeout,node)
         self.task_name = task_name
@@ -149,6 +169,7 @@ class ReadTaskSpecification(ServiceClient):
                  node:Node = None):
         outcomes=[SUCCEED]  # ABORT + TIMEOUT added
         super().__init__(
+            "ReadTaskSpecification",
             srv_name+"/readTaskSpecificationFile",
             TaskSpecificationFile, outcomes, timeout,node)
         self.task_name = task_name

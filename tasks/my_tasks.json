@@ -1,6 +1,5 @@
 {
     "$schema": "../../etasl_ros2_application_template/etasl/tasks-schema.json",
-    "default_robot_specification_file": "$[etasl_ros2_application_template]/etasl/robot_specifications/ur10.etasl.lua",
     "tasks": [
         {
             "name": "MovingHome",
@@ -20,13 +19,13 @@
         },
         {
             "name": "MovingCartesian",
+            "robot_specification_file": "$[etasl_ros2_application_template]/etasl/robot_specifications/ur10.etasl.lua",
             "parameters": {
                 "is-move_cartesianspace": true,
-                "robot_specification_file": "$[etasl_ros2_application_template]/etasl/robot_specifications/ur10.etasl.lua",
                 "file_path": "$[etasl_ros2_application_template]/etasl/task_specifications/move_cartesianspace.etasl.lua",
                 "delta_x": 0,
                 "delta_y": 0,
-                "delta_z": 0.1,
+                "delta_z": 0,
                 "eq_r": 0.08,
                 "maxacc": 0.1,
                 "maxvel": 0.3
@@ -42,8 +41,8 @@
             }
         },
         {
-            "name": "MovingDown",
-            "robot_specification_file": "$[etasl_ros2_application_template]/etasl/robot_specifications/ur10.etasl.lua",
+            "name": "MovingDown",        
+            "robot_specification_file": "$[etasl_ros2_application_template]/etasl/robot_specifications/ur10.etasl.lua",    
             "parameters": {
                 "is-move_cartesianspace": true,
                 "file_path": "$[etasl_ros2_application_template]/etasl/task_specifications/move_cartesianspace.etasl.lua",

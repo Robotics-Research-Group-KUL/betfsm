@@ -22,7 +22,8 @@ setup(
     entry_points={
         'console_scripts': [
             'test_ea = ' + package_name + ".test_ea:main",
-            'example_graphviz = ' +package_name + ".example_graphviz:main"
+            'example_graphviz = ' +package_name + ".example_graphviz:main",
+            'yasmin_action_server = ' +package_name + ".yasmin_action_server:main"
         ],
     }
 )

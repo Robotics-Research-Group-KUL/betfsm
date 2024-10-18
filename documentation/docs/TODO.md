@@ -13,3 +13,6 @@
   (dynamically built outcomes know need a dirty fix self._outcomes = outcomes )
 
 
+
+- uniform logging (problem:  should work with/without ROS2)
+

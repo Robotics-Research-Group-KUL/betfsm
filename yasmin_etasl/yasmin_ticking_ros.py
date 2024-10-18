@@ -1,3 +1,20 @@
+# yasmin_ticking_ros.py
+#
+# Copyright (C) Erwin Aertbeliën, Santiago Iregui, 2024
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program; if not, write to the Free Software Foundation,
+# Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 from .yasmin_ticking import *
 from .tickingstatemachine import *
@@ -251,13 +268,15 @@ class ServiceClient(Generator):
     ```
 
     """
-    def __init__(self, srv_name:str, srv_type: Type, outcomes:List[str], timeout:Duration = Duration(seconds=1.0), 
+    def __init__(self, name:str, srv_name:str, srv_type: Type, outcomes:List[str], timeout:Duration = Duration(seconds=1.0), 
                  node:Node = None) -> None:
         """
         Creates a TickingState that calls a service and generates an outcome when the service returns back.
         While waiting, it continues to tick.
 
         Parameters:
+            name:
+                name of the state
             srv_name:
                 name of the service
             srv_type:
@@ -275,7 +294,7 @@ class ServiceClient(Generator):
         else:
             self.node = None        
         outcomes.append(TIMEOUT) #TickingState will add TICKING
-        super().__init__(srv_name,outcomes)
+        super().__init__(name,outcomes)
         self.log       = self.node.get_logger()      
         self.clock     = self.node.get_clock()  
         self.srv_type  = srv_type
@@ -497,7 +516,7 @@ class LifeCycle(ServiceClient):
         else:
             self.node = None
         outcomes = [SUCCEED,ABORT] # TIMEOUT added by ServiceClient, TICKING added by TickingState
-        super().__init__(srv_name+"/change_state",ChangeState,outcomes,timeout,node)
+        super().__init__(transition.name,srv_name+"/change_state",ChangeState,outcomes,timeout,node)
         self.transition = transition
 
     def fill_in_request(self, blackboard: Blackboard,request) -> None:

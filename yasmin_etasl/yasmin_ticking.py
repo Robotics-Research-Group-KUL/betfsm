@@ -1,3 +1,22 @@
+# yasmin_ticking.py
+#
+# Copyright (C) Erwin Aertbeliën, Santiago Iregui, 2024
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program; if not, write to the Free Software Foundation,
+# Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+
 # proposed additions/adaptations of etasl_yasmin_utils by Erwin.
 #
 # Draft
@@ -10,6 +29,9 @@ from yasmin.state import State
 from typing import Dict, List, Union, Callable
 
 from yasmin_ros.basic_outcomes import SUCCEED, ABORT, TIMEOUT, CANCEL
+
+from .logger import get_logger
+
 #from yasmin_ros import ServiceState
 
 #from yasmin_viewer import YasminViewerPub
@@ -211,19 +233,21 @@ class TickingState(State):
             self.exit()
         self.status = TickingState_Status.ENTRY
 
-    def execute(self, blackboard: Blackboard) -> str:
+    def execute(self, blackboard: Blackboard) -> str:        
         #self.log.info("TickintState.execute")
         if self.status == TickingState_Status.ENTRY: 
+            get_logger().info(f"Entering {self.name}")
             #self.log.info("TickintState.execute ENTRY")           
             try:
                 self.outcome = self.entry(blackboard)
                 #self.log.info(f"TickintState.execute ENTRY returns {self.outcome}")
             except Exception as e:
-                print("exception occurred : "+ traceback.format_exc())
+                get_logger().error("exception occurred : "+ traceback.format_exc())
                 self.outcome = ABORT
                 self.status = TickingState_Status.EXIT
             if self.outcome == TICKING:
                 self.status = TickingState_Status.DOO
+                get_logger().info(f"Exit {self.name} with {self.outcome}")
                 return self.outcome
             if self.outcome == CONTINUE:
                 self.status = TickingState_Status.DOO
@@ -234,7 +258,7 @@ class TickingState(State):
             try:
                 self.outcome = self.doo(blackboard)
             except Exception as e:
-                print("exception occured : "+ traceback.format_exc())
+                get_logger().error("exception occured : "+ traceback.format_exc())
                 self.outcome = ABORT
                 self.status = TickingState_Status.EXIT
             if self.outcome == TICKING:
@@ -244,8 +268,9 @@ class TickingState(State):
         if self.status == TickingState_Status.EXIT:
             self.outcome = self.exit()
             self.status = TickingState_Status.ENTRY
+            get_logger().info(f"Exit {self.name} with {self.outcome}")
             return self.outcome
-        print("at end of execute")
+        get_logger().info(f"Exit {self.name} with {self.outcome}")
         return self.outcome # in case of ABORT
 
     def entry(self, blackboard: Blackboard) -> str:
@@ -386,8 +411,10 @@ class GeneratorWithList(Generator):
         """
         super().__init__(name,outcomes)
         self.states=[]
-        for c in children:
-            self.add_state(c[0],c[1])
+        print(children)
+        if (children is not None) and (children != []):
+            for c in children:
+                self.add_state(c[0],c[1])
 
     def add_state(self, name:str, state: State):
         """
@@ -408,10 +435,12 @@ class GeneratorWithList(Generator):
         self.outcomes = cleanup_outcomes(self.outcomes + state.get_outcomes())
         self._outcomes = self.outcomes  # dirty hack to fix a bug
         return self 
+    
     def reset(self):  # general rule, if you own states, you have to reset them
         """
         resets the sequence and ensures tht the underlying states are also reset.
         """
+        print("Sequence reset")
         for s in self.states:
             if isinstance(s["state"],TickingState):
                 print("reset state : " + s["name"])
@@ -424,6 +453,7 @@ class GeneratorWithList(Generator):
             for s in self.states:
                 s["state"].accept(visitor)
         visitor.post(self)        
+
 
 class Sequence(GeneratorWithList):
     """
@@ -802,7 +832,7 @@ class WaitFor(Generator):
 
         Parameters:
             condition_cb:
-                callback function with signature `condition(self, blackboard:Blackboard) -> bool`
+                callback function with signature `condition(blackboard:Blackboard) -> bool`
 
         """
         outcomes = ["SUCCEED"]
@@ -810,7 +840,7 @@ class WaitFor(Generator):
         self.condition_cb = condition_cb
 
     def co_execute(self,blackboard):
-        while not self.condition_cb(self,blackboard):
+        while not self.condition_cb(blackboard):
             yield TICKING
         yield SUCCEED
 
@@ -863,7 +893,7 @@ class GeneratorWithState(Generator):
             self.state.accept(visitor)
         visitor.post(self)    
 
-    def reset(self):  # general rule, if you own states, you have to reset them
+    def reset(self):  # general rule, if you own states, you have to reset thems
         if self.state is not None and isinstance(self.state,TickingState):
             self.state.reset()
         super().reset()  
@@ -903,7 +933,7 @@ class ConditionWhile(GeneratorWithState):
 
         Parameters:
             condition_cb:
-                callback function with signature `condition(self, blackboard:Blackboard) -> bool`
+                callback function with signature `condition(blackboard:Blackboard) -> bool`
             state:
                 at each tick of the underlying state, the condition_cb is checked 
         """
@@ -913,7 +943,7 @@ class ConditionWhile(GeneratorWithState):
         self.condition_cb = condition_cb
     
     def co_execute(self,blackboard):        
-        while self.condition_cb(self,blackboard):
+        while self.condition_cb(blackboard):
             outcome = self.state(blackboard)
             yield outcome
         yield CANCEL
@@ -972,5 +1002,20 @@ class Repeat(GeneratorWithState):
                 yield outcome
         yield SUCCEED
     
+
+
+class Message(Generator):
+    """
+    Message(msg) returns a State that displays a message
+    """
+    def __init__(self,msg) -> None:
+        super().__init__("message",[SUCCEED,])
+        self.msg = msg
+    def co_execute(self,blackboard: Blackboard)-> str:
+        #my_node = YasminNode.get_instance()
+        #log = my_node.get_logger()
+        #log.info(f'Entering MyMessage : {self.msg}')
+        print(self.msg)
+        yield SUCCEED
 
 
