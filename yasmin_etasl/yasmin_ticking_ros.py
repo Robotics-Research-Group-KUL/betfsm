@@ -294,8 +294,7 @@ class ServiceClient(Generator):
         else:
             self.node = None        
         outcomes.append(TIMEOUT) #TickingState will add TICKING
-        super().__init__(name,outcomes)
-        self.log       = self.node.get_logger()      
+        super().__init__(name,outcomes)        
         self.clock     = self.node.get_clock()  
         self.srv_type  = srv_type
         self.srv_name  = srv_name
@@ -304,12 +303,12 @@ class ServiceClient(Generator):
         self.timeout   = timeout
 
     def co_execute(self,blackboard:Blackboard):
-        self.log.info(f"calling ROS2 service {self.srv_name} ({self.srv_type.__name__})")
+        get_logger("service").info(f"calling ROS2 service {self.srv_name} ({self.srv_type.__name__})")
         starttime = self.clock.now()
         while not self.srvclient.service_is_ready():
             if self.timeout!=Duration():
                 if self.clock.now() - starttime > self.timeout:
-                    self.log.error(f"could not find service {self.srv_type.__name__} from {self.srv_name} in time")
+                    get_logger().error(f"could not find service {self.srv_type.__name__} from {self.srv_name} in time")
                     yield TIMEOUT
             yield TICKING
         self.request = self.fill_in_request(blackboard,self.request)
@@ -317,11 +316,11 @@ class ServiceClient(Generator):
         while not future.done():
             if self.timeout!=Duration():
                 if self.clock.now() - starttime > self.timeout:
-                    self.log.error(f"service {self.srv_type} from {self.srv_name.__name__} did not answer in time")
+                    get_logger().error(f"service {self.srv_type} from {self.srv_name.__name__} did not answer in time")
                     yield TIMEOUT            
             yield TICKING
         result = future.result()
-        self.log.info(f"received results from {self.srv_name}({self.srv_type.__name__})")
+        get_logger("service").info(f"received results from {self.srv_name}({self.srv_type.__name__})")
         yield self.process_result(blackboard, result)        
 
 
@@ -518,8 +517,10 @@ class LifeCycle(ServiceClient):
         outcomes = [SUCCEED,ABORT] # TIMEOUT added by ServiceClient, TICKING added by TickingState
         super().__init__(transition.name,srv_name+"/change_state",ChangeState,outcomes,timeout,node)
         self.transition = transition
+        self.node_name = srv_name
 
     def fill_in_request(self, blackboard: Blackboard,request) -> None:
+        get_logger().info(f"Set lifecycle of {self.node_name} to {self.name}")
         request.transition.id = self.transition.value
         return request
     

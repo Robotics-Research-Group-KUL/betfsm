@@ -222,7 +222,6 @@ class TickingState(State):
         super().__init__(self.outcomes)
         self.status = TickingState_Status.ENTRY
         self.outcome = "" # will contain the last used outcome
-        #self.log = DummyLogger #YasminNode.get_instance().get_logger()
     
     def reset(self)->None:
         """
@@ -236,18 +235,16 @@ class TickingState(State):
     def execute(self, blackboard: Blackboard) -> str:        
         #self.log.info("TickintState.execute")
         if self.status == TickingState_Status.ENTRY: 
-            get_logger().info(f"Entering {self.name}")
-            #self.log.info("TickintState.execute ENTRY")           
+            get_logger("state").info(f"Entering {self.name}")
             try:
                 self.outcome = self.entry(blackboard)
-                #self.log.info(f"TickintState.execute ENTRY returns {self.outcome}")
             except Exception as e:
                 get_logger().error("exception occurred : "+ traceback.format_exc())
                 self.outcome = ABORT
                 self.status = TickingState_Status.EXIT
             if self.outcome == TICKING:
                 self.status = TickingState_Status.DOO
-                get_logger().info(f"Exit {self.name} with {self.outcome}")
+                get_logger("state").info(f"Exit {self.name} with {self.outcome}")
                 return self.outcome
             if self.outcome == CONTINUE:
                 self.status = TickingState_Status.DOO
@@ -268,9 +265,9 @@ class TickingState(State):
         if self.status == TickingState_Status.EXIT:
             self.outcome = self.exit()
             self.status = TickingState_Status.ENTRY
-            get_logger().info(f"Exit {self.name} with {self.outcome}")
+            get_logger("state").info(f"Exit {self.name} with {self.outcome}")
             return self.outcome
-        get_logger().info(f"Exit {self.name} with {self.outcome}")
+        get_logger("state").info(f"Exit {self.name} with {self.outcome}")
         return self.outcome # in case of ABORT
 
     def entry(self, blackboard: Blackboard) -> str:

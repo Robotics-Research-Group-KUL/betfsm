@@ -70,7 +70,13 @@ def main(args=None):
     rclpy.init(args=args)
 
     my_node = YasminNode.get_instance()
-    set_logger(my_node.get_logger())
+
+    set_logger("default",my_node.get_logger())
+    #set_logger("service",my_node.get_logger())
+    #set_logger("state",my_node.get_logger())
+
+
+
     blackboard = Blackboard()
 
     load_task_list("$[yasmin_etasl]/tasks/my_tasks.json",blackboard)

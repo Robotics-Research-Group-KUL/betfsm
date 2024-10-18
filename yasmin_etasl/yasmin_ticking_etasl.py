@@ -113,7 +113,7 @@ class SetTaskParameters(ServiceClient):
                 param_string = param_string + f"{key} = {value}\n"
         # constructing request:
         request.str  = param_string
-        self.log.info(f"Set parameters for eTaSL task {self.task_name}\n{param_string}")
+        get_logger().info(f"Set parameters for eTaSL task {self.task_name}\n{param_string}")
         return request    
     
     def process_result(self, blackboard: Blackboard, response) -> str:
@@ -149,7 +149,7 @@ class ReadRobotSpecification(ServiceClient):
                         raise Exception("No robot_specification_file defined")
                 # we do expand refs, etasl_node does this already in his own ROS2 workspace
                 request.file_path  = specfile
-                print("robot specification file ",specfile)
+                get_logger().info(f"robot specification file {specfile}")
                 return request
             
         raise Exception(f"Task with name {self.task_name} was not found")
@@ -180,6 +180,7 @@ class ReadTaskSpecification(ServiceClient):
         # extract file_path, and expand references    
         # # we do expand refs, etasl_node does this already in his own ROS2 workspace    
         request.file_path = task["parameters"]["file_path"]
+        get_logger().info(f"task specification file {request.file_path}")
         return request
     
     def process_result(self, blackboard: Blackboard, response) -> str:
@@ -221,7 +222,7 @@ class eTaSLEventTopicListener(EventTopicListener):
         pass
     
     def process_message(self, msg) -> tuple[str, int]:
-        print(f"received message {self.count} : {msg}")
+        get_logger().info(f"received message {self.count} : {msg}")
         return (self.priority, msg.data)
 
 
