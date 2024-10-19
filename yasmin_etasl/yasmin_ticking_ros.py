@@ -1,6 +1,6 @@
 # yasmin_ticking_ros.py
 #
-# Copyright (C) Erwin Aertbeliën, Santiago Iregui, 2024
+# Copyright (C) Erwin Aertbeliën, 2024
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -16,24 +16,23 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-from .yasmin_ticking import *
-from .tickingstatemachine import *
+import re
+from abc import abstractmethod
+
 
 from rclpy.node import Node
-from yasmin_ros.yasmin_node import YasminNode
-from lifecycle_msgs.srv import ChangeState
-
-import re
 import ament_index_python as aip
 
+from std_msgs.msg import String
+from lifecycle_msgs.srv import ChangeState
 from rclpy.qos import QoSHistoryPolicy, QoSProfile, QoSReliabilityPolicy, QoSDurabilityPolicy
 
-from abc import ABC, abstractmethod
+from .yasmin_ticking import *
+from .tickingstatemachine import *
+from .yasmin_ticking_node import YasminTickingNode
 
-import heapq
 
 
-from std_msgs.msg import String
 
 class TimedWait(Generator):
     """Node that waits for a given time and then returns succeed
@@ -71,9 +70,9 @@ class TimedWait(Generator):
             will return TICKING until timeout is passed after which it returns SUCCEED
         """
         if node is None:
-            self.node = YasminNode.get_instance()
+            self.node = YasminTickingNode.get_instance()
         else:
-            self.node = None
+            self.node = node
         outcomes = [SUCCEED,ABORT]
         super().__init__("TimedWait",outcomes)
         self.clock = self.node.get_clock()
@@ -143,14 +142,14 @@ class TimedRepeat(GeneratorWithState):
             state:
                 underlying state
             node: 
-                ROS2 node, if None, YasminNode.get_instance() is used
+                ROS2 node, if None, YasminTickingNode.get_instance() is used
 
         Note:
             if the underlying state returns later than `timeout` with a non-ticking outcome, an exception will be raised 
             and abort is called.
         """
         if node is None:
-            self.node = YasminNode.get_instance()
+            self.node = YasminTickingNode.get_instance()
         else:
             self.node = node
         super().__init__("TimedRepeat",[SUCCEED],state)
@@ -205,14 +204,14 @@ class Timeout(GeneratorWithState):
             state:
                 underlying state
             node: 
-                ROS2 node, if None, YasminNode.get_instance() is used 
+                ROS2 node, if None, YasminTickingNode.get_instance() is used 
 
         Warning:
             assumes that the underlying state sufficiently yields TICKING!
             Don't use this if the underlying state completely blocks!
         """
         if node is None:
-            self.node = YasminNode.get_instance()
+            self.node = YasminTickingNode.get_instance()
         else:
             self.node = node        
         super().__init__("Timeout",[TIMEOUT],state)
@@ -287,12 +286,12 @@ class ServiceClient(Generator):
                 maximum time for contacting service and processing and retrieving request.
                 (special value: Duration(): ad infinitum)
             node:
-                node, if None, YasminNode.get_instance() will be used.
+                node, if None, YasminTickingNode.get_instance() will be used.
         """
         if node is None:
-            self.node = YasminNode.get_instance()
+            self.node = YasminTickingNode.get_instance()
         else:
-            self.node = None        
+            self.node = node
         outcomes.append(TIMEOUT) #TickingState will add TICKING
         super().__init__(name,outcomes)        
         self.clock     = self.node.get_clock()  
@@ -381,7 +380,7 @@ class EventTopicListener(Listener):
             node: Node = None,
         ) -> None:
         if node==None:
-            self.node = YasminNode.get_instance()
+            self.node = YasminTickingNode.get_instance()
         else:
             self.node = node
         super().__init__(outcomes,queue=queue)
@@ -508,14 +507,14 @@ class LifeCycle(ServiceClient):
             timeout: 
                 duration that indicates the timeout, 0 is forever
             node:
-                if None, singleton YasminNode.get_instance() will be used.
+                if None, singleton YasminTickingNode.get_instance() will be used.
         """
         if node is None:
-            self.node = YasminNode.get_instance()
+            self.node = YasminTickingNode.get_instance()
         else:
-            self.node = None
+            self.node = node
         outcomes = [SUCCEED,ABORT] # TIMEOUT added by ServiceClient, TICKING added by TickingState
-        super().__init__(transition.name,srv_name+"/change_state",ChangeState,outcomes,timeout,node)
+        super().__init__(name=transition.name,srv_name=srv_name+"/change_state",srv_type=ChangeState,outcomes=outcomes,timeout=timeout,node=node)
         self.transition = transition
         self.node_name = srv_name
 

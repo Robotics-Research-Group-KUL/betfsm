@@ -1,5 +1,5 @@
 # Yasmin_action
-# Copyright (C) Erwin Aertbeliën, Santiago Iregui, 2024
+# Copyright (C) Erwin Aertbeliën,  2024
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -41,7 +41,6 @@ from .yasmin_ticking_etasl import *
 
 from .logger import get_logger,set_logger
 
-from .sm_up_and_down import Up_and_down_as_a_class
 
 
 import rclpy 
@@ -169,15 +168,18 @@ class EmptyStateMachine(StateMachine):
         super().__init__(["   waiting_for_action   "])
         #self.add_state("WAITING",WaitingForAction(),transitions={})
 
-class YasminActionServer(Node):
+class YasminActionServer:
     """Action server that processes yasmin tasks one goal at a time.
 
     Some deep knowledge on YasminViewerPub is necessary to adapt it to another state machine
     See the main on how to use this.
     """
 
-    def __init__(self,bm, statemachines,name="yasmin_action_server"):
-        super().__init__(name)
+    def __init__(self,bm, statemachines,frequency:int = 100,node:Node=None):
+        if node is None:
+            self.node = YasminTickingNode.get_instance()
+        else:
+            self.node = node
         self.blackboard = bm 
         self.statemachines = statemachines
         self.empty_statemachine = EmptyStateMachine()
@@ -187,7 +189,7 @@ class YasminActionServer(Node):
         self._current_goal_request      = None
         self.input_parameters = {}        # decoded as (possibly recursive) Dict (No need for lock, action server makes sure only one thread is writing or reading)
         self._action_server = ActionServer(
-            self,
+            node,
             YasminTask,
             'yasmintask',
             execute_callback=self.execute_callback,
@@ -195,7 +197,7 @@ class YasminActionServer(Node):
             handle_accepted_callback=self.handle_accepted_callback,
             cancel_callback=self.cancel_callback,
             callback_group=self.cbg)
-        self.get_logger().info('YasminActionServer started')
+        get_logger().info('YasminActionServer started')
 
     def set_viewer(self,viewer:YasminViewerPub):
         self.viewer = viewer
@@ -214,16 +216,16 @@ class YasminActionServer(Node):
         # goal_request is local to this function
 
         # check existence of task
-        self.get_logger().info(f'Received goal request for "{goal_request.task}"')
+        get_logger().info(f'Received goal request for "{goal_request.task}"')
         if not (goal_request.task in self.statemachines):
-            self.get_logger().info(f'Rejected goal request:  task "{goal_request.task}" is not known by the system')
+            get_logger().info(f'Rejected goal request:  task "{goal_request.task}" is not known by the system')
             return GoalResponse.REJECT
         
         # decode input parameters
         try:
             param = json.loads(goal_request.parameters)
         except json.JSONDecodeError as err:
-            self.get_logger().error(f"Rejected goal request: error decoding parameters of goal : {str(err)}")
+            get_logger().error(f"Rejected goal request: error decoding parameters of goal : {str(err)}")
             return GoalResponse.REJECT
         
         # validate parameters
@@ -232,31 +234,31 @@ class YasminActionServer(Node):
                 jsonschema.validate(instance=param,
                                     schema=self.statemachines[goal_request.task].input_parameters_schema)
             except jsonschema.exceptions.ValidationError as err:
-                self.get_logger().error( f'Rejected goal request: error validating parameters of task "{goal_request.task}" : {str(err)}')
+                get_logger().error( f'Rejected goal request: error validating parameters of task "{goal_request.task}" : {str(err)}')
                 return GoalResponse.REJECT
             except jsonschema.exceptions.SchemaError as err:
-                self.get_logger().error(f'Rejected goal request: error validating the schema of task "{goal_request.task}" : {str(err)}')
+                get_logger().error(f'Rejected goal request: error validating the schema of task "{goal_request.task}" : {str(err)}')
                 return GoalResponse.REJECT
         # check concurrency        
         with self._current_goal_request_lock:
             if self._current_goal_request is not None:
-                self.get_logger().error('Rejected goal request: another action is still running')
+                get_logger().error('Rejected goal request: another action is still running')
                 return GoalResponse.REJECT
             self._current_goal_request = goal_request
         
         # only make changes to the YasminActiveServer instance when we are sure to be alone:
-        self.get_logger().info('Accepted goal request for task "{goal_request.task}"')
+        get_logger().info('Accepted goal request for task "{goal_request.task}"')
         self.input_parameters = param 
         return GoalResponse.ACCEPT
 
     def handle_accepted_callback(self, goal_handle):
         "handle an accepted action"
-        self.get_logger().info('handle accepted goal')        
+        get_logger().info('handle accepted goal')        
         goal_handle.execute()
 
     def cancel_callback(self, goal):
         """Accept or reject a client request to cancel an action."""
-        self.get_logger().info('Received cancel request')
+        get_logger().info('Received cancel request')
         self.blackboard["cancel_goal"] = True  # no need to further handle it in execute_callback, handled in 
         return CancelResponse.ACCEPT
 
@@ -271,18 +273,18 @@ class YasminActionServer(Node):
             self.blackboard["goal_handle"]      = goal_handle
             self.blackboard["input_parameters"] = self.input_parameters
             self.blackboard["task"]             = goal_handle.request.task
-            self.get_logger().info('Executing state machine {goal_handle.request.request.task}')
+            get_logger().info('Executing state machine {goal_handle.request.request.task}')
             sm = self.statemachines[goal_handle.request.task]
             if self.viewer is not None:
                 self.viewer._fsm = sm
                 self.viewer._fsm_name = goal_handle.request.task
-            rate = self.create_rate(100)
+            rate = self.node.create_rate(100)
             sm.reset()
             outcome=sm(self.blackboard)
             while outcome==TICKING:
                 rate.sleep()
                 outcome=sm(self.blackboard)
-            self.get_logger().info(f'Finished state machine {goal_handle.request.task} with outcome {outcome}')
+            get_logger().info(f'Finished state machine {goal_handle.request.task} with outcome {outcome}')
             result = YasminTask.Result()
             if self.viewer is not None:
                 self.viewer._start_publisher() # force a display of the end condition
@@ -291,7 +293,7 @@ class YasminActionServer(Node):
                 try:
                     result.parameters=json.dumps(self.blackboard["result"])
                 except TypeError as err:
-                    self.get_logger().error('blackboard["result"] contains data types that cannot be represented in JSON')
+                    get_logger().error('blackboard["result"] contains data types that cannot be represented in JSON')
                     result.parameters="{}"
             else:
                 result.parameters="{}"
@@ -300,7 +302,7 @@ class YasminActionServer(Node):
             elif outcome==CANCEL:            
                 goal_handle.canceled()
             else:
-                self.get_logger().error("state machine has an unexpected outcome {outcome}, action is canceled")
+                get_logger().error("state machine has an unexpected outcome {outcome}, action is canceled")
                 goal_handle.canceled()            
             if self.viewer is not None:
                 self.viewer._fsm = self.empty_statemachine
@@ -310,60 +312,38 @@ class YasminActionServer(Node):
                 self._current_goal_request = None
         return result
 
-class MyMessage(Generator):
-    """
-    Message(msg) returns a State that displays a message
-    """
-    def __init__(self,msg) -> None:
-        super().__init__("message",[SUCCEED,])
-        self.msg = msg
-    def co_execute(self,blackboard: Blackboard):
-        my_node = YasminNode.get_instance()
-        log = my_node.get_logger()
-        log.info(f'Entering MyMessage : {self.msg}')
-        yield SUCCEED
 
+
+
+
+#from .sm_up_and_down import Up_and_down_as_a_class
+from . import sm_up_and_down as ud
 def main(args=None):
 
     rclpy.init(args=args)
+    
+    node = YasminTickingNode.get_instance("yasmin_action_server")
+    set_logger("default",node.get_logger())
+    #set_logger("service",node.get_logger())
+    #set_logger("state",node.get_logger())
     blackboard = Blackboard()
-
-
-
+    
     load_task_list("$[yasmin_etasl]/tasks/my_tasks.json",blackboard)
 
-
-
-    # BUGFIX :executed second time, it starts from the previous execution.
-    # fixed by calling reset() in the action!!
-    # ath the highest level somebody has to reset() manually!
-    # sm1 = ConditionWhile(lambda bm : not bm["cancel_goal"], 
-    #     Sequence("timer", children=[
-    #         ("timer",TimedWait(Duration(seconds=5.0) ) ),
-    #         ("hello",MyMessage("Timer went off!"))
-    #     ])
-    # )
-
-
     # adapt to directly react to a CANCEL of the action:    
-    sm1 = ConditionWhile(lambda bm: not bm["cancel_goal"], Up_and_down_as_a_class() )
-
+    sm1 = ConditionWhile(lambda bm: not bm["cancel_goal"], ud.Up_and_down_with_parameters(node) )
     statemachines = {"up_and_down": sm1 }
     empty_statemachine = EmptyStateMachine()
-    action_server = YasminActionServer(blackboard,statemachines)
-
-    set_logger("default",action_server.get_logger())
-    #set_logger("service",my_node.get_logger())
-    #set_logger("state",my_node.get_logger())
+    action_server = YasminActionServer(blackboard,statemachines,100,node)
 
 
-    pub = YasminViewerPub("error", empty_statemachine,10,node=action_server)
+    pub = YasminViewerPub("error", empty_statemachine,10,node=action_server.node)
     action_server.set_viewer(pub)    
     
 
     # We use a MultiThreadedExecutor to handle incoming goal requests concurrently
     executor = MultiThreadedExecutor()
-    executor.add_node(action_server)    
+    executor.add_node(action_server.node)    
     executor.spin()
     
     action_server.destroy()

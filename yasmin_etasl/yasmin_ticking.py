@@ -1,6 +1,6 @@
 # yasmin_ticking.py
 #
-# Copyright (C) Erwin Aertbeliën, Santiago Iregui, 2024
+# Copyright (C) Erwin Aertbeliën, 2024
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -354,6 +354,8 @@ class Generator(TickingState):
                 a list of strings indicating the expected outcomes,  TICKING and ABORT will be
                 automatically added.
         """
+        if isinstance(outcomes,str):
+            outcomes=[outcomes]
         super().__init__(name,outcomes)        
 
     def cancel_state(self) -> None:
@@ -504,8 +506,7 @@ class Sequence(GeneratorWithList):
                 you can use add_state(...) to add children.
         """
         super().__init__(name,[],children)        
-        self.count = 0
-        #self.log = YasminNode.get_instance().get_logger()
+        self.count = 0        
 
     
   
@@ -1008,10 +1009,9 @@ class Message(Generator):
         super().__init__("message",[SUCCEED,])
         self.msg = msg
     def co_execute(self,blackboard: Blackboard)-> str:
-        #my_node = YasminNode.get_instance()
         #log = my_node.get_logger()
         #log.info(f'Entering MyMessage : {self.msg}')
-        print(self.msg)
+        get_logger().info(self.msg)
         yield SUCCEED
 
 

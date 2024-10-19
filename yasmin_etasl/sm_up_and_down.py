@@ -2,7 +2,7 @@
 #
 # A simple demo statemachine that moves up and down.
 #
-# Copyright (C) Erwin Aertbeliën, Santiago Iregui, 2024
+# Copyright (C) Erwin Aertbeliën, 2024
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -38,19 +38,20 @@ from .graphviz_visitor import *
 #
 
 
-
-def up_and_down_as_a_function():
+def up_and_down_as_a_function(node=None):
+    """
+    """
     return ConcurrentSequence("up_and_down_as_a_function", children=[
             ("task1", Sequence("my_sequence", children=[
-                        ("movinghome",eTaSL_StateMachine("MovingHome") ),
-                        ("movingup",eTaSL_StateMachine("MovingUp") ),
-                        ("movingdown",eTaSL_StateMachine("MovingDown") ),            
-                        ("movingup",eTaSL_StateMachine("MovingUp")),
+                        ("movinghome",eTaSL_StateMachine("MovingHome",node=node) ),
+                        ("movingup",eTaSL_StateMachine("MovingUp",node=node) ),
+                        ("movingdown",eTaSL_StateMachine("MovingDown",node=node) ),            
+                        ("movingup",eTaSL_StateMachine("MovingUp",node=node)),
                         ("my_message",Message("Robot is finished"))
                       ]) 
             ),
             ("task2",Sequence("timer", children=[
-                        ("timer",TimedWait(Duration(seconds=3.0) ) ),
+                        ("timer",TimedWait(Duration(seconds=3.0),node=node ) ),
                         ("hello",Message("Timer went off!"))
                     ])
             )
@@ -58,11 +59,57 @@ def up_and_down_as_a_function():
 
 
 class Up_and_down_as_a_class(ConcurrentSequence):
-    def __init__(self):
+    def __init__(self,node=None):
+        """
+        """
         super().__init__("Up_and_down_as_a_class")
+
         self.add_state("task1", Sequence("my_sequence", children=[
-                        ("movinghome",eTaSL_StateMachine("MovingHome") ),
-                        ("movingup",eTaSL_StateMachine("MovingUp") ),
+                        ("movinghome",eTaSL_StateMachine("MovingHome",node=node) ),
+                        ("movingup",eTaSL_StateMachine("MovingUp",node=node) ),
+                        ("movingdown",eTaSL_StateMachine("MovingDown",node=node) ),            
+                        ("movingup",eTaSL_StateMachine("MovingUp",node=node)),
+                        ("my_message",Message("Hello world"))
+                      ]))
+        
+        self.add_state("task2",Sequence("timer", children=[
+                        ("timer",TimedWait(Duration(seconds=3.0),node=node ) ),
+                        ("hello",Message("Timer went off!"))
+                    ]))
+
+class Up_and_down_with_parameters(ConcurrentSequence):
+    """
+    Examples of showing different styles of setting parameters and doing computations.
+
+    Remember: computations done in the constructor of this class are only executed during construction 
+    of the statemachine, not during execution! This is the reason behind the use of additional state MyComputations,
+    the function MyComputations.  A lambda function can be used to consisely do a small computations.
+    """
+    def __init__(self, node):
+        """
+        """
+        super().__init__("Up_and_down_as_a_class")
+
+
+        class MyComputations(Generator):
+            def __init__(self):
+                super().__init__("MyComputations",[SUCCEED])
+            def co_execute(self,bm):
+                bm["home_computations"]={}
+                bm["home_computations"]["joint_1"] = -10
+                yield SUCCEED 
+
+        def my_parameters(bb:Blackboard)->Dict:
+            return {"joint_1":0,"joint_2":-90}
+        
+        self.add_state("task1", Sequence("my_sequence", children=[
+                        ("movinghome",eTaSL_StateMachine("MovingHome",cb=my_parameters ,node=node) ),
+                        ('compute', MyComputations()),
+                        ("movinghome",eTaSL_StateMachine("MovingHome",
+                                                        cb=lambda bb: {"joint_1": bb["home_computations"]["joint_1"]+20} ,
+                                                        node=node) ),
+                        ("movinghome",eTaSL_StateMachine("MovingHome",node=node) ),
+                        ("movingup",eTaSL_StateMachine("MovingUp",node=node) ),
                         ("movingdown",eTaSL_StateMachine("MovingDown") ),            
                         ("movingup",eTaSL_StateMachine("MovingUp")),
                         ("my_message",Message("Hello world"))
@@ -71,5 +118,4 @@ class Up_and_down_as_a_class(ConcurrentSequence):
                         ("timer",TimedWait(Duration(seconds=3.0) ) ),
                         ("hello",Message("Timer went off!"))
                     ]))
-        
-        
+

@@ -69,7 +69,7 @@ def main(args=None):
     print("yasmin_etasl")
     rclpy.init(args=args)
 
-    my_node = YasminNode.get_instance()
+    my_node = YasminTickingNode.get_instance("test_ea")
 
     set_logger("default",my_node.get_logger())
     #set_logger("service",my_node.get_logger())
@@ -84,6 +84,7 @@ def main(args=None):
  
     sm = sm_up_and_down.Up_and_down_as_a_class()
 
+    # prints a graphviz representation of sm:
     vis = GraphViz_Visitor()
     sm.accept(vis)
     vis.print()

@@ -1,6 +1,6 @@
 # graphviz_visitor.py
 #
-# Copyright (C) Erwin Aertbeliën, Santiago Iregui, 2024
+# Copyright (C) Erwin Aertbeliën,  2024
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public

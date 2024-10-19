@@ -2,7 +2,7 @@
 
 # example_graphviz.py
 #
-# Copyright (C) Erwin Aertbeliën, Santiago Iregui, 2024
+# Copyright (C) Erwin Aertbeliën,  2024
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -37,23 +37,6 @@ from .yasmin_ticking_etasl import *
 from .graphviz_visitor import *
 
 
-
-class MyMessage(Generator):
-    """
-    Message(msg) returns a State that displays a message
-    """
-    def __init__(self,msg) -> None:
-        super().__init__("message",[SUCCEED,])
-        self.msg = msg
-    def co_execute(self,blackboard: Blackboard)-> str:
-        my_node = YasminNode.get_instance()
-        log = my_node.get_logger()
-        log.info(f'Entering MyMessage : {self.msg}')
-        yield SUCCEED
-
-
-
-
 class YasminRunner:
     def __init__(self,node:Node, statemachine:TickingState, blackboard: Blackboard, sampletime):
         self.node  = node
@@ -84,7 +67,7 @@ def main(args=None):
 
     rclpy.init(args=args)
 
-    my_node = YasminNode.get_instance()
+    my_node = YasminTickingNode.get_instance("example_graphviz")
     set_logger(my_node)
     blackboard = Blackboard()
 
@@ -92,24 +75,37 @@ def main(args=None):
     
   
 
-    # SOME BUG: 
-    sm = ConcurrentSequence("parallel", children=[
+    # # SOME BUG: 
+    # sm = ConcurrentSequence("parallel", children=[
+    #         ("task1", Sequence("my_sequence", children=[
+    #                     ("movinghome",eTaSL_StateMachine("MovingHome") ),
+    #                     ("movingup",eTaSL_StateMachine("MovingUp") ),
+    #                     ("movingdown",eTaSL_StateMachine("MovingDown") ),            
+    #                     ("movingup",eTaSL_StateMachine("MovingUp")),
+    #                     ("my_message",Message("Hello world"))
+    #                   ]) 
+    #         ),
+    #         ("task2",Sequence("timer", children=[
+    #                     ("timer",TimedWait(Duration(seconds=3.0) ) ),
+    #                     ("hello",Message("Timer went off!"))
+    #                 ])
+    #         )
+    # ])
+    sm=ConcurrentSequence("up_and_down_as_a_function", children=[
             ("task1", Sequence("my_sequence", children=[
                         ("movinghome",eTaSL_StateMachine("MovingHome") ),
                         ("movingup",eTaSL_StateMachine("MovingUp") ),
                         ("movingdown",eTaSL_StateMachine("MovingDown") ),            
                         ("movingup",eTaSL_StateMachine("MovingUp")),
-                        ("my_message",MyMessage("Hello world"))
+                        ("my_message",Message("Robot is finished"))
                       ]) 
             ),
             ("task2",Sequence("timer", children=[
                         ("timer",TimedWait(Duration(seconds=3.0) ) ),
-                        ("hello",MyMessage("Timer went off!"))
+                        ("hello",Message("Timer went off!"))
                     ])
             )
     ])
-
-
 
     vis = GraphViz_Visitor()
     sm.accept(vis)
