@@ -14,7 +14,8 @@
                 "joint_5": -90,
                 "joint_6": 45,
                 "maxacc": 0.4,
-                "maxvel": 0.8
+                "maxvel": 0.8,
+                "units": "degrees"
             }
         },
         {

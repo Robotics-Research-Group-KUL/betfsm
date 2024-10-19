@@ -127,6 +127,8 @@ class SetTaskParameters(ServiceClient):
         for key, value in param.items():
             if isinstance(value,bool):
                 param_string = param_string + f"{key} = {str(value).lower()}\n"
+            elif isinstance(value,str):
+                 param_string = param_string + f'{key} = "{value}"\n'
             else:
                 param_string = param_string + f"{key} = {value}\n"
         # constructing request:
