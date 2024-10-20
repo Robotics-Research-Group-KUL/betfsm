@@ -1,6 +1,8 @@
 ## documentation provided in mkdocs
 
 
+
+
 ....
 ## Used doc
 [ros2-tutorial](https://ros2-tutorial.readthedocs.io/en/latest/python_node_explained.html)
@@ -9,6 +11,9 @@
 [demos](https://github.com/ros2/demos/tree/ea3661152a87bc48e3f277ca8131c85a1a23d661)
 
 [mkdocstrings](https://mkdocstrings.github.io/griffe/reference/docstrings/)
+
+
+# Old documentation:
 
 ## TICKING outcome
 
@@ -37,34 +42,6 @@
   metioned when execute() will return value. (it expects to be called back appropriately)
 
 
-
-## Detailed semantics of the entry, doo, and exit functions: 
-
-```graphviz
-
-digraph monitoringstate{
-    //node [shape=point] start;      
-    //node [shape=point] end;
-    node [shape=point] start
-    node [shape=box, style=rounded];
-   
-
-    node [label= "  entry()\n if TICK return TICK\n if exception return ABORT"] Entry;
-
-    node [label= "  doo()\n if TICK return TICK\n if exception return ABORT"] Doo;
-    node [label= "  exit()\n return outcome \n if exception return ABORT"] Exit;
-    start->Entry
-
-    Entry -> Doo [label="CONTINUE\nor TICK"]
-
-    Entry -> Exit [label="≠TICK and\n ≠CONTINUE\nor ABORT"]
-    Doo -> Exit [label="≠TICK\nor ABORT"]
-    Doo -> Doo [label="TICK"]
-    Exit -> Entry 
-  
-}
-
-```
 
 ### entry(self, blackboard)
 called the first time execute() is called.
@@ -174,121 +151,7 @@ digraph monitoringstate{
    the code)
 
 
-## PlantUML
 
-```plantuml
-  @startuml
-scale 600 width
-[*] -> Begin
-Begin -right-> Running : Succeeded
-Begin --> [*] : Aborted
-state Running {
-  state "The game runneth" as long1
-  long1 : Until you die
-  long1 : second line
-  long1 --> long1 : User interaction
-  long1 --> keepGoing : stillAlive
-  keepGoing --> long1
-  long1 --> tooBadsoSad : killed
-  tooBadsoSad --> Dead : failed
-}
-Running: additional text
-Dead --> [*] : Aborted
-@enduml
-```
-
-second:
-
-
-
-Sequence:
-
-```plantuml
-@startuml
-  state Sequence {
-    [*] --> task1
-    state S <<outputPin>>    
-    state F <<outputPin>>
-    state R <<outputPin>>
-    task2 -> R : tick
-    task2 -> F : fail
-    
-    task1 --> task2 : success
-    
-    task2 --> S : success
-    task1 -> F : fail
-    task1 -> R : tick
-    
-}
-@enduml
-```
-
-Fallback
-
-```plantuml
-@startuml
-
-state Fallback {
-  [*]-->task1
-  task1 --> task2 : fail
-  task2 --> F <<outputPin>> : fail
-  task1 --> R <<outputPin>> : tick
-  task1 --> S <<outputPin>> : success
-  task2 --> S : success
-  task2 --> R : tick
-  
-}
-
-@enduml
-```
-
-Hierarchical
-
-```plantuml
-@startuml
-
-state Fallback {
-    state task1 {
-      [*] --> atask1
-      state aS <<outputPin>>    
-      state aF <<outputPin>>
-      state aR <<outputPin>>
-      atask2 -> aR : tick
-      atask2 -> aF : fail
-      
-      atask1 --> atask2 : success
-      
-      atask2 --> aS : success
-      atask1 -> aF : fail
-      atask1 -> aR : tick
-      
-  }
-  state task2 {
-    [*] --> btask1
-    state bS <<outputPin>>    
-    state bF <<outputPin>>
-    state bR <<outputPin>>
-    btask2 -> bR : tick
-    btask2 -> bF : fail
-    
-    btask1 --> btask2 : success
-    
-    btask2 --> bS : success
-    btask1 -> bF : fail
-    btask1 -> bR : tick
-    
-  }
-  [*]-->task1
-  aF --> task2 : fail
-  bF --> F <<outputPin>> : fail
-  aR --> R <<outputPin>> : tick
-  aS --> S <<outputPin>> : success
-  bS --> S : success
-  bR --> R : tick
-  
-}
-
-@enduml
 ```
 ## Install mkdocs
 

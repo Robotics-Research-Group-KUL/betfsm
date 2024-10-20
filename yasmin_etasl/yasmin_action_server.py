@@ -30,9 +30,10 @@ from rclpy.action import ActionServer, CancelResponse, GoalResponse
 from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.node import Node
 from rclpy.executors import MultiThreadedExecutor
+
 from yasmin_action_interfaces.action import YasminTask
 from yasmin import State
-from yasmin import Blackboard
+#from yasmin import Blackboard
 from yasmin import StateMachine
 from yasmin_viewer import YasminViewerPub
 
@@ -300,10 +301,10 @@ class YasminActionServer:
             if outcome==SUCCEED:            
                 goal_handle.succeed()
             elif outcome==CANCEL:            
-                goal_handle.canceled()
+                goal_handle.abort()
             else:
-                get_logger().error("state machine has an unexpected outcome {outcome}, action is canceled")
-                goal_handle.canceled()            
+                get_logger().error(f"state machine has an unexpected outcome {outcome}, action is canceled")
+                goal_handle.abort()            
             if self.viewer is not None:
                 self.viewer._fsm = self.empty_statemachine
                 self.viewer._fsm_name = "waiting for action"             
@@ -326,20 +327,22 @@ def main(args=None):
     set_logger("default",node.get_logger())
     #set_logger("service",node.get_logger())
     #set_logger("state",node.get_logger())
-    blackboard = Blackboard()
+    blackboard = {} #Blackboard()
     
     load_task_list("$[yasmin_etasl]/tasks/my_tasks.json",blackboard)
 
     # adapt to directly react to a CANCEL of the action:    
-    sm1 = ConditionWhile(lambda bm: not bm["cancel_goal"], ud.Up_and_down_with_parameters(node) )
-    statemachines = {"up_and_down": sm1 }
+
+    statemachines={}
+    #statemachines["up_and_down"] = ConditionWhile(lambda bm: not bm["cancel_goal"], ud.Up_and_down_with_parameters(node) )
+    #statemachines["up_and_down"] = ConditionWhile(lambda bm: not bm["cancel_goal"], ud.Up_and_down_as_a_class(node) )
+    statemachines["up_and_down"] = ConditionWhile(lambda bm: not bm["cancel_goal"], ud.up_and_down_as_a_function(node) )        
+
     empty_statemachine = EmptyStateMachine()
     action_server = YasminActionServer(blackboard,statemachines,100,node)
 
-
     pub = YasminViewerPub("error", empty_statemachine,10,node=action_server.node)
     action_server.set_viewer(pub)    
-    
 
     # We use a MultiThreadedExecutor to handle incoming goal requests concurrently
     executor = MultiThreadedExecutor()
@@ -348,8 +351,6 @@ def main(args=None):
     
     action_server.destroy()
     rclpy.shutdown()
-
-
 
 if __name__ == '__main__':
     main()

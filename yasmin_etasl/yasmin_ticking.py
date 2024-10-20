@@ -23,6 +23,8 @@
 
 
 # from simple_node import Node
+
+import json
 from yasmin import Blackboard
 from yasmin import StateMachine
 from yasmin.state import State
@@ -851,7 +853,7 @@ class WaitForever(Generator):
     """
     def __init__(self):
         """
-        Ticks forever, yielding TICKING (can be interrupted by e.g. a state machine with a listener)
+        Ticks forever, yielding TICKING
 
         """
         outcomes = []
@@ -1005,7 +1007,21 @@ class Message(Generator):
     """
     Message(msg) returns a State that displays a message
     """
-    def __init__(self,msg) -> None:
+    def __init__(self,msg:str=None, cb:Callable=None) -> None:
+        """
+        Displays a message to the log. 
+
+        Parameters:
+            msg:
+                string describing the message
+            cb:
+                callback returning the message.  Signature `def cb(blackboard)->str`.
+                The callback allows the user to compute the message at time of evaluation,
+                e.g. to report on values on the blackboard.
+
+        Example:
+            Message(lambda bb: f'{bb["some_key_in_blackboard"]=}' )
+        """
         super().__init__("message",[SUCCEED,])
         self.msg = msg
     def co_execute(self,blackboard: Blackboard)-> str:
@@ -1013,5 +1029,229 @@ class Message(Generator):
         #log.info(f'Entering MyMessage : {self.msg}')
         get_logger().info(self.msg)
         yield SUCCEED
+
+
+def dumps_blackboard(blackboard,indent=0):
+    """
+    returns a string-dump of a (piece of the ) blackboard
+    """
+    s = ""
+    indent += 4
+    space = f'{" ":{indent}}'
+    if isinstance(blackboard,bool):
+        s = f'{blackboard}\n'
+    elif isinstance(blackboard,int):
+        s = f'{blackboard}\n'
+    elif isinstance(blackboard,float):
+        s = f'{blackboard}\n'    
+    elif isinstance(blackboard,dict):
+        s = s + "\n"
+        for k,v in blackboard.items():
+            s+= space + k + " : " + dumps_blackboard(v,indent)
+    elif isinstance(blackboard, list):
+        listofnumbers=True
+        first = True
+        for item in blackboard:
+            if isinstance(item,int) or isinstance(item,float):
+                listofnumbers=True
+                break
+            if first:
+                s = s + "\n"
+                first=False
+            s+= space + dumps_blackboard(item,indent)
+        if listofnumbers:
+            s = f'{blackboard}\n'                 
+    elif isinstance(blackboard,str):
+        s = f'"{blackboard}"\n'       
+    elif isinstance(blackboard,list):
+        s = f'{blackboard}\n'             
+    else:
+        s = f'{type(blackboard)}'
+    return s
+
+
+class LogBlackboard(Generator):
+    """
+    Logs blackboard or part of blackboard
+    """
+    def __init__(self, location:List[str]=[]) -> None:
+        """
+        Parameters:
+            Prints (a part of) the blackboard to the log
+            location:
+                a list of strings that describes a location in the blackboard.
+        """
+        super().__init__("Logblackboard",[SUCCEED])
+        self.location = location
+
+    def co_execute(self,blackboard: Blackboard):
+        bb = blackboard
+        for k in self.location:
+            bb = bb[k]
+
+        
+        get_logger().info("Blackboard:\n"+dumps_blackboard(bb) )
+        yield SUCCEED
+
+
+
+
+class StateMachineElement:
+    """
+    Just to have a type that a visitor could recognize
+    """
+    def __init__(self,name,state,transitions):
+        self.name = name
+        self.state = state
+        self.transitions = transitions
+
+    def accept(self, visitor: Visitor):
+        if visitor.pre(self):
+            self.state.accept(visitor)
+        visitor.post(self)
+
+class TickingStateMachine(TickingState):
+    """
+    A version of StateMachine that calls a callback function before entering a state and/or at each transition.
+    extended version of the cbStateMachine from yasmin_action
+
+    Constructor(outcomes,transitioncb,statecb) :
+        - outcomes: the allowed outcomes of the state machine, cause the state machine to exit and return one of these outcomes   
+        - transitioncb: callback function called at each transition. 
+          Signature transitioncb(source_state:str, transtion:str, target_state:str)
+        - statecb: callback function called before entering each state. 
+          Signature statecb(name)
+
+    *In the case of a multithreaded application, it is assumed that the callback functions are reentrant or protected with a lock*
+
+    This class is useful but not necessary when using it with an ROS2 Action Server. Examples of usage:
+     - log transitions to ros2's logger 
+     - published action feedback on transitions
+    
+     
+    This statemachine is capable of working together with TickingState:
+      - will exit when TICKING outcome is given by one of the substates, but then if it is called again,
+        it will have remembered the state that had the TICKING outcome and start from that state.
+      - if returning with any other outcome, will start next time from the start state.
+      - should be drop in replacement of Yasmin StateMachine, (as long as nobody uses TICKING as outcome.)
+    """    
+    def __init__(self, name:str, outcomes: List[str], transitioncb=default_transitioncb, statecb=default_statecb) -> None:
+        outcomes.append(TICKING)
+        super().__init__(name,outcomes)
+
+        self._states = {}
+        self._start_state = None
+        self.__current_state = None
+        self.__current_state_lock = Lock()
+        self.statecb = statecb
+        self.transitioncb = transitioncb
+        
+    def add_state(
+        self,
+        name: str,
+        state: State,
+        transitions: Dict[str, str] = None
+    ) -> None:
+        if not transitions:
+            transitions = {}
+        if not isinstance( transitions , Dict):
+            raise ValueError("transitions should be a dictionary")            
+        self._states[name] = {
+            "state": state,
+            "transitions": transitions
+        }
+
+        if not self._start_state:
+            self._start_state = name
+            self.__current_state = name
+        
+        
+    def set_start_state(self, name: str) -> None:
+        self._start_state = name
+        self.__current_state = name
+
+    def get_start_state(self) -> str:
+        return self._start_state
+
+    def cancel_state(self) -> None:
+        super().cancel_state()
+        with self.__current_state_lock:
+            if self.__current_state:
+                self._states[self.__current_state]["state"].cancel_state()
+
+    def reset(self):
+        with self.__current_state_lock:
+            state = self.__current_state
+            if isinstance(state,TickingState):
+                state["state"].reset()
+            self.__current_state = self._start_state
+        super().reset()
+
+    def accept(self, visitor: Visitor):
+        if visitor.pre(self):
+            for k,v in self._states.items():
+                StateMachineElement(k,v["state"],v["transitions"]).accept(visitor)
+        visitor.post(self)
+
+    def entry(self, blackboard: Blackboard) -> str:
+        return CONTINUE
+
+    def doo(self, blackboard: Blackboard) -> str:
+        #with self.__current_state_lock:
+        #    self.__current_state = self._start_state
+        while True:
+            with self.__current_state_lock:
+                state = self._states[self.__current_state]
+                name = self.__current_state
+            self.statecb(self,blackboard,name)
+            outcome = state["state"](blackboard)
+            # check outcome belongs to state (double check on sanity of state, although state base already checks this)
+            if outcome not in state["state"].get_outcomes():
+                with self.__current_state_lock:
+                    self.__current_state = self._start_state
+                raise Exception(
+                    f"Outcome ({outcome}) is not register in state {self.__current_state}")            
+            outcome = self.transitioncb(self,blackboard,self.__current_state, outcome)
+            # translate outcome using transitions
+            if outcome in state["transitions"]:              
+                outcome = state["transitions"][outcome]
+            if outcome == TICKING:                # outcome is TICKING and exits state machine but keeps current state                                                 
+                return outcome
+            elif outcome in self.get_outcomes():      # outcome is an outcome of the sm, reset current state
+                with self.__current_state_lock:
+                    self.__current_state = self._start_state
+                return outcome 
+            elif outcome in self._states:           # outcome is a state
+                with self.__current_state_lock:
+                    self.__current_state = outcome
+            else:                                   # outcome is not in the sm
+                with self.__current_state_lock:
+                    self.__current_state = self._start_state                                                                            
+                raise Exception(f"""State {name} has outcome ({outcome}) without transition
+                                    transitions {state['transitions']}
+                                    outcomes state machine {self.get_outcomes()} """)
+    
+    def exit(self) -> str:
+        with self.__current_state_lock:
+            state = self.__current_state
+            if isinstance(state,TickingState):
+                state["state"].reset()
+            self.__current_state = self._start_state
+        return super().exit()
+    
+        
+    def get_states(self) -> Dict[str, Union[State, Dict[str, str]]]:
+        return self._states
+
+    def get_current_state(self) -> str:
+        with self.__current_state_lock:
+            if self.__current_state:
+                return self.__current_state
+
+        return ""
+
+    def __str__(self) -> str:
+        return f"StateMachine: {self._states}"
+    
 
 

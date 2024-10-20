@@ -361,6 +361,87 @@ class ServiceClient(Generator):
     
 
 
+
+class EventTopicListener(Listener):
+    """
+    Following queuing policy:
+        - either warn if max queue is reached or silently forget the oldest
+        - filtered using the available transitions in state and state machine, and take the oldest one.
+
+    """
+    def __init__(
+            self,
+            topic: str,
+            topic_type:Type,
+            outcomes: List[str],
+            queue:Queue=QueueFIFO(),
+            msg_queue: int = 30,
+            node: Node = None,
+        ) -> None:
+        if node==None:
+            self.node = YasminTickingNode.get_instance()
+        else:
+            self.node = node
+        super().__init__(outcomes,queue=queue)
+        self.topic_type = topic_type
+        self.topic = topic
+        self.msg_queue = msg_queue
+        self.count = 0
+
+        # qos_profile = QoSProfile(
+        #     history=QoSHistoryPolicy.KEEP_LAST, #Keeps the last msgs received in case buffer is fulll
+        #     depth=msg_queue, #Buffer size
+        #     reliability=QoSReliabilityPolicy.RELIABLE, #Uses TCP for reliability instead of UDP
+        #     durability=QoSDurabilityPolicy.VOLATILE #Volatile, may not use first msgs if subscribed late (will not happen in this context)
+        # )
+        # self.subscription = self.node.create_subscription(
+        #     topic_type,topic,self.__callback,qos_profile)
+        self.subscription = self.node.create_subscription(
+             self.topic_type,self.topic,self.__callback,self.msg_queue)
+        self.monitoring=False        
+        
+    def __callback(self,msg) -> None:
+        if self.monitoring:
+            priority, outcome = self.process_message(msg)
+            self.queue.push_outcome(priority, self.count,outcome,msg)
+            self.count = self.count + 1
+
+    
+    @abstractmethod
+    def process_message(self,msg) -> tuple[int,str]:
+        """
+        is called when a message on the topic is received. Processes the message into
+        an (outcome, priority) tuple
+        """
+        raise NotImplementedError("set_payload abstract method is not implemented by subclass")
+    
+    @abstractmethod
+    def set_payload(self, blackboard: Blackboard, msg):
+        """
+        is called when the outcome is returned.
+        """
+        pass
+
+    def start(self):
+        self.queue.clear()
+        self.monitoring=True
+
+    def stop(self):
+        self.monitoring=False
+
+
+
+
+
+
+
+# configure
+# shutdown
+# activate
+# cleanup
+# deactivate
+
+
 # states:
 # - unconfigured
 # - inactive

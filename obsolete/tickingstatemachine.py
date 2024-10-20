@@ -388,7 +388,8 @@ class TickingStateMachine(TickingState):
         visitor.post(self)
 
     def entry(self, blackboard: Blackboard) -> str:
-        self.listener.start()
+        if self.listener is not None:
+            self.listener.start()
         return CONTINUE
 
     def doo(self, blackboard: Blackboard) -> str:
@@ -444,7 +445,8 @@ class TickingStateMachine(TickingState):
                                     outcomes state machine {self.get_outcomes()} """)
     
     def exit(self) -> str:
-        self.listener.stop()
+        if self.listener is not None:
+            self.listener.stop()
         with self.__current_state_lock:
             state = self.__current_state
             if isinstance(state,TickingState):

@@ -43,10 +43,10 @@ def up_and_down_as_a_function(node=None):
     """
     return ConcurrentSequence("up_and_down_as_a_function", children=[
             ("task1", Sequence("my_sequence", children=[
-                        ("movinghome",eTaSL_StateMachine("MovingHome",node=node) ),
-                        ("movingup",eTaSL_StateMachine("MovingUp",node=node) ),
-                        ("movingdown",eTaSL_StateMachine("MovingDown",node=node) ),            
-                        ("movingup",eTaSL_StateMachine("MovingUp",node=node)),
+                        ("movinghome",eTaSL_StateMachine("movinghome","MovingHome",node=node) ),
+                        ("movingup",eTaSL_StateMachine("movingup","MovingUp",node=node) ),
+                        ("movingdown",eTaSL_StateMachine("movingdown","MovingDown",node=node) ),            
+                        ("movingup",eTaSL_StateMachine("movingup2","MovingUp",node=node)),
                         ("my_message",Message("Robot is finished"))
                       ]) 
             ),
@@ -65,10 +65,10 @@ class Up_and_down_as_a_class(ConcurrentSequence):
         super().__init__("Up_and_down_as_a_class")
 
         self.add_state("task1", Sequence("my_sequence", children=[
-                        ("movinghome",eTaSL_StateMachine("MovingHome",node=node) ),
-                        ("movingup",eTaSL_StateMachine("MovingUp",node=node) ),
-                        ("movingdown",eTaSL_StateMachine("MovingDown",node=node) ),            
-                        ("movingup",eTaSL_StateMachine("MovingUp",node=node)),
+                        ("movinghome",eTaSL_StateMachine("movinghome","MovingHome",node=node) ),
+                        ("movingup",eTaSL_StateMachine("movingup","MovingUp",node=node) ),
+                        ("movingdown",eTaSL_StateMachine("movingdown""MovingDown",node=node) ),            
+                        ("movingup",eTaSL_StateMachine("movingup2","MovingUp",node=node)),
                         ("my_message",Message("Hello world"))
                       ]))
         
@@ -103,15 +103,17 @@ class Up_and_down_with_parameters(ConcurrentSequence):
             return {"joint_1":0,"joint_2":-90}
         
         self.add_state("task1", Sequence("my_sequence", children=[
-                        ("movinghome",eTaSL_StateMachine("MovingHome",cb=my_parameters ,node=node) ),
+                        ("movinghome",eTaSL_StateMachine("home1","MovingHome",cb=my_parameters ,node=node) ),
+                        ("debug",LogBlackboard(["output"])),
                         ('compute', MyComputations()),
-                        ("movinghome",eTaSL_StateMachine("MovingHome",
+                        ("movinghome",eTaSL_StateMachine("home2","MovingHome",
                                                         cb=lambda bb: {"joint_1": bb["home_computations"]["joint_1"]+20} ,
                                                         node=node) ),
-                        ("movinghome",eTaSL_StateMachine("MovingHome",node=node) ),
-                        ("movingup",eTaSL_StateMachine("MovingUp",node=node) ),
-                        ("movingdown",eTaSL_StateMachine("MovingDown") ),            
-                        ("movingup",eTaSL_StateMachine("MovingUp")),
+                        ("movinghome",eTaSL_StateMachine("home3","MovingHome",node=node) ),
+                        ("debug",LogBlackboard(["output"])),
+                        ("movingup",eTaSL_StateMachine("movingup","MovingUp",node=node) ),
+                        ("movingdown",eTaSL_StateMachine("movingdown","MovingDown",node=node) ),            
+                        ("movingup",eTaSL_StateMachine("movingup2","MovingUp",node=node)),
                         ("my_message",Message("Hello world"))
                       ]))
         self.add_state("task2",Sequence("timer", children=[

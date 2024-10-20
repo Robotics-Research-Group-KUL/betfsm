@@ -24,6 +24,7 @@ from rclpy.qos import QoSProfile
 from yasmin import Blackboard
 from yasmin.blackboard import Blackboard
 
+from .tickingstatemachine import *
 from .yasmin_ticking_ros import *
 
 from etasl_interfaces.srv import TaskSpecificationFile
@@ -32,25 +33,6 @@ from etasl_interfaces.srv import TaskSpecificationString
 
 import json
 from jsonschema import validate, exceptions
-
-# Output:
-#  - msg.names
-#  - msg.data
-#  - msg.is_declared    
-from etasl_interfaces.msg import Output
-    
-
-from std_msgs.msg import String
-from functools import reduce
-from operator import and_
-
-        # qos_profile = QoSProfile(
-        #     history=QoSHistoryPolicy.KEEP_LAST, #Keeps the last msgs received in case buffer is fulll
-        #     depth=msg_queue, #Buffer size
-        #     reliability=QoSReliabilityPolicy.RELIABLE, #Uses TCP for relia
-        # bility instead of UDP
-        #     durability=QoSDurabilityPolicy.VOLATILE #Volatile, may not use first msgs if subscribed late (will not happen in this context)
-        # )  
 
 
 def get_task(blackboard:Blackboard,task_name:str) -> List[str|List]:
@@ -260,6 +242,172 @@ class ReadTaskSpecification(ServiceClient):
             return ABORT
 
 
+class eTaSLEventTopicListener(EventTopicListener):
+    def __init__(
+            self,topic:str = "/fsm/events",
+            outcomes: List[str] = ["e_finished@etasl_node"],
+            queue:Queue=QueueFIFO(),
+            msg_queue :int = 30,
+            priority: int = 1,
+            node : Node = None
+            ):
+        """
+        An EventTopicListener that listens to a String topic and uses the string as outcomes
+        with the given `priority` (and no payload)
+
+        Parameters:
+            topic: 
+                topic to listen to
+            outcomes:
+                allowable outcomes
+            msg_queue:
+                maximum size of the queue (last will be forgotten)
+            priority:
+                priority assigned to all outcome events (0= priority state, negative
+                is more important than the state, positive is less important than state 
+                output
+        """
+        super().__init__(topic,String,outcomes,queue,msg_queue,node)
+        self.priority=priority
+
+    def set_payload(self, blackboard: Blackboard, msg):
+        pass
+    
+    def process_message(self, msg) -> tuple[str, int]:
+        get_logger().info(f"received message {self.count} : {msg}")
+        return (self.priority, msg.data)
+
+
+
+    
+# class Executing(EventState):
+#     def __init__(self, name: str) -> None:
+#         super().__init__(
+#                          topic_name="fsm/events",  # topic name
+#                          outcomes=["e_finished@etasl_node",],  # explicitly list the events that can be received through the topic. Events that are not specified are ignored
+#                          entry_handler = None,  # entry handler callback, called once when entering
+#                          monitor_handler = None,  # monitor handler callback, called several times. If omitted or set to None, the default behavior is to match the topic msg to the outcome
+#                          exit_handler = self.exit_handler,  # exit handler callback, called once when exiting
+#                          state_name = name, #If omitted or set to None, no printing in colors when entering/exiting state
+#                          )
+    
+
+#     def exit_handler(self, blackboard: Blackboard):
+#         # YasminNode.get_instance().get_logger().info("exit handler called")
+#         return
+#         # time.sleep(1)
+
+ 
+# def nested_etasl_state(name: str, file_path: str, robot_path: str, display_in_viewer: bool= False):
+class eTaSL_StateMachine(TickingStateMachine):
+    """
+    A sub statemachine that:
+    - uses cbStateMachine to provide callbaxks for transtions and state changes
+    - uses a feedback to set parameters
+    - scopes the names of the state, such that the feedback trace is understandable.
+    - separate name of the state from the name of the task
+    """
+    def __init__(self,
+                 task_name: str = None,
+                 srv_name: str = "/etasl_node",
+                 #display_in_viewer: bool= False, 
+                 cb:Callable=default_parameter_setter,
+                 timeout:Duration = Duration(seconds=1.0),
+                 node : Node = None,
+                 listener : Listener = None ,
+                 transitioncb:Callable=default_transitioncb, 
+                 statecb:Callable=default_statecb
+                 ):
+        """
+        Configurable statemachine to execute an eTaSL task
+
+        Parameters:
+            task_name:
+                name of the task to be executed. Will be looked up in the blackboard.
+            srv_name:
+                name of the eTaSL node, by default /etasl_node
+            cb:
+                callback that sets the parameters, with signature `def cb(blackboard) ->param`
+                where param is a Dict with the parameters of the task that will be used to update
+                the default parameters.
+            timeout:
+                returns TIMEOUT if the communication timeout of any of the substeps is exceeded
+            node:
+                ROS2 node to be used
+            listener:
+                The Listener to be used, by default eTaSLEventTopicListener() which uses a FIFO queue to read in string topics
+                with the transition name. Could be shared with other statemachines that also wants to listen to the event topic
+            transitioncb:
+                callback that is called at each transition, signature `def transitioncb(statemachine,blackboard,source,outcome)->outcome`
+            statecb:
+                callback that is called at each, signature `default_statecb(statemachine,blackboard,state)`
+        """
+        name = "etasl_"+task_name
+        super().__init__(name,outcomes=[SUCCEED, ABORT,TIMEOUT],transitioncb=transitioncb,statecb=statecb)
+        
+        if listener is None:
+            listener = eTaSLEventTopicListener()
+        self.listener = listener
+        # if task is None:
+        #     task = name
+
+        #This state is just added in case that etasl is already running. If not possible (ABORT) still the task continues:
+        # I am not so sure that the transition will fail if inappropriate, only when there is an error for an appropriate transition.
+        self.add_state("DEACTIVATE_ETASL", LifeCycle(srv_name,Transition.DEACTIVATE,timeout,node),
+                transitions={SUCCEED: "CLEANUP_ETASL",
+                            ABORT: "CLEANUP_ETASL",
+                            TIMEOUT: ABORT}) 
+        
+        #This state is just added in case that etasl is already running. If not possible (ABORT) still the task continues
+        self.add_state("CLEANUP_ETASL", LifeCycle(srv_name,Transition.CLEANUP,timeout,node),
+                transitions={SUCCEED: "PARAMETER_CONFIG",
+                            ABORT: "PARAMETER_CONFIG"}) 
+        self.add_state("PARAMETER_CONFIG", SetTaskParameters( task_name, srv_name, cb, timeout, node ),
+                       transitions={
+                           SUCCEED: "ROBOT_SPECIFICATION"
+                       })
+        self.add_state("ROBOT_SPECIFICATION", ReadRobotSpecification(task_name,srv_name,timeout,node),
+                transitions={SUCCEED: "TASK_SPECIFICATION"})
+
+        self.add_state("TASK_SPECIFICATION", ReadTaskSpecification(task_name,srv_name,timeout,node),
+                transitions={SUCCEED: "CONFIG_ETASL"})
+
+        self.add_state("CONFIG_ETASL", LifeCycle(srv_name,Transition.CONFIGURE,timeout,node),
+                transitions={SUCCEED: "ACTIVATE_ETASL"})
+
+        self.add_state("ACTIVATE_ETASL", LifeCycle(srv_name,Transition.ACTIVATE,timeout,node),
+                transitions={SUCCEED: "EXECUTING"})
+
+        self.add_state("EXECUTING", WaitForever(),
+                       transitions= {"e_finished@etasl_node": SUCCEED})
+
+        # self.add_state(name+".RUNNING", Executing(name),
+        #         transitions={"e_finished@etasl_node": SUCCEED,
+        #                     ABORT: ABORT})
+
+        #if display_in_viewer:
+        #    YasminViewerPub('{} (nested FSM)'.format(name), self)
+
+    
+# Output:
+#  - msg.names
+#  - msg.data
+#  - msg.is_declared    
+from etasl_interfaces.msg import Output
+    
+
+from std_msgs.msg import String
+from functools import reduce
+from operator import and_
+
+        # qos_profile = QoSProfile(
+        #     history=QoSHistoryPolicy.KEEP_LAST, #Keeps the last msgs received in case buffer is fulll
+        #     depth=msg_queue, #Buffer size
+        #     reliability=QoSReliabilityPolicy.RELIABLE, #Uses TCP for relia
+        # bility instead of UDP
+        #     durability=QoSDurabilityPolicy.VOLATILE #Volatile, may not use first msgs if subscribed late (will not happen in this context)
+        # )  
+
 
 class eTaSLOutput(TickingState):
     """
@@ -382,7 +530,7 @@ class eTaSLEvent(TickingState):
 
 
 # def nested_etasl_state(name: str, file_path: str, robot_path: str, display_in_viewer: bool= False):
-class eTaSL_StateMachine(TickingStateMachine):
+class eTaSL_StateMachine2(TickingStateMachine):
     """
     A sub statemachine that:
     - uses cbStateMachine to provide callbaxks for transtions and state changes
