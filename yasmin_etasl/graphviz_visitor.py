@@ -43,7 +43,7 @@ from .yasmin_ticking_etasl import *
 
 
 
-class GraphViz_Visitor(Visitor):
+class GraphViz_Visitor_old(Visitor):
     """
     Todo:
         - All names should be identifiers!
@@ -126,7 +126,7 @@ digraph G {
 
 
 
-class GraphViz_Visitor_v2(Visitor):
+class GraphViz_Visitor(Visitor):
     """
     Todo:
         - All names should be identifiers!
@@ -159,44 +159,16 @@ digraph G {
         
 
     def pre(self, state) -> bool:
-        if isinstance(state,StateMachineElement):
-            fullname, previousname = self.add_to_stack(state.state)
-            shortname = state.name            
-            self.doc = self.doc+f'{" ":{self.indent}}{fullname} [label="{shortname}"]\n'
-            return False
-        if isinstance(state,TickingStateMachine):            
-            fullname, previousname = self.add_to_stack(state)
-            shortname = state.name 
-            self.doc = self.doc+f'{" ":{self.indent}}{previousname} -> {fullname} [lhead="cluster_{self.clustercount}"];\n'            
-            self.doc = self.doc+f"{' ':{self.indent}}subgraph cluster_{self.clustercount}" +"{\n"      
-            self.indent += self.tab
-            self.doc = self.doc+f'{" ":{self.indent}}{fullname}[label="{shortname}",style="invis"]\n'
-            self.doc = self.doc+f'{" ":{self.indent}}label="{shortname}"\n'
-            self.clustercount = self.clustercount + 1            
-            return False
-        else:
-            fullname, previousname = self.add_to_stack(state)
-            shortname = state.name
-            self.doc = self.doc+f'{" ":{self.indent}}{previousname} -> {fullname};\n{" ":{self.indent}}{fullname}[label="{shortname}"]\n'            
-            return True
+        fullname, previousname = self.add_to_stack(state)
+        shortname = state.name
+        self.doc = self.doc+f'{" ":{self.indent}}{previousname} -> {fullname};\n{" ":{self.indent}}{fullname}[label="{shortname}"]\n'            
+        return True
         
     
     
     def post(self, state):
-        if isinstance(state,StateMachineElement):
-            self.stack.pop()
-            self.childnr.pop()            
-            return 
-        if isinstance(state,TickingStateMachine):
-            self.doc = self.doc+"    }\n"
-            self.stack.pop()
-            self.childnr.pop()
-            self.indent -= self.tab
-            pass
-        else:        
-            self.stack.pop()
-            self.childnr.pop()
-
+        self.stack.pop()
+        self.childnr.pop()
     
     def print(self):
         dotstring = self.preamble + self.doc + self.postamble

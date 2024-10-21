@@ -77,9 +77,8 @@ class Up_and_down_as_a_class(Sequence):
 
 
 class Up_and_down_with_parameters(Sequence):
-    def __init__(self, node):
+    def __init__(self,node):
         super().__init__("Up_and_down_as_a_class")
-
 
         class MyComputations(Generator):
             def __init__(self):

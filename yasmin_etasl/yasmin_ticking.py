@@ -1313,7 +1313,7 @@ class TickingStateMachine(TickingState):
         """
         if visitor.pre(self):
             for k,v in self._states.items():
-                v.accept(visitor)
+                v["state"].accept(visitor)
         visitor.post(self)
 
     def entry(self, blackboard: Blackboard) -> str:
