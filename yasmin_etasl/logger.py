@@ -27,6 +27,9 @@ from colorama import Fore, Back, Style
 
 
 class DummyLogPrinter:
+    """
+    Can be used with set_looger for a do-nothing logger.
+    """
     def debug(self,*args):
         pass
     def info(self,*args):
@@ -39,6 +42,10 @@ class DummyLogPrinter:
         pass
 
 class LogPrinter:
+    """
+    Can be used with set_logger to install a logger that prints to console.
+    Is the default if not overridden by a call to set_logger()
+    """
     def debug(self,*args):
         print(Style.DIM    +Fore.WHITE+"DEBUG : " + str(*args) +Style.RESET_ALL)              
 
@@ -65,11 +72,13 @@ def get_logger(category:str="default"):
         category: 
             arbitrary name. You can associate a specific LogPrinter to a name,
             if not specified, "default" is used.
+
     Note:
-     Known categories used in yasmin_etasl:
-      - unknown (used when the category is not known or specified)
-      - default
-      - state (entering/exiting states, with outcome)            
+      Known categories used in yasmin_etasl:
+
+        - unknown (used when the category is not known or specified)
+        - default
+        - state (entering/exiting states, with outcome)            
     """
     global default_loggers
     if category in default_loggers:
@@ -86,20 +95,26 @@ def set_logger(category:str,logger):
             arbitrary name. You can associate a specific LogPrinter to a name,
             You probably want to specify at least the "default" logger
             (if not LogPrinter() is used, i.e. to Console)
+        logger:
+            Logger to associate with this category.
 
     
     Note:
-     Known categories used in yasmin_etasl:
-      - unknown (used when the category is not known or specified)
-      - default
-      - state (entering/exiting states, with outcome)
+      Known categories used in yasmin_etasl:
 
-
+        - unknown (used when the category is not known or specified)
+        - default
+        - state (entering/exiting states, with outcome)   
+      
+        `default_loggers={"default":LogPrinter(),"unknown":DummyLogPrinter()}`
+        
     Note:
-     Loggers:
-      - ROS2 logger, i.e. node.get_logger()
-      - Logprinter(), i.e. prints to console
-      - DummyLogPrinter(), i.e. does nothing
+      Loggers:
+
+        - `ROS2 logger`, i.e. node.get_logger()
+        - `Logprinter()`, i.e. prints to console
+        - `DummyLogPrinter`(), i.e. does nothing
+
     """
     global default_loggers
     default_loggers[category]=logger

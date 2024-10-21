@@ -26,6 +26,7 @@ import ament_index_python as aip
 from std_msgs.msg import String
 from lifecycle_msgs.srv import ChangeState
 from rclpy.qos import QoSHistoryPolicy, QoSProfile, QoSReliabilityPolicy, QoSDurabilityPolicy
+from rclpy.time import Duration
 
 from .yasmin_ticking import *
 from .yasmin_ticking_node import YasminTickingNode

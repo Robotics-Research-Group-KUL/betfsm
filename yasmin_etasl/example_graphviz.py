@@ -93,10 +93,10 @@ def main(args=None):
     # ])
     sm=ConcurrentSequence("up_and_down_as_a_function", children=[
             ("task1", Sequence("my_sequence", children=[
-                        ("movinghome",eTaSL_StateMachine("MovingHome") ),
-                        ("movingup",eTaSL_StateMachine("MovingUp") ),
-                        ("movingdown",eTaSL_StateMachine("MovingDown") ),            
-                        ("movingup",eTaSL_StateMachine("MovingUp")),
+                        ("movinghome",eTaSL_StateMachine("movinghome","MovingHome") ),
+                        ("movingup",eTaSL_StateMachine("movingup","MovingUp") ),
+                        ("movingdown",eTaSL_StateMachine("movingdown","MovingDown") ),            
+                        ("movingup",eTaSL_StateMachine("movingup2","MovingUp")),
                         ("my_message",Message("Robot is finished"))
                       ]) 
             ),

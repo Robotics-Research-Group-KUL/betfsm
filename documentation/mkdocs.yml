@@ -14,6 +14,8 @@ nav:
     - "Yasmin":
       - "Tickingstates":
         - "TickingState" : "tickingstate.md"
+        - "TickingStateMachine" : "tickingstatemachine.md"
+        - "Visitor" : "visitor.md"
         - "Generator" : "generator.md"
         - "Sequence" : "sequence.md"
         - "ConcurrentSequence" : "concurrentsequence.md"
@@ -23,7 +25,8 @@ nav:
         - "WaitForever" : 'waitforever.md'
         - "ConditionWhile" : 'conditionwhile.md'
         - "Repeat" : 'repeat.md'        
-      - "TickingStateMachine": 'tickingstatemachine.md'
+        - "Message" : "message.md"
+        - "LogBlackboard" : 'logblackboard.md'
       - "ROS 2":  
         - "ServiceClient" : 'serviceclient.md'
         - "LifeCycle" : 'lifecycle.md'

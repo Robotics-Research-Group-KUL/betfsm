@@ -24,78 +24,35 @@
 
 # from simple_node import Node
 
-import json
-from yasmin import Blackboard
-from yasmin import StateMachine
-from yasmin.state import State
-from typing import Dict, List, Union, Callable
 
+from typing import Dict, List, Union, Callable,Type
+from enum import Enum
+from threading import Lock
+from abc import ABC, abstractmethod
+import traceback
+
+from yasmin import Blackboard
+from yasmin.state import State
 from yasmin_ros.basic_outcomes import SUCCEED, ABORT, TIMEOUT, CANCEL
 
 from .logger import get_logger
 
-#from yasmin_ros import ServiceState
 
-#from yasmin_viewer import YasminViewerPub
-
-
-
-#from lifecycle_msgs.msg import Transition
-
-# from lifecycle_msgs.srv import ChangeState_Response
-
-#from std_msgs.msg import String
-
-
-from functools import partial
-
-from typing import List, Callable, Union, Type
-
-#from event_state import EventState
-
-
-
-#from etasl_yasmin_utils import *
-
-from enum import Enum
-from threading import Lock
-
-import traceback
-
-from rclpy import qos
-from rclpy.duration import Duration
-
-from abc import ABC, abstractmethod
-from yasmin.blackboard import Blackboard
-
-
-def cleanup_outcomes(outcomes):
+def cleanup_outcomes(outcomes:List[str])->List[str]:
     """
-    cleans up a list of outcomes by elliminating duplicates
+    cleans up a list of outcomes by elliminating duplicates.
+
+    Parameters:
+        list of outcomes with possibly duplicate elements.
+
+    Returns:
+        list of outcomes with duplicate elements elliminated.
     """
     return [ e for e in {e for e in outcomes}];
 
 
 
-def default_transitioncb(statemachine,blackboard,source,outcome):
-    """
-    Callback for use in cbStateMachine
 
-    Parameters
-    ----------
-    statemachine: statemachine in which this callback is called
-    blackboard  : the blackboard wich was used to execute this statemachine
-    source : the source state of the transition
-    outcome: the name of the transition
-
-    Returns
-    -------
-    outcome or an override of the outcome
-    """
-    return outcome
-
-def default_statecb(statemachine,blackboard,state):
-    pass
 
 
 #SUCCEED = "succeeded"
@@ -138,12 +95,17 @@ TickingState_Status = Enum("TickingState_Status",["ENTRY","DOO","EXIT"])
 
 class Visitor(ABC):
     """
-    Visitor pattern, see https://en.wikipedia.org/wiki/Visitor_pattern
+    Visitor pattern.
 
-    *Erich Gamma, Richard Helm, Ralph Johnson, John Vlissides (1994). Design Patterns: Elements of Reusable Object-Oriented Software. Addison Wesley.* (Gang of Four book)
+    Called by accept() methods of TickingState and its subclasses. The Visitor is a base class that you
+    can inherit from to have your object called throughout the hierarchy of states.  This mechanism
+    is completely generic.
+
+    See also:
+        - *Erich Gamma, Richard Helm, Ralph Johnson, John Vlissides (1994). Design Patterns: Elements of Reusable Object-Oriented Software. Addison Wesley.* (Gang of Four book)
+        - [wikipedia](https://en.wikipedia.org/wiki/Visitor_pattern)
 
 
-    Called by accept() methods of TickingState and its subclasses
     """
     @abstractmethod
     def pre(self,state) -> bool:
@@ -1034,6 +996,11 @@ class Message(Generator):
 def dumps_blackboard(blackboard,indent=0):
     """
     returns a string-dump of a (piece of the ) blackboard
+    
+    Parameters:
+        blackboard:
+        indent:
+            determines the indentation for printing.
     """
     s = ""
     indent += 4
@@ -1076,8 +1043,9 @@ class LogBlackboard(Generator):
     """
     def __init__(self, location:List[str]=[]) -> None:
         """
+        Prints (a part of) the blackboard to the log.  Info-level is used.
+
         Parameters:
-            Prints (a part of) the blackboard to the log
             location:
                 a list of strings that describes a location in the blackboard.
         """
@@ -1110,32 +1078,72 @@ class StateMachineElement:
             self.state.accept(visitor)
         visitor.post(self)
 
+
+def default_transitioncb(statemachine,blackboard,source,outcome):
+    """
+    Callback for use in cbStateMachine
+
+    Parameters:
+        statemachine: 
+            statemachine in which this callback is called
+        blackboard: 
+            the blackboard wich was used to execute this statemachine
+        source: 
+            the source state of the transition
+        outcome: 
+            the name of the transition
+
+    Returns:
+        outcome or an override of the outcome
+    """
+    return outcome
+
+def default_statecb(statemachine,blackboard,state):
+    """
+    Default callback used in TickingStateMachine.
+
+    Parameters:
+        statemachine:
+            statemachine in which this callback is called
+        blackboard:
+            the blackboard wich was used to execute this statemachine
+        state:
+            state that will be entered
+    """
+    pass
+
+
 class TickingStateMachine(TickingState):
     """
     A version of StateMachine that calls a callback function before entering a state and/or at each transition.
     extended version of the cbStateMachine from yasmin_action
-
-    Constructor(outcomes,transitioncb,statecb) :
-        - outcomes: the allowed outcomes of the state machine, cause the state machine to exit and return one of these outcomes   
-        - transitioncb: callback function called at each transition. 
-          Signature transitioncb(source_state:str, transtion:str, target_state:str)
-        - statecb: callback function called before entering each state. 
-          Signature statecb(name)
-
-    *In the case of a multithreaded application, it is assumed that the callback functions are reentrant or protected with a lock*
-
-    This class is useful but not necessary when using it with an ROS2 Action Server. Examples of usage:
-     - log transitions to ros2's logger 
-     - published action feedback on transitions
-    
-     
+         
     This statemachine is capable of working together with TickingState:
+
       - will exit when TICKING outcome is given by one of the substates, but then if it is called again,
         it will have remembered the state that had the TICKING outcome and start from that state.
-      - if returning with any other outcome, will start next time from the start state.
-      - should be drop in replacement of Yasmin StateMachine, (as long as nobody uses TICKING as outcome.)
+          - if returning with any other outcome, will start next time from the start state.
+      - should be drop in replacement of Yasmin StateMachine, (but not the other way around, StateMachine can't
+        handle TickingStates
+        
     """    
     def __init__(self, name:str, outcomes: List[str], transitioncb=default_transitioncb, statecb=default_statecb) -> None:
+        """
+        TickintStatemachine is a statemachine that can maintain TickingStates.
+
+        Parameters:
+            name: 
+                name of the state machine
+            outcomes: 
+                the allowed outcomes of the state machine, any outcome not specified in transitions
+                will be an outcome of the state machine and should be contained in outcomes (otherwise exception+abort) 
+            transitioncb: 
+                callback function called at each transition. 
+                Signature transitioncb(source_state:str, transtion:str, target_state:str).
+                See also 
+            statecb: callback function called before entering each state. 
+                    Signature statecb(name)        
+        """
         outcomes.append(TICKING)
         super().__init__(name,outcomes)
 
