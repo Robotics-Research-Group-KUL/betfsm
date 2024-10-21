@@ -175,7 +175,7 @@ class TickingState(State):
         """
         parameters:
             name:
-                name of the TickingState
+                name of the TickingState.  This is meant to be an instance-name, not a class-name.
             outcomes:
                 all possible outcomes of the state, TICKING and ABORT will be added.
         """
@@ -298,6 +298,11 @@ class TickingState(State):
         # no children
         visitor.post(self)
 
+    def get_active_states(self):
+        """
+        Gets a list of active underlying states, [] if there are no underlying states.
+        """
+        return []
 
 
 
@@ -347,11 +352,11 @@ class Generator(TickingState):
     def reset(self):
         super().reset()
 
-
+    @abstractmethod
     def co_execute(self,blackboard:Blackboard) -> str:
-        raise NotImplementedError("abstract method `co_execute` not implemented")
-        # yield SUCCEED
+        raise NotImplementedError("Subclasses deriving from Generator need to implement `co_execute(self,blackboard)`")
 
+        
 
     def __str__(self) -> str:
         pass
@@ -361,7 +366,7 @@ class GeneratorWithList(Generator):
     """
     A generator with some facilities to maintain an ordered list of children
     """
-    def __init__(self, name:str, outcomes:List[str], children: List[tuple[str,TickingState]]=[]) -> None:
+    def __init__(self, name:str, outcomes:List[str], children: List[TickingState]=[]) -> None:
         """
         parameters:
             name: 
@@ -369,21 +374,19 @@ class GeneratorWithList(Generator):
             outcomes:
                 list of possible outcomes (in addition to the outcomes of the underlying states)
             children:
-                a list of tuples (name, state). 
+                a list of states. 
                 you can use add_state(...) to add children.
         """
         super().__init__(name,outcomes)
         self.states=[]
         if (children is not None) and (children != []):
             for c in children:
-                self.add_state(c[0],c[1])
+                self.add_state(c)
 
-    def add_state(self, name:str, state: State):
+    def add_state(self, state: State):
         """
         adds a state to the sequence
         parameters:
-            name:
-                name of the state
             state:
                 state intance
         returns:
@@ -391,9 +394,7 @@ class GeneratorWithList(Generator):
         """
         if not isinstance(state,State):
             raise Exception("add_state expects as second argument an instance of a subclass of State")
-        if not isinstance(name,str):
-            raise Exception("add_state expects as first argument a string")
-        self.states.append({"name":name,"state":state})  
+        self.states.append({"name":state.name,"state":state})  
         self.outcomes = cleanup_outcomes(self.outcomes + state.get_outcomes())
         self._outcomes = self.outcomes  # dirty hack to fix a bug
         return self 
@@ -402,10 +403,8 @@ class GeneratorWithList(Generator):
         """
         resets the sequence and ensures tht the underlying states are also reset.
         """
-        print("Sequence reset")
         for s in self.states:
             if isinstance(s["state"],TickingState):
-                print("reset state : " + s["name"])
                 s["state"].reset()
         super().reset()  
 
@@ -416,6 +415,14 @@ class GeneratorWithList(Generator):
                 s["state"].accept(visitor)
         visitor.post(self)        
 
+    @abstractmethod
+    def get_active_states(self):
+        raise NotImplementedError("Subclasses deriving from GeneratorWithList need to implement 'get_active_states()'")
+        
+    @abstractmethod
+    def co_execute(self,blackboard):
+        raise NotImplementedError("Subclasses deriving from GeneratorWithList need to implement 'co_execute(blackboard)'")
+        
 
 class Sequence(GeneratorWithList):
     """
@@ -460,24 +467,23 @@ class Sequence(GeneratorWithList):
             class TIMEOUT abortClass
     ```
     """
-    def __init__(self, name:str, children: List[tuple[str,TickingState]]=[]) -> None:
+    def __init__(self, name:str, children: List[TickingState]=[]) -> None:
         """
         parameters:
             name: 
                 name of the sequence
             children:
-                a list of tuples (name, state). 
+                a list of states
                 you can use add_state(...) to add children.
         """
         super().__init__(name,[],children)        
-        self.count = 0        
-
+        self.count = 0
+        self.active_state = []
     
-  
-
     def co_execute(self,blackboard):        
         for s in self.states:                
             #print("Sequence: state : ",s["state"])
+            self.active_state = [s["name"]]
             outcome = s["state"](blackboard)
             while outcome==TICKING:
                 yield TICKING
@@ -486,6 +492,9 @@ class Sequence(GeneratorWithList):
                 yield outcome            
         #print("sequence finished")                
         yield SUCCEED
+
+    def get_active_states(self):
+        return self.active_state
 
 
 class ConcurrentSequence(GeneratorWithList):
@@ -546,17 +555,16 @@ class ConcurrentSequence(GeneratorWithList):
     ```
         
     """
-    def __init__(self, name:str, children: List[tuple[str,TickingState]]=[]) -> None:
+    def __init__(self, name:str, children: List[TickingState]=[]) -> None:
         """
         parameters:
             name: 
                 name of the sequence
             children:
-                a list of tuples (name, state). 
+                a list of states
                 you can use add_state(...) to add children.
         """
         super().__init__(name,[],children)
-        self.count = 0
                
     def co_execute(self,blackboard):
         """
@@ -590,7 +598,16 @@ class ConcurrentSequence(GeneratorWithList):
         # all of the underlying states have necessarily completed
         yield SUCCEED
         
-
+    def get_active_states(self):
+        """
+        Gets a list of active states. These are not necessarily all states because
+        some states could already have been finished.
+        """
+        active_states=[]
+        for s in self.states:
+            if s["active"]:
+                active_states.append(s["name"])
+        return self.active_states
 
 
 class Fallback(GeneratorWithList):
@@ -637,21 +654,22 @@ class Fallback(GeneratorWithList):
             class CANCEL abortClass
     ```    
     """
-    def __init__(self, name:str, children: List[tuple[str,TickingState]]=[]) -> None:
+    def __init__(self, name:str, children: List[TickingState]=[]) -> None:
         """
         parameters:
             name: 
                 name of the sequence
             children:
-                a list of tuples (name, state). 
+                a list of states 
                 you can use add_state(...) to add children.
         """
         super().__init__(name,[], children)
-        self.count = 0
+        self.active_state = []
         
 
     def co_execute(self,blackboard):
-        for s in self.states:                
+        for s in self.states:             
+            self.active_state = [s["name"]]
             outcome = s["state"](blackboard)
             while outcome==TICKING:
                 yield TICKING
@@ -659,7 +677,9 @@ class Fallback(GeneratorWithList):
             if outcome!=CANCEL:
                 yield outcome                            
         yield CANCEL
-
+        
+    def get_active_states(self):
+        return self.active_state
 
 
 class ConcurrentFallback(GeneratorWithList):
@@ -716,17 +736,17 @@ class ConcurrentFallback(GeneratorWithList):
     ```
         
     """
-    def __init__(self, name:str, children: List[tuple[str,TickingState]]=[]) -> None:
+    def __init__(self, name:str, children: List[TickingState]=[]) -> None:
         """
         parameters:
             name: 
                 name of the sequence
             children:
-                a list of tuples (name, state). 
+                a list of states 
                 you can use add_state(...) to add children.
         """
         super().__init__(name,[],children)
-        self.count = 0
+        
 
    
 
@@ -763,7 +783,16 @@ class ConcurrentFallback(GeneratorWithList):
         # all of the underlying states have necessarily completed
         yield CANCEL
         
-
+    def get_active_states(self):
+        """
+        Gets a list of active states. These are not necessarily all states because
+        some states could already have been finished.
+        """
+        active_states=[]
+        for s in self.states:
+            if s["active"]:
+                active_states.append(s["name"])
+        return self.active_states
 
 class WaitFor(Generator):
     """
@@ -805,6 +834,9 @@ class WaitFor(Generator):
             yield TICKING
         yield SUCCEED
 
+    def get_active_states(self):
+        return []
+
 
 
 
@@ -825,6 +857,8 @@ class WaitForever(Generator):
         while True:
             yield TICKING
 
+    def get_active_states(self):
+        return []
 
 
 
@@ -858,9 +892,16 @@ class GeneratorWithState(Generator):
         if self.state is not None and isinstance(self.state,TickingState):
             self.state.reset()
         super().reset()  
+    
+    @abstractmethod
+    def get_active_states(self):
+        raise NotImplementedError("Subclasses deriving from GeneratorWithState need to implement 'co_execute(self,blackboard)'")
+            
 
+    def get_active_states(self):
+        return [self.state.name]
 
-class ConditionWhile(GeneratorWithState):
+class While(GeneratorWithState):
     """
     State that contiuously evaluates an underlying state as long as a condition is satisfied.
     ```mermaid
@@ -886,7 +927,7 @@ class ConditionWhile(GeneratorWithState):
             class CANCEL abortClass
     ```     
     """
-    def __init__(self, condition_cb:Callable, state:TickingState):
+    def __init__(self, name:str,condition_cb:Callable, state:TickingState):
         """
         Same behavior as the underlying state `state`, but returns CANCEL if condition_cb(self,condition_cb)
         ever gets false. 
@@ -900,7 +941,7 @@ class ConditionWhile(GeneratorWithState):
         """
         outcomes = [CANCEL]
         outcomes.append(CANCEL)  # Generator will add TICKING and ABORT
-        super().__init__("ConditionWhile",outcomes,state)
+        super().__init__(name,outcomes,state)
         self.condition_cb = condition_cb
     
     def co_execute(self,blackboard):        
@@ -908,7 +949,6 @@ class ConditionWhile(GeneratorWithState):
             outcome = self.state(blackboard)
             yield outcome
         yield CANCEL
-  
 
 
 class Repeat(GeneratorWithState):
@@ -969,11 +1009,13 @@ class Message(Generator):
     """
     Message(msg) returns a State that displays a message
     """
-    def __init__(self,msg:str=None, cb:Callable=None) -> None:
+    def __init__(self,name:str="message",*,msg:str=None, cb:Callable=None) -> None:
         """
         Displays a message to the log. 
 
         Parameters:
+            name:
+                instance name, default `message`
             msg:
                 string describing the message
             cb:
@@ -981,15 +1023,28 @@ class Message(Generator):
                 The callback allows the user to compute the message at time of evaluation,
                 e.g. to report on values on the blackboard.
 
-        Example:
+                
+        warning:
+            Only one of the arguments msg or cb can be specified
+
+        example:
+            ```
             Message(lambda bb: f'{bb["some_key_in_blackboard"]=}' )
+            ```
         """
-        super().__init__("message",[SUCCEED,])
+        super().__init__(name,[SUCCEED,])
         self.msg = msg
-    def co_execute(self,blackboard: Blackboard)-> str:
+        self.cb  = cb
+        if not(self.msg is None) and not(self.cb is None) and not(self.msg is None and self.cb is None):
+            raise ValueError("Message: you have to specify exactly one of the msg or cb arguments in the constructor")
+        
+    def co_execute(self,blackboard: Blackboard):
         #log = my_node.get_logger()
         #log.info(f'Entering MyMessage : {self.msg}')
-        get_logger().info(self.msg)
+        if self.msg is not None:
+            get_logger().info(self.msg)
+        if self.cb is not None:
+            get_logger().info(self.cb(blackboard))
         yield SUCCEED
 
 
@@ -1041,15 +1096,17 @@ class LogBlackboard(Generator):
     """
     Logs blackboard or part of blackboard
     """
-    def __init__(self, location:List[str]=[]) -> None:
+    def __init__(self, name:str, location:List[str]=[]) -> None:
         """
         Prints (a part of) the blackboard to the log.  Info-level is used.
 
         Parameters:
+            name:
+                instance name
             location:
                 a list of strings that describes a location in the blackboard.
         """
-        super().__init__("Logblackboard",[SUCCEED])
+        super().__init__(name,[SUCCEED])
         self.location = location
 
     def co_execute(self,blackboard: Blackboard):
@@ -1064,19 +1121,51 @@ class LogBlackboard(Generator):
 
 
 
-class StateMachineElement:
-    """
-    Just to have a type that a visitor could recognize
-    """
-    def __init__(self,name,state,transitions):
-        self.name = name
-        self.state = state
-        self.transitions = transitions
+class Compute(Generator):
+    def __init__(self, name:str, location:List[str], cb:Callable):
+        """
+        State that performs some computations using a callback function
+        and places the results in a predetermined location in the blackboard.
 
-    def accept(self, visitor: Visitor):
-        if visitor.pre(self):
-            self.state.accept(visitor)
-        visitor.post(self)
+        Parameters:
+            name:
+                name of this node
+            location:
+                location in the blackboard, given as a list of strings.  Should point to
+                a dictionary.
+            cb:
+                callback function with signature `def cb(blackboard)->dict`. The dictionary 
+                contents will be inserted in the given location 
+        """
+        super().__init__(name,[SUCCEED])
+        self.location = location
+        self.cb = cb
+    def co_execute(self,blackboard):
+        bb = blackboard
+        for k in self.location:
+            if k not in bb:                
+                bb[k]={}
+            bb = bb[k]
+            if not isinstance(bb,dict):
+                raise ValueError("location should point to a dictionary in the blackboard")
+        bb.update( self.cb(blackboard) )
+        yield SUCCEED
+
+
+
+# class StateMachineElement:
+#     """
+#     Just to have a type that a visitor could recognize
+#     """
+#     def __init__(self,name,state,transitions):
+#         self.name = name
+#         self.state = state
+#         self.transitions = transitions
+
+#     def accept(self, visitor: Visitor) :
+#         if visitor.pre(self):
+#             self.state.accept(visitor)
+#         visitor.post(self)
 
 
 def default_transitioncb(statemachine,blackboard,source,outcome):
@@ -1120,11 +1209,11 @@ class TickingStateMachine(TickingState):
          
     This statemachine is capable of working together with TickingState:
 
-      - will exit when TICKING outcome is given by one of the substates, but then if it is called again,
-        it will have remembered the state that had the TICKING outcome and start from that state.
-          - if returning with any other outcome, will start next time from the start state.
-      - should be drop in replacement of Yasmin StateMachine, (but not the other way around, StateMachine can't
-        handle TickingStates
+    - will exit when TICKING outcome is given by one of the substates, but then if it is called again,
+      it will have remembered the state that had the TICKING outcome and start from that state.
+      - if returning with any other outcome, will start next time from the start state.
+    - should be drop in replacement of Yasmin StateMachine, (but not the other way around, StateMachine can't
+       handle TickingStates
         
     """    
     def __init__(self, name:str, outcomes: List[str], transitioncb=default_transitioncb, statecb=default_statecb) -> None:
@@ -1133,7 +1222,7 @@ class TickingStateMachine(TickingState):
 
         Parameters:
             name: 
-                name of the state machine
+                (instance) name of the state machine
             outcomes: 
                 the allowed outcomes of the state machine, any outcome not specified in transitions
                 will be an outcome of the state machine and should be contained in outcomes (otherwise exception+abort) 
@@ -1156,25 +1245,44 @@ class TickingStateMachine(TickingState):
         
     def add_state(
         self,
-        name: str,
-        state: State,
+        state: TickingState,
         transitions: Dict[str, str] = None
     ) -> None:
+        """
+        add_state(state,transitions) adds a state and associates transitions in this state-machine
+        with this state.
+
+        Parameters:
+            state: 
+                state to be added, it will be added under its name (i.e. state.name, as defined in TickingState)
+            transitions:
+                a dictionary that maps outcomes of the state to names of a state in this state machine.
+        """
+        if not isinstance(state,TickingState):
+            raise Exception("TickingStateMachine.add_state() only accepts states that are subclasses of TickingState")
         if not transitions:
             transitions = {}
         if not isinstance( transitions , Dict):
             raise ValueError("transitions should be a dictionary")            
-        self._states[name] = {
+        self._states[state.name] = {
             "state": state,
             "transitions": transitions
         }
 
         if not self._start_state:
-            self._start_state = name
-            self.__current_state = name
+            self._start_state = state.name
+            self.__current_state = state.name
         
         
     def set_start_state(self, name: str) -> None:
+        """
+        Explicitly states the starting state. States are specified using their name
+
+        Parameters:
+            name:
+                set the state by which the state machine starts.  By default the first state 
+                added.
+        """
         self._start_state = name
         self.__current_state = name
 
@@ -1188,6 +1296,10 @@ class TickingStateMachine(TickingState):
                 self._states[self.__current_state]["state"].cancel_state()
 
     def reset(self):
+        """
+        Resets the state-machine.  Ensures that the next call will start again
+        from the starting state.  Calls reset on all the states it contains.
+        """
         with self.__current_state_lock:
             state = self.__current_state
             if isinstance(state,TickingState):
@@ -1196,12 +1308,17 @@ class TickingStateMachine(TickingState):
         super().reset()
 
     def accept(self, visitor: Visitor):
+        """
+        accepts a visitor to go through all states of an hierarchy
+        """
         if visitor.pre(self):
             for k,v in self._states.items():
-                StateMachineElement(k,v["state"],v["transitions"]).accept(visitor)
+                v.accept(visitor)
         visitor.post(self)
 
     def entry(self, blackboard: Blackboard) -> str:
+        with self.__current_state_lock:
+            state = self.__current_state = self._start_state
         return CONTINUE
 
     def doo(self, blackboard: Blackboard) -> str:
@@ -1248,15 +1365,21 @@ class TickingStateMachine(TickingState):
         return super().exit()
     
         
-    def get_states(self) -> Dict[str, Union[State, Dict[str, str]]]:
-        return self._states
+    # def get_states(self) -> Dict[str, Union[State, Dict[str, str]]]:
+    #     return self._states
 
-    def get_current_state(self) -> str:
+    # def get_current_state(self) -> str:
+    #     with self.__current_state_lock:
+    #         if self.__current_state:
+    #             return self.__current_state
+    #     return self._start_state
+
+    def get_active_state(self) -> str:
         with self.__current_state_lock:
             if self.__current_state:
                 return self.__current_state
-
-        return ""
+            else:
+                return self._start_state
 
     def __str__(self) -> str:
         return f"StateMachine: {self._states}"

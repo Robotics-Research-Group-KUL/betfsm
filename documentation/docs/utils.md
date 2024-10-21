@@ -31,36 +31,45 @@ This sets the ROS2 logger for all of the above categories.
 
 ::: yasmin_etasl.yasmin_ticking_ros.expand_package_ref
     options:
+      heading_level: 3
       show_source: false
       show_root_heading: true 
 
 ::: yasmin_etasl.yasmin_ticking_ros.expand_env_ref
     options:
+      heading_level: 3
       show_source: false
       show_root_heading: true       
 
 
 ::: yasmin_etasl.yasmin_ticking_ros.expand_ref
     options:
+      heading_level: 3
       show_source: false
       show_root_heading: true             
 
 ::: yasmin_etasl.logger.set_logger
     options:
+      heading_level: 3
       show_source: false
       show_root_heading: true 
 
 ::: yasmin_etasl.logger.get_logger
     options:
+      heading_level: 3
       show_source: false
       show_root_heading: true  
 
 ::: yasmin_etasl.yasmin_ticking.cleanup_outcomes
     options:
+      heading_level: 3
       show_source: false
       show_root_heading: true
 
 ::: yasmin_etasl.yasmin_ticking_ros.dumps_blackboard
     options:
+      heading_level: 3
       show_source: false
       show_root_heading: true  
+
+      

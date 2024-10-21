@@ -1,6 +1,90 @@
 /* Indentation. */
 div.doc-contents:not(.first) {
     padding-left: 55px;
-    border-left: .5rem solid rgba(200, 200, 200, 0.2);
+    /*border-left: .5rem solid rgba(200, 200, 200, 0.2);*/
   }
+
+
+
+
+h2.doc-heading code {
+  color:black;
+  border-style: hidden;
+  font-size:small;
+  background-color: rgb(217, 237, 244) ;
+}
+
+
+div.doc-function h2.doc-heading  {
+  color:black;
+  border-style: hidden;
+  font-size:small;
+  background-color: white;
+}
+
+div.doc-function h2.doc-heading code {
+  color:black;
+  border-style: hidden;
+  font-size:small;
+  background-color: white;
+}
+
+
+
+
+
+
+
+
+
+
+h3.doc-heading code {
+  color:black;
+  border-style: hidden;
+  font-size:small;
+  background-color: rgb(217, 237, 244) ;
+}
+
+
+div.doc-function h3.doc-heading  {
+  color:black;
+  border-style: hidden;
+  font-size:small;
+  background-color: white;
+}
+
+div.doc-function h3.doc-heading code {
+  color:black;
+  border-style: hidden;
+  font-size:small;
+  background-color: white;
+}
+
+
+
+
+
+
+
+h4.doc-heading code {
+  color:black;
+  border-style: hidden;
+  font-size:small;
+  background-color: rgb(217, 237, 244) ;
+}
+
+
+div.doc-function h4.doc-heading  {
+  color:black;
+  border-style: hidden;
+  font-size:small;
+  background-color: white;
+}
+
+div.doc-function h4.doc-heading code {
+  color:black;
+  border-style: hidden;
+  font-size:small;
+  background-color: white;
+}
 

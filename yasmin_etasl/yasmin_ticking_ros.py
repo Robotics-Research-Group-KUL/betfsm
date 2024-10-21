@@ -56,11 +56,13 @@ class TimedWait(Generator):
         
     ```
     """
-    def __init__(self,timeout: Duration = Duration(seconds=1.0), node : Node = None):
+    def __init__(self,name:str,timeout: Duration = Duration(seconds=1.0), node : Node = None):
         """
         TimedWait waits for a given time and then returns succeed.
 
         Parameters:
+            name:
+                instance name
             timeout:
                 duration to wait.
             node:
@@ -74,7 +76,7 @@ class TimedWait(Generator):
         else:
             self.node = node
         outcomes = [SUCCEED,ABORT]
-        super().__init__("TimedWait",outcomes)
+        super().__init__(name,outcomes)
         self.clock = self.node.get_clock()
         self.log   = self.node.get_logger()
         self.timeout = timeout
@@ -123,6 +125,7 @@ class TimedRepeat(GeneratorWithState):
     """    
     def __init__(
             self,
+            name:str,
             maxcount:int, 
             timeout: Duration,
             state: TickingState,
@@ -135,6 +138,8 @@ class TimedRepeat(GeneratorWithState):
         such outcome  is returned by the underlying state.
 
         Parameters:
+            name:
+                instance name
             maxcount: 
                 maximum of iterations, if maxcount==0, repeat until SUCCEED is returned.   
             timeout: 
@@ -152,7 +157,7 @@ class TimedRepeat(GeneratorWithState):
             self.node = YasminTickingNode.get_instance()
         else:
             self.node = node
-        super().__init__("TimedRepeat",[SUCCEED],state)
+        super().__init__(name,[SUCCEED],state)
         self.maxcount = maxcount
         self.timeout = timeout
         self.log  = self.node.get_logger()
@@ -190,15 +195,19 @@ class Timeout(GeneratorWithState):
     """
     def __init__(
             self,
+            name:str,
             timeout: Duration,
             state: TickingState,
             node : Node = None  
         ):
         """
-        Timeout passes through the outcomes of the underlying state, finishes if the outcome is not Ticking,
-        and returns TIMEOUT when `timeout` duration is reached during execution.
+        Timeout executes the underlying state at long as its outcome is TICKING. It finishes when 
+        the outcome is not ticking and returns this outcome.  It also finishes when the given 
+        duration is exceeded and returns TIMEOUT.
         
         Parameters:
+            name:
+                instance name
             timeout: 
                 underlying state is triggered every `timeout` duration
             state:
@@ -288,6 +297,8 @@ class ServiceClient(Generator):
             node:
                 node, if None, YasminTickingNode.get_instance() will be used.
         """
+        if not( isinstance(name,str) and isinstance(srv_name,str) and isinstance(outcomes,list) ):
+            raise ValueError("Error in argument types of constructor")
         if node is None:
             self.node = YasminTickingNode.get_instance()
         else:
@@ -415,12 +426,15 @@ class LifeCycle(ServiceClient):
     not depicted here. Documentation of the full state machine can be found [here](https://design.ros2.org/articles/node_lifecycle.html)
     """
     def __init__(self, 
+                name:str,
                 srv_name:str = "/etasl_node", 
                 transition: Transition=Transition.ACTIVATE, 
                 timeout:Duration = Duration(seconds=1.0), 
                 node:Node = None):
         """
         Parameters:
+            name:
+                instance name of the lifecycle action
             srv_name:
                 name of the node whose lifecycle to control
             transition:
@@ -435,7 +449,7 @@ class LifeCycle(ServiceClient):
         else:
             self.node = node
         outcomes = [SUCCEED,ABORT] # TIMEOUT added by ServiceClient, TICKING added by TickingState
-        super().__init__(name=transition.name,srv_name=srv_name+"/change_state",srv_type=ChangeState,outcomes=outcomes,timeout=timeout,node=node)
+        super().__init__(name,srv_name=srv_name+"/change_state",srv_type=ChangeState,outcomes=outcomes,timeout=timeout,node=node)
         self.transition = transition
         self.node_name = srv_name
 

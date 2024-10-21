@@ -1,5 +1,5 @@
 
-:::yasmin_etasl.yasmin_ticking.ConditionWhile
+:::yasmin_etasl.yasmin_ticking.While
     options:
       show_source: false
       show_root_heading: true 

@@ -97,6 +97,7 @@ def default_parameter_setter(blackboard):
 
 class SetTaskParameters(ServiceClient):
     def __init__(self,
+                 name:str,
                  task_name:str,
                  srv_name:str = "/etasl_node",
                  cb: Callable = default_parameter_setter,
@@ -107,6 +108,8 @@ class SetTaskParameters(ServiceClient):
         from the task
 
         Parameters:
+            name:
+                instance name
             task_name:
                 name that will be used to find back the task with specifies the robot specification file.
             srv_name:
@@ -120,7 +123,7 @@ class SetTaskParameters(ServiceClient):
                 ROS2 node, by default YasminNode.get_instance()
         """        
         outcomes=[SUCCEED]  # ABORT + TIMEOUT added
-        super().__init__("setTaskParameters",srv_name+"/readTaskSpecificationString",TaskSpecificationString,outcomes,timeout,node)
+        super().__init__(name,srv_name+"/readTaskSpecificationString",TaskSpecificationString,outcomes,timeout,node)
         self.task_name = task_name
         self.cb = cb
 
@@ -136,7 +139,8 @@ class SetTaskParameters(ServiceClient):
         param_definition = {}
         param_definition.update(param)
         # calling callback
-        param.update( self.cb(blackboard)  )
+        if self.cb is not None:
+            param.update( self.cb(blackboard)  )
         # parameter checking using paramdef
         for key,value in param.items():
             if key not in param_definition:
@@ -169,6 +173,7 @@ class SetTaskParameters(ServiceClient):
 
 class ReadRobotSpecification(ServiceClient):
     def __init__(self,
+                 name:str,
                  task_name:str,
                  srv_name:str = "/etasl_node",
                  timeout:Duration = Duration(seconds=1.0), 
@@ -178,6 +183,8 @@ class ReadRobotSpecification(ServiceClient):
         from the task
 
         Parameters:
+            name:
+                instance name
             task_name:
                 name that will be used to find back the task with specifies the robot specification file.
             srv_name:
@@ -189,7 +196,7 @@ class ReadRobotSpecification(ServiceClient):
         """
         outcomes=[SUCCEED]  # ABORT + TIMEOUT added
         super().__init__(
-            "ReadRobotSpecification",
+            name,
             srv_name+"/readTaskSpecificationFile",
             TaskSpecificationFile, outcomes, timeout,node)
         self.task_name = task_name
@@ -219,6 +226,7 @@ class ReadRobotSpecification(ServiceClient):
 
 class ReadTaskSpecification(ServiceClient):
     def __init__(self,
+                 name:str,
                  task_name:str,
                  srv_name:str = "/etasl_node",
                  timeout:Duration = Duration(seconds=1.0), 
@@ -239,7 +247,7 @@ class ReadTaskSpecification(ServiceClient):
         """        
         outcomes=[SUCCEED]  # ABORT + TIMEOUT added
         super().__init__(
-            "ReadTaskSpecification",
+            name,
             srv_name+"/readTaskSpecificationFile",
             TaskSpecificationFile, outcomes, timeout,node)
         self.task_name = task_name
@@ -262,17 +270,34 @@ class ReadTaskSpecification(ServiceClient):
 
 
 class eTaSLOutput(TickingState):
-    """
-    At every tick processes the latest message from the topic and puts it 
-    on a predetermined location in the blackboard.
-    """
     def __init__(
             self,
+            name:str,
             topic: str,
             qos:QoSProfile=30,
             bb_location: List = ["output"],
             node: Node = None,
         ) -> None:
+        """
+        At every tick processes the latest message from the topic and puts it 
+        on a predetermined location in the blackboard.
+
+        Parameters:
+            name:
+                instance name
+            topic:
+                topic to listen to, topics with interfacev `etasl_interfaces/msg/Output`
+                are expected
+            qos:
+                specification of the topic quality of service profile (QOSProfile)
+            bb_location:
+                list of strings indicating location in the blackboard.
+            node:
+                ROS2 node where the subscription will run.  if None, YasminTicking.get_instance() is used.
+
+        warning:
+            will only store messages where for all variables in the message is_declared is true.
+        """
         if node==None:
             self.node = YasminTickingNode.get_instance()
         else:
@@ -319,6 +344,7 @@ class eTaSLEvent(TickingState):
     """
     def __init__(
             self,
+            name: str,
             topic: str,
             qos:QoSProfile=10,
             mapping:Dict[str,tuple[int,str]]={"e_finished@etasl_node":(1,SUCCEED)},
@@ -326,7 +352,10 @@ class eTaSLEvent(TickingState):
         ) -> None:
         """
         A node that waits until an event is received.
+        
         Parameters:
+            name:
+                instance name
             topic:
                 name of the topic.  Topics of type String are expected.
             qos:
@@ -346,7 +375,7 @@ class eTaSLEvent(TickingState):
         outcomes=[]
         for k,v in mapping.items():
             outcomes.append( v[1]  )
-        super().__init__("eTaSLEvent",outcomes)
+        super().__init__(name,outcomes)
         self.topic = topic
         self.qos = qos
         self.mapping = mapping
@@ -384,11 +413,8 @@ class eTaSLEvent(TickingState):
 # def nested_etasl_state(name: str, file_path: str, robot_path: str, display_in_viewer: bool= False):
 class eTaSL_StateMachine(TickingStateMachine):
     """
-    A sub statemachine that:
-    - uses cbStateMachine to provide callbaxks for transtions and state changes
-    - uses a feedback to set parameters
-    - scopes the names of the state, such that the feedback trace is understandable.
-    - separate name of the state from the name of the task
+
+
     """
     def __init__(self,
                  name : str,
@@ -402,7 +428,11 @@ class eTaSL_StateMachine(TickingStateMachine):
                  statecb:Callable=default_statecb
                  ):
         """
-        Configurable statemachine to execute an eTaSL task
+        Configurable statemachine to execute an eTaSL task that:
+
+        - uses TickingStateMachine to provide callbacks for transtions and state changes and support TICKING;
+        - uses a feedback to set parameters;
+        - puts the last message from the output topic in the blackboard under blackboard["output"][name].
 
         Parameters:
             name:
@@ -411,64 +441,59 @@ class eTaSL_StateMachine(TickingStateMachine):
                 name of the task to be executed (i.e. task type) Will be looked up in the blackboard.
             srv_name:
                 name of the eTaSL node, by default /etasl_node
+            output_topic:
+                name of the topic where to find the output of eTaSL. A topic with interface *etasl_interfaces/msg/Output* is expected.
             cb:
                 callback that sets the parameters, with signature `def cb(blackboard) ->param`
                 where param is a Dict with the parameters of the task that will be used to update
                 the default parameters.
             timeout:
-                returns TIMEOUT if the communication timeout of any of the substeps is exceeded
+                [optional] returns TIMEOUT if the communication timeout of any of the substeps is exceeded. 
+                Uses a duration of 1 second otherwise.
             node:
-                ROS2 node to be used
+                [optional] ROS2 node to be used. Uses YasminTicking.get_instance() otherwise.
             transitioncb:
-                callback that is called at each transition, signature `def transitioncb(statemachine,blackboard,source,outcome)->outcome`
+                [optional] callback that is called at each transition, signature `def transitioncb(statemachine,blackboard,source,outcome)->outcome`
             statecb:
-                callback that is called at each, signature `default_statecb(statemachine,blackboard,state)`
+                [optional] callback that is called at each, signature `default_statecb(statemachine,blackboard,state)`
+
+        warning:            
+            TODO: name of output topic needs to be changed.
         """
         super().__init__(name,outcomes=[SUCCEED, ABORT,TIMEOUT],transitioncb=transitioncb,statecb=statecb)
 
         #This state is just added in case that etasl is already running. If not possible (ABORT) still the task continues:
         # I am not so sure that the transition will fail if inappropriate, only when there is an error for an appropriate transition.
-        self.add_state("DEACTIVATE_ETASL", LifeCycle(srv_name,Transition.DEACTIVATE,timeout,node),
+        self.add_state(LifeCycle("DEACTIVATE_ETASL",srv_name,Transition.DEACTIVATE,timeout,node),
                 transitions={SUCCEED: "CLEANUP_ETASL",
                             ABORT: "CLEANUP_ETASL",
                             TIMEOUT: ABORT}) 
         
         #This state is just added in case that etasl is already running. If not possible (ABORT) still the task continues
-        self.add_state("CLEANUP_ETASL", LifeCycle(srv_name,Transition.CLEANUP,timeout,node),
-                transitions={SUCCEED: "PARAMETER_CONFIG"}) 
+        self.add_state(LifeCycle("CLEANUP_ETASL",srv_name,Transition.CLEANUP,timeout,node),
+                transitions={SUCCEED: "PARAMETER_CONFIG",ABORT: "PARAMETER_CONFIG"}) 
 
-        self.add_state("PARAMETER_CONFIG", SetTaskParameters( task_name, srv_name, cb, timeout, node ),
+        self.add_state(SetTaskParameters( "PARAMETER_CONFIG",task_name, srv_name, cb, timeout, node ),
                        transitions={
                            SUCCEED: "ROBOT_SPECIFICATION"
                        })
-        self.add_state("ROBOT_SPECIFICATION", ReadRobotSpecification(task_name,srv_name,timeout,node),
+        self.add_state(ReadRobotSpecification("ROBOT_SPECIFICATION",task_name,srv_name,timeout,node),
                 transitions={SUCCEED: "TASK_SPECIFICATION"})
 
-        self.add_state("TASK_SPECIFICATION", ReadTaskSpecification(task_name,srv_name,timeout,node),
+        self.add_state(ReadTaskSpecification("TASK_SPECIFICATION",task_name,srv_name,timeout,node),
                 transitions={SUCCEED: "CONFIG_ETASL"})
 
-        self.add_state("CONFIG_ETASL", LifeCycle(srv_name,Transition.CONFIGURE,timeout,node),
+        self.add_state(LifeCycle("CONFIG_ETASL",srv_name,Transition.CONFIGURE,timeout,node),
                 transitions={SUCCEED: "ACTIVATE_ETASL"})
 
-        self.add_state("ACTIVATE_ETASL", LifeCycle(srv_name,Transition.ACTIVATE,timeout,node),
+        self.add_state(LifeCycle("ACTIVATE_ETASL",srv_name,Transition.ACTIVATE,timeout,node),
                 transitions={SUCCEED: "EXECUTING"})
 
         # executes until one returns SUCCEED,  eTaSLOutput only returns TICKING
-        executing = ConcurrentFallback("Executing",[
-            ("check_event", eTaSLEvent("/fsm/events",node=node,mapping={"e_finished@etasl_node":(1,SUCCEED)}) ),
-            ("output", eTaSLOutput("/my_topic",bb_location=["output",name], node=node))
-        ])
-
-
-        self.add_state("EXECUTING", executing)
-
-
-
-
-
-        # self.add_state(name+".RUNNING", Executing(name),
-        #         transitions={"e_finished@etasl_node": SUCCEED,
-        #                     ABORT: ABORT})
-
-        #if display_in_viewer:
-        #    YasminViewerPub('{} (nested FSM)'.format(name), self)
+        self.add_state(
+            ConcurrentFallback("EXECUTING",[
+                eTaSLEvent("check_event","/fsm/events",node=node,mapping={"e_finished@etasl_node":(1,SUCCEED)}),
+                eTaSLOutput("output","/my_topic",bb_location=["output",name], node=node)
+            ]),
+            transitions={SUCCEED:SUCCEED}
+        )        

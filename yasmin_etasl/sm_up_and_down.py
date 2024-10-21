@@ -29,6 +29,7 @@ from .yasmin_ticking_ros import *
 from .yasmin_ticking_etasl import *
 from .graphviz_visitor import *
 
+import math
 
 #
 #
@@ -39,55 +40,44 @@ from .graphviz_visitor import *
 
 
 def up_and_down_as_a_function(node=None):
-    """
-    """
+    return  Sequence("my_sequence", children=[
+                                        eTaSL_StateMachine("movinghome","MovingHome",node=node),
+                                        eTaSL_StateMachine("movingup","MovingUp",node=node),
+                                        eTaSL_StateMachine("movingdown","MovingDown",node=node),            
+                                        eTaSL_StateMachine("movingup2","MovingUp",node=node),
+                                        Message("Robot is finished")
+                                    ] )
+
+
+def up_and_down_as_a_function_and_a_timer(node=None):
     return ConcurrentSequence("up_and_down_as_a_function", children=[
-            ("task1", Sequence("my_sequence", children=[
-                        ("movinghome",eTaSL_StateMachine("movinghome","MovingHome",node=node) ),
-                        ("movingup",eTaSL_StateMachine("movingup","MovingUp",node=node) ),
-                        ("movingdown",eTaSL_StateMachine("movingdown","MovingDown",node=node) ),            
-                        ("movingup",eTaSL_StateMachine("movingup2","MovingUp",node=node)),
-                        ("my_message",Message("Robot is finished"))
-                      ]) 
-            ),
-            ("task2",Sequence("timer", children=[
-                        ("timer",TimedWait(Duration(seconds=3.0),node=node ) ),
-                        ("hello",Message("Timer went off!"))
-                    ])
-            )
-    ])
+            Sequence("my_sequence", children=[
+                                        eTaSL_StateMachine("movinghome","MovingHome",node=node),
+                                        eTaSL_StateMachine("movingup","MovingUp",node=node),
+                                        eTaSL_StateMachine("movingdown","MovingDown",node=node),            
+                                        eTaSL_StateMachine("movingup2","MovingUp",node=node),
+                                        Message("Robot is finished")
+                                    ] ),
+            Sequence("timer", children=[
+                                TimedWait("timed_wait",Duration(seconds=3.0),node=node ),
+                                Message(msg="Timer went off!")
+                              ] )
+            ])
 
-
-class Up_and_down_as_a_class(ConcurrentSequence):
+class Up_and_down_as_a_class(Sequence):
     def __init__(self,node=None):
-        """
-        """
         super().__init__("Up_and_down_as_a_class")
+        self.add_state(eTaSL_StateMachine("movinghome","MovingHome",node=node))
+        self.add_state(eTaSL_StateMachine("movingup","MovingUp",node=node))
+        self.add_state(eTaSL_StateMachine("movingdown","MovingDown",node=node))
+        self.add_state(eTaSL_StateMachine("movingup2","MovingUp",node=node))
+        self.add_state(Message("Hello world"))
 
-        self.add_state("task1", Sequence("my_sequence", children=[
-                        ("movinghome",eTaSL_StateMachine("movinghome","MovingHome",node=node) ),
-                        ("movingup",eTaSL_StateMachine("movingup","MovingUp",node=node) ),
-                        ("movingdown",eTaSL_StateMachine("movingdown""MovingDown",node=node) ),            
-                        ("movingup",eTaSL_StateMachine("movingup2","MovingUp",node=node)),
-                        ("my_message",Message("Hello world"))
-                      ]))
-        
-        self.add_state("task2",Sequence("timer", children=[
-                        ("timer",TimedWait(Duration(seconds=3.0),node=node ) ),
-                        ("hello",Message("Timer went off!"))
-                    ]))
 
-class Up_and_down_with_parameters(ConcurrentSequence):
-    """
-    Examples of showing different styles of setting parameters and doing computations.
 
-    Remember: computations done in the constructor of this class are only executed during construction 
-    of the statemachine, not during execution! This is the reason behind the use of additional state MyComputations,
-    the function MyComputations.  A lambda function can be used to consisely do a small computations.
-    """
+
+class Up_and_down_with_parameters(Sequence):
     def __init__(self, node):
-        """
-        """
         super().__init__("Up_and_down_as_a_class")
 
 
@@ -96,28 +86,47 @@ class Up_and_down_with_parameters(ConcurrentSequence):
                 super().__init__("MyComputations",[SUCCEED])
             def co_execute(self,bm):
                 bm["home_computations"]={}
-                bm["home_computations"]["joint_1"] = -10
+                bm["home_computations"]["joint_1"] = bm["output"]["home1"]["jpos1"]*180.0/math.pi +100.0
                 yield SUCCEED 
 
         def my_parameters(bb:Blackboard)->Dict:
-            return {"joint_1":0,"joint_2":-90}
+            result = {}
+            result["joint_1"] = bb["home_computations"]["joint_1"]
+            result["joint_2"] = bb["output"]["home1"]["jpos2"]*180.0/math.pi+5
+            return result
         
-        self.add_state("task1", Sequence("my_sequence", children=[
-                        ("movinghome",eTaSL_StateMachine("home1","MovingHome",cb=my_parameters ,node=node) ),
-                        ("debug",LogBlackboard(["output"])),
-                        ('compute', MyComputations()),
-                        ("movinghome",eTaSL_StateMachine("home2","MovingHome",
-                                                        cb=lambda bb: {"joint_1": bb["home_computations"]["joint_1"]+20} ,
-                                                        node=node) ),
-                        ("movinghome",eTaSL_StateMachine("home3","MovingHome",node=node) ),
-                        ("debug",LogBlackboard(["output"])),
-                        ("movingup",eTaSL_StateMachine("movingup","MovingUp",node=node) ),
-                        ("movingdown",eTaSL_StateMachine("movingdown","MovingDown",node=node) ),            
-                        ("movingup",eTaSL_StateMachine("movingup2","MovingUp",node=node)),
-                        ("my_message",Message("Hello world"))
-                      ]))
-        self.add_state("task2",Sequence("timer", children=[
-                        ("timer",TimedWait(Duration(seconds=3.0) ) ),
-                        ("hello",Message("Timer went off!"))
-                    ]))
+        self.add_state(eTaSL_StateMachine("home1","MovingHome" ,node=node))
+        self.add_state(LogBlackboard("LogBlackboard1",["output"]))
+        self.add_state( MyComputations() )
+        self.add_state(LogBlackboard("LogBlackboard1",["home_computations"]))
+        self.add_state(eTaSL_StateMachine("home2","MovingHome", cb=my_parameters, node=node) )
+        self.add_state(eTaSL_StateMachine("home3","MovingHome",node=node))
+        self.add_state(LogBlackboard("Logblackboard2",["output"] ))
+        self.add_state(eTaSL_StateMachine("movingup","MovingUp",node=node),)
+        self.add_state(eTaSL_StateMachine("movingdown","MovingDown",node=node))
+        self.add_state(eTaSL_StateMachine("movingup2","MovingUp",node=node))
+        self.add_state( Message(msg="Hello world") )
+
+
+
+class Up_and_down_with_parameters_lambda(Sequence):
+    def __init__(self, node):
+        super().__init__("Up_and_down_as_a_class")
+        
+        self.add_state(eTaSL_StateMachine("home1","MovingHome",node=node))
+        self.add_state(LogBlackboard("LogBlackboard1",["output"]))
+        self.add_state(Compute("compute_state",["home_computations"], lambda bb: {"joint_1" : bb["output"]["home1"]["jpos1"]*180.0/math.pi + 100.0} ))
+        self.add_state(LogBlackboard("LogBlackboard1",["home_computations"]))                                                   
+        self.add_state(eTaSL_StateMachine("home2","MovingHome",
+                                            cb=lambda bb: {"joint_1": bb["home_computations"]["joint_1"],
+                                                           "joint_2": bb["output"]["home1"]["jpos2"]*180.0/math.pi+5,
+                                                          },
+                                            node=node) )
+        self.add_state(eTaSL_StateMachine("home3","MovingHome",node=node))
+        self.add_state(LogBlackboard("Logblackboard2",["output"] ))
+        self.add_state(eTaSL_StateMachine("movingup","MovingUp",node=node),)
+        self.add_state(eTaSL_StateMachine("movingdown","MovingDown",node=node))
+        self.add_state(eTaSL_StateMachine("movingup2","MovingUp",node=node))
+        self.add_state( Message(msg="Hello world") )
+
 

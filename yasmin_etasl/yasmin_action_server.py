@@ -248,7 +248,7 @@ class YasminActionServer:
             self._current_goal_request = goal_request
         
         # only make changes to the YasminActiveServer instance when we are sure to be alone:
-        get_logger().info('Accepted goal request for task "{goal_request.task}"')
+        get_logger().info(f'Accepted goal request for task "{goal_request.task}"')
         self.input_parameters = param 
         return GoalResponse.ACCEPT
 
@@ -334,9 +334,11 @@ def main(args=None):
     # adapt to directly react to a CANCEL of the action:    
 
     statemachines={}
-    #statemachines["up_and_down"] = ConditionWhile(lambda bm: not bm["cancel_goal"], ud.Up_and_down_with_parameters(node) )
-    #statemachines["up_and_down"] = ConditionWhile(lambda bm: not bm["cancel_goal"], ud.Up_and_down_as_a_class(node) )
-    statemachines["up_and_down"] = ConditionWhile(lambda bm: not bm["cancel_goal"], ud.up_and_down_as_a_function(node) )        
+    #statemachines["up_and_down"] = While("While",lambda bm: not bm["cancel_goal"], ud.Up_and_down_with_parameters(node) )
+    statemachines["up_and_down"] = While("While",lambda bm: not bm["cancel_goal"], ud.Up_and_down_with_parameters_lambda(node) )
+    #statemachines["up_and_down"] = While("While",lambda bm: not bm["cancel_goal"], ud.Up_and_down_as_a_class(node) )
+    #statemachines["up_and_down"] = While("While",lambda bm: not bm["cancel_goal"], ud.up_and_down_as_a_function(node) )        
+    #statemachines["up_and_down"] = While("While",lambda bm: not bm["cancel_goal"], ud.up_and_down_as_a_function_and_a_timer(node) )        
 
     empty_statemachine = EmptyStateMachine()
     action_server = YasminActionServer(blackboard,statemachines,100,node)

@@ -118,3 +118,86 @@ digraph G {
     def print(self):
         dotstring = self.preamble + self.doc + self.postamble
         print(dotstring)
+
+
+
+
+
+
+
+
+class GraphViz_Visitor_v2(Visitor):
+    """
+    Todo:
+        - All names should be identifiers!
+    """
+    def __init__(self):
+        self.stack = ["base"]
+        self.childnr = [0]
+        self.preamble = """
+
+digraph G {
+    rankdir=LR
+    base[label="", shape=point];
+    node [shape=rectangle style="filled,rounded" fillcolor=lightblue ];
+"""
+        self.postamble = """
+}
+
+"""
+        self.doc = ""
+        self.clustercount=0
+        self.indent = 4
+        self.tab = 4
+        # {' ':{self.indent}}
+    def add_to_stack(self, state):
+        # self.stack is never empty:
+        self.childnr.append(0)
+        self.childnr[-2] += 1
+        self.stack.append(f"{self.stack[-1]}_{state.name}_{self.childnr[-2]}")
+        return self.stack[-1], self.stack[-2]
+        
+
+    def pre(self, state) -> bool:
+        if isinstance(state,StateMachineElement):
+            fullname, previousname = self.add_to_stack(state.state)
+            shortname = state.name            
+            self.doc = self.doc+f'{" ":{self.indent}}{fullname} [label="{shortname}"]\n'
+            return False
+        if isinstance(state,TickingStateMachine):            
+            fullname, previousname = self.add_to_stack(state)
+            shortname = state.name 
+            self.doc = self.doc+f'{" ":{self.indent}}{previousname} -> {fullname} [lhead="cluster_{self.clustercount}"];\n'            
+            self.doc = self.doc+f"{' ':{self.indent}}subgraph cluster_{self.clustercount}" +"{\n"      
+            self.indent += self.tab
+            self.doc = self.doc+f'{" ":{self.indent}}{fullname}[label="{shortname}",style="invis"]\n'
+            self.doc = self.doc+f'{" ":{self.indent}}label="{shortname}"\n'
+            self.clustercount = self.clustercount + 1            
+            return False
+        else:
+            fullname, previousname = self.add_to_stack(state)
+            shortname = state.name
+            self.doc = self.doc+f'{" ":{self.indent}}{previousname} -> {fullname};\n{" ":{self.indent}}{fullname}[label="{shortname}"]\n'            
+            return True
+        
+    
+    
+    def post(self, state):
+        if isinstance(state,StateMachineElement):
+            self.stack.pop()
+            self.childnr.pop()            
+            return 
+        if isinstance(state,TickingStateMachine):
+            self.doc = self.doc+"    }\n"
+            self.stack.pop()
+            self.childnr.pop()
+            self.indent -= self.tab
+            pass
+        else:        
+            self.stack.pop()
+            self.childnr.pop()
+
+    
+    def print(self):
+        dotstring = self.preamble + self.doc + self.postamble
+        print(dotstring)        
