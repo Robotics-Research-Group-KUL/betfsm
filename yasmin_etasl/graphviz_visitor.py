@@ -43,87 +43,6 @@ from .yasmin_ticking_etasl import *
 
 
 
-class GraphViz_Visitor_old(Visitor):
-    """
-    Todo:
-        - All names should be identifiers!
-    """
-    def __init__(self):
-        self.stack = ["base"]
-        self.childnr = [0]
-        self.preamble = """
-
-digraph G {
-    rankdir=LR
-    base[label="", shape=point];
-    node [shape=rectangle style="filled,rounded" fillcolor=lightblue ];
-"""
-        self.postamble = """
-}
-
-"""
-        self.doc = ""
-        self.clustercount=0
-        self.indent = 4
-        self.tab = 4
-        # {' ':{self.indent}}
-    def add_to_stack(self, state):
-        # self.stack is never empty:
-        self.childnr.append(0)
-        self.childnr[-2] += 1
-        self.stack.append(f"{self.stack[-1]}_{state.name}_{self.childnr[-2]}")
-        return self.stack[-1], self.stack[-2]
-        
-
-    def pre(self, state) -> bool:
-        if isinstance(state,StateMachineElement):
-            fullname, previousname = self.add_to_stack(state.state)
-            shortname = state.name            
-            self.doc = self.doc+f'{" ":{self.indent}}{fullname} [label="{shortname}"]\n'
-            return False
-        if isinstance(state,TickingStateMachine):            
-            fullname, previousname = self.add_to_stack(state)
-            shortname = state.name 
-            self.doc = self.doc+f'{" ":{self.indent}}{previousname} -> {fullname} [lhead="cluster_{self.clustercount}"];\n'            
-            self.doc = self.doc+f"{' ':{self.indent}}subgraph cluster_{self.clustercount}" +"{\n"      
-            self.indent += self.tab
-            self.doc = self.doc+f'{" ":{self.indent}}{fullname}[label="{shortname}",style="invis"]\n'
-            self.doc = self.doc+f'{" ":{self.indent}}label="{shortname}"\n'
-            self.clustercount = self.clustercount + 1            
-            return False
-        else:
-            fullname, previousname = self.add_to_stack(state)
-            shortname = state.name
-            self.doc = self.doc+f'{" ":{self.indent}}{previousname} -> {fullname};\n{" ":{self.indent}}{fullname}[label="{shortname}"]\n'            
-            return True
-        
-    
-    
-    def post(self, state):
-        if isinstance(state,StateMachineElement):
-            self.stack.pop()
-            self.childnr.pop()            
-            return 
-        if isinstance(state,TickingStateMachine):
-            self.doc = self.doc+"    }\n"
-            self.stack.pop()
-            self.childnr.pop()
-            self.indent -= self.tab
-            pass
-        else:        
-            self.stack.pop()
-            self.childnr.pop()
-
-    
-    def print(self):
-        dotstring = self.preamble + self.doc + self.postamble
-        print(dotstring)
-
-
-
-
-
-
 
 
 class GraphViz_Visitor(Visitor):
@@ -147,9 +66,12 @@ digraph G {
 """
         self.doc = ""
         self.clustercount=0
-        self.indent = 4
-        self.tab = 4
-        # {' ':{self.indent}}
+        self.indent = 2
+        self.tab = 2
+        self.activecolor = "#eb5f5f" 
+        self.inactivecolor = "#9395c2" 
+        return 
+
     def add_to_stack(self, state):
         # self.stack is never empty:
         self.childnr.append(0)
@@ -159,9 +81,18 @@ digraph G {
         
 
     def pre(self, state) -> bool:
-        fullname, previousname = self.add_to_stack(state)
+        fullname, previousname = self.add_to_stack(state)        
         shortname = state.name
-        self.doc = self.doc+f'{" ":{self.indent}}{previousname} -> {fullname};\n{" ":{self.indent}}{fullname}[label="{shortname}"]\n'            
+        typename = type(state).__name__
+        if state.status == TickingState_Status.DOO:
+            color = self.activecolor
+        else:
+            color = self.inactivecolor
+        indentation = f'{" ":{self.indent}}'
+        self.indent += self.tab
+        self.doc = self.doc + indentation + f'{fullname} [shape=rectangle style="filled,rounded" fillcolor="{color}" label="{shortname}\\n<{typename}>" ];\n'
+        self.doc = self.doc + indentation + f"{previousname} -> {fullname};\n"
+        
         return True
         
     
@@ -169,7 +100,140 @@ digraph G {
     def post(self, state):
         self.stack.pop()
         self.childnr.pop()
+        self.indent -= self.tab
     
     def print(self):
         dotstring = self.preamble + self.doc + self.postamble
-        print(dotstring)        
+        print(dotstring)                
+
+    def graphviz(self):
+        return self.preamble + self.doc + self.postamble
+
+
+from std_msgs.msg import String
+
+class GraphvizPublisher(Generator):
+    "Simple state to print the graphviz representation of a statemachine to a file"
+    def __init__(self, name:str,topic:str, sm:TickingState, node=None,skip=10):
+        """
+        Publishes a graphviz representation on a topic.  This node runs forever.
+        ( probably you want to run it in parallel with some statemachine using
+         a ConcurrentFallback)
+
+        Parameters:
+            name:
+                name of the node
+            topic:
+                topic to publish on
+            sm:
+                statemachine whose representation you want to publish
+            node:
+                node, YasminTickingNode.get_instance() if None
+            skip:
+                skip this amount of cycles before sending out a topic
+        """
+        if node is None:
+            node = YasminTickingNode.get_instance()
+        self.node = node
+        super().__init__("print_graphviz",[SUCCEED])
+        self.sm = sm
+        self.topic = topic
+        self.publisher = node.create_publisher(String,topic,10)        
+        self.skip = skip
+
+        
+    def co_execute(self,bb):
+        count = 0
+        while True:
+            count = count +1
+            if count < self.skip:                
+                yield TICKING
+                continue
+            count = 0
+            vis = GraphViz_Visitor2()
+            self.sm.accept(vis)    
+            msg = String()
+            msg.data = vis.graphviz()
+            self.publisher.publish(msg)
+            yield TICKING
+
+
+
+
+
+class GraphViz_Visitor2(Visitor):
+    """
+    Todo:
+        - All names should be identifiers!
+    """
+    def __init__(self):
+        self.stack = ["base"]
+        self.childnr = [0]
+        self.active = [0]
+        self.preamble = """
+
+digraph G {
+    rankdir=LR
+    base[label="", shape=point];
+    node [shape=rectangle style="filled,rounded" fillcolor=lightblue ];
+"""
+        self.postamble = """
+}
+
+"""
+        self.doc = ""
+        self.clustercount=0
+        self.indent = 2
+        self.tab = 2
+        self.activecolor = "#eb5f5f" 
+        self.inactivecolor = "#9395c2" 
+        return 
+
+    def add_to_stack(self, state):
+        # self.stack is never empty:
+        self.childnr.append(0)
+        self.childnr[-2] += 1
+        self.stack.append(f"{self.stack[-1]}_{state.name}_{self.childnr[-2]}")
+        if state.status==TickingState_Status.DOO:
+            self.active[-1] = self.active[-1] + 1
+        self.active.append(0)            
+        return self.stack[-1], self.stack[-2]
+        
+
+
+    def generate_graph_state(self,fullname, previousname,state):
+        shortname = state.name
+        typename = type(state).__name__
+        if state.status == TickingState_Status.DOO:
+            color = self.activecolor
+        else:
+            color = self.inactivecolor
+        indentation = f'{" ":{self.indent}}'
+        
+        self.doc = self.doc + indentation + f'{fullname} [shape=rectangle style="filled,rounded" fillcolor="{color}" label="{shortname}\\n<{typename}>" ];\n'
+        self.doc = self.doc + indentation + f"{previousname} -> {fullname};\n"
+
+
+    def pre(self, state) -> bool:
+        fullname, previousname = self.add_to_stack(state)        
+        self.indent += self.tab
+        return True
+        
+    
+    
+    def post(self, state):
+        fullname = self.stack[-1]
+        previousname = self.stack[-2]
+        if (self.active[-2]>0) or (state.status == TickingState_Status.DOO):
+            self.generate_graph_state(fullname,previousname,state)
+        self.active.pop()
+        self.stack.pop()
+        self.childnr.pop()
+        self.indent -= self.tab
+    
+    def print(self):
+        dotstring = self.preamble + self.doc + self.postamble
+        print(dotstring)                
+
+    def graphviz(self):
+        return self.preamble + self.doc + self.postamble

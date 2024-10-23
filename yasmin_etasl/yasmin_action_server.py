@@ -42,7 +42,7 @@ from .yasmin_ticking_etasl import *
 
 from .logger import get_logger,set_logger
 
-
+from .graphviz_visitor import *
 
 import rclpy 
 
@@ -333,12 +333,26 @@ def main(args=None):
 
     # adapt to directly react to a CANCEL of the action:    
 
+
+    def run_while_publishing( sm):
+        return ConcurrentFallback("check_duration",[
+             sm,
+            GraphvizPublisher("publisher","/gz",sm,None,skip=5)
+    ])
+
+
     statemachines={}
     #statemachines["up_and_down"] = While("While",lambda bm: not bm["cancel_goal"], ud.Up_and_down_with_parameters(node) )
-    statemachines["up_and_down"] = While("While",lambda bm: not bm["cancel_goal"], ud.Up_and_down_with_parameters_lambda(node) )
+    statemachines["up_and_down"] =  run_while_publishing(While("While",lambda bm: not bm["cancel_goal"], ud.Up_and_down_with_parameters_lambda(node) ))
     #statemachines["up_and_down"] = While("While",lambda bm: not bm["cancel_goal"], ud.Up_and_down_as_a_class(node) )
     #statemachines["up_and_down"] = While("While",lambda bm: not bm["cancel_goal"], ud.up_and_down_as_a_function(node) )        
     #statemachines["up_and_down"] = While("While",lambda bm: not bm["cancel_goal"], ud.up_and_down_as_a_function_and_a_timer(node) )        
+
+
+
+
+
+
 
     empty_statemachine = EmptyStateMachine()
     action_server = YasminActionServer(blackboard,statemachines,100,node)

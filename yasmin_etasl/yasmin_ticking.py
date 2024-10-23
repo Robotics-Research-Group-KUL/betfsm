@@ -298,11 +298,11 @@ class TickingState(State):
         # no children
         visitor.post(self)
 
-    def get_active_states(self):
+    def get_active(self):
         """
         Gets a list of active underlying states, [] if there are no underlying states.
         """
-        return []
+        return self.status == TickingState_Status.DOO
 
 
 
@@ -394,7 +394,7 @@ class GeneratorWithList(Generator):
         """
         if not isinstance(state,State):
             raise Exception("add_state expects as second argument an instance of a subclass of State")
-        self.states.append({"name":state.name,"state":state})  
+        self.states.append({"name":state.name,"state":state,"active":False})  
         self.outcomes = cleanup_outcomes(self.outcomes + state.get_outcomes())
         self._outcomes = self.outcomes  # dirty hack to fix a bug
         return self 
@@ -404,6 +404,7 @@ class GeneratorWithList(Generator):
         resets the sequence and ensures tht the underlying states are also reset.
         """
         for s in self.states:
+            s["active"]=False
             if isinstance(s["state"],TickingState):
                 s["state"].reset()
         super().reset()  
@@ -415,9 +416,9 @@ class GeneratorWithList(Generator):
                 s["state"].accept(visitor)
         visitor.post(self)        
 
-    @abstractmethod
-    def get_active_states(self):
-        raise NotImplementedError("Subclasses deriving from GeneratorWithList need to implement 'get_active_states()'")
+    # @abstractmethod
+    # def get_active(self):
+    #     raise NotImplementedError("Subclasses deriving from GeneratorWithList need to implement 'get_active_states()'")
         
     @abstractmethod
     def co_execute(self,blackboard):
@@ -493,8 +494,8 @@ class Sequence(GeneratorWithList):
         #print("sequence finished")                
         yield SUCCEED
 
-    def get_active_states(self):
-        return self.active_state
+    # def get_active(self):
+    #     return [self.active_state]
 
 
 class ConcurrentSequence(GeneratorWithList):
@@ -598,16 +599,16 @@ class ConcurrentSequence(GeneratorWithList):
         # all of the underlying states have necessarily completed
         yield SUCCEED
         
-    def get_active_states(self):
-        """
-        Gets a list of active states. These are not necessarily all states because
-        some states could already have been finished.
-        """
-        active_states=[]
-        for s in self.states:
-            if s["active"]:
-                active_states.append(s["name"])
-        return self.active_states
+    # def get_active(self):
+    #     """
+    #     Gets a list of active states. These are not necessarily all states because
+    #     some states could already have been finished.
+    #     """
+    #     active_states=[]
+    #     for s in self.states:
+    #         if s["active"]:
+    #             active_states.append(s["name"])
+    #     return active_states
 
 
 class Fallback(GeneratorWithList):
@@ -678,8 +679,8 @@ class Fallback(GeneratorWithList):
                 yield outcome                            
         yield CANCEL
         
-    def get_active_states(self):
-        return self.active_state
+    # def get_active(self):
+    #     return [self.active_state]
 
 
 class ConcurrentFallback(GeneratorWithList):
@@ -783,16 +784,16 @@ class ConcurrentFallback(GeneratorWithList):
         # all of the underlying states have necessarily completed
         yield CANCEL
         
-    def get_active_states(self):
-        """
-        Gets a list of active states. These are not necessarily all states because
-        some states could already have been finished.
-        """
-        active_states=[]
-        for s in self.states:
-            if s["active"]:
-                active_states.append(s["name"])
-        return self.active_states
+    # def get_active(self):
+    #     """
+    #     Gets a list of active states. These are not necessarily all states because
+    #     some states could already have been finished.
+    #     """
+    #     active_states=[]
+    #     for s in self.states:
+    #         if s["active"]:
+    #             active_states.append(s["name"])
+    #     return active_states
 
 class WaitFor(Generator):
     """
@@ -834,8 +835,8 @@ class WaitFor(Generator):
             yield TICKING
         yield SUCCEED
 
-    def get_active_states(self):
-        return []
+    # def get_active(self):
+    #     return []
 
 
 
@@ -857,8 +858,8 @@ class WaitForever(Generator):
         while True:
             yield TICKING
 
-    def get_active_states(self):
-        return []
+    # def get_active(self):
+    #     return []
 
 
 
@@ -894,11 +895,11 @@ class GeneratorWithState(Generator):
         super().reset()  
     
     @abstractmethod
-    def get_active_states(self):
+    def get_active(self):
         raise NotImplementedError("Subclasses deriving from GeneratorWithState need to implement 'co_execute(self,blackboard)'")
             
 
-    def get_active_states(self):
+    def get_active(self):
         return [self.state.name]
 
 class While(GeneratorWithState):
@@ -1374,12 +1375,12 @@ class TickingStateMachine(TickingState):
     #             return self.__current_state
     #     return self._start_state
 
-    def get_active_state(self) -> str:
-        with self.__current_state_lock:
-            if self.__current_state:
-                return self.__current_state
-            else:
-                return self._start_state
+    # def get_active_state(self) -> str:
+    #     with self.__current_state_lock:
+    #         if self.__current_state:
+    #             return self.__current_state
+    #         else:
+    #             return self._start_state
 
     def __str__(self) -> str:
         return f"StateMachine: {self._states}"

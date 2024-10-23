@@ -14,7 +14,7 @@
                 "joint_5": -90,
                 "joint_6": 45,
                 "maxacc": 0.4,
-                "maxvel": 0.8,
+                "maxvel": 0.3,
                 "units": "degrees"
             }
         },
@@ -29,7 +29,7 @@
                 "delta_z": 0,
                 "eq_r": 0.08,
                 "maxacc": 0.1,
-                "maxvel": 0.3
+                "maxvel": 0.1
             }
         },
         {
