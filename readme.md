@@ -5,11 +5,21 @@ Documentation provided in mkdocs, with the library build and installed, you
 can access documentation by:
 
 ```
-cd \documentation
+cd ./documentation
 ./browse
 ```
 This will generate a python environment to run mkdocs with the appropriate libraries.
-In order for the python documentation to be generated, the libraries have to be installed.
+In order for the python documentation to be generated, the libraries have to be installed and build.
+
+
+You can build the documentation into a directory `./site' using:
+```
+cd ./documentation
+venv/bin/mkdocs build
+```
+
+A generated version of the documentation can be downloaded [here](https://kuleuven-my.sharepoint.com/:u:/g/personal/erwin_aertbelien_kuleuven_be/EQYMTeUUdZZHsbXG8kynaGIBXp-yeBkhDr0onEf9Q24IDw?e=zvCzHf)
+(should be replaced with CI/CD)
 
 
 ## Used documentation:
@@ -22,45 +32,6 @@ In order for the python documentation to be generated, the libraries have to be 
 
 
 
+[paper](https://arxiv.org/pdf/2208.04211)
 
 
-### Some testing of graphviz format:
-
-- The newline should be double escapred
-- fillcolor=lightblue for ENTRY/EXIT, fillcolor= "#ff634f" for DOO.
-
-
-```graphviz
-
-digraph G {
-    rankdir=LR
-    base[label="", shape=point];
-    node [shape=rectangle style="filled,rounded" fillcolor=lightblue ];
-  base -> base_concurrent_1;
-  node [shape=rectangle style="filled,rounded" fillcolor="#51b6e4" label="concurrent\n<ConcurrentSequence> ];
-    base_concurrent_1 -> base_concurrent_1_task1_1;
-    node [shape=rectangle style="filled,rounded" fillcolor="#51b6e4" label="task1\n<Sequence> ];
-      base_concurrent_1_task1_1 -> base_concurrent_1_task1_1_waiting_1;
-      node [shape=rectangle style="filled,rounded" fillcolor="#51b6e4" label="waiting\n<TimedWait> ];
-      base_concurrent_1_task1_1 -> base_concurrent_1_task1_1_message_2;
-      node [shape=rectangle style="filled,rounded" fillcolor="##003e76" label="message\n<Message> ];
-    base_concurrent_1 -> base_concurrent_1_my_state_machine_2;
-    node [shape=rectangle style="filled,rounded" fillcolor="#51b6e4" label="my_state_machine\n<MyStateMachine> ];
-      base_concurrent_1_my_state_machine_2 -> base_concurrent_1_my_state_machine_2_A_1;
-      node [shape=rectangle style="filled,rounded" fillcolor="##003e76" label="A\n<TimedWait> ];
-      base_concurrent_1_my_state_machine_2 -> base_concurrent_1_my_state_machine_2_B_2;
-      node [shape=rectangle style="filled,rounded" fillcolor="##003e76" label="B\n<Sequence> ];
-        base_concurrent_1_my_state_machine_2_B_2 -> base_concurrent_1_my_state_machine_2_B_2_a_1;
-        node [shape=rectangle style="filled,rounded" fillcolor="##003e76" label="a\n<TimedWait> ];
-        base_concurrent_1_my_state_machine_2_B_2 -> base_concurrent_1_my_state_machine_2_B_2_b_2;
-        node [shape=rectangle style="filled,rounded" fillcolor="##003e76" label="b\n<TimedWait> ];
-        base_concurrent_1_my_state_machine_2_B_2 -> base_concurrent_1_my_state_machine_2_B_2_c_3;
-        node [shape=rectangle style="filled,rounded" fillcolor="##003e76" label="c\n<TimedWait> ];
-      base_concurrent_1_my_state_machine_2 -> base_concurrent_1_my_state_machine_2_C_3;
-      node [shape=rectangle style="filled,rounded" fillcolor="#51b6e4" label="C\n<TimedWait> ];
-
-}
-
-}
-
-```

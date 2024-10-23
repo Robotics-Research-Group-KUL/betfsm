@@ -31,11 +31,11 @@ from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.node import Node
 from rclpy.executors import MultiThreadedExecutor
 
-from yasmin_action_interfaces.action import YasminTask
+from yasmin_etasl_interfaces.action import Task
 from yasmin import State
 #from yasmin import Blackboard
 from yasmin import StateMachine
-from yasmin_viewer import YasminViewerPub
+#from yasmin_viewer import YasminViewerPub
 
 from .yasmin_ticking_etasl import *
 
@@ -63,7 +63,7 @@ class FeedbackState(State):
     def execute(self, blackboard: Blackboard) -> str:
         if "goal_handle" in blackboard:
             goal_handle=blackboard["goal_handle"]
-            feedback_msg = YasminTask.Feedback()
+            feedback_msg = Task.Feedback()
             feedback_msg.state="feedback_state"
             feedback_msg.parameters=f"my_feedback {blackboard['counter']}"
             goal_handle.publish_feedback(feedback_msg)
@@ -81,7 +81,7 @@ class FeedbackState(State):
 #     logger.info("transition: %s:%s --> %s" % (source, transition, target))
 #     if "goal_handle" in blackboard:
 #         goal_handle=blackboard["goal_handle"]
-#         feedback_msg = YasminTask.Feedback()
+#         feedback_msg = Task.Feedback()
 #         feedback_msg.state="transition"
 #         feedback_msg.parameters=f"transition {source}:{transition} -> {target}"
 #         goal_handle.publish_feedback(feedback_msg)    
@@ -95,7 +95,7 @@ def action_state_cb(statemachine,blackboard,state):
     get_logger().info(f'entering state "{state}"')    
     if "goal_handle" in blackboard:
         goal_handle=blackboard["goal_handle"]
-        feedback_msg = YasminTask.Feedback()
+        feedback_msg = Task.Feedback()
         feedback_msg.state=state
         if "feedback" in blackboard:
             try:
@@ -154,7 +154,7 @@ class CancelState(State):
             if "goal_handle" in blackboard:
                 goal_handle=blackboard["goal_handle"]
                 if goal_handle.is_cancel_requested:
-                    logger.info("CancelState observed is_cancel_requested")
+                    get_logger().info("CancelState observed is_cancel_requested")
                     return "cancel"
             time.sleep(0.01)
         return "next"
@@ -185,14 +185,14 @@ class YasminActionServer:
         self.statemachines = statemachines
         self.empty_statemachine = EmptyStateMachine()
         self.cbg = ReentrantCallbackGroup()
-        self.viewer = None
+#       self.viewer = None
         self._current_goal_request_lock = threading.Lock()
         self._current_goal_request      = None
         self.input_parameters = {}        # decoded as (possibly recursive) Dict (No need for lock, action server makes sure only one thread is writing or reading)
         self._action_server = ActionServer(
             node,
-            YasminTask,
-            'yasmintask',
+            Task,
+            'task',
             execute_callback=self.execute_callback,
             goal_callback=self.goal_callback,
             handle_accepted_callback=self.handle_accepted_callback,
@@ -200,11 +200,11 @@ class YasminActionServer:
             callback_group=self.cbg)
         get_logger().info('YasminActionServer started')
 
-    def set_viewer(self,viewer:YasminViewerPub):
-        self.viewer = viewer
-        if self.viewer is not None:
-            self.viewer._fsm = self.empty_statemachine
-            self.viewer._fsm_name = "waiting for action"
+    # def set_viewer(self,viewer:YasminViewerPub):
+    #     self.viewer = viewer
+    #     if self.viewer is not None:
+    #         self.viewer._fsm = self.empty_statemachine
+    #         self.viewer._fsm_name = "waiting for action"
 
     def destroy(self):
         print("destroy")
@@ -268,7 +268,7 @@ class YasminActionServer:
         try:
             self.blackboard["cancel_goal"] = False
             if goal_handle.is_cancel_requested:
-                result = YasminTask.Result()
+                result = Task.Result()
                 result="cancel"
                 return result
             self.blackboard["goal_handle"]      = goal_handle
@@ -276,9 +276,9 @@ class YasminActionServer:
             self.blackboard["task"]             = goal_handle.request.task
             get_logger().info('Executing state machine {goal_handle.request.request.task}')
             sm = self.statemachines[goal_handle.request.task]
-            if self.viewer is not None:
-                self.viewer._fsm = sm
-                self.viewer._fsm_name = goal_handle.request.task
+            # if self.viewer is not None:
+            #     self.viewer._fsm = sm
+            #     self.viewer._fsm_name = goal_handle.request.task
             rate = self.node.create_rate(100)
             sm.reset()
             outcome=sm(self.blackboard)
@@ -286,9 +286,9 @@ class YasminActionServer:
                 rate.sleep()
                 outcome=sm(self.blackboard)
             get_logger().info(f'Finished state machine {goal_handle.request.task} with outcome {outcome}')
-            result = YasminTask.Result()
-            if self.viewer is not None:
-                self.viewer._start_publisher() # force a display of the end condition
+            result = Task.Result()
+            # if self.viewer is not None:
+            #     self.viewer._start_publisher() # force a display of the end condition
             result.outcome=outcome   
             if "result" in self.blackboard:
                 try:
@@ -305,9 +305,9 @@ class YasminActionServer:
             else:
                 get_logger().error(f"state machine has an unexpected outcome {outcome}, action is canceled")
                 goal_handle.abort()            
-            if self.viewer is not None:
-                self.viewer._fsm = self.empty_statemachine
-                self.viewer._fsm_name = "waiting for action"             
+            # if self.viewer is not None:
+            #     self.viewer._fsm = self.empty_statemachine
+            #     self.viewer._fsm_name = "waiting for action"             
         finally:
             with self._current_goal_request_lock:
                 self._current_goal_request = None
@@ -357,8 +357,8 @@ def main(args=None):
     empty_statemachine = EmptyStateMachine()
     action_server = YasminActionServer(blackboard,statemachines,100,node)
 
-    pub = YasminViewerPub("error", empty_statemachine,10,node=action_server.node)
-    action_server.set_viewer(pub)    
+    #pub = YasminViewerPub("error", empty_statemachine,10,node=action_server.node)
+    #action_server.set_viewer(pub)    
 
     # We use a MultiThreadedExecutor to handle incoming goal requests concurrently
     executor = MultiThreadedExecutor()

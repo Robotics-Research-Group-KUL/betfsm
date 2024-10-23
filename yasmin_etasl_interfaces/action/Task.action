@@ -1,0 +1,16 @@
+# only from the perspective of the state-machine
+# we can have generic handling of the parameters.
+# (perhaps needing adaptation of your handling of eTaSL parameters, such that they can also take parameters that are set beforehand
+# in the blackboard, i.e. not overwritten by defaults if they exist)
+#
+# goal
+string task
+string parameters
+---
+# result
+string outcome
+string parameters
+---
+# feedback
+string state
+string parameters

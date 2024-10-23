@@ -7,8 +7,7 @@
   <maintainer email="Erwin.Aertbelien@kuleuven.be">ros2</maintainer>
   <license>LGPL-3.0-only</license>
 
-  <exec_depend>yasmin_action_server</exec_depend>
-  <exec_depend>yasmin_action_interfaces</exec_depend>
+  <exec_depend>yasmin_etasl_interfaces</exec_depend>
   <exec_depend>rclpy</exec_depend>
   <exec_depend>etasl_ros2_application_template</exec_depend>
   <test_depend>ament_copyright</test_depend>

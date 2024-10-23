@@ -1,0 +1,21 @@
+
+
+# goal
+string task
+string parameters
+---
+# result
+int16 STOPPED_EXTERNALLY=1
+int16 STOPPED_INTERNALLY=2
+int16 OK=0
+int16 CONFIG_ERROR=1
+int16 INIT_ERROR=2
+int16 EXEC_ERROR=3
+
+int16  how_stopped
+int16  status
+string last_event
+---
+# feedback
+string event
+
