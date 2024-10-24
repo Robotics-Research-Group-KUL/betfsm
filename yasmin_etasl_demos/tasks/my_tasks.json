@@ -1,5 +1,5 @@
 {
-    "$schema": "../../etasl_ros2_application_template/etasl/tasks-schema.json",
+    "$schema": "../../../etasl_ros2_application_template/etasl/tasks-schema.json",
     "tasks": [
         {
             "name": "MovingHome",
@@ -52,7 +52,7 @@
                 "delta_z": -0.2,
                 "eq_r": 0.08,
                 "maxacc": 2,
-                "maxvel": 0.3
+                "maxvel": 0.1
             }
         },
         {
@@ -66,7 +66,7 @@
                 "delta_z": 0.2,
                 "eq_r": 0.08,
                 "maxacc": 2,
-                "maxvel": 0.3
+                "maxvel": 0.1
             }
         }
     ]

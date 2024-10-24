@@ -53,6 +53,7 @@ class YasminRunner:
         if outcome!=TICKING:
             self.timer.cancel()
             self.set_outcome(outcome)
+            self.sm.reset()
 
     def set_outcome(self, outcome):
         with self.outcome_lock:

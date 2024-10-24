@@ -48,9 +48,19 @@ from .yasmin_ticking_etasl import *
 class GraphViz_Visitor(Visitor):
     """
     Todo:
-        - All names should be identifiers!
+        - All names should be identifiers! is not checked!
     """
-    def __init__(self):
+    def __init__(self, do_not_expand_types:List[type]=[], do_not_expand_instances:List[str]=[]):
+        """
+        Visitor to generate a graphviz representation.
+
+        Parameters:
+            do_not_expand_types:
+                list of types that you don't want to expand (go in detail).
+                The names correspond to `type(class).__name__` (i.e. without module)
+            do_not_expand_instances
+                list of instance names that you don't want to expand (go in detail)
+        """        
         self.stack = ["base"]
         self.childnr = [0]
         self.preamble = """
@@ -70,7 +80,12 @@ digraph G {
         self.tab = 2
         self.activecolor = "#eb5f5f" 
         self.inactivecolor = "#9395c2" 
+        self.do_not_expand_types = do_not_expand_types
+        self.do_not_expand_instances = do_not_expand_instances        
         return 
+
+    def check_expand(self,shortname,statetype):
+        return shortname not in self.do_not_expand_instances and statetype not in self.do_not_expand_types
 
     def add_to_stack(self, state):
         # self.stack is never empty:
@@ -82,6 +97,7 @@ digraph G {
 
     def pre(self, state) -> bool:
         fullname, previousname = self.add_to_stack(state)        
+        self.indent += self.tab
         shortname = state.name
         typename = type(state).__name__
         if state.status == TickingState_Status.DOO:
@@ -89,11 +105,11 @@ digraph G {
         else:
             color = self.inactivecolor
         indentation = f'{" ":{self.indent}}'
-        self.indent += self.tab
+    
         self.doc = self.doc + indentation + f'{fullname} [shape=rectangle style="filled,rounded" fillcolor="{color}" label="{shortname}\\n<{typename}>" ];\n'
         self.doc = self.doc + indentation + f"{previousname} -> {fullname};\n"
-        
-        return True
+            
+        return self.check_expand(shortname,type(state))
         
     
     
@@ -107,6 +123,10 @@ digraph G {
         print(dotstring)                
 
     def graphviz(self):
+        """
+        returns a string corresponding to the Graphviz representation of the state machine that was visited
+        ( using statemachine.accept(visitor) ).
+        """
         return self.preamble + self.doc + self.postamble
 
 
@@ -114,7 +134,7 @@ from std_msgs.msg import String
 
 class GraphvizPublisher(Generator):
     "Simple state to print the graphviz representation of a statemachine to a file"
-    def __init__(self, name:str,topic:str, sm:TickingState, node=None,skip=10):
+    def __init__(self, name:str,topic:str, sm:TickingState, node=None,skip=10, do_not_expand_types:List[type]=[], do_not_expand_instances:List[str]=[]):
         """
         Publishes a graphviz representation on a topic.  This node runs forever.
         ( probably you want to run it in parallel with some statemachine using
@@ -131,6 +151,11 @@ class GraphvizPublisher(Generator):
                 node, YasminTickingNode.get_instance() if None
             skip:
                 skip this amount of cycles before sending out a topic
+            do_not_expand_types:
+                list of typenames that you don't want to expand (go in detail).
+                The names correspond to `type(class).__name__` (i.e. without module)
+            do_not_expand_instances
+                list of instance names that you don't want to expand (go in detail)
         """
         if node is None:
             node = YasminTickingNode.get_instance()
@@ -140,6 +165,8 @@ class GraphvizPublisher(Generator):
         self.topic = topic
         self.publisher = node.create_publisher(String,topic,10)        
         self.skip = skip
+        self.do_not_expand_types = do_not_expand_types
+        self.do_not_expand_instances = do_not_expand_instances
 
         
     def co_execute(self,bb):
@@ -150,7 +177,7 @@ class GraphvizPublisher(Generator):
                 yield TICKING
                 continue
             count = 0
-            vis = GraphViz_Visitor2()
+            vis = GraphViz_Visitor(do_not_expand_instances=self.do_not_expand_instances, do_not_expand_types=self.do_not_expand_types)
             self.sm.accept(vis)    
             msg = String()
             msg.data = vis.graphviz()

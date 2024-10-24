@@ -87,9 +87,10 @@ def generate_png():
     return Response(d.pipe(format='png'),mimetype="image/png",headers={'Refresh': '1;url=sm.png'})
 
 
-
-if __name__ == "__main__":
+def main():
     atexit.register(close_running_threads) 
     app.config['SEND_FILE_MAX_AGE_DEFAULT'] = -1
     app.run(debug = True, port = 5000)
 
+if __name__ == "__main__":
+    main()

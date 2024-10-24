@@ -9,8 +9,7 @@ setup(
     data_files=[
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
-        ('share/' + package_name, ['package.xml']),
-        ('share/' + package_name + "/tasks", ['./tasks/my_tasks.json']),
+        ('share/' + package_name, ['package.xml'])
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -21,9 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'test_ea = ' + package_name + ".test_ea:main",
-            'example_graphviz = ' +package_name + ".example_graphviz:main",
-            'yasmin_action_server = ' +package_name + ".yasmin_action_server:main"
+            'web_server = ' + package_name + ".web_server:main",
         ],
     }
 )

@@ -38,6 +38,7 @@ from yasmin import StateMachine
 #from yasmin_viewer import YasminViewerPub
 
 from .yasmin_ticking_etasl import *
+from .yasmin_ticking import *
 
 
 from .logger import get_logger,set_logger
@@ -140,29 +141,64 @@ def check_cancel_transitioncb(cancel_outcome):
         return outcome
     return cb
 
+
+
 # example of handling the cancel of an Action
 # A state that polls until time out or cancel given
-class CancelState(State):
+class CheckForCanceledAction(Generator):
     """
-    Example Yasmin State that continuously checks is_cancel_requested()  of the action server
+    Checks whether the Action that is running has received a cancel request.
     """
-    def __init__(self) -> None:
-        super().__init__(outcomes=["next","cancel"])
+    def __init__(self,name:str) -> None:
+        """
+        Checks whether the Action that is running has received a cancel request.
+        Returns SUCCEED if nothing received, returns CANCEL if something received
 
-    def execute(self, blackboard: Blackboard) -> str:
-        for i in range(0,100):            
-            if "goal_handle" in blackboard:
-                goal_handle=blackboard["goal_handle"]
-                if goal_handle.is_cancel_requested:
-                    get_logger().info("CancelState observed is_cancel_requested")
-                    return "cancel"
-            time.sleep(0.01)
-        return "next"
+        Parameters:
+            name:
+                name of this state
+        """
+        super().__init__(name,outcomes=[SUCCEED,CANCEL])
 
+    def co_execute(self, bm: Blackboard):
+        if ("goal_handle" in bm) and bm["goal_handle"].is_cancel_requested:
+            get_logger().info(f"{self.name} observed that the running action received a cancel request")            
+            yield CANCEL
+        else:
+            yield SUCCEED
 
+class WhileNotCanceled(GeneratorWithState):
+    """
+    Runs underlying state as long as not canceled. Returns outcome of state,
+    yields CANCEL if there is a client side cancel request.
 
+    warning: 
+        It is important to use GeneratorWithState and not Generator
+        and storing state yourself, since also a proper accept() for
+        visitors and reset() have to be defined.
+    """
+    def __init__(self,name:str, state:TickingState) -> None:
+        """
+        Runs underlying state as long as not canceled. Returns outcome of state
+        yields CANCEL if there is a client side cancel request.
 
+        Parameters:
+            name:
+                name of this state
+            state:
+                underlying state
+        """
+        super().__init__(name,[CANCEL],state)
+        
 
+    def co_execute(self, bm: Blackboard):
+        while not ("goal_handle" in bm and bm["goal_handle"].is_cancel_requested):
+            outcome = self.state(bm)
+            yield outcome        
+        get_logger().info(f"{self.name} observed that the running action received a cancel request")          
+        self.state.reset()  
+        yield CANCEL
+            
 
 class EmptyStateMachine(StateMachine):
     def __init__(self):
@@ -268,9 +304,8 @@ class YasminActionServer:
         try:
             self.blackboard["cancel_goal"] = False
             if goal_handle.is_cancel_requested:
-                result = Task.Result()
-                result="cancel"
-                return result
+                goal_handle.canceled()
+                return Task.Result()
             self.blackboard["goal_handle"]      = goal_handle
             self.blackboard["input_parameters"] = self.input_parameters
             self.blackboard["task"]             = goal_handle.request.task
@@ -300,73 +335,85 @@ class YasminActionServer:
                 result.parameters="{}"
             if outcome==SUCCEED:            
                 goal_handle.succeed()
-            elif outcome==CANCEL:            
-                goal_handle.abort()
+            elif outcome==CANCEL:    
+                if goal_handle.is_cancel_requested:
+                    get_logger().error(f"action is canceled upon request from client")
+                    goal_handle.canceled()
+                    result.outcome = CANCEL
+                    result.parameters ='{"requested":true}'
+                else:                            
+                    get_logger().error(f"action is canceled by the state machine returning CANCEL")
+                    goal_handle.abort()
+                    result.outcome = CANCEL
+                    result.parameters ='{"requested":false}'                   
             else:
                 get_logger().error(f"state machine has an unexpected outcome {outcome}, action is canceled")
                 goal_handle.abort()            
+                result.outcome = CANCEL
+                result.parameters =f'{{"requested":false, "unexpected_outcome":"{outcome}" }}'                   
             # if self.viewer is not None:
             #     self.viewer._fsm = self.empty_statemachine
             #     self.viewer._fsm_name = "waiting for action"             
         finally:
             with self._current_goal_request_lock:
                 self._current_goal_request = None
+        get_logger().info(f'Task is finished with result {result}')
         return result
 
 
 
 
 
-#from .sm_up_and_down import Up_and_down_as_a_class
-from . import sm_up_and_down as ud
-def main(args=None):
+# #from .sm_up_and_down import Up_and_down_as_a_class
+# from . import sm_up_and_down as ud
+# def main(args=None):
 
-    rclpy.init(args=args)
+#     rclpy.init(args=args)
     
-    node = YasminTickingNode.get_instance("yasmin_action_server")
-    set_logger("default",node.get_logger())
-    #set_logger("service",node.get_logger())
-    #set_logger("state",node.get_logger())
-    blackboard = {} #Blackboard()
+#     node = YasminTickingNode.get_instance("yasmin_action_server")
+#     set_logger("default",node.get_logger())
+#     #set_logger("service",node.get_logger())
+#     #set_logger("state",node.get_logger())
+#     blackboard = {} #Blackboard()
     
-    load_task_list("$[yasmin_etasl]/tasks/my_tasks.json",blackboard)
+#     load_task_list("$[yasmin_etasl]/tasks/my_tasks.json",blackboard)
 
-    # adapt to directly react to a CANCEL of the action:    
-
-
-    def run_while_publishing( sm):
-        return ConcurrentFallback("check_duration",[
-             sm,
-            GraphvizPublisher("publisher","/gz",sm,None,skip=5)
-    ])
+#     # adapt to directly react to a CANCEL of the action:    
 
 
-    statemachines={}
-    #statemachines["up_and_down"] = While("While",lambda bm: not bm["cancel_goal"], ud.Up_and_down_with_parameters(node) )
-    statemachines["up_and_down"] =  run_while_publishing(While("While",lambda bm: not bm["cancel_goal"], ud.Up_and_down_with_parameters_lambda(node) ))
-    #statemachines["up_and_down"] = While("While",lambda bm: not bm["cancel_goal"], ud.Up_and_down_as_a_class(node) )
-    #statemachines["up_and_down"] = While("While",lambda bm: not bm["cancel_goal"], ud.up_and_down_as_a_function(node) )        
-    #statemachines["up_and_down"] = While("While",lambda bm: not bm["cancel_goal"], ud.up_and_down_as_a_function_and_a_timer(node) )        
+#     def run_while_publishing( sm):
+#         return ConcurrentFallback("check_duration",[
+#              sm,
+#             GraphvizPublisher("publisher","/gz",sm,None,skip=5)
+#     ])
 
 
+#     statemachines={}
+#     #statemachines["up_and_down"] = While("While",lambda bm: not bm["cancel_goal"], ud.Up_and_down_with_parameters(node) )
+#     statemachines["up_and_down"] =  run_while_publishing(While("While",lambda bm: not bm["cancel_goal"], ud.Up_and_down_with_parameters_lambda(node) ))
+#     #statemachines["up_and_down"] = While("While",lambda bm: not bm["cancel_goal"], ud.Up_and_down_as_a_class(node) )
+#     #statemachines["up_and_down"] = While("While",lambda bm: not bm["cancel_goal"], ud.up_and_down_as_a_function(node) )        
+#     #statemachines["up_and_down"] = While("While",lambda bm: not bm["cancel_goal"], ud.up_and_down_as_a_function_and_a_timer(node) )        
 
 
 
 
 
-    empty_statemachine = EmptyStateMachine()
-    action_server = YasminActionServer(blackboard,statemachines,100,node)
 
-    #pub = YasminViewerPub("error", empty_statemachine,10,node=action_server.node)
-    #action_server.set_viewer(pub)    
 
-    # We use a MultiThreadedExecutor to handle incoming goal requests concurrently
-    executor = MultiThreadedExecutor()
-    executor.add_node(action_server.node)    
-    executor.spin()
+#     empty_statemachine = EmptyStateMachine()
+#     action_server = YasminActionServer(blackboard,statemachines,100,node)
+
+#     #pub = YasminViewerPub("error", empty_statemachine,10,node=action_server.node)
+#     #action_server.set_viewer(pub)    
+
+#     # We use a MultiThreadedExecutor to handle incoming goal requests concurrently
+#     executor = MultiThreadedExecutor()
+#     executor.add_node(action_server.node)    
+#     executor.spin()
     
-    action_server.destroy()
-    rclpy.shutdown()
+#     action_server.destroy()
+#     rclpy.shutdown()
 
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()

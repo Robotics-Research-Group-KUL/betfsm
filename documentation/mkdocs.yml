@@ -13,7 +13,7 @@ nav:
     - "Home": 'index.md'
     - "Tutorials":
       - "Up & Down": "upanddown.md"
-    - "Yasmin":
+    - "YasminTicking":
       - "Tickingstates":
         - "TickingState" : "tickingstate.md"
         - "TickingStateMachine" : "tickingstatemachine.md"
@@ -23,6 +23,7 @@ nav:
         - "ConcurrentSequence" : "concurrentsequence.md"
         - "Fallback" : "fallback.md"
         - "ConcurrentFallback" : "concurrentfallback.md"
+        - "Concurrent" : "concurrent.md"
         - "WaitFor" : 'waitfor.md'
         - "WaitForever" : 'waitforever.md'
         - "While" : 'while.md'
@@ -30,6 +31,7 @@ nav:
         - "Message" : "message.md"
         - "LogBlackboard" : 'logblackboard.md'
         - "Compute" : "compute.md"
+        - "Adapt" : "adapt.md"
       - "ROS 2":  
         - "ServiceClient" : 'serviceclient.md'
         - "LifeCycle" : 'lifecycle.md'

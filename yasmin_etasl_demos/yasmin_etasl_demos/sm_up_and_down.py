@@ -24,10 +24,13 @@ from yasmin_ros.yasmin_node import YasminNode
 from yasmin import Blackboard, State
 from yasmin_ros.basic_outcomes import SUCCEED, ABORT,CANCEL,TIMEOUT
 
-from .yasmin_ticking import *
-from .yasmin_ticking_ros import *
-from .yasmin_ticking_etasl import *
-from .graphviz_visitor import *
+from yasmin_etasl.yasmin_ticking import *
+from yasmin_etasl.yasmin_ticking_ros import *
+from yasmin_etasl.yasmin_ticking_etasl import *
+#from yasmin_etasl.graphviz_visitor import *
+
+
+from yasmin_etasl.yasmin_action_server import CheckForCanceledAction
 
 import math
 
@@ -40,6 +43,8 @@ import math
 
 
 def up_and_down_as_a_function(node=None):
+    """
+    """
     return  Sequence("my_sequence", children=[
                                         eTaSL_StateMachine("movinghome","MovingHome",node=node),
                                         eTaSL_StateMachine("movingup","MovingUp",node=node),
@@ -50,6 +55,8 @@ def up_and_down_as_a_function(node=None):
 
 
 def up_and_down_as_a_function_and_a_timer(node=None):
+    """
+    """
     return ConcurrentSequence("up_and_down_as_a_function", children=[
             Sequence("my_sequence", children=[
                                         eTaSL_StateMachine("movinghome","MovingHome",node=node),
@@ -65,7 +72,11 @@ def up_and_down_as_a_function_and_a_timer(node=None):
             ])
 
 class Up_and_down_as_a_class(Sequence):
+    """
+    """
     def __init__(self,node=None):
+        """
+        """
         super().__init__("Up_and_down_as_a_class")
         self.add_state(eTaSL_StateMachine("movinghome","MovingHome",node=node))
         self.add_state(eTaSL_StateMachine("movingup","MovingUp",node=node))
@@ -78,6 +89,8 @@ class Up_and_down_as_a_class(Sequence):
 
 class Up_and_down_with_parameters(Sequence):
     def __init__(self,node):
+        """
+        """
         super().__init__("Up_and_down_as_a_class")
 
         class MyComputations(Generator):
@@ -110,7 +123,9 @@ class Up_and_down_with_parameters(Sequence):
 
 class Up_and_down_with_parameters_lambda(Sequence):
     def __init__(self, node):
-        super().__init__("Up_and_down_as_a_class")
+        """
+        """
+        super().__init__("Up_and_down_with_parameters_lambda")
         
         self.add_state(eTaSL_StateMachine("home1","MovingHome",node=node))
         self.add_state(LogBlackboard("LogBlackboard1",["output"]))
@@ -126,6 +141,39 @@ class Up_and_down_with_parameters_lambda(Sequence):
         self.add_state(eTaSL_StateMachine("movingup","MovingUp",node=node),)
         self.add_state(eTaSL_StateMachine("movingdown","MovingDown",node=node))
         self.add_state(eTaSL_StateMachine("movingup2","MovingUp",node=node))
+        self.add_state( Message(msg="Hello world") )
+
+
+
+class Up_and_down_with_parameters_checking_for_cancel(Sequence):
+    def __init__(self, node):
+        """
+        """
+        super().__init__("Up_and_down_with_parameters_checking_for_cancel")
+        
+        self.add_state(eTaSL_StateMachine("home1","MovingHome",node=node))
+        self.add_state(LogBlackboard("LogBlackboard1",["output"]))
+        self.add_state(Compute("compute_state",["home_computations"], lambda bb: {"joint_1" : bb["output"]["home1"]["jpos1"]*180.0/math.pi + 100.0} ))
+        self.add_state(LogBlackboard("LogBlackboard1",["home_computations"]))                                                   
+        self.add_state(eTaSL_StateMachine("home2","MovingHome",
+                                            cb=lambda bb: {"joint_1": bb["home_computations"]["joint_1"],
+                                                           "joint_2": bb["output"]["home1"]["jpos2"]*180.0/math.pi+5,
+                                                          },
+                                            node=node) )
+        self.add_state(eTaSL_StateMachine("home3","MovingHome",node=node))
+        self.add_state(LogBlackboard("Logblackboard2",["output"] ))
+        # looping 10 times and checking for cancelled action at a specific point in the
+        # task. A CANCEL outcome will fall through the states "up_and_down_cycle","repeat","
+        # Up_and_down_as_a_class"
+        self.add_state(Repeat("repeat",10,
+                Sequence("up_and_down_cycle",
+                        [
+                            eTaSL_StateMachine("movingup","MovingUp",node=node),
+                            eTaSL_StateMachine("movingdown","MovingDown",node=node),
+                            CheckForCanceledAction("check_for_cancel")
+                        ]
+                )
+        ))       
         self.add_state( Message(msg="Hello world") )
 
 

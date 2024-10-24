@@ -52,6 +52,7 @@ class entry centerClass
 When using the state one calls it with the () operator. This calls then the execute() method that calls the entry,doo,exit methods
 appropriately, according to the figure above.
 
+
 The [visitor pattern](https://en.wikipedia.org/wiki/Visitor_pattern) is used to be able to generically travers the hierarchy of states.
 the **accept** method of a TickingState calls the visitor appropriately.  Visitor is defined  [here][yasmin_etasl.yasmin_ticking.Visitor]
 
@@ -105,6 +106,7 @@ The main difference is that for a typical behavior-tree implementation the outco
 
 [ConcurrentSequence][yasmin_etasl.yasmin_ticking.ConcurrentSequence] and [ConcurrentFallback][yasmin_etasl.yasmin_ticking.ConcurrentFallback] are basically the same as [Sequence][yasmin_etasl.yasmin_ticking.Sequence] and [Fallback][yasmin_etasl.yasmin_ticking.Fallback] but execute concurrently: at each tick they go to their complete list of states and follow the logic of sequence or fallback. e.g. in a ConcurrentSequence the states are executed concurrently, but within one tick, they are executed in the order specified.
 
+[Concurrent][yasmin_etasl.yasmin_ticking.Concurrent] executes also its children concurrently (calling them in sequence for each tick). Concurrent stops executing when any child returns any outcome different from TICKING. See [API][yasmin_etasl.yasmin_ticking.Concurrent] for description fo detailed behavior.
 
 The **Repeat** state has one underlying state and repeats this state for a given number of times.
 
@@ -184,11 +186,38 @@ To manage file locations in a ROS2 environment a function [expand_ref][yasmin_et
 ### Related to eTaSL
 
 ### Defining your own states
-The [Generator][yasmin_etasl.yasmin_ticking.Generator] class uses a python generator to define a TickingState. 
+
+To implement a TickingState, you have to implement:
+
+- `def entry(self, blackboard: Blackboard) -> str`  called when execute() is called for the first time. returns an outcome but has one additional outcome CONTINUE that indicates its preference to directly call `doo()` after its return, without a tick.
+- `def doo(self, blackboard: Blackboard) -> str` called for the duration of the task, as long as you return TICKING
+- `def exit(self) -> str`: should call `return super().exit()` at the end, is guaranteed to be called after the last time that execute() was called.
+- `def reset(self)->None:`  should call `super().exit()` at the end: to reset the state *and its children*.
+- `def accept(self, visitor:Visitor)` calls `pre` on the visitor, calls accept(visitor) on all its children, and then calls `post` on the visitor.  
+
+
+To facilitate the definition of tickingStates, you can use [Python generators](https://www.geeksforgeeks.org/generators-in-python/), for this 
+the [Generator][yasmin_etasl.yasmin_ticking.Generator] class is defined.
 This allows to define TickingStates using a python generator method `co_execute(self, blackboard:Blackboard)`.  This routine has to regularly 
 yield control using a `yield <outcom>` statement. This makes it easy to specify a TickingState.
 
-[GeneratorWithState][yasmin_etasl.yasmin_ticking.GeneratorWithState] and [GeneratorWithList][yasmin_etasl.yasmin_ticking.GeneratorWithLists] are generic implementations to be uses to subclass from while implementing states with one or multiple underlying states.
+
+Keep in mind that the `reset` and `accept` methods still need to be defined when the state has children (otherwise 
+the default implementations are sufficient)
+
+!!! Warning
+    Forgetting to implement these methods can lead to silent failures.  Even worse, the state will 
+    work the first time, but not the second time.
+
+!!! Warning
+    Outside code that repeately calls a state-machine has to call `reset` itself before calling the state-machine.    
+  
+For the **common use cases** of a Generator with **one child state** and a Generator 
+with a **list of child states** implementations are provided that implement `reset` and `accept` for you:
+[GeneratorWithState][yasmin_etasl.yasmin_ticking.GeneratorWithState] and 
+[GeneratorWithList][yasmin_etasl.yasmin_ticking.GeneratorWithLists] are generic implementations to
+ be uses to subclass from while implementing states with one or multiple underlying states.
 
 
-
+!!! Recommendation
+    Look a a few implementations such as `WaitFor`,`Repeat`, `Concurrent`
