@@ -207,8 +207,7 @@ class TickingState(State):
                 self.outcome = ABORT
                 self.status = TickingState_Status.EXIT
             if self.outcome == TICKING:
-                self.status = TickingState_Status.DOO
-                get_logger("state").info(f"Exit {self.name} with {self.outcome}")
+                self.status = TickingState_Status.DOO                
                 return self.outcome
             if self.outcome == CONTINUE:
                 self.status = TickingState_Status.DOO
@@ -219,7 +218,7 @@ class TickingState(State):
             try:
                 self.outcome = self.doo(blackboard)
             except Exception as e:
-                get_logger().error("exception occured : "+ traceback.format_exc())
+                get_logger().error(f"{self.name} : exception occured : "+ traceback.format_exc())
                 self.outcome = ABORT
                 self.status = TickingState_Status.EXIT
             if self.outcome == TICKING:
@@ -861,7 +860,7 @@ class WaitFor(Generator):
                 callback function with signature `condition(blackboard:Blackboard) -> bool`
 
         """
-        outcomes = ["SUCCEED"]
+        outcomes = [SUCCEED]
         super().__init__("WaitFor",outcomes)
         self.condition_cb = condition_cb
 

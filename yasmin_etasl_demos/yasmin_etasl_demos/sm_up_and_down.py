@@ -96,9 +96,9 @@ class Up_and_down_with_parameters(Sequence):
         class MyComputations(Generator):
             def __init__(self):
                 super().__init__("MyComputations",[SUCCEED])
-            def co_execute(self,bm):
-                bm["home_computations"]={}
-                bm["home_computations"]["joint_1"] = bm["output"]["home1"]["jpos1"]*180.0/math.pi +100.0
+            def co_execute(self,bb):
+                bb["home_computations"]={}
+                bb["home_computations"]["joint_1"] = bb["output"]["home1"]["jpos1"]*180.0/math.pi +100.0
                 yield SUCCEED 
 
         def my_parameters(bb:Blackboard)->Dict:

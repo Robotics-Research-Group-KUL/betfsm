@@ -30,7 +30,7 @@ class GzSubscriber(Node):
         self.subscription = self.create_subscription(String,'/gz',self.listener_callback,10)
 
     def listener_callback(self,msg):
-        self.get_logger().info("received graphviz string")
+        #self.get_logger().info("received graphviz string")
         global generated_dot
         generated_dot = msg.data
 

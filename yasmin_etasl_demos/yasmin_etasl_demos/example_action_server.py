@@ -17,7 +17,7 @@ class CheckingCancelAndShutdown(TickingStateMachine):
         # execute in sequence but don't care about ABORT, only way to fail is TIMEOUT
         super().__init__(name,[CANCEL,SUCCEED])
 
-        self.add_state(state=WhileNotCanceled("while_not_canceled",state), transitions={CANCEL:"DEACTIVATE_ETASL",SUCCEED:SUCCEED, TIMEOUT:CANCEL})
+        self.add_state(state=WhileNotCanceled("while_not_canceled",state), transitions={CANCEL:"DEACTIVATE_ETASL",SUCCEED:SUCCEED, TIMEOUT:"DEACTIVATE_ETASL"})
 
         self.add_state(state=LifeCycle("DEACTIVATE_ETASL",srv_name,Transition.DEACTIVATE,timeout,node),
                        transitions={SUCCEED: "CLEANUP_ETASL",  ABORT: "CLEANUP_ETASL", TIMEOUT:"CLEANUP_ETASL"} )
@@ -48,7 +48,7 @@ def main(args=None):
 
     set_logger("default",node.get_logger())
     #set_logger("service",node.get_logger())
-    #set_logger("state",node.get_logger())
+    set_logger("state",node.get_logger())
 
 
     blackboard = {} #Blackboard()

@@ -42,6 +42,12 @@ For a state machine example you can look at `eTaSL_StateMachine` in `yasmin_etas
 
 ## Running the action server example:
 
+Running the eTaSL node:
+```
+ros2 run etasl_ros2 etasl_node
+```
+This will start up a server that can execute eTaSL.
+
 The example action server in this repository is run by:
   ```
   ros2 run yasmin_etasl_demos example_action_server
@@ -53,10 +59,18 @@ A small script in the `./scripts` directory calls an action handled by the examp
   ```
 Try interrupting the script with ctrl-C while its waiting to finish. You'll see that this is passed to
 the state-machine, that will also finish, this is done by checking a variable on the blackboard
-while running your statemachine:
-```python
-  While("While",lambda bm: not bm["cancel_goal"], <your statemachine>) 
+while running your statemachine.
+There are two examples that deal in a different way with cancelation of the action:
+ - `example_action_server.py` continuously checks for cancelation and interupts the robot motion by
+   deactivating the eTaSL server.  The example shows how to specify a shutdown procedure.
+ - `example_action_server2.py` uses a state to detect cancelation such that robot motion can be interrupted at a specified time.
+
+These examples also start a state that publishes the statemachine on a String topic in graphviz format.
+
+You can startup a webserver that publishes an svg file using:
 ```
-Cleanup motions after canceling can be defined using a `Fallback` state (if the first fails, the second is tried and so one ...)
+ros2 run yasmin_etasl web_server
+```
+
 
 

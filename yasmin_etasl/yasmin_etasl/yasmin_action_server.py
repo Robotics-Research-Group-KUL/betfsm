@@ -54,7 +54,7 @@ import rclpy
 
 # example to demonstrate that you can generate feedback from with a state:
 # in a similar way we could write the result
-class FeedbackState(State):
+class FeedbackState(TickingState):
     """
     Example of a Yasmin State that publishes feedback of the action
     """
@@ -160,8 +160,8 @@ class CheckForCanceledAction(Generator):
         """
         super().__init__(name,outcomes=[SUCCEED,CANCEL])
 
-    def co_execute(self, bm: Blackboard):
-        if ("goal_handle" in bm) and bm["goal_handle"].is_cancel_requested:
+    def co_execute(self, bb: Blackboard):
+        if ("goal_handle" in bb) and bb["goal_handle"].is_cancel_requested:
             get_logger().info(f"{self.name} observed that the running action received a cancel request")            
             yield CANCEL
         else:

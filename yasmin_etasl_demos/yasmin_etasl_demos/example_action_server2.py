@@ -39,7 +39,8 @@ def run_while_publishing( sm):
     #do_not_expand_types doesn't work for now...
     return Concurrent("concurrent",[
             sm,
-        GraphvizPublisher("publisher","/gz",sm,None,skip=10,do_not_expand_types=["eTaSL_StateMachine"])
+        GraphvizPublisher("publisher","/gz",sm,None,skip=10,do_not_expand_types=[eTaSL_StateMachine])
+        #GraphvizPublisher("publisher","/gz",sm,None,skip=10,do_not_expand_types=[])
 ])
 
 
