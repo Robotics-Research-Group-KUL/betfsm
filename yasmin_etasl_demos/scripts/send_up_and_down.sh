@@ -6,6 +6,7 @@
 task="up_and_down"
 parameters=$(cat <<EOF
     {
+        "delta_z" : 0.3
     }
 EOF
 )

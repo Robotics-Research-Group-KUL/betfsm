@@ -168,12 +168,23 @@ class Up_and_down_with_parameters_checking_for_cancel(Sequence):
         self.add_state(Repeat("repeat",10,
                 Sequence("up_and_down_cycle",
                         [
-                            eTaSL_StateMachine("movingup","MovingUp",node=node),
-                            eTaSL_StateMachine("movingdown","MovingDown",node=node),
+                            eTaSL_StateMachine("movingup","MovingUp",node=node,cb= lambda bb: {"delta_z": bb["input_parameters"]["delta_z"]}),
+                            eTaSL_StateMachine("movingdown","MovingDown",node=node,cb= lambda bb: {"delta_z": -bb["input_parameters"]["delta_z"]}),
                             CheckForCanceledAction("check_for_cancel")
                         ]
                 )
         ))       
-        self.add_state( Message(msg="Hello world") )
 
-
+#static member:    
+my_schema=json.loads("""
+        {
+            "title": "upanddown",
+            "description": "task that moves up and down",
+            "type": "object",
+            "properties" : {
+                "delta_z" : { "type" : "number", "description": "height to move up and down" }
+            },
+            "required" : [ "delta_z"],
+            "additionalProperties" : false
+        }
+    """)

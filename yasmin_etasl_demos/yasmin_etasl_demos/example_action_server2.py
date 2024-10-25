@@ -29,7 +29,7 @@ import rclpy
 
 
 # import some example state machines:
-from . import sm_up_and_down as ud
+from . import sm_up_and_down as examples
 
 def run_while_publishing( sm):
     """
@@ -65,10 +65,9 @@ def main(args=None):
     # which state-machine will be exeuted for which task name:
     statemachines={}
     
-    statemachines["up_and_down"] =  run_while_publishing(ud.Up_and_down_with_parameters_checking_for_cancel(node) )
-     
-
-
+    statemachines["up_and_down"] =  run_while_publishing(examples.Up_and_down_with_parameters_checking_for_cancel(node) )
+    # if you add additional member `input_parameters_schema` the action server will use this to validate the input:    
+    statemachines["up_and_down"].input_parameters_schema=examples.my_schema
     action_server = YasminActionServer(blackboard,statemachines,100,node)
 
     # single or multi threaded executor does not matter here, only default callback group is used (which is mutually exclusive)

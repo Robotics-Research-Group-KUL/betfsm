@@ -8,7 +8,7 @@ import rclpy
 
 
 # import some example state machines:
-from .sm_up_and_down import Up_and_down_with_parameters_lambda
+from . import sm_up_and_down as examples
 
 
 # define your shutdown procefdure:
@@ -39,6 +39,11 @@ def run_while_publishing( sm):
     ])
 
 
+
+
+
+
+
 def main(args=None):
 
     rclpy.init(args=args)
@@ -51,22 +56,20 @@ def main(args=None):
     set_logger("state",node.get_logger())
 
 
-    blackboard = {} #Blackboard()
-    
+    blackboard = {} 
     # load your tasks
     load_task_list("$[yasmin_etasl_demos]/tasks/my_tasks.json",blackboard)
 
 
     # which state-machine will be exeuted for which task name:
     statemachines={}
-    #statemachines["up_and_down"] = While("While",lambda bm: not bm["cancel_goal"], ud.Up_and_down_with_parameters(node) )
-    #statemachines["up_and_down"] =  WhileNotCanceled_ensure_stop(run_while_publishing(ud.Up_and_down_with_parameters_lambda(node)  ),node=node)
-    statemachines["up_and_down"] =  run_while_publishing( CheckingCancelAndShutdown("check", Up_and_down_with_parameters_lambda(node), node=node  ))
-    #statemachines["up_and_down"] =  ud.Up_and_down_with_parameters_lambda(node) 
-    #statemachines["up_and_down"] = While("While",lambda bm: not bm["cancel_goal"], ud.Up_and_down_as_a_class(node) )
-    #statemachines["up_and_down"] = While("While",lambda bm: not bm["cancel_goal"], ud.up_and_down_as_a_function(node) )        
-    #statemachines["up_and_down"] = While("While",lambda bm: not bm["cancel_goal"], ud.up_and_down_as_a_function_and_a_timer(node) )        
-
+    statemachines["up_and_down_as_function"] =  run_while_publishing( CheckingCancelAndShutdown("check", examples.up_and_down_as_a_function(node), node=node  ) )
+       
+    statemachines["up_and_down"] =  run_while_publishing( CheckingCancelAndShutdown("check", examples.Up_and_down_with_parameters_lambda(node), node=node  ) )
+    # if you add additional member `input_parameters_schema` the action server will use this to validate the input:
+    statemachines["up_and_down"].input_parameters_schema=examples.my_schema
+    
+    print(statemachines)
 
     action_server = YasminActionServer(blackboard,statemachines,100,node)
 

@@ -233,8 +233,16 @@ class YasminActionServer:
             goal_callback=self.goal_callback,
             handle_accepted_callback=self.handle_accepted_callback,
             cancel_callback=self.cancel_callback,
-            callback_group=self.cbg)
+            callback_group=self.cbg)        
         get_logger().info('YasminActionServer started')
+        list = "Listening to tasks:"
+        for k,v in self.statemachines.items():
+            list = list + "\n" + f"task {k}"
+            if hasattr(v,"input_parameters_schema"):
+                list = list + "  with schema:\n"+json.dumps(v.input_parameters_schema, indent=True)
+            else:
+                list = list + " with no schema"
+        get_logger().info( list)        
 
     # def set_viewer(self,viewer:YasminViewerPub):
     #     self.viewer = viewer
@@ -266,7 +274,7 @@ class YasminActionServer:
             return GoalResponse.REJECT
         
         # validate parameters
-        if hasattr(self.statemachines[goal_request.task],'input_parameters_schema'):
+        if hasattr(self.statemachines[goal_request.task],'input_parameters_schema'):            
             try:
                 jsonschema.validate(instance=param,
                                     schema=self.statemachines[goal_request.task].input_parameters_schema)
