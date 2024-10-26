@@ -52,24 +52,36 @@ import rclpy
 
 
 
-# example to demonstrate that you can generate feedback from with a state:
-# in a similar way we could write the result
 class FeedbackState(TickingState):
     """
-    Example of a Yasmin State that publishes feedback of the action
     """
-    def __init__(self) -> None:
-        super().__init__(outcomes=["next"])
+    def __init__(self, name:str, state:str, cb:Dict) -> None:
+        """
+        A ticking state that uses a callback function to publish to the feedback topic
+        of an action.
+
+        Parameters:
+            name:
+                name of the instance 
+            state:
+                is passed as the `state` field of the feedback message
+            cb:
+                callback function that returns a dictionary, possibly hierarchical that will 
+                be mapped to the parameters **string** field of the feedback message.
+                The callback has signature `def cb(bbb) -> Dict` 
+        """
+        super().__init__(name,outcomes=[SUCCEED])
+        self.name = name
+        self.cb = cb
 
     def execute(self, blackboard: Blackboard) -> str:
         if "goal_handle" in blackboard:
             goal_handle=blackboard["goal_handle"]
             feedback_msg = Task.Feedback()
-            feedback_msg.state="feedback_state"
-            feedback_msg.parameters=f"my_feedback {blackboard['counter']}"
+            feedback_msg.state=self.name
+            feedback_msg.parameters=json.dumps(self.cb(blackboard))
             goal_handle.publish_feedback(feedback_msg)
-        time.sleep(1)
-        return "next"
+        return SUCCEED
 
 # now using action_state_cb for more structured feedback
 #
@@ -171,11 +183,6 @@ class WhileNotCanceled(GeneratorWithState):
     """
     Runs underlying state as long as not canceled. Returns outcome of state,
     yields CANCEL if there is a client side cancel request.
-
-    warning: 
-        It is important to use GeneratorWithState and not Generator
-        and storing state yourself, since also a proper accept() for
-        visitors and reset() have to be defined.
     """
     def __init__(self,name:str, state:TickingState) -> None:
         """
@@ -207,17 +214,25 @@ class EmptyStateMachine(StateMachine):
 
 class YasminActionServer:
     """Action server that processes yasmin tasks one goal at a time.
-
-    Some deep knowledge on YasminViewerPub is necessary to adapt it to another state machine
-    See the main on how to use this.
     """
 
-    def __init__(self,bm, statemachines,frequency:int = 100,node:Node=None):
+    def __init__(self,blackboard, statemachines,frequency:int = 100,node:Node=None):
+        """
+        Parameters:
+            blackboard:
+                blackboard to use when responding to actions.
+            statemachines:
+                a list of task names and state machines.
+            frequency:
+                frequency at which to run the state machine once an action is received.
+            node:
+                ROS2 node for the action server,  if None, the singleton YasminTickingNode.get_instance() will be used.
+        """
         if node is None:
             self.node = YasminTickingNode.get_instance()
         else:
             self.node = node
-        self.blackboard = bm 
+        self.blackboard = blackboard
         self.statemachines = statemachines
         self.empty_statemachine = EmptyStateMachine()
         self.cbg = ReentrantCallbackGroup()

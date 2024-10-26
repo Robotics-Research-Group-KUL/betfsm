@@ -40,6 +40,7 @@ nav:
         - "TimedWait" : 'timedwait.md'
         - "Timeout" : "timeout.md"
       - "eTaSL": 'etaslstatemachine.md'
+    - "Action server": "actionserver.md"
     - "Utilities" : 'utils.md'
     - "About": 'about.md'
     - "Todo list" : "TODO.md"

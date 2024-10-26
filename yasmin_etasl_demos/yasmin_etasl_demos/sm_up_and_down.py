@@ -27,6 +27,7 @@ from yasmin_ros.basic_outcomes import SUCCEED, ABORT,CANCEL,TIMEOUT
 from yasmin_etasl.yasmin_ticking import *
 from yasmin_etasl.yasmin_ticking_ros import *
 from yasmin_etasl.yasmin_ticking_etasl import *
+from yasmin_etasl.yasmin_action_server import *
 #from yasmin_etasl.graphviz_visitor import *
 
 
@@ -115,7 +116,14 @@ class Up_and_down_with_parameters(Sequence):
         self.add_state(eTaSL_StateMachine("home3","MovingHome",node=node))
         self.add_state(LogBlackboard("Logblackboard2",["output"] ))
         self.add_state(eTaSL_StateMachine("movingup","MovingUp",node=node),)
-        self.add_state(eTaSL_StateMachine("movingdown","MovingDown",node=node))
+        self.add_state(FeedbackState("feedback1","up",
+                                     lambda bb:{
+                                                "x_tcp": bb["output"]["movingup"]["x_tcp"],
+                                                "y_tcp": bb["output"]["movingup"]["y_tcp"],
+                                                "z_tcp": bb["output"]["movingup"]["z_tcp"]
+                                                }))
+        self.add_state(eTaSL_StateMachine("movingdown","MovingDown",node=node))    
+        self.add_state(FeedbackState("feedback1","up",lambda bb:{}))
         self.add_state(eTaSL_StateMachine("movingup2","MovingUp",node=node))
         self.add_state( Message(msg="Hello world") )
 
@@ -170,6 +178,12 @@ class Up_and_down_with_parameters_checking_for_cancel(Sequence):
                         [
                             eTaSL_StateMachine("movingup","MovingUp",node=node,cb= lambda bb: {"delta_z": bb["input_parameters"]["delta_z"]}),
                             eTaSL_StateMachine("movingdown","MovingDown",node=node,cb= lambda bb: {"delta_z": -bb["input_parameters"]["delta_z"]}),
+                            FeedbackState("feedback2","up",
+                                     lambda bb:{
+                                                "x_tcp": bb["output"]["movingdown"]["x_tcp"],
+                                                "y_tcp": bb["output"]["movingdown"]["y_tcp"],
+                                                "z_tcp": bb["output"]["movingdown"]["z_tcp"]
+                                                }),
                             CheckForCanceledAction("check_for_cancel")
                         ]
                 )
