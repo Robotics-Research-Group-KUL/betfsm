@@ -21,7 +21,6 @@
 
 from rclpy.duration import Duration
 from yasmin_ros.yasmin_node import YasminNode
-from yasmin import Blackboard, State
 from yasmin_ros.basic_outcomes import SUCCEED, ABORT,CANCEL,TIMEOUT
 
 from yasmin_etasl.yasmin_ticking import *

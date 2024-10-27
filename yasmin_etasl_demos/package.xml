@@ -9,8 +9,8 @@
 
   <depend>yasmin_etasl_interfaces</depend>
   <depend>yasmin_etasl</depend>
-  <depend>etasl_ros2</depend>
-  <depend>etasl_ros2_application_template</depend>
+  <exec_depend>etasl_ros2</exec_depend>
+  <exec_depend>etasl_ros2_application_template</exec_depend>
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>

@@ -22,18 +22,17 @@
 import rclpy
 import sys
 
+from threading import Lock
 import rclpy.time
-from yasmin_ros.yasmin_node import YasminNode
-from yasmin import Blackboard
-# from yasmin_ros.basic_outcomes import SUCCEED, ABORT
-# from yasmin_viewer import YasminViewerPub
-from .yasmin_ticking import *
-from .yasmin_ticking_ros import *
-from .yasmin_ticking_etasl import *
-from .graphviz_visitor import *
+from rclpy import Node
 
-from . import sm_up_and_down
-from .logger import get_logger,set_logger
+from yasmin_etasl.yasmin_ticking import TickingState,TICKING,Blackboard
+from yasmin_etasl.yasmin_ticking_ros import YasminTickingNode
+from yasmin_etasl.yasmin_ticking_etasl import load_task_list
+from yasmin_etasl.graphviz_visitor import GraphViz_Visitor
+from yasmin_etasl.logger import get_logger,set_logger
+import sm_up_and_down
+
 
 
 
@@ -78,7 +77,7 @@ def main(args=None):
 
 
 
-    blackboard = Blackboard()
+    blackboard = {}
 
     load_task_list("$[yasmin_etasl]/tasks/my_tasks.json",blackboard)
     
@@ -90,12 +89,10 @@ def main(args=None):
     sm.accept(vis)
     vis.print()
 
-
-    # YasminViewerPub("Complete FSM", sm)
     runner = YasminRunner(my_node,sm,blackboard,0.01)
     
     try:
-        while (runner.get_outcome()=="TICKING"):
+        while (runner.get_outcome()==TICKING):
             rclpy.spin_once(my_node)
         rclpy.shutdown()
     except KeyboardInterrupt:

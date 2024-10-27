@@ -32,10 +32,6 @@ from rclpy.node import Node
 from rclpy.executors import MultiThreadedExecutor
 
 from yasmin_etasl_interfaces.action import Task
-from yasmin import State
-#from yasmin import Blackboard
-from yasmin import StateMachine
-#from yasmin_viewer import YasminViewerPub
 
 from .yasmin_ticking_etasl import *
 from .yasmin_ticking import *
@@ -101,24 +97,24 @@ class FeedbackState(TickingState):
 #     return
 
 
-def action_state_cb(statemachine,blackboard,state):
-    """
-    returns the current state name and the contents as JSON of blackboard["feedback"] 
-    """
-    get_logger().info(f'entering state "{state}"')    
-    if "goal_handle" in blackboard:
-        goal_handle=blackboard["goal_handle"]
-        feedback_msg = Task.Feedback()
-        feedback_msg.state=state
-        if "feedback" in blackboard:
-            try:
-                feedback_msg.parameters=json.dumps(blackboard["feedback"])
-            except TypeError as err:
-               get_logger().error('blackboard["feedback"] contains data types that cannot be represented in JSON')
-               feedback_msg.parameters="{}"
-        else:
-            feedback_msg.parameters="{}"        
-        goal_handle.publish_feedback(feedback_msg)        
+# def action_state_cb(statemachine,blackboard,state):
+#     """
+#     returns the current state name and the contents as JSON of blackboard["feedback"] 
+#     """
+#     get_logger().info(f'entering state "{state}"')    
+#     if "goal_handle" in blackboard:
+#         goal_handle=blackboard["goal_handle"]
+#         feedback_msg = Task.Feedback()
+#         feedback_msg.state=state
+#         if "feedback" in blackboard:
+#             try:
+#                 feedback_msg.parameters=json.dumps(blackboard["feedback"])
+#             except TypeError as err:
+#                get_logger().error('blackboard["feedback"] contains data types that cannot be represented in JSON')
+#                feedback_msg.parameters="{}"
+#         else:
+#             feedback_msg.parameters="{}"        
+#         goal_handle.publish_feedback(feedback_msg)        
 
 
 
@@ -207,11 +203,6 @@ class WhileNotCanceled(GeneratorWithState):
         yield CANCEL
             
 
-class EmptyStateMachine(StateMachine):
-    def __init__(self):
-        super().__init__(["   waiting_for_action   "])
-        #self.add_state("WAITING",WaitingForAction(),transitions={})
-
 class YasminActionServer:
     """Action server that processes yasmin tasks one goal at a time.
     """
@@ -234,9 +225,7 @@ class YasminActionServer:
             self.node = node
         self.blackboard = blackboard
         self.statemachines = statemachines
-        self.empty_statemachine = EmptyStateMachine()
         self.cbg = ReentrantCallbackGroup()
-#       self.viewer = None
         self._current_goal_request_lock = threading.Lock()
         self._current_goal_request      = None
         self.input_parameters = {}        # decoded as (possibly recursive) Dict (No need for lock, action server makes sure only one thread is writing or reading)
@@ -259,11 +248,7 @@ class YasminActionServer:
                 list = list + " with no schema"
         get_logger().info( list)        
 
-    # def set_viewer(self,viewer:YasminViewerPub):
-    #     self.viewer = viewer
-    #     if self.viewer is not None:
-    #         self.viewer._fsm = self.empty_statemachine
-    #         self.viewer._fsm_name = "waiting for action"
+
 
     def destroy(self):
         print("destroy")
@@ -334,9 +319,6 @@ class YasminActionServer:
             self.blackboard["task"]             = goal_handle.request.task
             get_logger().info('Executing state machine {goal_handle.request.request.task}')
             sm = self.statemachines[goal_handle.request.task]
-            # if self.viewer is not None:
-            #     self.viewer._fsm = sm
-            #     self.viewer._fsm_name = goal_handle.request.task
             rate = self.node.create_rate(100)
             sm.reset()
             outcome=sm(self.blackboard)
@@ -345,8 +327,6 @@ class YasminActionServer:
                 outcome=sm(self.blackboard)
             get_logger().info(f'Finished state machine {goal_handle.request.task} with outcome {outcome}')
             result = Task.Result()
-            # if self.viewer is not None:
-            #     self.viewer._start_publisher() # force a display of the end condition
             result.outcome=outcome   
             if "result" in self.blackboard:
                 try:
@@ -373,10 +353,7 @@ class YasminActionServer:
                 get_logger().error(f"state machine has an unexpected outcome {outcome}, action is canceled")
                 goal_handle.abort()            
                 result.outcome = CANCEL
-                result.parameters =f'{{"requested":false, "unexpected_outcome":"{outcome}" }}'                   
-            # if self.viewer is not None:
-            #     self.viewer._fsm = self.empty_statemachine
-            #     self.viewer._fsm_name = "waiting for action"             
+                result.parameters =f'{{"requested":false, "unexpected_outcome":"{outcome}" }}' 
         finally:
             with self._current_goal_request_lock:
                 self._current_goal_request = None
@@ -385,58 +362,3 @@ class YasminActionServer:
 
 
 
-
-
-# #from .sm_up_and_down import Up_and_down_as_a_class
-# from . import sm_up_and_down as ud
-# def main(args=None):
-
-#     rclpy.init(args=args)
-    
-#     node = YasminTickingNode.get_instance("yasmin_action_server")
-#     set_logger("default",node.get_logger())
-#     #set_logger("service",node.get_logger())
-#     #set_logger("state",node.get_logger())
-#     blackboard = {} #Blackboard()
-    
-#     load_task_list("$[yasmin_etasl]/tasks/my_tasks.json",blackboard)
-
-#     # adapt to directly react to a CANCEL of the action:    
-
-
-#     def run_while_publishing( sm):
-#         return ConcurrentFallback("check_duration",[
-#              sm,
-#             GraphvizPublisher("publisher","/gz",sm,None,skip=5)
-#     ])
-
-
-#     statemachines={}
-#     #statemachines["up_and_down"] = While("While",lambda bm: not bm["cancel_goal"], ud.Up_and_down_with_parameters(node) )
-#     statemachines["up_and_down"] =  run_while_publishing(While("While",lambda bm: not bm["cancel_goal"], ud.Up_and_down_with_parameters_lambda(node) ))
-#     #statemachines["up_and_down"] = While("While",lambda bm: not bm["cancel_goal"], ud.Up_and_down_as_a_class(node) )
-#     #statemachines["up_and_down"] = While("While",lambda bm: not bm["cancel_goal"], ud.up_and_down_as_a_function(node) )        
-#     #statemachines["up_and_down"] = While("While",lambda bm: not bm["cancel_goal"], ud.up_and_down_as_a_function_and_a_timer(node) )        
-
-
-
-
-
-
-
-#     empty_statemachine = EmptyStateMachine()
-#     action_server = YasminActionServer(blackboard,statemachines,100,node)
-
-#     #pub = YasminViewerPub("error", empty_statemachine,10,node=action_server.node)
-#     #action_server.set_viewer(pub)    
-
-#     # We use a MultiThreadedExecutor to handle incoming goal requests concurrently
-#     executor = MultiThreadedExecutor()
-#     executor.add_node(action_server.node)    
-#     executor.spin()
-    
-#     action_server.destroy()
-#     rclpy.shutdown()
-
-# if __name__ == '__main__':
-#     main()

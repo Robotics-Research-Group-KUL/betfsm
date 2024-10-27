@@ -25,17 +25,21 @@
 # from simple_node import Node
 
 
-from typing import Dict, List, Union, Callable,Type
+from typing import Dict, List, Union, Callable,Type, TypeAlias
 from enum import Enum
 from threading import Lock
 from abc import ABC, abstractmethod
 import traceback
 
-from yasmin import Blackboard
-from yasmin.state import State
+#from yasmin import Blackboard
+#from yasmin.state import State
 from yasmin_ros.basic_outcomes import SUCCEED, ABORT, TIMEOUT, CANCEL
 
 from .logger import get_logger
+
+
+
+Blackboard: TypeAlias = Dict[str, Dict|any]
 
 
 def cleanup_outcomes(outcomes:List[str])->List[str]:
@@ -53,17 +57,19 @@ def cleanup_outcomes(outcomes:List[str])->List[str]:
 
 
 
+#
+# outcomes with some special meaning for some TickingStates
+# just to allow a more systematic definition of states
+#
 
+SUCCEED  = "succeeded"    # everything is fine, continue as normal
+ABORT    = "aborted"      # involuntary stop, e.g. due to exception raised, communication failure,...
+CANCEL   = "canceled"     # valuntary stop, deliberatly provoked, e.g. reacting to cancel request of an action
+TIMEOUT  = "timeout"      # some operation times out.
+TICKING  = "ticking"      # only use this to yield and expecting to be called back the next tick
+CONTINUE = "continue"     # only used in the entry() method of TickingState, to signal tht you want to directly continue with Doo().
+                          # don't use it anywhere else
 
-#SUCCEED = "succeeded"
-#ABORT = "aborted"
-#CANCEL = "canceled"
-#TIMEOUT = "timeout"
-
-TICKING="ticking"
-CONTINUE="continue"
-EXIT="exit"
-# TIMEOUT="timout"  #already defined
 
 TickingState_Status = Enum("TickingState_Status",["ENTRY","DOO","EXIT"])
 # """
@@ -124,7 +130,12 @@ class Visitor(ABC):
         """
         raise NotImplementedError("Visitor.pre() method not implemented")
 
-class TickingState(State):
+
+
+
+
+
+class TickingState:
     """
     Implements a 'ticking' state, i.e. a state that takes a longer time, but cooperatively yields
     the initiative back to the caller (cooperative concurrency):
@@ -183,10 +194,22 @@ class TickingState(State):
         self.outcomes.append(TICKING)
         self.outcomes.append(ABORT)
         self.name = name
-        super().__init__(self.outcomes)
         self.status = TickingState_Status.ENTRY
         self.outcome = "" # will contain the last used outcome
-    
+
+
+    def __call__(self, blackboard: Blackboard) -> str:
+        if blackboard is None:
+            raise Exception("blackboard argument should not be None")
+        outcome = self.execute(blackboard)
+        if outcome is None:
+            raise Exception(f"execute() method of {self.name} with type  {type(self).__name__} should return a string reprsenting the outcome")
+        if outcome not in self.outcomes:
+            raise Exception(
+                f"Outcome '{outcome}' of  {self.name} with type {type(self).__name__} does not belong to the outcomes of the state {self.outcomes}")
+        return outcome
+
+
     def reset(self)->None:
         """
         External reset of the TickingState to its initial condition.
@@ -298,6 +321,11 @@ class TickingState(State):
         visitor.post(self)
 
 
+    def __str__(self) -> str:
+        return f"{self.name}<{self.__class__.__name__}>"
+
+    def get_outcomes(self) -> List[str]:
+        return self.outcomes
 
 
 
@@ -321,9 +349,6 @@ class Generator(TickingState):
         if isinstance(outcomes,str):
             outcomes=[outcomes]
         super().__init__(name,outcomes)        
-
-    def cancel_state(self) -> None:
-        super().cancel_state()
 
     def entry(self, blackboard: Blackboard) -> str:
         self.generator = self.co_execute(blackboard)
@@ -378,7 +403,7 @@ class GeneratorWithList(Generator):
             for c in children:
                 self.add_state(c)
 
-    def add_state(self, state: State):
+    def add_state(self, state: TickingState):
         """
         adds a state to the sequence
         parameters:
@@ -387,7 +412,7 @@ class GeneratorWithList(Generator):
         returns:
             self (to allow method chaining)
         """
-        if not isinstance(state,State):
+        if not isinstance(state,TickingState):
             raise Exception("add_state expects as second argument an instance of a subclass of State")
         self.states.append({"name":state.name,"state":state,"active":False})  
         self.outcomes = cleanup_outcomes(self.outcomes + state.get_outcomes())
@@ -1298,10 +1323,9 @@ class TickingStateMachine(TickingState):
         outcomes.append(TICKING)
         super().__init__(name,outcomes)
 
-        self._states = {}
-        self._start_state = None
-        self.__current_state = None
-        self.__current_state_lock = Lock()
+        self.states = {}
+        self.start_state = None
+        self.current_state = None
         self.statecb = statecb
         self.transitioncb = transitioncb
         
@@ -1322,18 +1346,17 @@ class TickingStateMachine(TickingState):
         """
         if not isinstance(state,TickingState):
             raise Exception("TickingStateMachine.add_state() only accepts states that are subclasses of TickingState")
-        if not transitions:
+        if transitions is None:
             transitions = {}
         if not isinstance( transitions , Dict):
             raise ValueError("transitions should be a dictionary")            
-        self._states[state.name] = {
+        self.states[state.name] = {
             "state": state,
             "transitions": transitions
         }
-
-        if not self._start_state:
-            self._start_state = state.name
-            self.__current_state = state.name
+        if self.start_state is None:
+            self.start_state = state.name
+            self.current_state = state.name
         
         
     def set_start_state(self, name: str) -> None:
@@ -1345,28 +1368,20 @@ class TickingStateMachine(TickingState):
                 set the state by which the state machine starts.  By default the first state 
                 added.
         """
-        self._start_state = name
-        self.__current_state = name
+        self.start_state = name
+        self.current_state = name
 
     def get_start_state(self) -> str:
-        return self._start_state
-
-    def cancel_state(self) -> None:
-        super().cancel_state()
-        with self.__current_state_lock:
-            if self.__current_state:
-                self._states[self.__current_state]["state"].cancel_state()
+        return self.start_state
 
     def reset(self):
         """
         Resets the state-machine.  Ensures that the next call will start again
         from the starting state.  Calls reset on all the states it contains.
         """
-        with self.__current_state_lock:
-            state = self.__current_state
-            if isinstance(state,TickingState):
-                state["state"].reset()
-            self.__current_state = self._start_state
+        for s,v in self.states.items():
+            v["state"].reset()
+        self.current_state = self.start_state
         super().reset()
 
     def accept(self, visitor: Visitor):
@@ -1374,61 +1389,41 @@ class TickingStateMachine(TickingState):
         accepts a visitor to go through all states of an hierarchy
         """
         if visitor.pre(self):
-            for k,v in self._states.items():
+            for k,v in self.states.items():
                 v["state"].accept(visitor)
         visitor.post(self)
 
     def entry(self, blackboard: Blackboard) -> str:
-        with self.__current_state_lock:
-            state = self.__current_state = self._start_state
+        self.current_state = self.start_state
         return CONTINUE
 
     def doo(self, blackboard: Blackboard) -> str:
-        #with self.__current_state_lock:
-        #    self.__current_state = self._start_state
         while True:
-            with self.__current_state_lock:
-                state = self._states[self.__current_state]
-                name = self.__current_state
+            state = self.states[self.current_state]
+            name = self.current_state
             self.statecb(self,blackboard,name)
-            outcome = state["state"](blackboard)
-            # check outcome belongs to state (double check on sanity of state, although state base already checks this)
-            if outcome not in state["state"].get_outcomes():
-                with self.__current_state_lock:
-                    self.__current_state = self._start_state
-                raise Exception(
-                    f"Outcome ({outcome}) is not register in state {self.__current_state}")            
-            outcome = self.transitioncb(self,blackboard,self.__current_state, outcome)
+            outcome = state["state"](blackboard)         
+            outcome = self.transitioncb(self,blackboard,self.current_state, outcome)
             # translate outcome using transitions
             if outcome in state["transitions"]:              
                 outcome = state["transitions"][outcome]
             if outcome == TICKING:                # outcome is TICKING and exits state machine but keeps current state                                                 
                 return outcome
-            elif outcome in self.get_outcomes():      # outcome is an outcome of the sm, reset current state
-                with self.__current_state_lock:
-                    self.__current_state = self._start_state
+            elif outcome in self.get_outcomes():  # outcome is an outcome of the sm, reset current state
                 return outcome 
-            elif outcome in self._states:           # outcome is a state
-                with self.__current_state_lock:
-                    self.__current_state = outcome
-            else:                                   # outcome is not in the sm
-                with self.__current_state_lock:
-                    self.__current_state = self._start_state                                                                            
-                raise Exception(f"""State {name} has outcome ({outcome}) without transition
-                                    transitions {state['transitions']}
+            elif outcome in self.states:          # outcome is a state
+                self.current_state = outcome
+            else:                                 # outcome is not in the sm
+                raise Exception(f"""State {name} has outcome ({outcome}) without transition specified\n
+                                    transitions {state['transitions']} \n
                                     outcomes state machine {self.get_outcomes()} """)
     
     def exit(self) -> str:
-        with self.__current_state_lock:
-            state = self.__current_state
-            if isinstance(state,TickingState):
-                state["state"].reset()
-            self.__current_state = self._start_state
+        self.current_state = self.start_state
+        self.reset()
         return super().exit()
  
 
-    def __str__(self) -> str:
-        return f"StateMachine: {self._states}"
     
 
 
