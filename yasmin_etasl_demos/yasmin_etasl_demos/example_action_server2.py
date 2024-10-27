@@ -24,6 +24,7 @@ from yasmin_etasl.yasmin_ticking_etasl import *
 from yasmin_etasl.logger import get_logger,set_logger
 from yasmin_etasl.graphviz_visitor import *
 from yasmin_etasl.yasmin_action_server import YasminActionServer
+from yasmin_etasl.tracer import TracePublisher
 import rclpy 
 
 
@@ -40,6 +41,18 @@ def run_while_publishing( sm):
     return Concurrent("concurrent",[
             sm,
         GraphvizPublisher("publisher","/gz",sm,None,skip=10,do_not_expand_types=[eTaSL_StateMachine])
+        #GraphvizPublisher("publisher","/gz",sm,None,skip=10,do_not_expand_types=[])
+])
+
+def run_while_tracing( sm):
+    """
+    small state machine that executes `sm` while publishing graphviz to a topic /gz
+    """
+
+    #do_not_expand_types doesn't work for now...
+    return Concurrent("concurrent",[
+            sm,
+        TracePublisher("tracer","/smtrace",sm,None,skip=10,do_not_expand_types=[])
         #GraphvizPublisher("publisher","/gz",sm,None,skip=10,do_not_expand_types=[])
 ])
 
@@ -65,7 +78,7 @@ def main(args=None):
     # which state-machine will be exeuted for which task name:
     statemachines={}
     
-    statemachines["up_and_down"] =  run_while_publishing(examples.Up_and_down_with_parameters_checking_for_cancel(node) )
+    statemachines["up_and_down"] =  run_while_tracing(run_while_publishing(examples.Up_and_down_with_parameters_checking_for_cancel(node) ))
     # if you add additional member `input_parameters_schema` the action server will use this to validate the input:    
     statemachines["up_and_down"].input_parameters_schema=examples.my_schema
     action_server = YasminActionServer(blackboard,statemachines,100,node)

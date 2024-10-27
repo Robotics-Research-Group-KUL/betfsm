@@ -27,5 +27,6 @@ find_package(rosidl_default_generators REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   "action/Task.action"
+  "msg/Trace.msg"
 )
 ament_package()
