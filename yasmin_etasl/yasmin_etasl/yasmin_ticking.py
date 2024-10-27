@@ -31,9 +31,6 @@ from threading import Lock
 from abc import ABC, abstractmethod
 import traceback
 
-#from yasmin import Blackboard
-#from yasmin.state import State
-from yasmin_ros.basic_outcomes import SUCCEED, ABORT, TIMEOUT, CANCEL
 
 from .logger import get_logger
 
@@ -1420,7 +1417,6 @@ class TickingStateMachine(TickingState):
     
     def exit(self) -> str:
         self.current_state = self.start_state
-        self.reset()
         return super().exit()
  
 

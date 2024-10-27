@@ -263,14 +263,14 @@ class YasminActionServer:
         # check existence of task
         get_logger().info(f'Received goal request for "{goal_request.task}"')
         if not (goal_request.task in self.statemachines):
-            get_logger().info(f'Rejected goal request:  task "{goal_request.task}" is not known by the system')
+            get_logger().warning(f'Rejected goal request:  task "{goal_request.task}" is not known by the system')
             return GoalResponse.REJECT
         
         # decode input parameters
         try:
             param = json.loads(goal_request.parameters)
         except json.JSONDecodeError as err:
-            get_logger().error(f"Rejected goal request: error decoding parameters of goal : {str(err)}")
+            get_logger().warning(f"Rejected goal request: error decoding parameters of goal : {str(err)}")
             return GoalResponse.REJECT
         
         # validate parameters
@@ -279,7 +279,7 @@ class YasminActionServer:
                 jsonschema.validate(instance=param,
                                     schema=self.statemachines[goal_request.task].input_parameters_schema)
             except jsonschema.exceptions.ValidationError as err:
-                get_logger().error( f'Rejected goal request: error validating parameters of task "{goal_request.task}" : {str(err)}')
+                get_logger().warning( f'Rejected goal request: error validating parameters of task "{goal_request.task}" : {str(err)}')
                 return GoalResponse.REJECT
             except jsonschema.exceptions.SchemaError as err:
                 get_logger().error(f'Rejected goal request: error validating the schema of task "{goal_request.task}" : {str(err)}')
@@ -287,7 +287,7 @@ class YasminActionServer:
         # check concurrency        
         with self._current_goal_request_lock:
             if self._current_goal_request is not None:
-                get_logger().error('Rejected goal request: another action is still running')
+                get_logger().warning('Rejected goal request: another action is still running')
                 return GoalResponse.REJECT
             self._current_goal_request = goal_request
         
@@ -340,12 +340,12 @@ class YasminActionServer:
                 goal_handle.succeed()
             elif outcome==CANCEL:    
                 if goal_handle.is_cancel_requested:
-                    get_logger().error(f"action is canceled upon request from client")
+                    get_logger().info(f"action is canceled upon request from client")
                     goal_handle.canceled()
                     result.outcome = CANCEL
                     result.parameters ='{"requested":true}'
                 else:                            
-                    get_logger().error(f"action is canceled by the state machine returning CANCEL")
+                    get_logger().info(f"action is canceled by the state machine returning CANCEL")
                     goal_handle.abort()
                     result.outcome = CANCEL
                     result.parameters ='{"requested":false}'                   

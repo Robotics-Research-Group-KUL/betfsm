@@ -21,8 +21,6 @@
 Yasmin_Ticking states related to eTaSL
 """
 from rclpy.qos import QoSProfile
-from yasmin import Blackboard
-from yasmin.blackboard import Blackboard
 
 from .yasmin_ticking_ros import *
 
