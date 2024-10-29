@@ -44,17 +44,6 @@ def run_while_publishing( sm):
         #GraphvizPublisher("publisher","/gz",sm,None,skip=10,do_not_expand_types=[])
 ])
 
-def run_while_tracing( sm):
-    """
-    small state machine that executes `sm` while publishing graphviz to a topic /gz
-    """
-
-    #do_not_expand_types doesn't work for now...
-    return Concurrent("concurrent",[
-            sm,
-        TracePublisher("tracer","/smtrace",sm,None,skip=10,do_not_expand_types=[])
-        #GraphvizPublisher("publisher","/gz",sm,None,skip=10,do_not_expand_types=[])
-])
 
 
 def main(args=None):
@@ -78,7 +67,6 @@ def main(args=None):
     # which state-machine will be exeuted for which task name:
     statemachines={}
     
-    #statemachines["up_and_down"] =  run_while_tracing(run_while_publishing(examples.Up_and_down_with_parameters_checking_for_cancel(node) ))
     statemachines["up_and_down"] =  run_while_publishing(examples.Up_and_down_with_parameters_checking_for_cancel(node) )
     # if you add additional member `input_parameters_schema` the action server will use this to validate the input:    
     statemachines["up_and_down"].input_parameters_schema=examples.my_schema
