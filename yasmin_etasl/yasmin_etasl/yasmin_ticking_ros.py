@@ -304,6 +304,7 @@ class ServiceClient(Generator):
         else:
             self.node = node
         outcomes.append(TIMEOUT) #TickingState will add TICKING
+        outcomes.append(SUCCEED) #TickingState will add TICKING
         super().__init__(name,outcomes)        
         self.clock     = self.node.get_clock()  
         self.srv_type  = srv_type
