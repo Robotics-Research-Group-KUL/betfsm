@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Erwin Aertbelien" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>eTaSL - Yasmin_eTaSL documenttaion</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../assets/_mkdocstrings.css" rel="stylesheet" />
+        <link href="../css/mkdocstrings.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "eTaSL";
+        var mkdocs_page_input_path = "etaslstatemachine.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Yasmin_eTaSL documenttaion
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Documentation</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Tutorials</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../upanddown/">Up & Down</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" >YasminTicking</a>
+    <ul class="current">
+                <li class="toctree-l2"><a class="reference internal" >Tickingstates</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../tickingstate/">TickingState</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../tickingstatemachine/">TickingStateMachine</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../visitor/">Visitor</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../generator/">Generator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../sequence/">Sequence</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../concurrentsequence/">ConcurrentSequence</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../fallback/">Fallback</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../concurrentfallback/">ConcurrentFallback</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../concurrent/">Concurrent</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../waitfor/">WaitFor</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../waitforever/">WaitForever</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../while/">While</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../repeat/">Repeat</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../message/">Message</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../logblackboard/">LogBlackboard</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../compute/">Compute</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../adapt/">Adapt</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" >ROS 2</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../serviceclient/">ServiceClient</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../lifecycle/">LifeCycle</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../topicstate/">TopicState</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../timedrepeat/">TimedRepeat</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../timedwait/">TimedWait</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../timeout/">Timeout</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2 current"><a class="reference internal current" href="#">eTaSL</a>
+    <ul class="current">
+    <li class="toctree-l3"><a class="reference internal" href="#utility-functions">Utility functions</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#yasmin_etasl.yasmin_ticking_etasl.get_task">get_task</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#yasmin_etasl.yasmin_ticking_etasl.load_task_list">load_task_list</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#the-etaslstatemachine">The eTaSLStateMachine</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#yasmin_etasl.yasmin_ticking_etasl.eTaSL_StateMachine">eTaSL_StateMachine</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#auxiliary-states-used-to-define-etaslstatemachine">Auxiliary states (used to define eTaSLStateMachine)</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#yasmin_etasl.yasmin_ticking_etasl.SetTaskParameters">SetTaskParameters</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#yasmin_etasl.yasmin_ticking_etasl.ReadRobotSpecification">ReadRobotSpecification</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#yasmin_etasl.yasmin_ticking_etasl.ReadTaskSpecification">ReadTaskSpecification</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#yasmin_etasl.yasmin_ticking_etasl.eTaSLOutput">eTaSLOutput</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#yasmin_etasl.yasmin_ticking_etasl.eTaSLEvent">eTaSLEvent</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../actionserver/">Action server</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../utils/">Utilities</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../about/">About</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../TODO/">Todo list</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Yasmin_eTaSL documenttaion</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Documentation</li>
+          <li class="breadcrumb-item">YasminTicking</li>
+      <li class="breadcrumb-item active">eTaSL</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="etasl">eTaSL</h1>
+<p>Description of the interface towards eTaSL.</p>
+<h2 id="utility-functions">Utility functions</h2>
+<p>Some utility functions to manage tasks are provided:</p>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="yasmin_etasl.yasmin_ticking_etasl.get_task" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">yasmin_etasl</span><span class="o">.</span><span class="n">yasmin_ticking_etasl</span><span class="o">.</span><span class="n">get_task</span><span class="p">(</span><span class="n">blackboard</span><span class="p">,</span> <span class="n">task_name</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents first">
+
+        <p>get the default parameters for a task.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>blackboard</code></b>
+                  (<code><span title="yasmin_etasl.yasmin_ticking_ros.Blackboard">Blackboard</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>blackboard</p>
+              </div>
+            </li>
+            <li>
+              <b><code>task_name</code></b>
+                  (<code>str</code>)
+              –
+              <div class="doc-md-description">
+                <p>name of the task</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="yasmin_etasl.yasmin_ticking_etasl.load_task_list" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">yasmin_etasl</span><span class="o">.</span><span class="n">yasmin_ticking_etasl</span><span class="o">.</span><span class="n">load_task_list</span><span class="p">(</span><span class="n">json_file_name</span><span class="p">,</span> <span class="n">blackboard</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Loads a task list from a file. References to packages and environment variables in the name
+are expanded (using the expand_... functions)</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>json_file_name</code></b>
+                  (<code>str</code>)
+              –
+              <div class="doc-md-description">
+                <p>json file containing the task list.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>blackboard</code></b>
+                  (<code><span title="yasmin_etasl.yasmin_ticking_ros.Blackboard">Blackboard</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>blackboard into which to load the task list.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+    </div>
+
+</div><h2 id="the-etaslstatemachine">The eTaSLStateMachine</h2>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="yasmin_etasl.yasmin_ticking_etasl.eTaSL_StateMachine" class="doc doc-heading">
+            <code>yasmin_etasl.yasmin_ticking_etasl.eTaSL_StateMachine</code>
+
+
+</h3>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="yasmin_etasl.yasmin_ticking_ros.TickingStateMachine" href="../tickingstatemachine/#yasmin_etasl.yasmin_ticking.TickingStateMachine">TickingStateMachine</a></code></p>
+
+
+        
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="yasmin_etasl.yasmin_ticking_etasl.eTaSL_StateMachine.__init__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">task_name</span><span class="p">,</span> <span class="n">srv_name</span><span class="o">=</span><span class="s1">&#39;/etasl_node&#39;</span><span class="p">,</span> <span class="n">cb</span><span class="o">=</span><span class="n">default_parameter_setter</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">Duration</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mf">1.0</span><span class="p">),</span> <span class="n">node</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">transitioncb</span><span class="o">=</span><span class="n">default_transitioncb</span><span class="p">,</span> <span class="n">statecb</span><span class="o">=</span><span class="n">default_statecb</span><span class="p">)</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Configurable statemachine to execute an eTaSL task that:</p>
+<ul>
+<li>uses TickingStateMachine to provide callbacks for transtions and state changes and support TICKING;</li>
+<li>uses a feedback to set parameters;</li>
+<li>puts the last message from the output topic in the blackboard under blackboard["output"][name].</li>
+</ul>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>name</code></b>
+                  (<code>str</code>)
+              –
+              <div class="doc-md-description">
+                <p>name of this state machine (i.e. task instance)</p>
+              </div>
+            </li>
+            <li>
+              <b><code>task_name</code></b>
+                  (<code>str</code>)
+              –
+              <div class="doc-md-description">
+                <p>name of the task to be executed (i.e. task type) Will be looked up in the blackboard.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>srv_name</code></b>
+                  (<code>str</code>, default:
+                      <code>&#39;/etasl_node&#39;</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>name of the eTaSL node, by default /etasl_node</p>
+              </div>
+            </li>
+            <li>
+              <b><code>output_topic</code></b>
+              –
+              <div class="doc-md-description">
+                <p>name of the topic where to find the output of eTaSL. A topic with interface <em>etasl_interfaces/msg/Output</em> is expected.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>cb</code></b>
+                  (<code><span title="yasmin_etasl.yasmin_ticking_ros.Callable">Callable</span></code>, default:
+                      <code><span title="yasmin_etasl.yasmin_ticking_etasl.default_parameter_setter">default_parameter_setter</span></code>
+)
+              –
+              <div class="doc-md-description">
+                <p>callback that sets the parameters, with signature <code>def cb(blackboard) -&gt;param</code>
+where param is a Dict with the parameters of the task that will be used to update
+the default parameters.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>timeout</code></b>
+                  (<code><span title="yasmin_etasl.yasmin_ticking_ros.Duration">Duration</span></code>, default:
+                      <code><span title="yasmin_etasl.yasmin_ticking_ros.Duration">Duration</span>(seconds=1.0)</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>[optional] returns TIMEOUT if the communication timeout of any of the substeps is exceeded. 
+Uses a duration of 1 second otherwise.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>node</code></b>
+                  (<code><span title="yasmin_etasl.yasmin_ticking_ros.Node">Node</span></code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>[optional] ROS2 node to be used. Uses YasminTicking.get_instance() otherwise.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>transitioncb</code></b>
+                  (<code><span title="yasmin_etasl.yasmin_ticking_ros.Callable">Callable</span></code>, default:
+                      <code><a class="autorefs autorefs-internal" title="yasmin_etasl.yasmin_ticking_ros.default_transitioncb" href="../default_callbacks/#yasmin_etasl.yasmin_ticking.default_transitioncb">default_transitioncb</a></code>
+)
+              –
+              <div class="doc-md-description">
+                <p>[optional] callback that is called at each transition, signature <code>def transitioncb(statemachine,blackboard,source,outcome)-&gt;outcome</code></p>
+              </div>
+            </li>
+            <li>
+              <b><code>statecb</code></b>
+                  (<code><span title="yasmin_etasl.yasmin_ticking_ros.Callable">Callable</span></code>, default:
+                      <code><a class="autorefs autorefs-internal" title="yasmin_etasl.yasmin_ticking_ros.default_statecb" href="../default_callbacks/#yasmin_etasl.yasmin_ticking.default_statecb">default_statecb</a></code>
+)
+              –
+              <div class="doc-md-description">
+                <p>[optional] callback that is called at each, signature <code>default_statecb(statemachine,blackboard,state)</code></p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<details class="warning" open>
+  <summary>warning</summary>
+  <p>TODO: name of output topic needs to be changed.</p>
+</details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div><h2 id="auxiliary-states-used-to-define-etaslstatemachine">Auxiliary states (used to define eTaSLStateMachine)</h2>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="yasmin_etasl.yasmin_ticking_etasl.SetTaskParameters" class="doc doc-heading">
+            <code>yasmin_etasl.yasmin_ticking_etasl.SetTaskParameters</code>
+
+
+</h3>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="yasmin_etasl.yasmin_ticking_ros.ServiceClient" href="../serviceclient/#yasmin_etasl.yasmin_ticking_ros.ServiceClient">ServiceClient</a></code></p>
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="yasmin_etasl.yasmin_ticking_etasl.SetTaskParameters.__init__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">task_name</span><span class="p">,</span> <span class="n">srv_name</span><span class="o">=</span><span class="s1">&#39;/etasl_node&#39;</span><span class="p">,</span> <span class="n">cb</span><span class="o">=</span><span class="n">default_parameter_setter</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">Duration</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mf">1.0</span><span class="p">),</span> <span class="n">node</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>calls a service to instruct eTaSL to read a robot specification file. The file is obtained
+from the task</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>name</code></b>
+                  (<code>str</code>)
+              –
+              <div class="doc-md-description">
+                <p>instance name</p>
+              </div>
+            </li>
+            <li>
+              <b><code>task_name</code></b>
+                  (<code>str</code>)
+              –
+              <div class="doc-md-description">
+                <p>name that will be used to find back the task with specifies the robot specification file.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>srv_name</code></b>
+                  (<code>str</code>, default:
+                      <code>&#39;/etasl_node&#39;</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>name of the etasl node, by default <code>/etasl_node</code></p>
+              </div>
+            </li>
+            <li>
+              <b><code>cb</code></b>
+                  (<code><span title="yasmin_etasl.yasmin_ticking_ros.Callable">Callable</span></code>, default:
+                      <code><span title="yasmin_etasl.yasmin_ticking_etasl.default_parameter_setter">default_parameter_setter</span></code>
+)
+              –
+              <div class="doc-md-description">
+                <p>callback that sets the parameters, with signature <code>def param_setters(blackboard) -&gt;param</code>
+where param is a Dict with the parameters of the task.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>timeout</code></b>
+                  (<code><span title="yasmin_etasl.yasmin_ticking_ros.Duration">Duration</span></code>, default:
+                      <code><span title="yasmin_etasl.yasmin_ticking_ros.Duration">Duration</span>(seconds=1.0)</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>returns TIMEOUT if timeout is exceeded.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>node</code></b>
+                  (<code><span title="yasmin_etasl.yasmin_ticking_ros.Node">Node</span></code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>ROS2 node, by default YasminNode.get_instance()</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="yasmin_etasl.yasmin_ticking_etasl.ReadRobotSpecification" class="doc doc-heading">
+            <code>yasmin_etasl.yasmin_ticking_etasl.ReadRobotSpecification</code>
+
+
+</h3>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="yasmin_etasl.yasmin_ticking_ros.ServiceClient" href="../serviceclient/#yasmin_etasl.yasmin_ticking_ros.ServiceClient">ServiceClient</a></code></p>
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="yasmin_etasl.yasmin_ticking_etasl.ReadRobotSpecification.__init__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">task_name</span><span class="p">,</span> <span class="n">srv_name</span><span class="o">=</span><span class="s1">&#39;/etasl_node&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">Duration</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mf">1.0</span><span class="p">),</span> <span class="n">node</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>calls a service to instruct eTaSL to read a robot specification file. The file is obtained
+from the task</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>name</code></b>
+                  (<code>str</code>)
+              –
+              <div class="doc-md-description">
+                <p>instance name</p>
+              </div>
+            </li>
+            <li>
+              <b><code>task_name</code></b>
+                  (<code>str</code>)
+              –
+              <div class="doc-md-description">
+                <p>name that will be used to find back the task with specifies the robot specification file.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>srv_name</code></b>
+                  (<code>str</code>, default:
+                      <code>&#39;/etasl_node&#39;</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>name of the etasl node, by default <code>/etasl_node</code></p>
+              </div>
+            </li>
+            <li>
+              <b><code>timeout</code></b>
+                  (<code><span title="yasmin_etasl.yasmin_ticking_ros.Duration">Duration</span></code>, default:
+                      <code><span title="yasmin_etasl.yasmin_ticking_ros.Duration">Duration</span>(seconds=1.0)</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>returns TIMEOUT if timeout is exceeded.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>node</code></b>
+                  (<code><span title="yasmin_etasl.yasmin_ticking_ros.Node">Node</span></code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>ROS2 node, by default YasminNode.get_instance()</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="yasmin_etasl.yasmin_ticking_etasl.ReadTaskSpecification" class="doc doc-heading">
+            <code>yasmin_etasl.yasmin_ticking_etasl.ReadTaskSpecification</code>
+
+
+</h3>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="yasmin_etasl.yasmin_ticking_ros.ServiceClient" href="../serviceclient/#yasmin_etasl.yasmin_ticking_ros.ServiceClient">ServiceClient</a></code></p>
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="yasmin_etasl.yasmin_ticking_etasl.ReadTaskSpecification.__init__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">task_name</span><span class="p">,</span> <span class="n">srv_name</span><span class="o">=</span><span class="s1">&#39;/etasl_node&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">Duration</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mf">1.0</span><span class="p">),</span> <span class="n">node</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>calls a service to instruct eTaSL to read a task specification file. The file is obtained
+from the task</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>task_name</code></b>
+                  (<code>str</code>)
+              –
+              <div class="doc-md-description">
+                <p>name that will be used to find back the task with specifies the task specification file.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>srv_name</code></b>
+                  (<code>str</code>, default:
+                      <code>&#39;/etasl_node&#39;</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>name of the etasl node, by default <code>/etasl_node</code></p>
+              </div>
+            </li>
+            <li>
+              <b><code>timeout</code></b>
+                  (<code><span title="yasmin_etasl.yasmin_ticking_ros.Duration">Duration</span></code>, default:
+                      <code><span title="yasmin_etasl.yasmin_ticking_ros.Duration">Duration</span>(seconds=1.0)</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>returns TIMEOUT if timeout is exceeded.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>node</code></b>
+                  (<code><span title="yasmin_etasl.yasmin_ticking_ros.Node">Node</span></code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>ROS2 node, by default YasminNode.get_instance()</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="yasmin_etasl.yasmin_ticking_etasl.eTaSLOutput" class="doc doc-heading">
+            <code>yasmin_etasl.yasmin_ticking_etasl.eTaSLOutput</code>
+
+
+</h3>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="yasmin_etasl.yasmin_ticking_ros.TickingState" href="../tickingstate/#yasmin_etasl.yasmin_ticking.TickingState">TickingState</a></code></p>
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="yasmin_etasl.yasmin_ticking_etasl.eTaSLOutput.__init__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">topic</span><span class="p">,</span> <span class="n">qos</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">bb_location</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">],</span> <span class="n">node</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>At every tick processes the latest message from the topic and puts it 
+on a predetermined location in the blackboard.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>name</code></b>
+                  (<code>str</code>)
+              –
+              <div class="doc-md-description">
+                <p>instance name</p>
+              </div>
+            </li>
+            <li>
+              <b><code>topic</code></b>
+                  (<code>str</code>)
+              –
+              <div class="doc-md-description">
+                <p>topic to listen to, topics with interfacev <code>etasl_interfaces/msg/Output</code>
+are expected</p>
+              </div>
+            </li>
+            <li>
+              <b><code>qos</code></b>
+                  (<code><span title="yasmin_etasl.yasmin_ticking_ros.QoSProfile">QoSProfile</span></code>, default:
+                      <code>30</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>specification of the topic quality of service profile (QOSProfile)</p>
+              </div>
+            </li>
+            <li>
+              <b><code>bb_location</code></b>
+                  (<code><span title="yasmin_etasl.yasmin_ticking_ros.List">List</span></code>, default:
+                      <code>[&#39;output&#39;]</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>list of strings indicating location in the blackboard.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>node</code></b>
+                  (<code><span title="yasmin_etasl.yasmin_ticking_ros.Node">Node</span></code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>ROS2 node where the subscription will run.  if None, YasminTicking.get_instance() is used.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<details class="warning" open>
+  <summary>warning</summary>
+  <p>will only store messages where for all variables in the message is_declared is true.</p>
+</details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="yasmin_etasl.yasmin_ticking_etasl.eTaSLEvent" class="doc doc-heading">
+            <code>yasmin_etasl.yasmin_ticking_etasl.eTaSLEvent</code>
+
+
+</h3>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="yasmin_etasl.yasmin_ticking_ros.TickingState" href="../tickingstate/#yasmin_etasl.yasmin_ticking.TickingState">TickingState</a></code></p>
+
+
+        <p>At every tick processes the latest message from the topic.
+Node will CANCEL when it is ticked and no topic has been received.</p>
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="yasmin_etasl.yasmin_ticking_etasl.eTaSLEvent.__init__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">topic</span><span class="p">,</span> <span class="n">qos</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;e_finished@etasl_node&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">SUCCEED</span><span class="p">)},</span> <span class="n">node</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>A node that waits until an event is received.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>name</code></b>
+                  (<code>str</code>)
+              –
+              <div class="doc-md-description">
+                <p>instance name</p>
+              </div>
+            </li>
+            <li>
+              <b><code>topic</code></b>
+                  (<code>str</code>)
+              –
+              <div class="doc-md-description">
+                <p>name of the topic.  Topics of type String are expected.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>qos</code></b>
+                  (<code><span title="yasmin_etasl.yasmin_ticking_ros.QoSProfile">QoSProfile</span></code>, default:
+                      <code>10</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>To be able to adapt the QoS</p>
+              </div>
+            </li>
+            <li>
+              <b><code>mapping</code></b>
+                  (<code><span title="yasmin_etasl.yasmin_ticking_ros.Dict">Dict</span>[str, tuple[int, str]]</code>, default:
+                      <code>{&#39;e_finished@etasl_node&#39;: (1, <span title="yasmin_etasl.yasmin_ticking_ros.SUCCEED">SUCCEED</span>)}</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>maps the event string to a priority and outcome.<br />
+When multiple messages are received, the event with lowest priority
+will be used.  For events with the same priority the earliest
+event will be selected.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>node</code></b>
+                  (<code><span title="yasmin_etasl.yasmin_ticking_ros.Node">Node</span></code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>node or YasminTickingNode if node==None.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../timeout/" class="btn btn-neutral float-left" title="Timeout"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../actionserver/" class="btn btn-neutral float-right" title="Action server">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>LGPL-3.0-only</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://gitlab.kuleuven.be/rob-expressiongraphs/ros2/yasmin_etasl" class="fa fa-code-fork" style="color: #fcfcfc"> Gitlab</a>
+        </span>
+    
+    
+      <span><a href="../timeout/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../actionserver/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="https://cdn.jsdelivr.net/gh/rod2ik/cdn@main/mkdocs/javascripts/mkdocs-graphviz.js"></script>
+      <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

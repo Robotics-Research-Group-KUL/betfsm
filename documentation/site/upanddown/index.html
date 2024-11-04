@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Erwin Aertbelien" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Up & Down - Yasmin_eTaSL documenttaion</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../assets/_mkdocstrings.css" rel="stylesheet" />
+        <link href="../css/mkdocstrings.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Up \u0026 Down";
+        var mkdocs_page_input_path = "upanddown.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Yasmin_eTaSL documenttaion
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Documentation</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" >Tutorials</a>
+    <ul class="current">
+                <li class="toctree-l2 current"><a class="reference internal current" href="#">Up & Down</a>
+    <ul class="current">
+    <li class="toctree-l3"><a class="reference internal" href="#up-down-specified-as-a-function">Up &amp; Down, specified as a function:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#yasmin_etasl_demos.sm_up_and_down.up_and_down_as_a_function">up_and_down_as_a_function</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#up-down-specified-as-a-function-and-with-a-timer-running-concurrently">Up &amp; Down, specified as a function and with a timer running concurrently:</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#yasmin_etasl_demos.sm_up_and_down.up_and_down_as_a_function_and_a_timer">up_and_down_as_a_function_and_a_timer</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#up-down-specified-as-a-class">Up &amp; Down, specified as a class:</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#yasmin_etasl_demos.sm_up_and_down.Up_and_down_as_a_class">Up_and_down_as_a_class</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#yasmin_etasl_demos.sm_up_and_down.Up_and_down_as_a_class.__init__">__init__</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#up-down-with-etasl-tasks-with-input-and-output-parameters">Up &amp; Down, with eTaSL tasks with input and output parameters:</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#yasmin_etasl_demos.sm_up_and_down.Up_and_down_with_parameters">Up_and_down_with_parameters</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#yasmin_etasl_demos.sm_up_and_down.Up_and_down_with_parameters.__init__">__init__</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#up-down-with-etasl-tasks-with-input-and-output-parameters-using-lambda-functions">Up &amp; Down, with eTaSL tasks with input and output parameters using lambda functions:</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#yasmin_etasl_demos.sm_up_and_down.Up_and_down_with_parameters_lambda">Up_and_down_with_parameters_lambda</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#yasmin_etasl_demos.sm_up_and_down.Up_and_down_with_parameters_lambda.__init__">__init__</a>
+    </li>
+    </ul>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >YasminTicking</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" >Tickingstates</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../tickingstate/">TickingState</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../tickingstatemachine/">TickingStateMachine</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../visitor/">Visitor</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../generator/">Generator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../sequence/">Sequence</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../concurrentsequence/">ConcurrentSequence</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../fallback/">Fallback</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../concurrentfallback/">ConcurrentFallback</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../concurrent/">Concurrent</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../waitfor/">WaitFor</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../waitforever/">WaitForever</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../while/">While</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../repeat/">Repeat</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../message/">Message</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../logblackboard/">LogBlackboard</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../compute/">Compute</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../adapt/">Adapt</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" >ROS 2</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../serviceclient/">ServiceClient</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../lifecycle/">LifeCycle</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../topicstate/">TopicState</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../timedrepeat/">TimedRepeat</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../timedwait/">TimedWait</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../timeout/">Timeout</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../etaslstatemachine/">eTaSL</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../actionserver/">Action server</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../utils/">Utilities</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../about/">About</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../TODO/">Todo list</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Yasmin_eTaSL documenttaion</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Documentation</li>
+          <li class="breadcrumb-item">Tutorials</li>
+      <li class="breadcrumb-item active">Up & Down</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="tutorial-example-up-down">Tutorial example "Up &amp; Down"</h1>
+<p>One needs to give permission for the devcontainer to display graphical windows on the host computer.
+These needs to be executed on the host computer, outside Visual Studio.
+  <code>xhost +</code>
+To be checked if it also works (where local=localhost and root is users)
+  <code>xhost +local:root</code>
+To retract the permissions:
+  <code>xhost -</code></p>
+<p>This test setup needs the following nodes running: </p>
+<p><strong>RVIZ</strong> : visualization of UR10 robot:</p>
+<pre><code>  ros2 launch etasl_ros2_application_template load_ur10_setup.launch.py
+</code></pre>
+<p>Running the <strong>eTaSL node</strong>:</p>
+<pre><code>   ros2 run etasl_ros2 etasl_node
+</code></pre>
+<p>This will start up a server that can execute eTaSL.</p>
+<p>The <strong>example action server</strong> in this repository is run by:</p>
+<pre><code>   ros2 run yasmin_etasl_demos example_action_server
+</code></pre>
+<p>You are now listening for incomming actions.
+A small script in the <code>./scripts</code> directory calls an action handled by the example_action_server:</p>
+<pre><code>   ./scripts/send_up_and_down.sh
+</code></pre>
+<p>Try interrupting the script with ctrl-C while its waiting to finish. You'll see that this is passed to
+the state-machine, that will also finish, this is done by checking a variable on the blackboard
+while running your statemachine.
+There are two examples that deal in a different way with cancelation of the action:</p>
+<ul>
+<li><code>example_action_server.py</code> continuously checks for cancelation and interupts the robot motion by
+   deactivating the eTaSL server.  The example shows how to specify a shutdown procedure.</li>
+<li><code>example_action_server2.py</code> uses a state to detect cancelation such that robot motion can be interrupted at a specified time.</li>
+</ul>
+<p>These examples also start a state that publishes the statemachine on a String topic in graphviz format.</p>
+<p>You can startup a webserver that publishes an svg file using:</p>
+<pre><code>   ros2 run yasmin_etasl web_server
+</code></pre>
+<p>I you look at the action scripts, you see that a <a class="autorefs autorefs-internal" href="../concurrent/#yasmin_etasl.yasmin_ticking.Concurrent">Concurrent</a> state runs the state
+machine in parallel with a GraphvizPublisher state that publishes the state machine on a topic <code>/gz</code>.  There is a 
+<code>do_not_expand_types</code> and <code>do_not_expand_instances</code> argument where you can limit what is displayed in the state machine
+(in order not to overload the figure)</p>
+<pre><code>Concurrent(&quot;concurrent&quot;,[
+ sm,
+ GraphvizPublisher(&quot;publisher&quot;,&quot;/gz&quot;,sm,None,skip=10,do_not_expand_types=[eTaSL_StateMachine])
+</code></pre>
+<div class="admonition warning">
+<p class="admonition-title">TODO</p>
+<p>still some work here...</p>
+</div>
+<p>in <code>sm_up_and_down.py</code> you find example statemachines that show different styles for specifying
+a simple state machine that moves up and down:</p>
+<h3 id="up-down-specified-as-a-function">Up &amp; Down, specified as a function:</h3>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<a id="yasmin_etasl_demos.sm_up_and_down.up_and_down_as_a_function"></a>
+    <div class="doc doc-contents first">
+
+        
+
+            <details class="quote">
+              <summary>Source code in <code>yasmin_etasl_demos/sm_up_and_down.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">up_and_down_as_a_function</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span>  <span class="n">Sequence</span><span class="p">(</span><span class="s2">&quot;my_sequence&quot;</span><span class="p">,</span> <span class="n">children</span><span class="o">=</span><span class="p">[</span>
+                                        <span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movinghome&quot;</span><span class="p">,</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">),</span>
+                                        <span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movingup&quot;</span><span class="p">,</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">),</span>
+                                        <span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movingdown&quot;</span><span class="p">,</span><span class="s2">&quot;MovingDown&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">),</span>            
+                                        <span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movingup2&quot;</span><span class="p">,</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">),</span>
+                                        <span class="n">Message</span><span class="p">(</span><span class="s2">&quot;Robot is finished&quot;</span><span class="p">)</span>
+                                    <span class="p">]</span> <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div><p>options:
+      heading_level: 3
+      show_source: true
+      show_root_heading: true   </p>
+<h3 id="up-down-specified-as-a-function-and-with-a-timer-running-concurrently">Up &amp; Down, specified as a function and with a timer running concurrently:</h3>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<a id="yasmin_etasl_demos.sm_up_and_down.up_and_down_as_a_function_and_a_timer"></a>
+    <div class="doc doc-contents first">
+
+        
+
+            <details class="quote">
+              <summary>Source code in <code>yasmin_etasl_demos/sm_up_and_down.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">up_and_down_as_a_function_and_a_timer</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">ConcurrentSequence</span><span class="p">(</span><span class="s2">&quot;up_and_down_as_a_function&quot;</span><span class="p">,</span> <span class="n">children</span><span class="o">=</span><span class="p">[</span>
+            <span class="n">Sequence</span><span class="p">(</span><span class="s2">&quot;my_sequence&quot;</span><span class="p">,</span> <span class="n">children</span><span class="o">=</span><span class="p">[</span>
+                                        <span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movinghome&quot;</span><span class="p">,</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">),</span>
+                                        <span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movingup&quot;</span><span class="p">,</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">),</span>
+                                        <span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movingdown&quot;</span><span class="p">,</span><span class="s2">&quot;MovingDown&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">),</span>            
+                                        <span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movingup2&quot;</span><span class="p">,</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">),</span>
+                                        <span class="n">Message</span><span class="p">(</span><span class="s2">&quot;Robot is finished&quot;</span><span class="p">)</span>
+                                    <span class="p">]</span> <span class="p">),</span>
+            <span class="n">Sequence</span><span class="p">(</span><span class="s2">&quot;timer&quot;</span><span class="p">,</span> <span class="n">children</span><span class="o">=</span><span class="p">[</span>
+                                <span class="n">TimedWait</span><span class="p">(</span><span class="s2">&quot;timed_wait&quot;</span><span class="p">,</span><span class="n">Duration</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mf">3.0</span><span class="p">),</span><span class="n">node</span><span class="o">=</span><span class="n">node</span> <span class="p">),</span>
+                                <span class="n">Message</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Timer went off!&quot;</span><span class="p">)</span>
+                              <span class="p">]</span> <span class="p">)</span>
+            <span class="p">])</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div><p>options:
+      heading_level: 3
+      show_source: true
+      show_root_heading: true   </p>
+<h3 id="up-down-specified-as-a-class">Up &amp; Down, specified as a class:</h3>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<a id="yasmin_etasl_demos.sm_up_and_down.Up_and_down_as_a_class"></a>
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="yasmin_etasl.yasmin_action_server.Sequence" href="../sequence/#yasmin_etasl.yasmin_ticking.Sequence">Sequence</a></code></p>
+
+
+        
+
+
+
+
+
+
+              <details class="quote">
+                <summary>Source code in <code>yasmin_etasl_demos/sm_up_and_down.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Up_and_down_as_a_class</span><span class="p">(</span><span class="n">Sequence</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;Up_and_down_as_a_class&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movinghome&quot;</span><span class="p">,</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movingup&quot;</span><span class="p">,</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movingdown&quot;</span><span class="p">,</span><span class="s2">&quot;MovingDown&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movingup2&quot;</span><span class="p">,</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">Message</span><span class="p">(</span><span class="s2">&quot;Hello world&quot;</span><span class="p">))</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="yasmin_etasl_demos.sm_up_and_down.Up_and_down_as_a_class.__init__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        
+
+            <details class="quote">
+              <summary>Source code in <code>yasmin_etasl_demos/sm_up_and_down.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;Up_and_down_as_a_class&quot;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movinghome&quot;</span><span class="p">,</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movingup&quot;</span><span class="p">,</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movingdown&quot;</span><span class="p">,</span><span class="s2">&quot;MovingDown&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movingup2&quot;</span><span class="p">,</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">Message</span><span class="p">(</span><span class="s2">&quot;Hello world&quot;</span><span class="p">))</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div><p>options:
+      heading_level: 3
+      show_source: true
+      show_root_heading: true   </p>
+<h3 id="up-down-with-etasl-tasks-with-input-and-output-parameters">Up &amp; Down, with eTaSL tasks with input and output parameters:</h3>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<a id="yasmin_etasl_demos.sm_up_and_down.Up_and_down_with_parameters"></a>
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="yasmin_etasl.yasmin_action_server.Sequence" href="../sequence/#yasmin_etasl.yasmin_ticking.Sequence">Sequence</a></code></p>
+
+
+
+
+
+
+
+              <details class="quote">
+                <summary>Source code in <code>yasmin_etasl_demos/sm_up_and_down.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Up_and_down_with_parameters</span><span class="p">(</span><span class="n">Sequence</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">node</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;Up_and_down_as_a_class&quot;</span><span class="p">)</span>
+
+        <span class="k">class</span> <span class="nc">MyComputations</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
+            <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;MyComputations&quot;</span><span class="p">,[</span><span class="n">SUCCEED</span><span class="p">])</span>
+            <span class="k">def</span> <span class="nf">co_execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">bb</span><span class="p">):</span>
+                <span class="n">bb</span><span class="p">[</span><span class="s2">&quot;home_computations&quot;</span><span class="p">]</span><span class="o">=</span><span class="p">{}</span>
+                <span class="n">bb</span><span class="p">[</span><span class="s2">&quot;home_computations&quot;</span><span class="p">][</span><span class="s2">&quot;joint_1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bb</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">][</span><span class="s2">&quot;home1&quot;</span><span class="p">][</span><span class="s2">&quot;jpos1&quot;</span><span class="p">]</span><span class="o">*</span><span class="mf">180.0</span><span class="o">/</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">+</span><span class="mf">100.0</span>
+                <span class="k">yield</span> <span class="n">SUCCEED</span> 
+
+        <span class="k">def</span> <span class="nf">my_parameters</span><span class="p">(</span><span class="n">bb</span><span class="p">:</span><span class="n">Blackboard</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">Dict</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">result</span><span class="p">[</span><span class="s2">&quot;joint_1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bb</span><span class="p">[</span><span class="s2">&quot;home_computations&quot;</span><span class="p">][</span><span class="s2">&quot;joint_1&quot;</span><span class="p">]</span>
+            <span class="n">result</span><span class="p">[</span><span class="s2">&quot;joint_2&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bb</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">][</span><span class="s2">&quot;home1&quot;</span><span class="p">][</span><span class="s2">&quot;jpos2&quot;</span><span class="p">]</span><span class="o">*</span><span class="mf">180.0</span><span class="o">/</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">+</span><span class="mi">5</span>
+            <span class="k">return</span> <span class="n">result</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;home1&quot;</span><span class="p">,</span><span class="s2">&quot;MovingHome&quot;</span> <span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">LogBlackboard</span><span class="p">(</span><span class="s2">&quot;LogBlackboard1&quot;</span><span class="p">,[</span><span class="s2">&quot;output&quot;</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span> <span class="n">MyComputations</span><span class="p">()</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">LogBlackboard</span><span class="p">(</span><span class="s2">&quot;LogBlackboard1&quot;</span><span class="p">,[</span><span class="s2">&quot;home_computations&quot;</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;home2&quot;</span><span class="p">,</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">,</span> <span class="n">cb</span><span class="o">=</span><span class="n">my_parameters</span><span class="p">,</span> <span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">)</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;home3&quot;</span><span class="p">,</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">LogBlackboard</span><span class="p">(</span><span class="s2">&quot;Logblackboard2&quot;</span><span class="p">,[</span><span class="s2">&quot;output&quot;</span><span class="p">]</span> <span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movingup&quot;</span><span class="p">,</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">),)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">FeedbackState</span><span class="p">(</span><span class="s2">&quot;feedback1&quot;</span><span class="p">,</span><span class="s2">&quot;up&quot;</span><span class="p">,</span>
+                                     <span class="k">lambda</span> <span class="n">bb</span><span class="p">:{</span>
+                                                <span class="s2">&quot;x_tcp&quot;</span><span class="p">:</span> <span class="n">bb</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">][</span><span class="s2">&quot;movingup&quot;</span><span class="p">][</span><span class="s2">&quot;x_tcp&quot;</span><span class="p">],</span>
+                                                <span class="s2">&quot;y_tcp&quot;</span><span class="p">:</span> <span class="n">bb</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">][</span><span class="s2">&quot;movingup&quot;</span><span class="p">][</span><span class="s2">&quot;y_tcp&quot;</span><span class="p">],</span>
+                                                <span class="s2">&quot;z_tcp&quot;</span><span class="p">:</span> <span class="n">bb</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">][</span><span class="s2">&quot;movingup&quot;</span><span class="p">][</span><span class="s2">&quot;z_tcp&quot;</span><span class="p">]</span>
+                                                <span class="p">}))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movingdown&quot;</span><span class="p">,</span><span class="s2">&quot;MovingDown&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">))</span>    
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">FeedbackState</span><span class="p">(</span><span class="s2">&quot;feedback1&quot;</span><span class="p">,</span><span class="s2">&quot;up&quot;</span><span class="p">,</span><span class="k">lambda</span> <span class="n">bb</span><span class="p">:{}))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movingup2&quot;</span><span class="p">,</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span> <span class="n">Message</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Hello world&quot;</span><span class="p">)</span> <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="yasmin_etasl_demos.sm_up_and_down.Up_and_down_with_parameters.__init__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">node</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        
+
+            <details class="quote">
+              <summary>Source code in <code>yasmin_etasl_demos/sm_up_and_down.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">node</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;Up_and_down_as_a_class&quot;</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">MyComputations</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;MyComputations&quot;</span><span class="p">,[</span><span class="n">SUCCEED</span><span class="p">])</span>
+        <span class="k">def</span> <span class="nf">co_execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">bb</span><span class="p">):</span>
+            <span class="n">bb</span><span class="p">[</span><span class="s2">&quot;home_computations&quot;</span><span class="p">]</span><span class="o">=</span><span class="p">{}</span>
+            <span class="n">bb</span><span class="p">[</span><span class="s2">&quot;home_computations&quot;</span><span class="p">][</span><span class="s2">&quot;joint_1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bb</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">][</span><span class="s2">&quot;home1&quot;</span><span class="p">][</span><span class="s2">&quot;jpos1&quot;</span><span class="p">]</span><span class="o">*</span><span class="mf">180.0</span><span class="o">/</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">+</span><span class="mf">100.0</span>
+            <span class="k">yield</span> <span class="n">SUCCEED</span> 
+
+    <span class="k">def</span> <span class="nf">my_parameters</span><span class="p">(</span><span class="n">bb</span><span class="p">:</span><span class="n">Blackboard</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">Dict</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">result</span><span class="p">[</span><span class="s2">&quot;joint_1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bb</span><span class="p">[</span><span class="s2">&quot;home_computations&quot;</span><span class="p">][</span><span class="s2">&quot;joint_1&quot;</span><span class="p">]</span>
+        <span class="n">result</span><span class="p">[</span><span class="s2">&quot;joint_2&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bb</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">][</span><span class="s2">&quot;home1&quot;</span><span class="p">][</span><span class="s2">&quot;jpos2&quot;</span><span class="p">]</span><span class="o">*</span><span class="mf">180.0</span><span class="o">/</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">+</span><span class="mi">5</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;home1&quot;</span><span class="p">,</span><span class="s2">&quot;MovingHome&quot;</span> <span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">LogBlackboard</span><span class="p">(</span><span class="s2">&quot;LogBlackboard1&quot;</span><span class="p">,[</span><span class="s2">&quot;output&quot;</span><span class="p">]))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span> <span class="n">MyComputations</span><span class="p">()</span> <span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">LogBlackboard</span><span class="p">(</span><span class="s2">&quot;LogBlackboard1&quot;</span><span class="p">,[</span><span class="s2">&quot;home_computations&quot;</span><span class="p">]))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;home2&quot;</span><span class="p">,</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">,</span> <span class="n">cb</span><span class="o">=</span><span class="n">my_parameters</span><span class="p">,</span> <span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">)</span> <span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;home3&quot;</span><span class="p">,</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">LogBlackboard</span><span class="p">(</span><span class="s2">&quot;Logblackboard2&quot;</span><span class="p">,[</span><span class="s2">&quot;output&quot;</span><span class="p">]</span> <span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movingup&quot;</span><span class="p">,</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">),)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">FeedbackState</span><span class="p">(</span><span class="s2">&quot;feedback1&quot;</span><span class="p">,</span><span class="s2">&quot;up&quot;</span><span class="p">,</span>
+                                 <span class="k">lambda</span> <span class="n">bb</span><span class="p">:{</span>
+                                            <span class="s2">&quot;x_tcp&quot;</span><span class="p">:</span> <span class="n">bb</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">][</span><span class="s2">&quot;movingup&quot;</span><span class="p">][</span><span class="s2">&quot;x_tcp&quot;</span><span class="p">],</span>
+                                            <span class="s2">&quot;y_tcp&quot;</span><span class="p">:</span> <span class="n">bb</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">][</span><span class="s2">&quot;movingup&quot;</span><span class="p">][</span><span class="s2">&quot;y_tcp&quot;</span><span class="p">],</span>
+                                            <span class="s2">&quot;z_tcp&quot;</span><span class="p">:</span> <span class="n">bb</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">][</span><span class="s2">&quot;movingup&quot;</span><span class="p">][</span><span class="s2">&quot;z_tcp&quot;</span><span class="p">]</span>
+                                            <span class="p">}))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movingdown&quot;</span><span class="p">,</span><span class="s2">&quot;MovingDown&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">))</span>    
+    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">FeedbackState</span><span class="p">(</span><span class="s2">&quot;feedback1&quot;</span><span class="p">,</span><span class="s2">&quot;up&quot;</span><span class="p">,</span><span class="k">lambda</span> <span class="n">bb</span><span class="p">:{}))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movingup2&quot;</span><span class="p">,</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span> <span class="n">Message</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Hello world&quot;</span><span class="p">)</span> <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div><p>options:
+      heading_level: 3
+      show_source: true
+      show_root_heading: true   </p>
+<h3 id="up-down-with-etasl-tasks-with-input-and-output-parameters-using-lambda-functions">Up &amp; Down, with eTaSL tasks with input and output parameters using lambda functions:</h3>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<a id="yasmin_etasl_demos.sm_up_and_down.Up_and_down_with_parameters_lambda"></a>
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="yasmin_etasl.yasmin_action_server.Sequence" href="../sequence/#yasmin_etasl.yasmin_ticking.Sequence">Sequence</a></code></p>
+
+
+
+
+
+
+
+              <details class="quote">
+                <summary>Source code in <code>yasmin_etasl_demos/sm_up_and_down.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Up_and_down_with_parameters_lambda</span><span class="p">(</span><span class="n">Sequence</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;Up_and_down_with_parameters_lambda&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;home1&quot;</span><span class="p">,</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">LogBlackboard</span><span class="p">(</span><span class="s2">&quot;LogBlackboard1&quot;</span><span class="p">,[</span><span class="s2">&quot;output&quot;</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">Compute</span><span class="p">(</span><span class="s2">&quot;compute_state&quot;</span><span class="p">,[</span><span class="s2">&quot;home_computations&quot;</span><span class="p">],</span> <span class="k">lambda</span> <span class="n">bb</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;joint_1&quot;</span> <span class="p">:</span> <span class="n">bb</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">][</span><span class="s2">&quot;home1&quot;</span><span class="p">][</span><span class="s2">&quot;jpos1&quot;</span><span class="p">]</span><span class="o">*</span><span class="mf">180.0</span><span class="o">/</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">+</span> <span class="mf">100.0</span><span class="p">}</span> <span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">LogBlackboard</span><span class="p">(</span><span class="s2">&quot;LogBlackboard1&quot;</span><span class="p">,[</span><span class="s2">&quot;home_computations&quot;</span><span class="p">]))</span>                                                   
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;home2&quot;</span><span class="p">,</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">,</span>
+                                            <span class="n">cb</span><span class="o">=</span><span class="k">lambda</span> <span class="n">bb</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;joint_1&quot;</span><span class="p">:</span> <span class="n">bb</span><span class="p">[</span><span class="s2">&quot;home_computations&quot;</span><span class="p">][</span><span class="s2">&quot;joint_1&quot;</span><span class="p">],</span>
+                                                           <span class="s2">&quot;joint_2&quot;</span><span class="p">:</span> <span class="n">bb</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">][</span><span class="s2">&quot;home1&quot;</span><span class="p">][</span><span class="s2">&quot;jpos2&quot;</span><span class="p">]</span><span class="o">*</span><span class="mf">180.0</span><span class="o">/</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">+</span><span class="mi">5</span><span class="p">,</span>
+                                                          <span class="p">},</span>
+                                            <span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">)</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;home3&quot;</span><span class="p">,</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">LogBlackboard</span><span class="p">(</span><span class="s2">&quot;Logblackboard2&quot;</span><span class="p">,[</span><span class="s2">&quot;output&quot;</span><span class="p">]</span> <span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movingup&quot;</span><span class="p">,</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">),)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movingdown&quot;</span><span class="p">,</span><span class="s2">&quot;MovingDown&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movingup2&quot;</span><span class="p">,</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span> <span class="n">Message</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Hello world&quot;</span><span class="p">)</span> <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="yasmin_etasl_demos.sm_up_and_down.Up_and_down_with_parameters_lambda.__init__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">node</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        
+
+            <details class="quote">
+              <summary>Source code in <code>yasmin_etasl_demos/sm_up_and_down.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;Up_and_down_with_parameters_lambda&quot;</span><span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;home1&quot;</span><span class="p">,</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">LogBlackboard</span><span class="p">(</span><span class="s2">&quot;LogBlackboard1&quot;</span><span class="p">,[</span><span class="s2">&quot;output&quot;</span><span class="p">]))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">Compute</span><span class="p">(</span><span class="s2">&quot;compute_state&quot;</span><span class="p">,[</span><span class="s2">&quot;home_computations&quot;</span><span class="p">],</span> <span class="k">lambda</span> <span class="n">bb</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;joint_1&quot;</span> <span class="p">:</span> <span class="n">bb</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">][</span><span class="s2">&quot;home1&quot;</span><span class="p">][</span><span class="s2">&quot;jpos1&quot;</span><span class="p">]</span><span class="o">*</span><span class="mf">180.0</span><span class="o">/</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">+</span> <span class="mf">100.0</span><span class="p">}</span> <span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">LogBlackboard</span><span class="p">(</span><span class="s2">&quot;LogBlackboard1&quot;</span><span class="p">,[</span><span class="s2">&quot;home_computations&quot;</span><span class="p">]))</span>                                                   
+    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;home2&quot;</span><span class="p">,</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">,</span>
+                                        <span class="n">cb</span><span class="o">=</span><span class="k">lambda</span> <span class="n">bb</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;joint_1&quot;</span><span class="p">:</span> <span class="n">bb</span><span class="p">[</span><span class="s2">&quot;home_computations&quot;</span><span class="p">][</span><span class="s2">&quot;joint_1&quot;</span><span class="p">],</span>
+                                                       <span class="s2">&quot;joint_2&quot;</span><span class="p">:</span> <span class="n">bb</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">][</span><span class="s2">&quot;home1&quot;</span><span class="p">][</span><span class="s2">&quot;jpos2&quot;</span><span class="p">]</span><span class="o">*</span><span class="mf">180.0</span><span class="o">/</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">+</span><span class="mi">5</span><span class="p">,</span>
+                                                      <span class="p">},</span>
+                                        <span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">)</span> <span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;home3&quot;</span><span class="p">,</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">LogBlackboard</span><span class="p">(</span><span class="s2">&quot;Logblackboard2&quot;</span><span class="p">,[</span><span class="s2">&quot;output&quot;</span><span class="p">]</span> <span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movingup&quot;</span><span class="p">,</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">),)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movingdown&quot;</span><span class="p">,</span><span class="s2">&quot;MovingDown&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movingup2&quot;</span><span class="p">,</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span> <span class="n">Message</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Hello world&quot;</span><span class="p">)</span> <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div><p>options:
+      heading_level: 3
+      show_source: true
+      show_root_heading: true   </p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href=".." class="btn btn-neutral float-left" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../tickingstate/" class="btn btn-neutral float-right" title="TickingState">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>LGPL-3.0-only</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://gitlab.kuleuven.be/rob-expressiongraphs/ros2/yasmin_etasl" class="fa fa-code-fork" style="color: #fcfcfc"> Gitlab</a>
+        </span>
+    
+    
+      <span><a href=".." style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../tickingstate/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="https://cdn.jsdelivr.net/gh/rod2ik/cdn@main/mkdocs/javascripts/mkdocs-graphviz.js"></script>
+      <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Erwin Aertbelien" />
+      <link rel="shortcut icon" href="img/favicon.ico" />
+    <title>Home - Yasmin_eTaSL documenttaion</title>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="assets/_mkdocstrings.css" rel="stylesheet" />
+        <link href="css/mkdocstrings.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Home";
+        var mkdocs_page_input_path = "index.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="." class="icon icon-home"> Yasmin_eTaSL documenttaion
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Documentation</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Home</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#summary-of-states-and-state-machines">Summary of states and state-machines</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#the-state-machine-state">The state-machine state</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#behavior-tree-like-states">Behavior-tree like states</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#related-to-conditions">Related to conditions</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#related-to-output">Related to output</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#related-to-timing">Related to timing</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#related-to-ros-2-services-life-cycle-and-topics">Related to ROS 2 services, life cycle and topics</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#related-to-etasl">Related to eTaSL</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#defining-your-own-states">Defining your own states</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Tutorials</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="upanddown/">Up & Down</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >YasminTicking</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" >Tickingstates</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="tickingstate/">TickingState</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="tickingstatemachine/">TickingStateMachine</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="visitor/">Visitor</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="generator/">Generator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="sequence/">Sequence</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="concurrentsequence/">ConcurrentSequence</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="fallback/">Fallback</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="concurrentfallback/">ConcurrentFallback</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="concurrent/">Concurrent</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="waitfor/">WaitFor</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="waitforever/">WaitForever</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="while/">While</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="repeat/">Repeat</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="message/">Message</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="logblackboard/">LogBlackboard</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="compute/">Compute</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="adapt/">Adapt</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" >ROS 2</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="serviceclient/">ServiceClient</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="lifecycle/">LifeCycle</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="topicstate/">TopicState</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="timedrepeat/">TimedRepeat</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="timedwait/">TimedWait</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="timeout/">Timeout</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="etaslstatemachine/">eTaSL</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="actionserver/">Action server</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="utils/">Utilities</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="about/">About</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="TODO/">Todo list</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href=".">Yasmin_eTaSL documenttaion</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Documentation</li>
+      <li class="breadcrumb-item active">Home</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="home">Home</h1>
+<h2 id="introduction">Introduction</h2>
+<p>This is a library for "ticking" statemachines, it is originally based upon the <a href="https://github.com/uleroboticsgroup/yasmin">Yasmin</a> library, but is substantially changed</p>
+<div class="admonition error">
+<p class="admonition-title">TODO</p>
+<p>Completely decouple from yasmin?  nothing substantial is left and would be easy to completely decouple from Yasmin.   Certainly in practice, it is used completely differently.  </p>
+</div>
+<p>Each <a class="autorefs autorefs-internal" href="tickingstate/#yasmin_etasl.yasmin_ticking.TickingState">TickingState</a> (see <a class="autorefs autorefs-internal" href="tickingstate/#yasmin_etasl.yasmin_ticking.TickingState">API</a> for detailed definition) is defined by the following methods:</p>
+<ul>
+<li>
+<p><strong>entry(self,blackboard)</strong>:
+    executed when the state is entered</p>
+</li>
+<li>
+<p><strong>doo(self,blackboard)</strong>:
+    execute while the state is running.  The state can take a longer time
+    but should regularly yield by returning TICKING.</p>
+</li>
+<li><strong>exit(self)</strong>:
+    is execute when the state exits, note that it does not has the blackboard as argument.
+    Will even be called when the other methods return an exception.</li>
+<li><strong>reset(self)</strong>:
+    Resets the state (i.e. calls exit() when appropriate and ensures that the next time, entry() will be called)</li>
+</ul>
+<pre><code class="language-mermaid">---
+title: Internal workings of TickingState
+---
+stateDiagram-v2
+   direction LR
+   classDef successClass  fill:darkgreen,color:white
+   classDef tickingClass  fill:yellow,color:black
+   classDef otherClass  fill:darkorange,color:white
+   classDef abortClass  fill:darkred,color:white
+   classDef centerClass  text-align:center
+
+entry --&gt; doo : returns &lt;br&gt;CONTINUE or TICK
+doo --&gt; doo: returns&lt;br&gt;TICK
+doo --&gt; exit : returns not TICK
+
+entry --&gt;exit: returns &lt;br&gt;not TICK or CONTINUE
+exit  --&gt; entry : exit() finished &lt;br&gt; or reset() called
+doo --&gt; exit : reset() called
+
+entry: calls entry()&lt;br&gt;if TICK return TICK&lt;br&gt;if exception return ABORT
+doo:   calls doo()&lt;br&gt; if TICK return TICK &lt;br&gt;if exception return ABORT
+exit:  calls exit()&lt;br&gt; return outcome&lt;br&gt;if exception return ABORT
+
+class entry centerClass
+</code></pre>
+<p>When using the state one calls it with the () operator. This calls then the execute() method that calls the entry,doo,exit methods
+appropriately, according to the figure above.</p>
+<p>The <a href="https://en.wikipedia.org/wiki/Visitor_pattern">visitor pattern</a> is used to be able to generically travers the hierarchy of states.
+the <strong>accept</strong> method of a TickingState calls the visitor appropriately.  Visitor is defined  <a class="autorefs autorefs-internal" href="visitor/#yasmin_etasl.yasmin_ticking.Visitor">here</a></p>
+<h2 id="summary-of-states-and-state-machines">Summary of states and state-machines</h2>
+<p>For full specification, see the API-documentation.</p>
+<p>Sometimes states have underlying states, e.g. a state-machine or a sequence.  Typically they can be specfied in two ways:</p>
+<ul>
+<li>a list of children in the constructor. This is handy when the substates are also simple to construct.  If there is only one underlying state, the constructor argument is typically called <code>state</code>, if there are multiple underlying states, the constructor argument is typically called <code>children</code>.</li>
+<li>by subclassing the state (e.g. Sequence), and calling <code>add_state()</code> in the constructor of this subclass.  This is handy when the definition of the substates is a bit more complex.</li>
+</ul>
+<p>In some cases, more information needs to be given and only the <code>add_state</code> approach is applicable (e.g. TickingStateMachine).</p>
+<h3 id="the-state-machine-state">The state-machine state</h3>
+<p><a class="autorefs autorefs-internal" href="tickingstatemachine/#yasmin_etasl.yasmin_ticking.TickingStateMachine">TickingStateMachine</a> implements a basic state machine. You
+can add nodes using <a class="autorefs autorefs-internal" href="tickingstatemachine/#yasmin_etasl.yasmin_ticking.TickingStateMachine.add_state">add_state</a>.  In this call
+you also specify the transitions between states.  These transitions are specified by mapping an outcome of the state to the name of one of the states in the state machine.  </p>
+<p>The <a class="autorefs autorefs-internal" href="tickingstatemachine/#yasmin_etasl.yasmin_ticking.TickingStateMachine.__init__">constructor</a> takes a (<strong>instance</strong>) name of the state machine, its allowable outcomes and two optional callback functions <code>transitioncb</code> and <code>statecb</code>.
+Default implementations of the callbacks are described in <a class="autorefs autorefs-internal" href="default_callbacks/#yasmin_etasl.yasmin_ticking.default_transitioncb">default|_transition_cb</a> and <a class="autorefs autorefs-internal" href="default_callbacks/#yasmin_etasl.yasmin_ticking.default_statecb">default_statecb</a>.</p>
+<h3 id="behavior-tree-like-states">Behavior-tree like states</h3>
+<p>The most important behavior-tree like states are <a class="autorefs autorefs-internal" href="sequence/#yasmin_etasl.yasmin_ticking.Sequence">Sequence</a>,<a class="autorefs autorefs-internal" href="fallback/#yasmin_etasl.yasmin_ticking.Fallback">Fallback</a>,
+<a class="autorefs autorefs-internal" href="concurrentsequence/#yasmin_etasl.yasmin_ticking.ConcurrentSequence">ConcurrentSequence</a>,<a class="autorefs autorefs-internal" href="concurrentfallback/#yasmin_etasl.yasmin_ticking.ConcurrentFallback">ConcurrentFallback</a>, and <a class="autorefs autorefs-internal" href="repeat/#yasmin_etasl.yasmin_ticking.Repeat">Repeat</a></p>
+<p>The main difference is that for a typical behavior-tree implementation the outcomes can only be RUNNING, SUCCESS or FAILURE. Here, there can be more types of outcome.   The mapping to traditional behavior trees is explained below, detailed behavior is documented in the diagrams in the API-documentation.</p>
+<ul>
+<li>
+<p><strong>Fallback</strong> (or <em>Any(success)</em>):   Implements a behaviortree-like Fallback node (concurrently executed):</p>
+<ul>
+<li>other outcome is success</li>
+<li>CANCEL outcome is failure</li>
+<li>TICKING outcome is running</li>
+</ul>
+<p>Finishes if <strong>any</strong> has success.  Success is defined by an outcome different from CANCEL.
+In other words, success can be differentiated by different outcomes.</p>
+</li>
+<li>
+<p><strong>Sequence</strong> (or <em>All(success)</em>). Implements a behaviortree-like Sequence node (concurrently executed):</p>
+<ul>
+<li>SUCCEED outcome is success,</li>
+<li>any other outcome is failure</li>
+<li>TICKING outcome is running</li>
+</ul>
+<p>Finishes if <strong>all</strong> have success. Success is defined by an outcome SUCCEED.
+In other words, failure can be differentiated by different outcomes.</p>
+</li>
+</ul>
+<p><a class="autorefs autorefs-internal" href="concurrentsequence/#yasmin_etasl.yasmin_ticking.ConcurrentSequence">ConcurrentSequence</a> and <a class="autorefs autorefs-internal" href="concurrentfallback/#yasmin_etasl.yasmin_ticking.ConcurrentFallback">ConcurrentFallback</a> are basically the same as <a class="autorefs autorefs-internal" href="sequence/#yasmin_etasl.yasmin_ticking.Sequence">Sequence</a> and <a class="autorefs autorefs-internal" href="fallback/#yasmin_etasl.yasmin_ticking.Fallback">Fallback</a> but execute concurrently: at each tick they go to their complete list of states and follow the logic of sequence or fallback. e.g. in a ConcurrentSequence the states are executed concurrently, but within one tick, they are executed in the order specified.</p>
+<p><a class="autorefs autorefs-internal" href="concurrent/#yasmin_etasl.yasmin_ticking.Concurrent">Concurrent</a> executes also its children concurrently (calling them in sequence for each tick). Concurrent stops executing when any child returns any outcome different from TICKING. See <a class="autorefs autorefs-internal" href="concurrent/#yasmin_etasl.yasmin_ticking.Concurrent">API</a> for description fo detailed behavior.</p>
+<p>The <strong>Repeat</strong> state has one underlying state and repeats this state for a given number of times.</p>
+<h3 id="related-to-conditions">Related to conditions</h3>
+<ul>
+<li><a class="autorefs autorefs-internal" href="waitfor/#yasmin_etasl.yasmin_ticking.WaitFor">waitFor</a> waits until a condition is satisfied.  This condition is given by a callback.
+   Note that this callback can be defined using Python's <a href="https://python-reference.readthedocs.io/en/latest/docs/operators/lambda.html">lambda</a></li>
+<li><a class="autorefs autorefs-internal" href="waitforever/#yasmin_etasl.yasmin_ticking.WaitForever">WaitForever</a> waits forever, you probably want something to be running in parallel with this.</li>
+<li><a class="autorefs autorefs-internal" href="while/#yasmin_etasl.yasmin_ticking.While">While</a> continues to execute the underlying state while checking the given condition. It finishes with CANCEL when the condition returns false, it finishes also when the underlying state finishes and returns the outcome of the underlying state.</li>
+</ul>
+<h3 id="related-to-output">Related to output</h3>
+<ul>
+<li>
+<p><a class="autorefs autorefs-internal" href="message/#yasmin_etasl.yasmin_ticking.Message">Message</a> is a state to quickly return send message to the log.
+Its arguments are either a string or either a callback function.  Since the string is specified at
+construction time, the callback function is handy when you want to return something depending on the actual state while running.  Python's <a href="https://python-reference.readthedocs.io/en/latest/docs/operators/lambda.html">lambda</a> could be useful to specify the callback.</p>
+</li>
+<li>
+<p><a class="autorefs autorefs-internal" href="logblackboard/#yasmin_etasl.yasmin_ticking.LogBlackboard">LogBlackboard</a> logs the blackboard or a part of the blackboard.
+The location to log is given by a list of strings.  </p>
+</li>
+</ul>
+<p>Example:
+   <code>LogBlackboard|(["output","move_home"])</code>
+   Logs the content of the blackboard under <code>blackboard["output]["move_home"]</code></p>
+<h3 id="related-to-timing">Related to timing</h3>
+<ul>
+<li><a class="autorefs autorefs-internal" href="timedwait/#yasmin_etasl.yasmin_ticking_ros.TimedWait">TimedWait</a> waits for the given duration and returns SUCCEED.</li>
+<li><a class="autorefs autorefs-internal" href="timedwait/#yasmin_etasl.yasmin_ticking_ros.TimedWait">TimedRepeat</a> repeats the underlying state for a given number of time.  The time between two repetitions is specified.</li>
+<li><a class="autorefs autorefs-internal" href="timeout/#yasmin_etasl.yasmin_ticking_ros.Timeout">Timeout</a> executes the underlying state at long as its outcome is TICKING. It finishes when the outcome is not ticking and returns this outcome.  It also finishes when the given duration is exceeded and returns TIMEOUT.</li>
+</ul>
+<h3 id="related-to-ros-2-services-life-cycle-and-topics">Related to ROS 2 services, life cycle and topics</h3>
+<p>To manage file locations in a ROS2 environment a function <a class="autorefs autorefs-internal" href="utils/#yasmin_etasl.yasmin_ticking_ros.expand_ref">expand_ref</a> is provided that expands references to ROS2 packages (or more preciselly ament packages) (using <code>$[packagename]</code>) or environmental variables (using <code>${environmental_variable}</code>)</p>
+<ul>
+<li>
+<p><a class="autorefs autorefs-internal" href="serviceclient/#yasmin_etasl.yasmin_ticking_ros.ServiceClient">ServiceClient</a> creates a TickingState that calls a ROS2 service and generates an outcome when the service returns back. While waiting, it continues to tick. Subclasses need to implement two methods <code>fill_in_request</code> to fill in the service request, most probably using information from the blackboard, and <code>process_result</code> to process the result from the service request, most probably putting some information in the blackboard.</p>
+</li>
+<li>
+<p><a class="autorefs autorefs-internal" href="lifecycle/#yasmin_etasl.yasmin_ticking_ros.LifeCycle">LifeCycle</a> manages the lifecycle of some other ROS2 node.
+  The node is constructed with service_name, transition (see below), timeout and the transition is requested during execution of the state.
+  See below for a simplified view of this lifecycle (transition states not included):</p>
+</li>
+</ul>
+<pre><code class="language-mermaid">    stateDiagram-v2
+        direction LR
+        classDef successClass  fill:darkgreen,color:white
+        classDef tickingClass  fill:yellow,color:black
+        classDef otherClass  fill:darkorange,color:white
+        classDef abortClass  fill:darkred,color:white
+
+
+        [*] --&gt; unconfigured
+        unconfigured --&gt; inactive : CONFIGURE
+        inactive --&gt; active : ACTIVATE
+        inactive --&gt; unconfigured : CLEANUP
+        inactive --&gt; finalized : INACTIVE_SHUTDOWN
+        active --&gt; inactive : DEACTIVATE
+        active --&gt; finalized : ACTIVE_SHUTDOWN
+        unconfigured --&gt; finalized : UNCONFIGURED_SHUTDOWN
+</code></pre>
+<p>These are the transtions that can be passed to a LifeCycle state:
+    <code>python
+        class Transition(Enum):
+            CONFIGURE              = 1
+            CLEANUP                = 2
+            ACTIVATE               = 3
+            DEACTIVATE             = 4
+            UNCONFIGURED_SHUTDOWN  = 5
+            INACTIVE_SHUTDOWN      = 6
+            ACTIVE_SHUTDOWN        = 7</code></p>
+<h3 id="related-to-etasl">Related to eTaSL</h3>
+<h3 id="defining-your-own-states">Defining your own states</h3>
+<p>To implement a TickingState, you have to implement:</p>
+<ul>
+<li><code>def entry(self, blackboard: Blackboard) -&gt; str</code>  called when execute() is called for the first time. returns an outcome but has one additional outcome CONTINUE that indicates its preference to directly call <code>doo()</code> after its return, without a tick.</li>
+<li><code>def doo(self, blackboard: Blackboard) -&gt; str</code> called for the duration of the task, as long as you return TICKING</li>
+<li><code>def exit(self) -&gt; str</code>: should call <code>return super().exit()</code> at the end, is guaranteed to be called after the last time that execute() was called.</li>
+<li><code>def reset(self)-&gt;None:</code>  should call <code>super().exit()</code> at the end: to reset the state <em>and its children</em>.</li>
+<li><code>def accept(self, visitor:Visitor)</code> calls <code>pre</code> on the visitor, calls accept(visitor) on all its children, and then calls <code>post</code> on the visitor.  </li>
+</ul>
+<p>To facilitate the definition of tickingStates, you can use <a href="https://www.geeksforgeeks.org/generators-in-python/">Python generators</a>, for this 
+the <a class="autorefs autorefs-internal" href="generator/#yasmin_etasl.yasmin_ticking.Generator">Generator</a> class is defined.
+This allows to define TickingStates using a python generator method <code>co_execute(self, blackboard:Blackboard)</code>.  This routine has to regularly 
+yield control using a <code>yield &lt;outcom&gt;</code> statement. This makes it easy to specify a TickingState.</p>
+<p>Keep in mind that the <code>reset</code> and <code>accept</code> methods still need to be defined when the state has children (otherwise 
+the default implementations are sufficient)</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Forgetting to implement these methods can lead to silent failures.  Even worse, the state will 
+work the first time, but not the second time.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Outside code that repeately calls a state-machine has to call <code>reset</code> itself before calling the state-machine.    </p>
+</div>
+<p>For the <strong>common use cases</strong> of a Generator with <strong>one child state</strong> and a Generator 
+with a <strong>list of child states</strong> implementations are provided that implement <code>reset</code> and <code>accept</code> for you:
+<a class="autorefs autorefs-internal" href="generator/#yasmin_etasl.yasmin_ticking.GeneratorWithState">GeneratorWithState</a> and 
+[GeneratorWithList][yasmin_etasl.yasmin_ticking.GeneratorWithLists] are generic implementations to
+ be uses to subclass from while implementing states with one or multiple underlying states.</p>
+<div class="admonition recommendation">
+<p class="admonition-title">Recommendation</p>
+<p>Look a a few implementations such as <code>WaitFor</code>,<code>Repeat</code>, <code>Concurrent</code></p>
+</div>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="upanddown/" class="btn btn-neutral float-right" title="Up & Down">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>LGPL-3.0-only</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://gitlab.kuleuven.be/rob-expressiongraphs/ros2/yasmin_etasl" class="fa fa-code-fork" style="color: #fcfcfc"> Gitlab</a>
+        </span>
+    
+    
+    
+      <span><a href="upanddown/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = ".";</script>
+    <script src="js/theme_extra.js"></script>
+    <script src="js/theme.js"></script>
+      <script src="https://cdn.jsdelivr.net/gh/rod2ik/cdn@main/mkdocs/javascripts/mkdocs-graphviz.js"></script>
+      <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+      <script src="search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
