@@ -233,7 +233,7 @@ string parameters
 </li>
 </ul>
 <h2 id="server">Server</h2>
-<img alt="state machine of action server" src="../static/goal_state_machine.png" /></p>
+<p><img alt="state machine of action server" src="../static/goal_state_machine.png" /></p>
 <p>The state machine is run in the EXECUTING state of the above figure from the ROS2 documentation.  The <a class="autorefs autorefs-internal" href="#yasmin_etasl.yasmin_action_server.YasminActionServer.goal_callback">goal_callback</a> checks whether the task exists in the dictionary of state machines and optionally validates the input parameters of the task using a schema.<br />
 The action server is implemented in the <a class="autorefs autorefs-internal" href="#yasmin_etasl.yasmin_action_server.YasminActionServer">YasminActionServer</a> described below.</p>
 <p>The tasks that the action server can react to are described by a Dictionary that maps the name of the task to an instance of TickingState (a state machine)..</p>
