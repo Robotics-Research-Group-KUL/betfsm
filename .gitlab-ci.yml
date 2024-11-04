@@ -3,7 +3,8 @@ image: python:3.8-buster
 pages:
   stage: deploy
   script:
-  - cp -r documentation/site/* ../public
+  - mkdir -p ./public
+  - cp -r documentation/site/* ./public
   artifacts:
     paths:
     - public
