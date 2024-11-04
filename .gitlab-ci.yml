@@ -1,0 +1,14 @@
+image: python:3.8-buster
+
+pages:
+  stage: deploy
+  script:
+  - cp -r documentation/site/* ../public
+  artifacts:
+    paths:
+    - public
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: always
+    - if: $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH
+      when: manual
