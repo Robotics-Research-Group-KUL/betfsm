@@ -1,17 +1,17 @@
 
-::: yasmin_etasl.yasmin_ticking.Generator
+::: betfsm.betfsm.Generator
     options:
       show_source: false
       show_root_heading: true 
 
 
-::: yasmin_etasl.yasmin_ticking.GeneratorWithState
+::: betfsm.betfsm.GeneratorWithState
     options:
       show_source: false
       show_root_heading: true 
 
 
-::: yasmin_etasl.yasmin_ticking.GeneratorWithList
+::: betfsm.betfsm.GeneratorWithList
     options:
       show_source: false
       show_root_heading: true 

@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 import glob
 
-package_name = 'yasmin_etasl_demos'
+package_name = 'betfsm_demos'
 
 import os
 
@@ -29,7 +29,7 @@ setup(
     zip_safe=True,
     maintainer='Erwin Aertbeliën',
     maintainer_email='Erwin.Aertbelien@kuleuven.be',
-    description='tutorial scripts for yasmin_etasl',
+    description='tutorial scripts for BeTFSM',
     license='LGPL-3.0-only',
     tests_require=['pytest'],
     entry_points={

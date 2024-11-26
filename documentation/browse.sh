@@ -21,4 +21,4 @@ else
     echo "reusing existing virtual environment"
 fi
 
-$BASE/venv/bin/mkdocs serve -w ../yasmin_etasl -o
+$BASE/venv/bin/mkdocs serve -w ../betfsm  -o

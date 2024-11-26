@@ -27,7 +27,7 @@ This interface is generic and applies to all state machines that are controlled:
 
 - **goal**
   `task` is a label that indicates which state-machine needs to be executed
-  `parameters` is a string with JSON describing the parameters of the task.  These parameters will be put in Yasmin's blackboard for use within the statemachine.
+  `parameters` is a string with JSON describing the parameters of the task.  These parameters will be put in BeTFSM's blackboard for use within the statemachine.
   Optionally these parameters can be validated using a JSON-Schema 
 
 - **result**
@@ -43,14 +43,14 @@ This interface is generic and applies to all state machines that are controlled:
 
 ![state machine of action server](./static/goal_state_machine.png)
 
-The state machine is run in the EXECUTING state of the above figure from the ROS2 documentation.  The [goal_callback][yasmin_etasl.yasmin_action_server.YasminActionServer.goal_callback] checks whether the task exists in the dictionary of state machines and optionally validates the input parameters of the task using a schema.  
-The action server is implemented in the [YasminActionServer][yasmin_etasl.yasmin_action_server.YasminActionServer] described below.
+The state machine is run in the EXECUTING state of the above figure from the ROS2 documentation.  The [goal_callback][betfsm.betfsm_action_server.BeTFSMActionServer.goal_callback] checks whether the task exists in the dictionary of state machines and optionally validates the input parameters of the task using a schema.  
+The action server is implemented in the [BeTFSMActionServer][betfsm.betfsm_action_server.BeTFSMActionServer] described below.
 
 The tasks that the action server can react to are described by a Dictionary that maps the name of the task to an instance of TickingState (a state machine)..
 
 To specify a schema to validate the parameters, add `input_parameters_schema` member to the TickingState with the schena in python format (i.e. using json.loads("..." )
 
-::: yasmin_etasl.yasmin_action_server.YasminActionServer
+::: betfsm.betfsm_action_server.BeTFSMActionServer
     options:
       heading_level: 3
       show_source: false
@@ -58,7 +58,7 @@ To specify a schema to validate the parameters, add `input_parameters_schema` me
 
 ## Giving intermediate feedback
 
-::: yasmin_etasl.yasmin_action_server.FeedbackState
+::: betfsm.betfsm_action_server.FeedbackState
     options:
       heading_level: 3
       show_source: false
@@ -75,7 +75,7 @@ The `example_action_server` example shows a case where we continuously check for
 cancelation is detected go out of the state machines and perform a shutdown procedure.  The following class is
 used for this purpose:
 
-::: yasmin_etasl.yasmin_action_server.WhileNotCanceled
+::: betfsm.betfsm_action_server.WhileNotCanceled
     options:
       heading_level: 4
       show_source: false
@@ -106,7 +106,7 @@ The `example_action_server2` describes another approach where there is only a ch
 at specific locations of the state machine(s).  The following TickingState is used for this purpose:
 
 
-::: yasmin_etasl.yasmin_action_server.CheckForCanceledAction
+::: betfsm.betfsm_action_server.CheckForCanceledAction
     options:
       heading_level: 4
       show_source: false

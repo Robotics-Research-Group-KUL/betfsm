@@ -1,16 +1,16 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>yasmin_etasl_demos</name>
+  <name>betfsm</name>
   <version>0.0.0</version>
-  <description>tutorial scripts for yasmin_etasl</description>
-  <maintainer email="Erwin.Aertbelien@kuleuven.be">Erwin Aertbeliën</maintainer>
+  <description> A behavior tree and finite state machine framework in Python using cooperative multitasking where new state machines or behavior-tree nodes can be easily specified </description>
+  <maintainer email="Erwin.Aertbelien@kuleuven.be">ros2</maintainer>
   <license>LGPL-3.0-only</license>
 
-  <depend>yasmin_etasl_interfaces</depend>
-  <depend>yasmin_etasl</depend>
-  <exec_depend>etasl_ros2</exec_depend>
-  <exec_depend>etasl_ros2_application_template</exec_depend>
+  <depend>betfsm_interfaces</depend>
+  <depend>etasl_ros2</depend>
+  <depend>etasl_ros2_application_template</depend>
+  <exec_depend>rclpy</exec_depend>
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>

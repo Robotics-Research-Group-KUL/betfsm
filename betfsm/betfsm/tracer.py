@@ -18,11 +18,11 @@
 
 
 
-from .yasmin_ticking import *
-from .yasmin_ticking_ros import *
-from .yasmin_ticking_etasl import *
+from .betfsm import *
+from .betfsm_ros import *
+from .betfsm_etasl import *
 
-from yasmin_etasl_interfaces.msg import Trace
+from betfsm_interfaces.msg import Trace
 import rclpy.time
 import rclpy
 
@@ -86,7 +86,7 @@ class TracePublisher(Generator):
             sm:
                 statemachine whose representation you want to publish
             node:
-                node, YasminTickingNode.get_instance() if None
+                node, BeTFSMNode.get_instance() if None
             skip:
                 skip this amount of cycles before sending out a topic
             do_not_expand_types:
@@ -96,7 +96,7 @@ class TracePublisher(Generator):
                 list of instance names that you don't want to expand (go in detail)
         """
         if node is None:
-            node = YasminTickingNode.get_instance()
+            node = BeTFSMNode.get_instance()
         self.node = node
         super().__init__("trace_publisher",[SUCCEED])
         self.sm = sm

@@ -1,6 +1,6 @@
-site_name: "Yasmin_eTaSL documenttaion"
+site_name: "BeTFSM documenttaion"
 site_author: "Erwin Aertbelien"
-repo_url: "https://gitlab.kuleuven.be/rob-expressiongraphs/ros2/yasmin_etasl"
+repo_url: "https://gitlab.kuleuven.be/rob-expressiongraphs/ros2/BeTFSM"
 copyright: "LGPL-3.0-only"
 theme:
   name: "readthedocs"
@@ -13,33 +13,32 @@ nav:
     - "Home": 'index.md'
     - "Tutorials":
       - "Up & Down": "upanddown.md"
-    - "YasminTicking":
-      - "Tickingstates":
-        - "TickingState" : "tickingstate.md"
-        - "TickingStateMachine" : "tickingstatemachine.md"
-        - "Visitor" : "visitor.md"
-        - "Generator" : "generator.md"
-        - "Sequence" : "sequence.md"
-        - "ConcurrentSequence" : "concurrentsequence.md"
-        - "Fallback" : "fallback.md"
-        - "ConcurrentFallback" : "concurrentfallback.md"
-        - "Concurrent" : "concurrent.md"
-        - "WaitFor" : 'waitfor.md'
-        - "WaitForever" : 'waitforever.md'
-        - "While" : 'while.md'
-        - "Repeat" : 'repeat.md'        
-        - "Message" : "message.md"
-        - "LogBlackboard" : 'logblackboard.md'
-        - "Compute" : "compute.md"
-        - "Adapt" : "adapt.md"
-      - "ROS 2":  
-        - "ServiceClient" : 'serviceclient.md'
-        - "LifeCycle" : 'lifecycle.md'
-        - "TopicState" : 'topicstate.md'
-        - "TimedRepeat" : timedrepeat.md
-        - "TimedWait" : 'timedwait.md'
-        - "Timeout" : "timeout.md"
-      - "eTaSL": 'etaslstatemachine.md'
+    - "BeTFSM":
+      - "TickingState" : "tickingstate.md"
+      - "TickingStateMachine" : "tickingstatemachine.md"
+      - "Visitor" : "visitor.md"
+      - "Generator" : "generator.md"
+      - "Sequence" : "sequence.md"
+      - "ConcurrentSequence" : "concurrentsequence.md"
+      - "Fallback" : "fallback.md"
+      - "ConcurrentFallback" : "concurrentfallback.md"
+      - "Concurrent" : "concurrent.md"
+      - "WaitFor" : 'waitfor.md'
+      - "WaitForever" : 'waitforever.md'
+      - "While" : 'while.md'
+      - "Repeat" : 'repeat.md'        
+      - "Message" : "message.md"
+      - "LogBlackboard" : 'logblackboard.md'
+      - "Compute" : "compute.md"
+      - "Adapt" : "adapt.md"
+    - "BeTFSM ROS2":  
+      - "ServiceClient" : 'serviceclient.md'
+      - "LifeCycle" : 'lifecycle.md'
+      - "TopicState" : 'topicstate.md'
+      - "TimedRepeat" : timedrepeat.md
+      - "TimedWait" : 'timedwait.md'
+      - "Timeout" : "timeout.md"
+    - "BeTFSM eTaSL": 'etaslstatemachine.md'
     - "Action server": "actionserver.md"
     - "Utilities" : 'utils.md'
     - "About": 'about.md'

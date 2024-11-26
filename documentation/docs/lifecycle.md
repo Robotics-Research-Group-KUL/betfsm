@@ -1,5 +1,5 @@
 
-::: yasmin_etasl.yasmin_ticking_ros.LifeCycle
+::: betfsm.betfsm_ros.LifeCycle
     options:
       show_source: false
       show_root_heading: true 

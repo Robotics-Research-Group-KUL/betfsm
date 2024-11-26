@@ -1,8 +1,8 @@
 from rclpy.executors import MultiThreadedExecutor
-from yasmin_etasl.yasmin_ticking_etasl import *
-from yasmin_etasl.logger import get_logger,set_logger
-from yasmin_etasl.graphviz_visitor import *
-from yasmin_etasl.yasmin_action_server import YasminActionServer,CheckForCanceledAction,WhileNotCanceled
+from betfsm.betfsm_etasl import *
+from betfsm.logger import get_logger,set_logger
+from betfsm.graphviz_visitor import *
+from betfsm.betfsm_action_server import BeTFSMActionServer,CheckForCanceledAction,WhileNotCanceled
 import rclpy 
 
 
@@ -48,7 +48,7 @@ def main(args=None):
 
     rclpy.init(args=args)
     
-    node = YasminTickingNode.get_instance("yasmin_action_server")
+    node = BeTFSMNode.get_instance("betfsm_action_server")
 
 
     set_logger("default",node.get_logger())
@@ -58,7 +58,7 @@ def main(args=None):
 
     blackboard = {} 
     # load your tasks
-    load_task_list("$[yasmin_etasl_demos]/tasks/my_tasks.json",blackboard)
+    load_task_list("$[betfsm_demos]/tasks/my_tasks.json",blackboard)
 
 
     # which state-machine will be exeuted for which task name:
@@ -71,7 +71,7 @@ def main(args=None):
     
     print(statemachines)
 
-    action_server = YasminActionServer(blackboard,statemachines,100,node)
+    action_server = BeTFSMActionServer(blackboard,statemachines,100,node)
 
     # single or multi threaded executor does not matter here, only default callback group is used (which is mutually exclusive)
     executor = MultiThreadedExecutor()  

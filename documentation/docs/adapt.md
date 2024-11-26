@@ -1,5 +1,5 @@
 
-::: yasmin_etasl.yasmin_ticking.Adapt
+::: betfsm.betfsm.Adapt
     options:
       show_source: false
       show_root_heading: true 

@@ -1,4 +1,4 @@
-# yasmin_ticking.py
+# betfsm.py
 #
 # Copyright (C) Erwin Aertbeliën, 2024
 #
@@ -16,8 +16,6 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-
-# proposed additions/adaptations of etasl_yasmin_utils by Erwin.
 #
 # Draft
 
@@ -1288,8 +1286,8 @@ def default_statecb(statemachine,blackboard,state):
 
 class TickingStateMachine(TickingState):
     """
-    A version of StateMachine that calls a callback function before entering a state and/or at each transition.
-    extended version of the cbStateMachine from yasmin_action
+    A StateMachine that calls a callback function before entering a state and/or at each transition.
+    
          
     This statemachine is capable of working together with TickingState:
 

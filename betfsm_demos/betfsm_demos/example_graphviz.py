@@ -24,19 +24,19 @@ import rclpy
 import sys
 
 import rclpy.time
-from yasmin_etasl.yasmin_ticking import *
-from yasmin_etasl.yasmin_ticking_ros import *
-from yasmin_etasl.yasmin_ticking_etasl import *
-from yasmin_etasl.graphviz_visitor import *
+from betfsm.betfsm import *
+from betfsm.betfsm_ros import *
+from betfsm.betfsm_etasl import *
+from betfsm.graphviz_visitor import *
 
 from . import sm_up_and_down
-from yasmin_etasl.logger import get_logger,set_logger
+from betfsm.logger import get_logger,set_logger
 
 
 
-class YasminRunner:
+class BeTFSMRunner:
     def __init__(self,node:Node, statemachine:TickingState, blackboard: Blackboard, sampletime):
-        get_logger().info(f"YasminRunner started with sample time {sampletime}")
+        get_logger().info(f"BeTFSMRunner started with sample time {sampletime}")
         self.node  = node
         self.sm    = statemachine
         self.bm    = blackboard
@@ -130,10 +130,10 @@ def run_for_specified_duration_while_publishing( sm, duration):
 # main
 def main(args=None):
 
-    print("yasmin_etasl")
+    print("BeTFSM")
     rclpy.init(args=args)
 
-    my_node = YasminTickingNode.get_instance("test_ea")
+    my_node = BeTFSMNode.get_instance("test_ea")
 
     set_logger("default",my_node.get_logger())
     #set_logger("service",my_node.get_logger())
@@ -143,7 +143,7 @@ def main(args=None):
 
     blackboard = {}
 
-    load_task_list("$[yasmin_etasl]/tasks/my_tasks.json",blackboard)
+    load_task_list("$[betfsm]/tasks/my_tasks.json",blackboard)
     
  
     sm = run_for_specified_duration_while_publishing( example(), Duration(seconds=300))
@@ -155,8 +155,7 @@ def main(args=None):
     vis.print()
 
 
-    # YasminViewerPub("Complete FSM", sm)
-    runner = YasminRunner(my_node,sm,blackboard,0.01)
+    runner = BeTFSMRunner(my_node,sm,blackboard,0.01)
     
     try:
         while (runner.get_outcome()=="TICKING"):
@@ -171,3 +170,4 @@ def main(args=None):
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv))
+

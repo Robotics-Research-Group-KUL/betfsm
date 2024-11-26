@@ -6,13 +6,13 @@ Description of the interface towards eTaSL.
 ## Utility functions
 Some utility functions to manage tasks are provided:
 
-::: yasmin_etasl.yasmin_ticking_etasl.get_task
+::: betfsm.betfsm_etasl.get_task
     options:
       heading_level: 3
       show_source: false
       show_root_heading: true 
 
-::: yasmin_etasl.yasmin_ticking_etasl.load_task_list
+::: betfsm.betfsm_etasl.load_task_list
     options:
       heading_level: 3
       show_source: false
@@ -21,7 +21,7 @@ Some utility functions to manage tasks are provided:
 
 ## The eTaSLStateMachine
 
-::: yasmin_etasl.yasmin_ticking_etasl.eTaSL_StateMachine
+::: betfsm.betfsm_etasl.eTaSL_StateMachine
     options:
       heading_level: 3
       show_source: false
@@ -32,31 +32,31 @@ Some utility functions to manage tasks are provided:
 
 
 
-::: yasmin_etasl.yasmin_ticking_etasl.SetTaskParameters
+::: betfsm.betfsm_etasl.SetTaskParameters
     options:
       heading_level: 3
       show_source: false
       show_root_heading: true 
 
-::: yasmin_etasl.yasmin_ticking_etasl.ReadRobotSpecification
+::: betfsm.betfsm_etasl.ReadRobotSpecification
     options:
       heading_level: 3
       show_source: false
       show_root_heading: true 
 
-::: yasmin_etasl.yasmin_ticking_etasl.ReadTaskSpecification
+::: betfsm.betfsm_etasl.ReadTaskSpecification
     options:
       heading_level: 3    
       show_source: false
       show_root_heading: true 
 
-::: yasmin_etasl.yasmin_ticking_etasl.eTaSLOutput
+::: betfsm.betfsm_etasl.eTaSLOutput
     options:
       heading_level: 3    
       show_source: false
       show_root_heading: true 
 
-::: yasmin_etasl.yasmin_ticking_etasl.eTaSLEvent
+::: betfsm.betfsm_etasl.eTaSLEvent
     options:
       heading_level: 3    
       show_source: false

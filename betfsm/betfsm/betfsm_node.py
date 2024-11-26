@@ -1,5 +1,4 @@
-# Copyright (C) 2023  Miguel Ángel González Santamarta
-# Adapted by Erwin Aertbelien,2024
+# Erwin Aertbelien,2024
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,34 +21,27 @@ from rclpy.node import Node
 from rclpy.executors import MultiThreadedExecutor
 
 
-class YasminTickingNode(Node):
+class BeTFSMNode(Node):
 
-    _instance: "YasminTickingNode" = None
+    _instance: "BeTFSMNode" = None
     _lock: RLock = RLock()
     _executor: MultiThreadedExecutor = None
     _spin_thread: Thread = None
 
     @staticmethod
-    def get_instance(*args,**kwargs) -> "YasminTickingNode":
-        #print("YasmiTickingNode.get_instance called with:",*args,**kwargs)
-        with YasminTickingNode._lock:
-            if YasminTickingNode._instance == None:
-                YasminTickingNode._instance = YasminTickingNode(*args,**kwargs)
-            #print(YasminTickingNode._instance)
-            return YasminTickingNode._instance
+    def get_instance(*args,**kwargs) -> "BeTFSMNode":
+        with BeTFSMNode._lock:
+            if BeTFSMNode._instance == None:
+                BeTFSMNode._instance = BeTFSMNode(*args,**kwargs)
+            return BeTFSMNode._instance
 
     def __init__(self,*args,**kwargs) -> None:
 
-        if not YasminTickingNode._instance is None:
+        if not BeTFSMNode._instance is None:
             raise Exception("This class is a Singleton")
 
         # automatically generated name, if no name of the node is provided
         if len(args)<1:
-            args.append( f"yasmin_{str(uuid.uuid4()).replace('-', '_')}_node" ) 
+            args.append( f"BeTFSM_{str(uuid.uuid4()).replace('-', '_')}_node" ) 
         super().__init__(*args,**kwargs)
             
-        # executor
-        # self._executor = MultiThreadedExecutor()
-        # self._executor.add_node(self)
-        # self._spin_thread = Thread(target=self._executor.spin)
-        # self._spin_thread.start()

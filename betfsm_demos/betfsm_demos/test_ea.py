@@ -26,19 +26,19 @@ from threading import Lock
 import rclpy.time
 from rclpy import Node
 
-from yasmin_etasl.yasmin_ticking import TickingState,TICKING,Blackboard
-from yasmin_etasl.yasmin_ticking_ros import YasminTickingNode
-from yasmin_etasl.yasmin_ticking_etasl import load_task_list
-from yasmin_etasl.graphviz_visitor import GraphViz_Visitor
-from yasmin_etasl.logger import get_logger,set_logger
+from betfsm.betfsm import TickingState,TICKING,Blackboard
+from betfsm.betfsm_node import BeTFSMNode
+from betfsm.betfsm_etasl import load_task_list
+from betfsm.graphviz_visitor import GraphViz_Visitor
+from betfsm.logger import get_logger,set_logger
 import sm_up_and_down
 
 
 
 
-class YasminRunner:
+class BeTFSMRunner:
     def __init__(self,node:Node, statemachine:TickingState, blackboard: Blackboard, sampletime):
-        get_logger().info(f"YasminRunner started with sample time {sampletime}")
+        get_logger().info(f"BeTFSMRunner started with sample time {sampletime}")
         self.node  = node
         self.sm    = statemachine
         self.bm    = blackboard
@@ -66,10 +66,10 @@ class YasminRunner:
 # main
 def main(args=None):
 
-    print("yasmin_etasl")
+    print("betfsm")
     rclpy.init(args=args)
 
-    my_node = YasminTickingNode.get_instance("test_ea")
+    my_node = BeTFSMNode.get_instance("test_ea")
 
     set_logger("default",my_node.get_logger())
     #set_logger("service",my_node.get_logger())
@@ -79,7 +79,7 @@ def main(args=None):
 
     blackboard = {}
 
-    load_task_list("$[yasmin_etasl]/tasks/my_tasks.json",blackboard)
+    load_task_list("$[betfsm]/tasks/my_tasks.json",blackboard)
     
  
     sm = sm_up_and_down.Up_and_down_as_a_class()
@@ -89,7 +89,7 @@ def main(args=None):
     sm.accept(vis)
     vis.print()
 
-    runner = YasminRunner(my_node,sm,blackboard,0.01)
+    runner = BeTFSMRunner(my_node,sm,blackboard,0.01)
     
     try:
         while (runner.get_outcome()==TICKING):

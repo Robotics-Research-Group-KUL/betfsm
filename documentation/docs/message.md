@@ -1,5 +1,5 @@
 
-::: yasmin_etasl.yasmin_ticking.Message
+::: betfsm.betfsm.Message
     options:
       show_source: false
       show_root_heading: true 

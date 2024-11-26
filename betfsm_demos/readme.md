@@ -1,6 +1,15 @@
-# yasmin_etasl_demos
+# betfsm_demos 
 
-Some demonstrations of the yasmin_etasl library.
+Some demonstrations of the BeTFSM library, together with the action server and eTaSL.
+
+A behavior tree and finite state machine framework in Python using cooperative multitasking where new state machines or behavior-tree nodes can be easily specified.
+It provides:
+
+- Hierarchical (composite) states
+- Parametrizable and reusable states
+- Easy to build statemachines by composing existing states/state machines using Behavior-tree principles.
+- Easily extendable using Python's generators and yield.
+- On-line visualization of the tree-structure.
 
 
 ## Setup up your environment
@@ -22,15 +31,13 @@ To retract the permissions:
 **RVIZ** : visualization of UR10 robot:
   ```
   ros2 launch etasl_ros2_application_template load_ur10_setup.launch.py
-  ```
-The **eTaSL node** runs the eTaSL controller:
-  ```
+  ``` The **eTaSL node** runs the eTaSL controller: ```
   ros2 run etasl_ros2 etasl_node
   ```
 
 ## Defining your state machine
 
-The `yasmin_etasl_demos/sm_up_and_down.py` files definesexample state-machines, always very with a very similar robot tasks, but demonstrating different features and styles:
+The `betfsm_demos/sm_up_and_down.py` files definesexample state-machines, always very with a very similar robot tasks, but demonstrating different features and styles:
 - Up & Down, specified as a function.
 - Up & Down, specified as a function a.d with a timer running concurrently.
 - Up & Down, specified as a class.
@@ -38,7 +45,7 @@ The `yasmin_etasl_demos/sm_up_and_down.py` files definesexample state-machines, 
 - Up & Down, with eTaSL tasks with input and output parameters using lambda functions (**this is the one used by the action server**)
 
 
-For a state machine example you can look at `eTaSL_StateMachine` in `yasmin_etasl.yasmin_ticking_etasl`.
+For a state machine example you can look at `eTaSL_StateMachine` in `betfsm.betfsm_etasl`.
 
 ## Running the action server example:
 
@@ -50,10 +57,10 @@ This will start up a server that can execute eTaSL.
 
 The example action server in this repository is run by:
   ```
-  ros2 run yasmin_etasl_demos example_action_server
+  ros2 run betfsm_demos example_action_server
   ```
 You are now listening for incomming actions.
-A small script in the `./scripts` directory calls an action handled by the example_action_server:
+A small script in the `./betfsm_demos/scripts` directory calls an action handled by the example_action_server:
   ```
   ./scripts/send_up_and_down.sh
   ```
@@ -69,7 +76,7 @@ These examples also start a state that publishes the statemachine on a String to
 
 You can startup a webserver that publishes an svg file using:
 ```
-ros2 run yasmin_etasl web_server
+ros2 run betfsm web_server
 ```
 
 

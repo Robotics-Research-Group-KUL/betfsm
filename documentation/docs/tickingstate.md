@@ -2,7 +2,7 @@
 
 
 
-::: yasmin_etasl.yasmin_ticking.TickingState
+::: betfsm.betfsm.TickingState
     options:
       show_source: false
       show_root_heading: true 

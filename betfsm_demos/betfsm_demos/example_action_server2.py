@@ -20,11 +20,11 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 from rclpy.executors import MultiThreadedExecutor
-from yasmin_etasl.yasmin_ticking_etasl import *
-from yasmin_etasl.logger import get_logger,set_logger
-from yasmin_etasl.graphviz_visitor import *
-from yasmin_etasl.yasmin_action_server import YasminActionServer
-from yasmin_etasl.tracer import TracePublisher
+from betfsm.betfsm_etasl import *
+from betfsm.logger import get_logger,set_logger
+from betfsm.graphviz_visitor import *
+from betfsm.betfsm_action_server import BeTFSMActionServer
+from betfsm.tracer import TracePublisher
 import rclpy 
 
 
@@ -50,7 +50,7 @@ def main(args=None):
 
     rclpy.init(args=args)
     
-    node = YasminTickingNode.get_instance("yasmin_action_server")
+    node = BeTFSMNode.get_instance("betfsm_action_server2")
 
 
     set_logger("default",node.get_logger())
@@ -61,7 +61,7 @@ def main(args=None):
     blackboard = {} #Blackboard()
     
     # load your tasks
-    load_task_list("$[yasmin_etasl_demos]/tasks/my_tasks.json",blackboard)
+    load_task_list("$[betfsm_demos]/tasks/my_tasks.json",blackboard)
 
 
     # which state-machine will be exeuted for which task name:
@@ -70,7 +70,7 @@ def main(args=None):
     statemachines["up_and_down"] =  run_while_publishing(examples.Up_and_down_with_parameters_checking_for_cancel(node) )
     # if you add additional member `input_parameters_schema` the action server will use this to validate the input:    
     statemachines["up_and_down"].input_parameters_schema=examples.my_schema
-    action_server = YasminActionServer(blackboard,statemachines,100,node)
+    action_server = BeTFSMActionServer(blackboard,statemachines,100,node)
 
     # single or multi threaded executor does not matter here, only default callback group is used (which is mutually exclusive)
     executor = MultiThreadedExecutor()  
@@ -82,3 +82,4 @@ def main(args=None):
 
 if __name__ == '__main__':
     main()
+

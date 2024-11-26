@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup, glob
 
-package_name = 'yasmin_etasl'
+package_name = 'betfsm'
 
 setup(
     name=package_name,

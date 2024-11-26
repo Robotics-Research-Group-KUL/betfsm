@@ -74,7 +74,7 @@ def get_logger(category:str="default"):
             if not specified, "default" is used.
 
     Note:
-      Known categories used in yasmin_etasl:
+      Known categories used in betfsm_etasl:
 
         - unknown (used when the category is not known or specified)
         - default
@@ -100,7 +100,7 @@ def set_logger(category:str,logger):
 
     
     Note:
-      Known categories used in yasmin_etasl:
+      Known categories used in betfsm_etasl:
 
         - unknown (used when the category is not known or specified)
         - default

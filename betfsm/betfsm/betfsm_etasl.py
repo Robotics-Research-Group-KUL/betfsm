@@ -1,4 +1,4 @@
-# yasmin_ticking_etasl.py
+# betfsm_etasl.py
 #
 # Copyright (C) Erwin Aertbeliën, Santiago Iregui, 2024
 #
@@ -18,11 +18,11 @@
 
 
 """
-Yasmin_Ticking states related to eTaSL
+BeTFSM states related to eTaSL
 """
 from rclpy.qos import QoSProfile
 
-from .yasmin_ticking_ros import *
+from .betfsm_ros import *
 
 from etasl_interfaces.srv import TaskSpecificationFile
 from etasl_interfaces.srv import TaskSpecificationString
@@ -118,7 +118,7 @@ class SetTaskParameters(ServiceClient):
             timeout:
                 returns TIMEOUT if timeout is exceeded.
             node:
-                ROS2 node, by default YasminNode.get_instance()
+                ROS2 node, by default BeTFSMNode.get_instance()
         """        
         outcomes=[SUCCEED]  # ABORT + TIMEOUT added
         super().__init__(name,srv_name+"/readTaskSpecificationString",TaskSpecificationString,outcomes,timeout,node)
@@ -190,7 +190,7 @@ class ReadRobotSpecification(ServiceClient):
             timeout:
                 returns TIMEOUT if timeout is exceeded.
             node:
-                ROS2 node, by default YasminNode.get_instance()
+                ROS2 node, by default BeTFSMNode.get_instance()
         """
         outcomes=[SUCCEED]  # ABORT + TIMEOUT added
         super().__init__(
@@ -241,7 +241,7 @@ class ReadTaskSpecification(ServiceClient):
             timeout:
                 returns TIMEOUT if timeout is exceeded.
             node:
-                ROS2 node, by default YasminNode.get_instance()
+                ROS2 node, by default BeTFSMNode.get_instance()
         """        
         outcomes=[SUCCEED]  # ABORT + TIMEOUT added
         super().__init__(
@@ -291,13 +291,13 @@ class eTaSLOutput(TickingState):
             bb_location:
                 list of strings indicating location in the blackboard.
             node:
-                ROS2 node where the subscription will run.  if None, YasminTicking.get_instance() is used.
+                ROS2 node where the subscription will run.  if None, BeTFSMNode.get_instance() is used.
 
         warning:
             will only store messages where for all variables in the message is_declared is true.
         """
         if node==None:
-            self.node = YasminTickingNode.get_instance()
+            self.node = BeTFSMNode.get_instance()
         else:
             self.node = node
         super().__init__("eTaSLOutput",[SUCCEED])
@@ -364,10 +364,10 @@ class eTaSLEvent(TickingState):
                 will be used.  For events with the same priority the earliest
                 event will be selected.
             node:
-                node or YasminTickingNode if node==None.
+                node or BeTFSMNode if node==None.
         """
         if node==None:
-            self.node = YasminTickingNode.get_instance()
+            self.node = BeTFSMNode.get_instance()
         else:
             self.node = node
         outcomes=[]
@@ -449,7 +449,7 @@ class eTaSL_StateMachine(TickingStateMachine):
                 [optional] returns TIMEOUT if the communication timeout of any of the substeps is exceeded. 
                 Uses a duration of 1 second otherwise.
             node:
-                [optional] ROS2 node to be used. Uses YasminTicking.get_instance() otherwise.
+                [optional] ROS2 node to be used. Uses BeTFSMNode.get_instance() otherwise.
             transitioncb:
                 [optional] callback that is called at each transition, signature `def transitioncb(statemachine,blackboard,source,outcome)->outcome`
             statecb:

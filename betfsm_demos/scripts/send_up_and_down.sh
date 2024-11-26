@@ -12,7 +12,7 @@ EOF
 )
 
 
-ros2 action send_goal -f /task yasmin_etasl_interfaces/action/Task "
+ros2 action send_goal -f /task betfsm_interfaces/action/Task "
     task: $task
     parameters: '$parameters'
 "

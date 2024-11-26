@@ -1,4 +1,4 @@
-# yasmin_ticking_ros.py
+# betfsm_ros.py
 #
 # Copyright (C) Erwin Aertbeliën, 2024
 #
@@ -28,8 +28,8 @@ from lifecycle_msgs.srv import ChangeState
 from rclpy.qos import QoSHistoryPolicy, QoSProfile, QoSReliabilityPolicy, QoSDurabilityPolicy
 from rclpy.time import Duration
 
-from .yasmin_ticking import *
-from .yasmin_ticking_node import YasminTickingNode
+from .betfsm import *
+from .betfsm_node import BeTFSMNode
 
 
 
@@ -72,7 +72,7 @@ class TimedWait(Generator):
             will return TICKING until timeout is passed after which it returns SUCCEED
         """
         if node is None:
-            self.node = YasminTickingNode.get_instance()
+            self.node = BeTFSMNode.get_instance()
         else:
             self.node = node
         outcomes = [SUCCEED,ABORT]
@@ -147,14 +147,14 @@ class TimedRepeat(GeneratorWithState):
             state:
                 underlying state
             node: 
-                ROS2 node, if None, YasminTickingNode.get_instance() is used
+                ROS2 node, if None, BeTFSMNode.get_instance() is used
 
         Note:
             if the underlying state returns later than `timeout` with a non-ticking outcome, an exception will be raised 
             and abort is called.
         """
         if node is None:
-            self.node = YasminTickingNode.get_instance()
+            self.node = BeTFSMNode.get_instance()
         else:
             self.node = node
         super().__init__(name,[SUCCEED],state)
@@ -213,14 +213,14 @@ class Timeout(GeneratorWithState):
             state:
                 underlying state
             node: 
-                ROS2 node, if None, YasminTickingNode.get_instance() is used 
+                ROS2 node, if None, BeTFSMNode.get_instance() is used 
 
         Warning:
             assumes that the underlying state sufficiently yields TICKING!
             Don't use this if the underlying state completely blocks!
         """
         if node is None:
-            self.node = YasminTickingNode.get_instance()
+            self.node = BeTFSMNode.get_instance()
         else:
             self.node = node        
         super().__init__("Timeout",[TIMEOUT],state)
@@ -295,12 +295,12 @@ class ServiceClient(Generator):
                 maximum time for contacting service and processing and retrieving request.
                 (special value: Duration(): ad infinitum)
             node:
-                node, if None, YasminTickingNode.get_instance() will be used.
+                node, if None, BeTFSMNode.get_instance() will be used.
         """
         if not( isinstance(name,str) and isinstance(srv_name,str) and isinstance(outcomes,list) ):
             raise ValueError("Error in argument types of constructor")
         if node is None:
-            self.node = YasminTickingNode.get_instance()
+            self.node = BeTFSMNode.get_instance()
         else:
             self.node = node
         outcomes.append(TIMEOUT) #TickingState will add TICKING
@@ -443,10 +443,10 @@ class LifeCycle(ServiceClient):
             timeout: 
                 duration that indicates the timeout, 0 is forever
             node:
-                if None, singleton YasminTickingNode.get_instance() will be used.
+                if None, singleton BeTFSMNode.get_instance() will be used.
         """
         if node is None:
-            self.node = YasminTickingNode.get_instance()
+            self.node = BeTFSMNode.get_instance()
         else:
             self.node = node
         outcomes = [SUCCEED,ABORT] # TIMEOUT added by ServiceClient, TICKING added by TickingState

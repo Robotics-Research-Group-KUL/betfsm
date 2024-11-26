@@ -28,7 +28,7 @@ Running the **eTaSL node**:
 
 The **example action server** in this repository is run by:
 ```
-   ros2 run yasmin_etasl_demos example_action_server
+   ros2 run betfsm_demos example_action_server
 ```
 
 You are now listening for incomming actions.
@@ -49,9 +49,9 @@ These examples also start a state that publishes the statemachine on a String to
 
 You can startup a webserver that publishes an svg file using:
 ```
-   ros2 run yasmin_etasl web_server
+   ros2 run betfsm web_server
 ```
-I you look at the action scripts, you see that a [Concurrent][yasmin_etasl.yasmin_ticking.Concurrent] state runs the state
+I you look at the action scripts, you see that a [Concurrent][betfsm.betfsm.Concurrent] state runs the state
 machine in parallel with a GraphvizPublisher state that publishes the state machine on a topic `/gz`.  There is a 
 `do_not_expand_types` and `do_not_expand_instances` argument where you can limit what is displayed in the state machine
 (in order not to overload the figure)
@@ -70,28 +70,28 @@ a simple state machine that moves up and down:
 
  
 ### Up & Down, specified as a function:   
-:::yasmin_etasl_demos.sm_up_and_down.up_and_down_as_a_function
+:::betfsm_demos.sm_up_and_down.up_and_down_as_a_function
    options:
       heading_level: 3
       show_source: true
       show_root_heading: true   
 
 ### Up & Down, specified as a function and with a timer running concurrently:
-:::yasmin_etasl_demos.sm_up_and_down.up_and_down_as_a_function_and_a_timer
+:::betfsm_demos.sm_up_and_down.up_and_down_as_a_function_and_a_timer
    options:
       heading_level: 3
       show_source: true
       show_root_heading: true   
 
 ### Up & Down, specified as a class:
-:::yasmin_etasl_demos.sm_up_and_down.Up_and_down_as_a_class
+:::betfsm_demos.sm_up_and_down.Up_and_down_as_a_class
    options:
       heading_level: 3
       show_source: true
       show_root_heading: true   
 
 ### Up & Down, with eTaSL tasks with input and output parameters:
-:::yasmin_etasl_demos.sm_up_and_down.Up_and_down_with_parameters
+:::betfsm_demos.sm_up_and_down.Up_and_down_with_parameters
    options:
       heading_level: 3
       show_source: true
@@ -99,7 +99,7 @@ a simple state machine that moves up and down:
       
 
 ### Up & Down, with eTaSL tasks with input and output parameters using lambda functions:
-:::yasmin_etasl_demos.sm_up_and_down.Up_and_down_with_parameters_lambda
+:::betfsm_demos.sm_up_and_down.Up_and_down_with_parameters_lambda
    options:
       heading_level: 3
       show_source: true

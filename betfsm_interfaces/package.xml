@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>yasmin_etasl_interfaces</name>
+  <name>betfsm_interfaces</name>
   <version>0.0.0</version>
-  <description>Action interface to command yasmin_etasl state machines</description>
+  <description>Action interface to command BeTFSM state machines</description>
   <maintainer email="Erwin.Aertbelien@kuleuven.be">ros2</maintainer>
   <license>LGPL-3.0-only</license>
 

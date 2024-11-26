@@ -21,14 +21,14 @@
 
 from rclpy.duration import Duration
 
-from yasmin_etasl.yasmin_ticking import *
-from yasmin_etasl.yasmin_ticking_ros import *
-from yasmin_etasl.yasmin_ticking_etasl import *
-from yasmin_etasl.yasmin_action_server import *
-#from yasmin_etasl.graphviz_visitor import *
+from betfsm.betfsm import *
+from betfsm.betfsm_ros import *
+from betfsm.betfsm_etasl import *
+from betfsm.betfsm_action_server import *
+#from betfsm.graphviz_visitor import *
 
 
-from yasmin_etasl.yasmin_action_server import CheckForCanceledAction
+from betfsm.betfsm_action_server import CheckForCanceledAction
 
 import math
 
@@ -199,3 +199,5 @@ my_schema=json.loads("""
             "additionalProperties" : false
         }
     """)
+
+

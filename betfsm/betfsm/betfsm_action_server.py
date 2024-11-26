@@ -1,4 +1,4 @@
-# Yasmin_action
+# betfsm_action
 # Copyright (C) Erwin Aertbeliën,  2024
 #
 # This program is free software; you can redistribute it and/or
@@ -17,8 +17,8 @@
 
 
 # Defines the action server
-# and some additional states for Yasmin to useful to experiment
-# and demonstrate.
+# and some additional states for BeTFSM to easily manage common tasks in an action server.
+#
 
 
 import threading
@@ -31,10 +31,10 @@ from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.node import Node
 from rclpy.executors import MultiThreadedExecutor
 
-from yasmin_etasl_interfaces.action import Task
+from betfsm_interfaces.action import Task
 
-from .yasmin_ticking_etasl import *
-from .yasmin_ticking import *
+#from .betfsm_etasl import *
+from .betfsm import *
 
 
 from .logger import get_logger,set_logger
@@ -203,8 +203,8 @@ class WhileNotCanceled(GeneratorWithState):
         yield CANCEL
             
 
-class YasminActionServer:
-    """Action server that processes yasmin tasks one goal at a time.
+class BeTFSMActionServer:
+    """Action server that processes BeTFSM tasks one goal at a time.  Each action starts state machine
     """
 
     def __init__(self,blackboard, statemachines,frequency:int = 100,node:Node=None):
@@ -217,10 +217,10 @@ class YasminActionServer:
             frequency:
                 frequency at which to run the state machine once an action is received.
             node:
-                ROS2 node for the action server,  if None, the singleton YasminTickingNode.get_instance() will be used.
+                ROS2 node for the action server,  if None, the singleton BeTFSMNode.get_instance() will be used.
         """
         if node is None:
-            self.node = YasminTickingNode.get_instance()
+            self.node = BeTFSMNode.get_instance()
         else:
             self.node = node
         self.blackboard = blackboard
@@ -238,7 +238,7 @@ class YasminActionServer:
             handle_accepted_callback=self.handle_accepted_callback,
             cancel_callback=self.cancel_callback,
             callback_group=self.cbg)        
-        get_logger().info('YasminActionServer started')
+        get_logger().info('BeTFSMActionServer started')
         list = "Listening to tasks:"
         for k,v in self.statemachines.items():
             list = list + "\n" + f"task {k}"
@@ -257,7 +257,7 @@ class YasminActionServer:
 
     def goal_callback(self, goal_request):
         """called to accept or reject a client request."""
-        # self.statemachines does not change during lifetime YasminActionServer
+        # self.statemachines does not change during lifetime BeTFSMActionServer
         # goal_request is local to this function
 
         # check existence of task
@@ -291,7 +291,7 @@ class YasminActionServer:
                 return GoalResponse.REJECT
             self._current_goal_request = goal_request
         
-        # only make changes to the YasminActiveServer instance when we are sure to be alone:
+        # only make changes to the BeTFSMActiveServer instance when we are sure to be alone:
         get_logger().info(f'Accepted goal request for task "{goal_request.task}"')
         self.input_parameters = param 
         return GoalResponse.ACCEPT
