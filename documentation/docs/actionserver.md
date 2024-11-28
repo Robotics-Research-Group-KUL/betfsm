@@ -48,6 +48,55 @@ The action server is implemented in the [BeTFSMActionServer][betfsm.betfsm_actio
 
 The tasks that the action server can react to are described by a Dictionary that maps the name of the task to an instance of TickingState (a state machine)..
 
+
+- Sequence diagram of interactions:
+```mermaid
+sequenceDiagram
+  participant ActionClient
+  participant ActionServer
+  participant Execute
+    
+  activate ActionClient
+  ActionClient ->> ActionServer: goal_request
+  activate ActionServer
+  ActionServer --) ActionClient: goal_response (accept only 1 simult.action)
+  ActionServer ->> Execute: handle_goal
+  deactivate ActionServer
+  
+  activate Execute
+  ActionClient ->> ActionServer: get_result
+  activate ActionServer
+
+  
+  
+  Execute ->> Blackboard: set goal_handle
+  Execute ->> Blackboard: set and validate input_parameters
+
+  Note over Execute: state machine for task running
+  
+  
+  
+    
+  loop over state machine until outcome!=TICKING
+    Execute ->> Blackboard : get info from blackboard<br>always react at some point in time <br>to goal_handle.is_cancel_request<br>Generate feedback messages
+  end
+  Note over Execute: state machine stopped
+  Execute ->> Blackboard : get result.outcome and <br> result.parameters from blackboard
+  Execute ->> ActionServer: succeed() or cancel() <br> construct result msg
+
+  
+  deactivate Execute
+
+  ActionServer--) ActionClient: result_request
+   
+  
+  
+  deactivate ActionServer
+  deactivate ActionClient
+
+```
+
+
 To specify a schema to validate the parameters, add `input_parameters_schema` member to the TickingState with the schena in python format (i.e. using json.loads("..." )
 
 ::: betfsm.betfsm_action_server.BeTFSMActionServer
@@ -68,6 +117,9 @@ To specify a schema to validate the parameters, add `input_parameters_schema` me
 ## Checking for cancelation
 
 Actions can be canceled and our action server and state machines need to react appropriately.
+
+## Interaction diagram
+
 
 ### example_action_server
 

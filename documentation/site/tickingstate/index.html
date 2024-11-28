@@ -6,7 +6,7 @@
 <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Erwin Aertbelien" name="author"/>
 <link href="../img/favicon.ico" rel="shortcut icon"/>
-<title>TickingState - Yasmin_eTaSL documenttaion</title>
+<title>TickingState - BeTFSM documenttaion</title>
 <link href="../css/theme.css" rel="stylesheet"/>
 <link href="../css/theme_extra.css" rel="stylesheet"/>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" rel="stylesheet"/>
@@ -29,7 +29,7 @@
 <nav class="wy-nav-side stickynav" data-toggle="wy-nav-shift">
 <div class="wy-side-scroll">
 <div class="wy-side-nav-search">
-<a class="icon icon-home" href=".."> Yasmin_eTaSL documenttaion
+<a class="icon icon-home" href=".."> BeTFSM documenttaion
         </a><div role="search">
 <form action="../search.html" class="wy-form" id="rtd-search-form" method="get">
 <input aria-label="Search docs" name="q" placeholder="Search docs" title="Type search term here" type="text"/>
@@ -47,79 +47,75 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="reference internal current">YasminTicking</a>
+<li class="toctree-l1 current"><a class="reference internal current">BeTFSM</a>
 <ul class="current">
-<li class="toctree-l2 current"><a class="reference internal current">Tickingstates</a>
+<li class="toctree-l2 current"><a class="reference internal current" href="#">TickingState</a>
 <ul class="current">
-<li class="toctree-l3 current"><a class="reference internal current" href="#">TickingState</a>
-<ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="#yasmin_etasl.yasmin_ticking.TickingState.__init__">__init__</a>
+<li class="toctree-l3"><a class="reference internal" href="#betfsm.betfsm.TickingState.__init__">__init__</a>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="#yasmin_etasl.yasmin_ticking.TickingState.accept">accept</a>
+<li class="toctree-l3"><a class="reference internal" href="#betfsm.betfsm.TickingState.accept">accept</a>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="#yasmin_etasl.yasmin_ticking.TickingState.doo">doo</a>
+<li class="toctree-l3"><a class="reference internal" href="#betfsm.betfsm.TickingState.doo">doo</a>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="#yasmin_etasl.yasmin_ticking.TickingState.entry">entry</a>
+<li class="toctree-l3"><a class="reference internal" href="#betfsm.betfsm.TickingState.entry">entry</a>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="#yasmin_etasl.yasmin_ticking.TickingState.exit">exit</a>
+<li class="toctree-l3"><a class="reference internal" href="#betfsm.betfsm.TickingState.exit">exit</a>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="#yasmin_etasl.yasmin_ticking.TickingState.reset">reset</a>
+<li class="toctree-l3"><a class="reference internal" href="#betfsm.betfsm.TickingState.reset">reset</a>
 </li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../tickingstatemachine/">TickingStateMachine</a>
+<li class="toctree-l2"><a class="reference internal" href="../tickingstatemachine/">TickingStateMachine</a>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../visitor/">Visitor</a>
+<li class="toctree-l2"><a class="reference internal" href="../visitor/">Visitor</a>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../generator/">Generator</a>
+<li class="toctree-l2"><a class="reference internal" href="../generator/">Generator</a>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../sequence/">Sequence</a>
+<li class="toctree-l2"><a class="reference internal" href="../sequence/">Sequence</a>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../concurrentsequence/">ConcurrentSequence</a>
+<li class="toctree-l2"><a class="reference internal" href="../concurrentsequence/">ConcurrentSequence</a>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../fallback/">Fallback</a>
+<li class="toctree-l2"><a class="reference internal" href="../fallback/">Fallback</a>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../concurrentfallback/">ConcurrentFallback</a>
+<li class="toctree-l2"><a class="reference internal" href="../concurrentfallback/">ConcurrentFallback</a>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../concurrent/">Concurrent</a>
+<li class="toctree-l2"><a class="reference internal" href="../concurrent/">Concurrent</a>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../waitfor/">WaitFor</a>
+<li class="toctree-l2"><a class="reference internal" href="../waitfor/">WaitFor</a>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../waitforever/">WaitForever</a>
+<li class="toctree-l2"><a class="reference internal" href="../waitforever/">WaitForever</a>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../while/">While</a>
+<li class="toctree-l2"><a class="reference internal" href="../while/">While</a>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../repeat/">Repeat</a>
+<li class="toctree-l2"><a class="reference internal" href="../repeat/">Repeat</a>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../message/">Message</a>
+<li class="toctree-l2"><a class="reference internal" href="../message/">Message</a>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../logblackboard/">LogBlackboard</a>
+<li class="toctree-l2"><a class="reference internal" href="../logblackboard/">LogBlackboard</a>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../compute/">Compute</a>
+<li class="toctree-l2"><a class="reference internal" href="../compute/">Compute</a>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../adapt/">Adapt</a>
+<li class="toctree-l2"><a class="reference internal" href="../adapt/">Adapt</a>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal">ROS 2</a>
+<li class="toctree-l1"><a class="reference internal">BeTFSM ROS2</a>
 <ul>
-<li class="toctree-l3"><a class="reference internal" href="../serviceclient/">ServiceClient</a>
+<li class="toctree-l2"><a class="reference internal" href="../serviceclient/">ServiceClient</a>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../lifecycle/">LifeCycle</a>
+<li class="toctree-l2"><a class="reference internal" href="../lifecycle/">LifeCycle</a>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../topicstate/">TopicState</a>
+<li class="toctree-l2"><a class="reference internal" href="../topicstate/">TopicState</a>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../timedrepeat/">TimedRepeat</a>
+<li class="toctree-l2"><a class="reference internal" href="../timedrepeat/">TimedRepeat</a>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../timedwait/">TimedWait</a>
+<li class="toctree-l2"><a class="reference internal" href="../timedwait/">TimedWait</a>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../timeout/">Timeout</a>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../etaslstatemachine/">eTaSL</a>
+<li class="toctree-l2"><a class="reference internal" href="../timeout/">Timeout</a>
 </li>
 </ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../etaslstatemachine/">BeTFSM eTaSL</a>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../actionserver/">Action server</a>
 </li>
@@ -136,15 +132,14 @@
 <section class="wy-nav-content-wrap" data-toggle="wy-nav-shift">
 <nav aria-label="Mobile navigation menu" class="wy-nav-top" role="navigation">
 <i class="fa fa-bars" data-toggle="wy-nav-top"></i>
-<a href="..">Yasmin_eTaSL documenttaion</a>
+<a href="..">BeTFSM documenttaion</a>
 </nav>
 <div class="wy-nav-content">
 <div class="rst-content"><div aria-label="breadcrumbs navigation" role="navigation">
 <ul class="wy-breadcrumbs">
 <li><a aria-label="Docs" class="icon icon-home" href=".."></a></li>
 <li class="breadcrumb-item">Documentation</li>
-<li class="breadcrumb-item">YasminTicking</li>
-<li class="breadcrumb-item">Tickingstates</li>
+<li class="breadcrumb-item">BeTFSM</li>
 <li class="breadcrumb-item active">TickingState</li>
 <li class="wy-breadcrumbs-aside">
 </li>
@@ -154,8 +149,8 @@
 <div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
 <div class="section" itemprop="articleBody">
 <div class="doc doc-object doc-class">
-<h2 class="doc doc-heading" id="yasmin_etasl.yasmin_ticking.TickingState">
-<code>yasmin_etasl.yasmin_ticking.TickingState</code>
+<h2 class="doc doc-heading" id="betfsm.betfsm.TickingState">
+<code>betfsm.betfsm.TickingState</code>
 </h2>
 <div class="doc doc-contents first">
 <p>Implements a 'ticking' state, i.e. a state that takes a longer time, but cooperatively yields
@@ -206,7 +201,7 @@ if not, the user needs to call reset() before using the state again.</p>
 </details>
 <div class="doc doc-children">
 <div class="doc doc-object doc-function">
-<h3 class="doc doc-heading" id="yasmin_etasl.yasmin_ticking.TickingState.__init__">
+<h3 class="doc doc-heading" id="betfsm.betfsm.TickingState.__init__">
 <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">outcomes</span><span class="p">)</span></code>
 </h3>
 <div class="doc doc-contents">
@@ -244,7 +239,7 @@ if not, the user needs to call reset() before using the state again.</p>
 </div>
 </div>
 <div class="doc doc-object doc-function">
-<h3 class="doc doc-heading" id="yasmin_etasl.yasmin_ticking.TickingState.accept">
+<h3 class="doc doc-heading" id="betfsm.betfsm.TickingState.accept">
 <code class="highlight language-python"><span class="n">accept</span><span class="p">(</span><span class="n">visitor</span><span class="p">)</span></code>
 </h3>
 <div class="doc doc-contents">
@@ -256,7 +251,7 @@ if not, the user needs to call reset() before using the state again.</p>
 </div>
 </div>
 <div class="doc doc-object doc-function">
-<h3 class="doc doc-heading" id="yasmin_etasl.yasmin_ticking.TickingState.doo">
+<h3 class="doc doc-heading" id="betfsm.betfsm.TickingState.doo">
 <code class="highlight language-python"><span class="n">doo</span><span class="p">(</span><span class="n">blackboard</span><span class="p">)</span></code>
 </h3>
 <div class="doc doc-contents">
@@ -273,7 +268,7 @@ if not, the user needs to call reset() before using the state again.</p>
 <ul class="first simple">
 <li>
 <b><code>blackboard</code></b>
-                  (<code><span title="yasmin_etasl.yasmin_ticking.Blackboard">Blackboard</span></code>)
+                  (<code><span title="betfsm.betfsm.Blackboard">Blackboard</span></code>)
               –
               <div class="doc-md-description">
 </div>
@@ -320,7 +315,7 @@ If one likes more detailed behavior, doo needs to catch the exception itself.</p
 </div>
 </div>
 <div class="doc doc-object doc-function">
-<h3 class="doc doc-heading" id="yasmin_etasl.yasmin_ticking.TickingState.entry">
+<h3 class="doc doc-heading" id="betfsm.betfsm.TickingState.entry">
 <code class="highlight language-python"><span class="n">entry</span><span class="p">(</span><span class="n">blackboard</span><span class="p">)</span></code>
 </h3>
 <div class="doc doc-contents">
@@ -337,7 +332,7 @@ If one likes more detailed behavior, doo needs to catch the exception itself.</p
 <ul class="first simple">
 <li>
 <b><code>blackboard</code></b>
-                  (<code><span title="yasmin_etasl.yasmin_ticking.Blackboard">Blackboard</span></code>)
+                  (<code><span title="betfsm.betfsm.Blackboard">Blackboard</span></code>)
               –
               <div class="doc-md-description">
 </div>
@@ -380,7 +375,7 @@ If one likes more detailed behavior, entry needs to catch the exception itself.<
 </div>
 </div>
 <div class="doc doc-object doc-function">
-<h3 class="doc doc-heading" id="yasmin_etasl.yasmin_ticking.TickingState.exit">
+<h3 class="doc doc-heading" id="betfsm.betfsm.TickingState.exit">
 <code class="highlight language-python"><span class="n">exit</span><span class="p">()</span></code>
 </h3>
 <div class="doc doc-contents">
@@ -419,7 +414,7 @@ which does not and should not know the blackboard parameter.</p>
 </div>
 </div>
 <div class="doc doc-object doc-function">
-<h3 class="doc doc-heading" id="yasmin_etasl.yasmin_ticking.TickingState.reset">
+<h3 class="doc doc-heading" id="betfsm.betfsm.TickingState.reset">
 <code class="highlight language-python"><span class="n">reset</span><span class="p">()</span></code>
 </h3>
 <div class="doc doc-contents">
@@ -451,7 +446,7 @@ exit() is called when appropriate</p>
 <div aria-label="Versions" class="rst-versions" role="note">
 <span class="rst-current-version" data-toggle="rst-current-version">
 <span>
-<a class="fa fa-code-fork" href="https://gitlab.kuleuven.be/rob-expressiongraphs/ros2/yasmin_etasl" style="color: #fcfcfc"> Gitlab</a>
+<a class="fa fa-code-fork" href="https://gitlab.kuleuven.be/rob-expressiongraphs/ros2/BeTFSM" style="color: #fcfcfc"> Gitlab</a>
 </span>
 <span><a href="../upanddown/" style="color: #fcfcfc">« Previous</a></span>
 <span><a href="../tickingstatemachine/" style="color: #fcfcfc">Next »</a></span>
