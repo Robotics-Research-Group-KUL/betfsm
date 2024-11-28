@@ -1,9 +1,18 @@
-# Yasmin_etasl
+# BeTFSM
 
 
 ## Read the gitlab pages documentation
 
-[Gitlab pages documentation](https://yasmin-etasl-rob-expressiongraphs-ros2-384b48faf69720d69d4eb1c0.pages.gitlab.kuleuven.be/)
+[Gitlab pages documentation]()
+
+
+## LICENSE
+
+LGPL-3.0-only
+
+See LICENSE file in this directory.
+
+(c) Erwin Aertbelien, contributions of Santiago Iregui.
 
 
 ## Generate most recent documentation
