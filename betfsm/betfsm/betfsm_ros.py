@@ -457,6 +457,16 @@ class LifeCycle(ServiceClient):
     def fill_in_request(self, blackboard: Blackboard,request) -> None:
         get_logger().info(f"Set lifecycle of {self.node_name} to {self.name}")
         request.transition.id = self.transition.value
+        if self.transition.value == Transition.CONFIGURE.value:
+            request.transition.label='configure'
+        elif self.transition.value == Transition.CLEANUP.value:
+            request.transition.label='cleanup'
+        elif self.transition.value == Transition.ACTIVATE.value:
+            request.transition.label='activate'
+        elif self.transition.value == Transition.DEACTIVATE.value:
+            request.transition.label='deactivate'
+        else:
+            request.transition.label='shutdown'
         return request
     
     def process_result(self, blackboard: Blackboard, result) -> str:

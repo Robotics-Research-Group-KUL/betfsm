@@ -27,6 +27,8 @@ from .betfsm_ros import *
 from etasl_interfaces.srv import TaskSpecificationFile
 from etasl_interfaces.srv import TaskSpecificationString
 
+from etasl_ros2_py import etasl_params
+
 
 import json
 from jsonschema import validate, exceptions
@@ -51,28 +53,6 @@ from operator import and_
         # )  
 
 
-def get_task(blackboard:Blackboard,task_name:str) -> List[str|List]:
-    """
-    get the default parameters for a task.
-
-    Parameters:
-        blackboard: blackboard
-        task_name: name of the task
-    """
-    try:
-        tasks=blackboard["tasks"]
-    except:
-        raise Exception("There is no `tasks` defined in the blackboard, are you sure you loaded a list of tasks?")
-    for task in tasks:
-        if task.get("name")==task_name:
-            if not("parameters" in task):
-                raise Exception("task dictionary should have `parameters` keyword")
-            return task
-    raise Exception(f"No task with name {task_name} found in the blackboard")
-
-
-
-
 
 def load_task_list( json_file_name: str, blackboard: Blackboard) -> None:
     """
@@ -85,9 +65,7 @@ def load_task_list( json_file_name: str, blackboard: Blackboard) -> None:
         blackboard:
             blackboard into which to load the task list.
     """
-    with open(expand_ref(json_file_name), 'r') as json_file:
-        parameters = json.load(json_file)
-        blackboard["tasks"] = parameters["tasks"]
+    etasl_params.load_task_list(json_file_name,blackboard)
 
 
 def default_parameter_setter(blackboard):
@@ -121,43 +99,37 @@ class SetTaskParameters(ServiceClient):
                 ROS2 node, by default BeTFSMNode.get_instance()
         """        
         outcomes=[SUCCEED]  # ABORT + TIMEOUT added
-        super().__init__(name,srv_name+"/readTaskSpecificationString",TaskSpecificationString,outcomes,timeout,node)
+        super().__init__(name,srv_name+"/readTaskParameters",TaskSpecificationString,outcomes,timeout,node)
         self.task_name = task_name
         self.cb = cb
 
     def fill_in_request(self, blackboard: Blackboard, request) -> None:
         # lookup task.
-        task = get_task(blackboard,self.task_name)
-        # eliminate irrelevant parameters and put in a local dictionary:
-        # (parameter changes should be local, not global)
-        param = {}
-        for key,value in task["parameters"].items():
-            if (key[:3]!="is-") and (key!="file_path"):
-                param[key] = value
-        param_definition = {}
-        param_definition.update(param)
-        # calling callback
-        if self.cb is not None:
-            param.update( self.cb(blackboard)  )
-        # parameter checking using paramdef
-        for key,value in param.items():
-            if key not in param_definition:
-                raise ValueError(f"callback sets {key} parameter that is not in schema ")
-            # not really needed anymore:
-            if value == "external":
-                raise ValueError(f"parameter declared 'external' is not set by callback ('external' is obsolete)")          
-        # constructing LUA script fragment:       
-        param_string = ""
-        for key, value in param.items():
-            if isinstance(value,bool):
-                param_string = param_string + f"{key} = {str(value).lower()}\n"
-            elif isinstance(value,str):
-                 param_string = param_string + f'{key} = "{value}"\n'
-            else:
-                param_string = param_string + f"{key} = {value}\n"
-        # constructing request:
-        request.str  = param_string
-        get_logger().info(f"Set parameters for eTaSL task {self.task_name}\n{param_string}")
+        
+        # task = etasl_params.get_task(blackboard,self.task_name)
+        # # eliminate irrelevant parameters and put in a local dictionary:
+        # # (parameter changes should be local, not global)
+        # param = {}
+        # for key,value in task["task_specification"]["parameters"].items():
+        #     if (key[:3]!="is-") and (key!="file_path"):
+        #         param[key] = value
+        # param_definition = {}
+        # param_definition.update(param)
+        # # calling callback
+        # if self.cb is not None:
+        #     param.update( self.cb(blackboard)  )
+        # # parameter checking using paramdef
+        # for key,value in param.items():
+        #     if key not in param_definition:
+        #         raise ValueError(f"callback sets {key} parameter that is not in schema ")
+        #     # not really needed anymore:
+        #     if value == "external":
+        #         raise ValueError(f"parameter declared 'external' is not set by callback ('external' is obsolete)")          
+
+        param = etasl_params.get_task_parameters_filled(blackboard,self.task_name)
+
+        request.str = json.dumps(param)
+        get_logger().info(f"Set parameters for eTaSL task {self.task_name}\n{request.str}")
         return request    
     
     def process_result(self, blackboard: Blackboard, response) -> str:
@@ -195,23 +167,13 @@ class ReadRobotSpecification(ServiceClient):
         outcomes=[SUCCEED]  # ABORT + TIMEOUT added
         super().__init__(
             name,
-            srv_name+"/readTaskSpecificationFile",
+            srv_name+"/readRobotSpecification",
             TaskSpecificationFile, outcomes, timeout,node)
         self.task_name = task_name
 
     def fill_in_request(self, blackboard: Blackboard, request) -> None:
-        # lookup task.
-        for task in blackboard["tasks"]:
-            if task["name"]==self.task_name:
-                specfile = task.get("robot_specification_file")
-                if specfile is None or specfile=="":
-                    specfile = blackboard["default_robot_specification"]
-                    if specfile is None or specfile=="":
-                        raise Exception("No robot_specification_file defined")
-                # we do expand refs, etasl_node does this already in his own ROS2 workspace
-                request.file_path  = specfile
-                get_logger().info(f"robot specification file {specfile}")
-                return request
+        request.file_path = etasl_params.get_robot_specification_for_task(blackboard, self.task_name)
+        return request
             
         raise Exception(f"Task with name {self.task_name} was not found")
     
@@ -252,10 +214,10 @@ class ReadTaskSpecification(ServiceClient):
 
     def fill_in_request(self, blackboard: Blackboard, request) -> None:
         # lookup task.
-        task = get_task(blackboard,self.task_name)
+        task = etasl_params.get_task(blackboard,self.task_name)
         # extract file_path, and expand references    
         # # we do expand refs, etasl_node does this already in his own ROS2 workspace    
-        request.file_path = task["parameters"]["file_path"]
+        request.file_path = task["task_specification"]["file_path"]
         get_logger().info(f"task specification file {request.file_path}")
         return request
     
@@ -273,7 +235,7 @@ class eTaSLOutput(TickingState):
             name:str,
             topic: str,
             qos:QoSProfile=30,
-            bb_location: List = ["output"],
+            bb_location: List = ["output_param"],
             node: Node = None,
         ) -> None:
         """
@@ -469,29 +431,39 @@ class eTaSL_StateMachine(TickingStateMachine):
         
         #This state is just added in case that etasl is already running. If not possible (ABORT) still the task continues
         self.add_state(LifeCycle("CLEANUP_ETASL",srv_name,Transition.CLEANUP,timeout,node),
-                transitions={SUCCEED: "PARAMETER_CONFIG",ABORT: "PARAMETER_CONFIG"}) 
+                transitions={SUCCEED: "PARAMETER_CONFIG",
+                ABORT: "PARAMETER_CONFIG"}) 
 
         self.add_state(SetTaskParameters( "PARAMETER_CONFIG",task_name, srv_name, cb, timeout, node ),
                        transitions={
-                           SUCCEED: "ROBOT_SPECIFICATION"
+                           SUCCEED: "ROBOT_SPECIFICATION",
+                           ABORT: ABORT
                        })
         self.add_state(ReadRobotSpecification("ROBOT_SPECIFICATION",task_name,srv_name,timeout,node),
-                transitions={SUCCEED: "TASK_SPECIFICATION"})
+                transitions={
+                    SUCCEED: "TASK_SPECIFICATION",
+                    ABORT: ABORT})
 
         self.add_state(ReadTaskSpecification("TASK_SPECIFICATION",task_name,srv_name,timeout,node),
-                transitions={SUCCEED: "CONFIG_ETASL"})
+                transitions={
+                    SUCCEED: "CONFIG_ETASL",
+                    ABORT: ABORT})
 
         self.add_state(LifeCycle("CONFIG_ETASL",srv_name,Transition.CONFIGURE,timeout,node),
-                transitions={SUCCEED: "ACTIVATE_ETASL"})
+                transitions={
+                    SUCCEED: "ACTIVATE_ETASL",
+                    ABORT: ABORT})
 
         self.add_state(LifeCycle("ACTIVATE_ETASL",srv_name,Transition.ACTIVATE,timeout,node),
-                transitions={SUCCEED: "EXECUTING"})
+                transitions={
+                    SUCCEED: "EXECUTING",
+                    ABORT: ABORT})
 
         # executes until one returns SUCCEED,  eTaSLOutput only returns TICKING
         self.add_state(
             ConcurrentFallback("EXECUTING",[
-                eTaSLEvent("check_event","/fsm/events",node=node,mapping={"e_finished@etasl_node":(1,SUCCEED)}),
-                eTaSLOutput("output","/my_topic",bb_location=["output",name], node=node)
+                eTaSLEvent("check_event","/etasl/events",node=node,mapping={"e_finished@etasl_node":(1,SUCCEED)}),
+                eTaSLOutput("output","/my_topic",bb_location=["output_param",name], node=node)
             ]),
             transitions={SUCCEED:SUCCEED}
         )        
