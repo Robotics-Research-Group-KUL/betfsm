@@ -27,6 +27,7 @@ from std_msgs.msg import String
 from lifecycle_msgs.srv import ChangeState
 from rclpy.qos import QoSHistoryPolicy, QoSProfile, QoSReliabilityPolicy, QoSDurabilityPolicy
 from rclpy.time import Duration
+from rclpy.action import ActionClient
 
 from .betfsm import *
 from .betfsm_node import BeTFSMNode
@@ -370,8 +371,126 @@ class ServiceClient(Generator):
         return SUCCEED
 
 
+class ActionClientBTFSM(Generator):
 
+    def __init__(self, name:str, action_name:str, action_type: Type, outcomes:List[str], timeout:Duration = Duration(seconds=1.0), 
+                 node:Node = None) -> None:
+        """
+        Creates a TickingState that calls an action and generates an outcome when the action returns back.
+        While waiting, it gets the response.
+
+        Parameters:
+            name:
+                name of the state
+            action_name:
+                name of the service
+            action_type:
+                type of the service
+            outcomes:
+                outcomes to be expected (TIMEOUT and TICKING will be added)
+            timeout:
+                maximum time for contacting service and processing and retrieving request.
+                (special value: Duration(): ad infinitum)
+            node:
+                node, if None, BeTFSMNode.get_instance() will be used.
+        """
+        if node is None:
+            self.node = BeTFSMNode.get_instance()
+        else:
+            self.node = node
+        outcomes.extend([TIMEOUT, SUCCEED])
+        super().__init__(name, outcomes)
+        self.clock          = self.node.get_clock()  
+        self.action_type    = action_type
+        self.action_name    = action_name
+        self.client         = ActionClient(self.node, action_type, action_name)
+        self.timeout        = timeout
+        self.goal_handle    = None
+        self.result_future  = None
+        self.send_goal_future = None
+
+    def co_execute(self, blackboard: Blackboard):
+        get_logger("action").info(f"Calling ROS2 action {self.action_name} ({self.action_type.__name__})")
+        starttime = self.clock.now()
+        # wait for the action server to be available
+        while not self.client.wait_for_server(timeout_sec=self.timeout.nanoseconds / 1e9):
+            if self.timeout != Duration():
+                if self.clock.now() - starttime > self.timeout:
+                    get_logger("action").error(f"Could not find action server {self.action_name} in time")
+                    yield TIMEOUT
+            yield TICKING
+
+        # Create the goal message and fill it in
+        goal_msg = self.fill_in_goal(blackboard)
+        self.send_goal_future = self.client.send_goal_async(goal_msg, feedback_callback=self.feedback_callback)
+        while not self.send_goal_future.done():
+            if self.timeout != Duration():
+                if self.clock.now() - starttime > self.timeout:
+                    get_logger("action").error(f"Goal to {self.action_name} timed out while sending")
+                    yield TIMEOUT
+            yield TICKING
+
+        # Check if the goal was accepted by the action server
+        self.goal_handle = self.send_goal_future.result()
+        if not self.goal_handle.accepted:
+            get_logger("action").error(f"Goal rejected by {self.action_name}")
+            yield TIMEOUT
+            return
+
+        # Wait for the result
+        self.result_future = self.goal_handle.get_result_async()
+        while not self.result_future.done():
+            if self.timeout != Duration():
+                if self.clock.now() - starttime > self.timeout:
+                    get_logger("action").error(f"Action {self.action_name} did not finish in time")
+                    yield TIMEOUT
+            yield TICKING
+
+        result = self.result_future.result().result
+        get_logger("action").info(f"Received result from {self.action_name}")
+        yield self.process_result(blackboard, result)
     
+    def fill_in_goal(self, blackboard: Blackboard):
+        """
+        fills in the self.action_type.Goal instance with
+        the goal parameters of the action call
+
+        Parameters:
+            blackboard: 
+                blackboard to be used
+
+        Returns:
+            self.action_type.Goal:
+                goal to be used for the action call
+        """
+        return self.action_type.Goal()
+
+    def process_result(self, blackboard: Blackboard, result) -> str:
+        """
+        gets the result and puts it in the blackboard (if needed) and
+        returns an outcome
+
+        Parameters:
+            blackboard:
+                blackboard to be used
+            result(action_type.Result):  
+                result returned by the action
+
+        Returns:
+            outcome : str
+                the outcome to give back (should be final outcome, i.e. TICKING not allowed)
+        """
+        return SUCCEED
+
+    def feedback_callback(self, feedback_msg):
+        """
+        Callback for feedback messages from the action server
+
+        Parameters:
+            feedback_msg:
+                feedback message from the action
+        """
+        pass
 
 
 # states:
@@ -457,6 +576,16 @@ class LifeCycle(ServiceClient):
     def fill_in_request(self, blackboard: Blackboard,request) -> None:
         get_logger().info(f"Set lifecycle of {self.node_name} to {self.name}")
         request.transition.id = self.transition.value
+        if self.transition.value == Transition.CONFIGURE.value:
+            request.transition.label='configure'
+        elif self.transition.value == Transition.CLEANUP.value:
+            request.transition.label='cleanup'
+        elif self.transition.value == Transition.ACTIVATE.value:
+            request.transition.label='activate'
+        elif self.transition.value == Transition.DEACTIVATE.value:
+            request.transition.label='deactivate'
+        else:
+            request.transition.label='shutdown'
         return request
     
     def process_result(self, blackboard: Blackboard, result) -> str:
