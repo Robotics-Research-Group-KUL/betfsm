@@ -29,7 +29,7 @@ from threading import Lock
 from abc import ABC, abstractmethod
 import traceback
 
-
+import time
 from .logger import get_logger
 
 
@@ -47,7 +47,7 @@ def cleanup_outcomes(outcomes:List[str])->List[str]:
     Returns:
         list of outcomes with duplicate elements elliminated.
     """
-    return [ e for e in {e for e in outcomes}];
+    return [ e for e in {e for e in outcomes}]
 
 
 
@@ -409,7 +409,7 @@ class GeneratorWithList(Generator):
         """
         if not isinstance(state,TickingState):
             raise Exception("add_state expects as second argument an instance of a subclass of State")
-        self.states.append({"name":state.name,"state":state,"active":False})  
+        self.states.append({"name":state.name,"state":state,"active":False}) 
         self.outcomes = cleanup_outcomes(self.outcomes + state.get_outcomes())
         self._outcomes = self.outcomes  # dirty hack to fix a bug
         return self 

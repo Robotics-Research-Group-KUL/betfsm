@@ -310,7 +310,13 @@ class ServiceClient(Generator):
         self.clock     = self.node.get_clock()  
         self.srv_type  = srv_type
         self.srv_name  = srv_name
-        self.srvclient = self.node.create_client(srv_type,srv_name)
+        # check if self.node has a get_client method
+        if not hasattr(self.node, 'get_client'):
+            get_logger("service").info(f"Not get_client found in node creating service client for {self.srv_name} ({self.srv_type.__name__})")
+            self.srvclient = self.node.create_client(srv_type,srv_name)
+        else:
+            self.srvclient = self.node.get_client(srv_type,srv_name)
+
         self.request   = srv_type.Request()
         self.timeout   = timeout
 
@@ -328,7 +334,7 @@ class ServiceClient(Generator):
         while not future.done():
             if self.timeout!=Duration():
                 if self.clock.now() - starttime > self.timeout:
-                    get_logger().error(f"service {self.srv_type} from {self.srv_name.__name__} did not answer in time")
+                    get_logger().error(f"service {self.srv_type} from {self.srv_name} did not answer in time")
                     yield TIMEOUT            
             yield TICKING
         result = future.result()
@@ -394,6 +400,8 @@ class ActionClientBTFSM(Generator):
             node:
                 node, if None, BeTFSMNode.get_instance() will be used.
         """
+        # import time
+        # start_time = time.time()
         if node is None:
             self.node = BeTFSMNode.get_instance()
         else:
@@ -403,7 +411,12 @@ class ActionClientBTFSM(Generator):
         self.clock          = self.node.get_clock()  
         self.action_type    = action_type
         self.action_name    = action_name
-        self.client         = ActionClient(self.node, action_type, action_name)
+        if not hasattr(self.node, 'get_action'):
+            self.client     = ActionClient(self.node, action_type, action_name)
+        else:
+            self.client = self.node.get_action(action_type, action_name)
+        # end_time = time.time()
+        # print(f"----JJJJJJJJJJJJJJJJJJJJ -----Time to create ActionClientBTFSM super: {end_time - start_time} seconds")
         self.timeout        = timeout
         self.goal_handle    = None
         self.result_future  = None
