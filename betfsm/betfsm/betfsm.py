@@ -407,23 +407,11 @@ class GeneratorWithList(Generator):
         returns:
             self (to allow method chaining)
         """
-        start_time = time.time()
         if not isinstance(state,TickingState):
             raise Exception("add_state expects as second argument an instance of a subclass of State")
-        end_time = time.time()
-        # print(f"Time to check isinstance for state {state.name}: {end_time - start_time} seconds")
-        start_time = time.time()
         self.states.append({"name":state.name,"state":state,"active":False}) 
-        end_time = time.time()
-        # print(f"Time to add state {state.name}: {end_time - start_time} seconds") 
-        start_time = time.time()
         self.outcomes = cleanup_outcomes(self.outcomes + state.get_outcomes())
-        end_time = time.time()
-        # print(f"Time to cleanup outcomes after adding state {state.name}: {end_time - start_time} seconds")
-        start_time = time.time()
         self._outcomes = self.outcomes  # dirty hack to fix a bug
-        end_time = time.time()
-        # print(f"Time to fix dirty hack after adding state {state.name}: {end_time - start_time} seconds")
         return self 
     
     def reset(self):  # general rule, if you own states, you have to reset them
