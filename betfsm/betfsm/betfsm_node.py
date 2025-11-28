@@ -19,6 +19,7 @@ from threading import Thread, RLock
 
 from rclpy.node import Node
 from rclpy.executors import MultiThreadedExecutor
+from rclpy.action import ActionClient
 
 
 class BeTFSMNode(Node):
@@ -44,4 +45,19 @@ class BeTFSMNode(Node):
         if len(args)<1:
             args.append( f"BeTFSM_{str(uuid.uuid4()).replace('-', '_')}_node" ) 
         super().__init__(*args,**kwargs)
+        self.clients_created = {}
+        self.actions_created = {}
+
+    def get_client(self, srv_type, srv_name):
+        if srv_name not in self.clients_created:
+            self.get_logger().info(f"Creating new client for {srv_name}")
+            self.clients_created[srv_name] = self.create_client(srv_type, srv_name)
+        return self.clients_created[srv_name]
+    
+    def get_action(self, action_type, action_name):
+        if action_name not in self.actions_created:
+            self.get_logger().info(f"Creating new action for {action_name}")
+            self.actions_created[action_name] = ActionClient(self, action_type, action_name)
+        return self.actions_created[action_name]
+
             

@@ -115,9 +115,6 @@ class SetTaskParameters(ServiceClient):
         #         param[key] = value
         # param_definition = {}
         # param_definition.update(param)
-        # # calling callback
-        # if self.cb is not None:
-        #     param.update( self.cb(blackboard)  )
         # # parameter checking using paramdef
         # for key,value in param.items():
         #     if key not in param_definition:
@@ -127,6 +124,10 @@ class SetTaskParameters(ServiceClient):
         #         raise ValueError(f"parameter declared 'external' is not set by callback ('external' is obsolete)")          
 
         param = etasl_params.get_task_parameters_filled(blackboard,self.task_name)
+
+        # calling callback
+        if self.cb is not None:
+            param.update( self.cb(blackboard)  )
 
         request.str = json.dumps(param)
         get_logger().info(f"Set parameters for eTaSL task {self.task_name}\n{request.str}")
@@ -278,7 +279,8 @@ class eTaSLOutput(TickingState):
         return bb
 
     def cb_msg(self,msg) -> None:
-        if reduce(and_,msg.is_declared):
+        # if reduce(and_,msg.is_declared):
+        if reduce(and_,msg.is_declared, True): #TODO: Should this be used instead? (Santiago and Federico)
             self.msgbuffer = msg
 
     def entry(self,blackboard:Blackboard):      
@@ -380,6 +382,7 @@ class eTaSL_StateMachine(TickingStateMachine):
                  name : str,
                  task_name: str,
                  srv_name: str = "/etasl_node",
+                 output_topic: str = "/my_topic",
                  #display_in_viewer: bool= False, 
                  cb:Callable=default_parameter_setter,
                  timeout:Duration = Duration(seconds=1.0),
@@ -462,8 +465,8 @@ class eTaSL_StateMachine(TickingStateMachine):
         # executes until one returns SUCCEED,  eTaSLOutput only returns TICKING
         self.add_state(
             ConcurrentFallback("EXECUTING",[
-                eTaSLEvent("check_event","/etasl/events",node=node,mapping={"e_finished@etasl_node":(1,SUCCEED)}),
-                eTaSLOutput("output","/my_topic",bb_location=["output_param",name], node=node)
+                eTaSLEvent(name="check_event",topic="/etasl/events",mapping={"e_finished@etasl_node":(1,SUCCEED)},node=node),
+                eTaSLOutput("output", topic=output_topic, bb_location=["output_param",name], node=node)
             ]),
             transitions={SUCCEED:SUCCEED}
         )        
