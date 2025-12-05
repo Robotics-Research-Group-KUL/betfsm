@@ -655,3 +655,28 @@ def expand_ref(pth: str) -> str:
         pth: string to expand
     """    
     return expand_package_ref(expand_env_ref(pth))
+
+class BeTFSMROSRunner:
+    def __init__(self,node:Node, statemachine:TickingState, blackboard: Blackboard, sampletime):
+        get_logger().info(f"BeTFSMROSRunner started with sample time {sampletime}")
+        self.node  = node
+        self.sm    = statemachine
+        self.bm    = blackboard
+        self.timer = self.node.create_timer(sampletime, self.timer_cb)
+        self.outcome = "TICKING"
+        self.outcome_lock = Lock()
+
+    def timer_cb(self):
+        outcome = self.sm(self.bm)
+        if outcome!=TICKING:
+            self.timer.cancel()
+            self.set_outcome(outcome)
+
+    def set_outcome(self, outcome):
+        with self.outcome_lock:
+            self.outcome = outcome
+
+    def get_outcome(self):
+        with self.outcome_lock:
+            outcome = self.outcome
+        return outcome
