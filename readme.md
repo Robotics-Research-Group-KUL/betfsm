@@ -8,12 +8,9 @@
 
 ## LICENSE
 
-LGPL-3.0-only
+LGPL-3.0-only, see LICENSE file in this directory.
 
-See LICENSE file in this directory.
-
-(c) Erwin Aertbelien, contributions of Santiago Iregui and Federico Ulloa Rios
-
+(c) KU Leuven, department of Mechanical Engineering, ROB-group : Erwin Aertbelien, contributions of Santiago Iregui and Federico Ulloa Rios
 
 This work was funded by the European Union’s Horizon 2020 research and innovation program under grant agreement No. 101058589 (AI-PRISM)
 
