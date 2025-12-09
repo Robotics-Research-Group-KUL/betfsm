@@ -4,9 +4,8 @@
 
 Published under the GNU LESSER GENERAL PUBLIC LICENSE Version 3, 29 June 2007.
 
-Main author: Erwin Aertbeliën
-
-Contributors: Federico Ulloa Rios,  Santiago Iregui Rincon
+(c) 2024, KU Leuven, Department of Mechanical Engineering, ROB-Group: Erwin Aertbeliën, 
+contributions of Federico Ulloa Rios and Santiago Iregui Rincon
 
 This work was funded by the European Union’s Horizon 2020 research and innovation program under grant agreement No.
 101058589 (AI-PRISM)
