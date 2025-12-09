@@ -45,6 +45,8 @@
 <ul>
 <li class="toctree-l2"><a class="reference internal" href="../upanddown/">Up &amp; Down</a>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../actionserver_ex/">Action servers</a>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal">BeTFSM</a>
@@ -91,8 +93,6 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../lifecycle/">LifeCycle</a>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../topicstate/">TopicState</a>
-</li>
 <li class="toctree-l2"><a class="reference internal" href="../timedrepeat/">TimedRepeat</a>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../timedwait/">TimedWait</a>
@@ -137,29 +137,13 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#checking-for-cancelation">Checking for cancelation</a>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#interaction-diagram">Interaction diagram</a>
-<ul>
-<li class="toctree-l3"><a class="reference internal" href="#example_action_server">example_action_server</a>
-<ul>
-<li class="toctree-l4"><a class="reference internal" href="#betfsm.betfsm_action_server.WhileNotCanceled">WhileNotCanceled</a>
-</li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#example_action_server2">example_action_server2</a>
-<ul>
-<li class="toctree-l4"><a class="reference internal" href="#betfsm.betfsm_action_server.CheckForCanceledAction">CheckForCanceledAction</a>
-</li>
-</ul>
-</li>
-</ul>
+<li class="toctree-l2"><a class="reference internal" href="#examples">Examples</a>
 </li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../utils/">Utilities</a>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../about/">About</a>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../TODO/">Todo list</a>
 </li>
 </ul>
 </div>
@@ -285,7 +269,7 @@ The action server is implemented in the <a class="autorefs autorefs-internal" hr
 <div class="doc doc-children">
 <div class="doc doc-object doc-function">
 <h4 class="doc doc-heading" id="betfsm.betfsm_action_server.BeTFSMActionServer.__init__">
-<code class="highlight language-python">__init__(blackboard, statemachines, frequency=100, node=None)</code>
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">blackboard</span><span class="p">,</span> <span class="n">statemachines</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">node</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 </h4>
 <div class="doc doc-contents">
 <table class="field-list">
@@ -341,7 +325,7 @@ The action server is implemented in the <a class="autorefs autorefs-internal" hr
 </div>
 <div class="doc doc-object doc-function">
 <h4 class="doc doc-heading" id="betfsm.betfsm_action_server.BeTFSMActionServer.cancel_callback">
-<code class="highlight language-python">cancel_callback(goal)</code>
+<code class="highlight language-python"><span class="n">cancel_callback</span><span class="p">(</span><span class="n">goal</span><span class="p">)</span></code>
 </h4>
 <div class="doc doc-contents">
 <p>Accept or reject a client request to cancel an action.</p>
@@ -349,7 +333,7 @@ The action server is implemented in the <a class="autorefs autorefs-internal" hr
 </div>
 <div class="doc doc-object doc-function">
 <h4 class="doc doc-heading" id="betfsm.betfsm_action_server.BeTFSMActionServer.execute_callback">
-<code class="highlight language-python">execute_callback(goal_handle)</code>
+<code class="highlight language-python"><span class="n">execute_callback</span><span class="p">(</span><span class="n">goal_handle</span><span class="p">)</span></code>
 </h4>
 <div class="doc doc-contents">
 <p>Execute the goal.</p>
@@ -357,7 +341,7 @@ The action server is implemented in the <a class="autorefs autorefs-internal" hr
 </div>
 <div class="doc doc-object doc-function">
 <h4 class="doc doc-heading" id="betfsm.betfsm_action_server.BeTFSMActionServer.goal_callback">
-<code class="highlight language-python">goal_callback(goal_request)</code>
+<code class="highlight language-python"><span class="n">goal_callback</span><span class="p">(</span><span class="n">goal_request</span><span class="p">)</span></code>
 </h4>
 <div class="doc doc-contents">
 <p>called to accept or reject a client request.</p>
@@ -365,7 +349,7 @@ The action server is implemented in the <a class="autorefs autorefs-internal" hr
 </div>
 <div class="doc doc-object doc-function">
 <h4 class="doc doc-heading" id="betfsm.betfsm_action_server.BeTFSMActionServer.handle_accepted_callback">
-<code class="highlight language-python">handle_accepted_callback(goal_handle)</code>
+<code class="highlight language-python"><span class="n">handle_accepted_callback</span><span class="p">(</span><span class="n">goal_handle</span><span class="p">)</span></code>
 </h4>
 <div class="doc doc-contents">
 <p>handle an accepted action</p>
@@ -384,7 +368,7 @@ The action server is implemented in the <a class="autorefs autorefs-internal" hr
 <div class="doc doc-children">
 <div class="doc doc-object doc-function">
 <h4 class="doc doc-heading" id="betfsm.betfsm_action_server.FeedbackState.__init__">
-<code class="highlight language-python">__init__(name, state, cb)</code>
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">cb</span><span class="p">)</span></code>
 </h4>
 <div class="doc doc-contents">
 <p>A ticking state that uses a callback function to publish to the feedback topic
@@ -436,123 +420,8 @@ The callback has signature <code>def cb(bbb) -&gt; Dict</code></p>
 </div>
 </div><h2 id="checking-for-cancelation">Checking for cancelation</h2>
 <p>Actions can be canceled and our action server and state machines need to react appropriately.</p>
-<h2 id="interaction-diagram">Interaction diagram</h2>
-<h3 id="example_action_server">example_action_server</h3>
-<p>The <code>example_action_server</code> example shows a case where we continuously check for an action and when an
-cancelation is detected go out of the state machines and perform a shutdown procedure.  The following class is
-used for this purpose:</p>
-<div class="doc doc-object doc-class">
-<h4 class="doc doc-heading" id="betfsm.betfsm_action_server.WhileNotCanceled">
-<code>betfsm.betfsm_action_server.WhileNotCanceled</code>
-</h4>
-<div class="doc doc-contents first">
-<p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" href="../generator/#betfsm.betfsm.GeneratorWithState" title="betfsm.betfsm.GeneratorWithState (betfsm.graphviz_visitor.GeneratorWithState)">GeneratorWithState</a></code></p>
-<p>Runs underlying state as long as not canceled. Returns outcome of state,
-yields CANCEL if there is a client side cancel request.</p>
-<div class="doc doc-children">
-<div class="doc doc-object doc-function">
-<h5 class="doc doc-heading" id="betfsm.betfsm_action_server.WhileNotCanceled.__init__">
-<code class="highlight language-python">__init__(name, state)</code>
-</h5>
-<div class="doc doc-contents">
-<p>Runs underlying state as long as not canceled. Returns outcome of state
-yields CANCEL if there is a client side cancel request.</p>
-<table class="field-list">
-<colgroup>
-<col class="field-name"/>
-<col class="field-body"/>
-</colgroup>
-<tbody valign="top">
-<tr class="field">
-<th class="field-name">Parameters:</th>
-<td class="field-body">
-<ul class="first simple">
-<li>
-<b><code>name</code></b>
-                  (<code><span title="str">str</span></code>)
-              –
-              <div class="doc-md-description">
-<p>name of this state</p>
-</div>
-</li>
-<li>
-<b><code>state</code></b>
-                  (<code><a class="autorefs autorefs-internal" href="../tickingstate/#betfsm.betfsm.TickingState" title="betfsm.betfsm.TickingState (betfsm.graphviz_visitor.TickingState)">TickingState</a></code>)
-              –
-              <div class="doc-md-description">
-<p>underlying state</p>
-</div>
-</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-</div>
-</div><p>This class runs its underlying state and has transitions that depend on the outcome of the underlying state or on cancelation requests.  With this we can build a simple statemachine to implement what should happen when cancel is requested:</p>
-<pre><code>class CheckingCancelAndShutdown(TickingStateMachine):
-    def __init__(self,name:str,state:TickingState,srv_name:str="/etasl_node",timeout:Duration = Duration(seconds=1.0), node : Node = None):
-        # execute in sequence but don't care about ABORT, only way to fail is TIMEOUT
-        super().__init__(name,[CANCEL,SUCCEED])
-
-        self.add_state(state=WhileNotCanceled("while_not_canceled",state), transitions={CANCEL:"DEACTIVATE_ETASL",SUCCEED:SUCCEED, TIMEOUT:"DEACTIVATE_ETASL"})
-
-        self.add_state(state=LifeCycle("DEACTIVATE_ETASL",srv_name,Transition.DEACTIVATE,timeout,node),
-                       transitions={SUCCEED: "CLEANUP_ETASL",  ABORT: "CLEANUP_ETASL", TIMEOUT:"CLEANUP_ETASL"} )
-        self.add_state( state=LifeCycle("CLEANUP_ETASL",srv_name,Transition.CLEANUP,timeout,node),
-                       transitions={SUCCEED: CANCEL, ABORT: CANCEL,TIMEOUT: CANCEL} )
-</code></pre>
-<h3 id="example_action_server2">example_action_server2</h3>
-<p>The <code>example_action_server2</code> describes another approach where there is only a check for cancelation
-at specific locations of the state machine(s).  The following TickingState is used for this purpose:</p>
-<div class="doc doc-object doc-class">
-<h4 class="doc doc-heading" id="betfsm.betfsm_action_server.CheckForCanceledAction">
-<code>betfsm.betfsm_action_server.CheckForCanceledAction</code>
-</h4>
-<div class="doc doc-contents first">
-<p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" href="../generator/#betfsm.betfsm.Generator" title="betfsm.betfsm.Generator (betfsm.graphviz_visitor.Generator)">Generator</a></code></p>
-<p>Checks whether the Action that is running has received a cancel request.</p>
-<div class="doc doc-children">
-<div class="doc doc-object doc-function">
-<h5 class="doc doc-heading" id="betfsm.betfsm_action_server.CheckForCanceledAction.__init__">
-<code class="highlight language-python">__init__(name)</code>
-</h5>
-<div class="doc doc-contents">
-<p>Checks whether the Action that is running has received a cancel request.
-Returns SUCCEED if nothing received, returns CANCEL if something received</p>
-<table class="field-list">
-<colgroup>
-<col class="field-name"/>
-<col class="field-body"/>
-</colgroup>
-<tbody valign="top">
-<tr class="field">
-<th class="field-name">Parameters:</th>
-<td class="field-body">
-<ul class="first simple">
-<li>
-<b><code>name</code></b>
-                  (<code><span title="str">str</span></code>)
-              –
-              <div class="doc-md-description">
-<p>name of this state</p>
-</div>
-</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-</div>
-</div>
+<h2 id="examples">Examples</h2>
+<p>See <a href="../actionserver_ex/">Action Server examples</a></p>
 </div>
 </div><footer>
 <div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">

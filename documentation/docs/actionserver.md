@@ -118,50 +118,7 @@ To specify a schema to validate the parameters, add `input_parameters_schema` me
 
 Actions can be canceled and our action server and state machines need to react appropriately.
 
-## Interaction diagram
+## Examples 
 
-
-### example_action_server
-
-The `example_action_server` example shows a case where we continuously check for an action and when an
-cancelation is detected go out of the state machines and perform a shutdown procedure.  The following class is
-used for this purpose:
-
-::: betfsm.betfsm_action_server.WhileNotCanceled
-    options:
-      heading_level: 4
-      show_source: false
-      show_root_heading: true 
-
-
-This class runs its underlying state and has transitions that depend on the outcome of the underlying state or on cancelation requests.  With this we can build a simple statemachine to implement what should happen when cancel is requested:
-
-```
-class CheckingCancelAndShutdown(TickingStateMachine):
-    def __init__(self,name:str,state:TickingState,srv_name:str="/etasl_node",timeout:Duration = Duration(seconds=1.0), node : Node = None):
-        # execute in sequence but don't care about ABORT, only way to fail is TIMEOUT
-        super().__init__(name,[CANCEL,SUCCEED])
-
-        self.add_state(state=WhileNotCanceled("while_not_canceled",state), transitions={CANCEL:"DEACTIVATE_ETASL",SUCCEED:SUCCEED, TIMEOUT:"DEACTIVATE_ETASL"})
-
-        self.add_state(state=LifeCycle("DEACTIVATE_ETASL",srv_name,Transition.DEACTIVATE,timeout,node),
-                       transitions={SUCCEED: "CLEANUP_ETASL",  ABORT: "CLEANUP_ETASL", TIMEOUT:"CLEANUP_ETASL"} )
-        self.add_state( state=LifeCycle("CLEANUP_ETASL",srv_name,Transition.CLEANUP,timeout,node),
-                       transitions={SUCCEED: CANCEL, ABORT: CANCEL,TIMEOUT: CANCEL} )
-```
-
-
-### example_action_server2
-
-
-The `example_action_server2` describes another approach where there is only a check for cancelation
-at specific locations of the state machine(s).  The following TickingState is used for this purpose:
-
-
-::: betfsm.betfsm_action_server.CheckForCanceledAction
-    options:
-      heading_level: 4
-      show_source: false
-      show_root_heading: true 
-
+See [Action Server examples](actionserver_ex.md)
 

@@ -49,6 +49,8 @@
     <ul>
                 <li class="toctree-l2"><a class="reference internal" href="../upanddown/">Up & Down</a>
                 </li>
+                <li class="toctree-l2"><a class="reference internal" href="../actionserver_ex/">Action servers</a>
+                </li>
     </ul>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" >BeTFSM</a>
@@ -94,8 +96,6 @@
                 <li class="toctree-l2"><a class="reference internal" href="../serviceclient/">ServiceClient</a>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../lifecycle/">LifeCycle</a>
-                </li>
-                <li class="toctree-l2"><a class="reference internal" href="../topicstate/">TopicState</a>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../timedrepeat/">TimedRepeat</a>
                 </li>
@@ -165,8 +165,6 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../about/">About</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../TODO/">Todo list</a>
-                  </li>
               </ul>
       </div>
     </div>
@@ -202,7 +200,7 @@
 
 
 <h3 id="betfsm.betfsm_etasl.load_task_list" class="doc doc-heading">
-            <code class="highlight language-python">betfsm.betfsm_etasl.load_task_list(json_file_name, blackboard)</code>
+            <code class="highlight language-python"><span class="n">betfsm</span><span class="o">.</span><span class="n">betfsm_etasl</span><span class="o">.</span><span class="n">load_task_list</span><span class="p">(</span><span class="n">json_file_name</span><span class="p">,</span> <span class="n">blackboard</span><span class="p">)</span></code>
 
 </h3>
 
@@ -291,7 +289,7 @@ are expanded (using the expand_... functions)</p>
 
 
 <h4 id="betfsm.betfsm_etasl.eTaSL_StateMachine.__init__" class="doc doc-heading">
-            <code class="highlight language-python">__init__(name, task_name, srv_name='/etasl_node', output_topic='/my_topic', cb=default_parameter_setter, timeout=Duration(seconds=1.0), node=None, transitioncb=default_transitioncb, statecb=default_statecb)</code>
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">task_name</span><span class="p">,</span> <span class="n">srv_name</span><span class="o">=</span><span class="s1">&#39;/etasl_node&#39;</span><span class="p">,</span> <span class="n">output_topic</span><span class="o">=</span><span class="s1">&#39;/my_topic&#39;</span><span class="p">,</span> <span class="n">cb</span><span class="o">=</span><span class="n">default_parameter_setter</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">Duration</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mf">1.0</span><span class="p">),</span> <span class="n">node</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">transitioncb</span><span class="o">=</span><span class="n">default_transitioncb</span><span class="p">,</span> <span class="n">statecb</span><span class="o">=</span><span class="n">default_statecb</span><span class="p">)</span></code>
 
 </h4>
 
@@ -471,7 +469,7 @@ Uses a duration of 1 second otherwise.</p>
 
 
 <h4 id="betfsm.betfsm_etasl.SetTaskParameters.__init__" class="doc doc-heading">
-            <code class="highlight language-python">__init__(name, task_name, srv_name='/etasl_node', cb=default_parameter_setter, timeout=Duration(seconds=1.0), node=None)</code>
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">task_name</span><span class="p">,</span> <span class="n">srv_name</span><span class="o">=</span><span class="s1">&#39;/etasl_node&#39;</span><span class="p">,</span> <span class="n">cb</span><span class="o">=</span><span class="n">default_parameter_setter</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">Duration</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mf">1.0</span><span class="p">),</span> <span class="n">node</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h4>
 
@@ -609,7 +607,7 @@ where param is a Dict with the parameters of the task.</p>
 
 
 <h4 id="betfsm.betfsm_etasl.ReadRobotSpecification.__init__" class="doc doc-heading">
-            <code class="highlight language-python">__init__(name, task_name, srv_name='/etasl_node', timeout=Duration(seconds=1.0), node=None)</code>
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">task_name</span><span class="p">,</span> <span class="n">srv_name</span><span class="o">=</span><span class="s1">&#39;/etasl_node&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">Duration</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mf">1.0</span><span class="p">),</span> <span class="n">node</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h4>
 
@@ -736,7 +734,7 @@ from the task</p>
 
 
 <h4 id="betfsm.betfsm_etasl.ReadTaskSpecification.__init__" class="doc doc-heading">
-            <code class="highlight language-python">__init__(name, task_name, srv_name='/etasl_node', timeout=Duration(seconds=1.0), node=None)</code>
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">task_name</span><span class="p">,</span> <span class="n">srv_name</span><span class="o">=</span><span class="s1">&#39;/etasl_node&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">Duration</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mf">1.0</span><span class="p">),</span> <span class="n">node</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h4>
 
@@ -855,7 +853,7 @@ from the task</p>
 
 
 <h4 id="betfsm.betfsm_etasl.eTaSLOutput.__init__" class="doc doc-heading">
-            <code class="highlight language-python">__init__(name, topic, qos=30, bb_location=['output_param'], node=None)</code>
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">topic</span><span class="p">,</span> <span class="n">qos</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">bb_location</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;output_param&#39;</span><span class="p">],</span> <span class="n">node</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h4>
 
@@ -991,7 +989,7 @@ Node will CANCEL when it is ticked and no topic has been received.</p>
 
 
 <h4 id="betfsm.betfsm_etasl.eTaSLEvent.__init__" class="doc doc-heading">
-            <code class="highlight language-python">__init__(name, topic, qos=10, mapping={'e_finished@etasl_node': (1, SUCCEED)}, node=None)</code>
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">topic</span><span class="p">,</span> <span class="n">qos</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;e_finished@etasl_node&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">SUCCEED</span><span class="p">)},</span> <span class="n">node</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h4>
 

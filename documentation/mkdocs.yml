@@ -13,6 +13,7 @@ nav:
     - "Home": 'index.md'
     - "Tutorials":
       - "Up & Down": "upanddown.md"
+      - "Action servers": "actionserver_ex.md" 
     - "BeTFSM":
       - "TickingState" : "tickingstate.md"
       - "TickingStateMachine" : "tickingstatemachine.md"
@@ -34,7 +35,6 @@ nav:
     - "BeTFSM ROS2":  
       - "ServiceClient" : 'serviceclient.md'
       - "LifeCycle" : 'lifecycle.md'
-      - "TopicState" : 'topicstate.md'
       - "TimedRepeat" : timedrepeat.md
       - "TimedWait" : 'timedwait.md'
       - "Timeout" : "timeout.md"
@@ -42,12 +42,13 @@ nav:
     - "Action server": "actionserver.md"
     - "Utilities" : 'utils.md'
     - "About": 'about.md'
-    - "Todo list" : "TODO.md"
 
 
 
 plugins:
   - search
+  - codeinclude:
+      title_mode: none
   - mermaid2
   - mkdocstrings:
       handlers:

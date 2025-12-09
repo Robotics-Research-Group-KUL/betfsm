@@ -49,43 +49,11 @@
     <ul class="current">
                 <li class="toctree-l2 current"><a class="reference internal current" href="#">Up & Down</a>
     <ul class="current">
-    <li class="toctree-l3"><a class="reference internal" href="#up-down-specified-as-a-function">Up &amp; Down, specified as a function:</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#betfsm_demos.sm_up_and_down.up_and_down_as_a_function">up_and_down_as_a_function</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#up-down-specified-as-a-function-and-with-a-timer-running-concurrently">Up &amp; Down, specified as a function and with a timer running concurrently:</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#betfsm_demos.sm_up_and_down.up_and_down_as_a_function_and_a_timer">up_and_down_as_a_function_and_a_timer</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#up-down-specified-as-a-class">Up &amp; Down, specified as a class:</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#betfsm_demos.sm_up_and_down.Up_and_down_as_a_class">Up_and_down_as_a_class</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#betfsm_demos.sm_up_and_down.Up_and_down_as_a_class.__init__">__init__</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#up-down-with-etasl-tasks-with-input-and-output-parameters">Up &amp; Down, with eTaSL tasks with input and output parameters:</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#betfsm_demos.sm_up_and_down.Up_and_down_with_parameters">Up_and_down_with_parameters</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#betfsm_demos.sm_up_and_down.Up_and_down_with_parameters.__init__">__init__</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#up-down-with-etasl-tasks-with-input-and-output-parameters-using-lambda-functions">Up &amp; Down, with eTaSL tasks with input and output parameters using lambda functions:</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#betfsm_demos.sm_up_and_down.Up_and_down_with_parameters_lambda">Up_and_down_with_parameters_lambda</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#betfsm_demos.sm_up_and_down.Up_and_down_with_parameters_lambda.__init__">__init__</a>
-    </li>
-        </ul>
+    <li class="toctree-l3"><a class="reference internal" href="#full-code-of-up-and-down-examples">Full code of up-and-down examples:</a>
     </li>
     </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../actionserver_ex/">Action servers</a>
                 </li>
     </ul>
                   </li>
@@ -133,8 +101,6 @@
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../lifecycle/">LifeCycle</a>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="../topicstate/">TopicState</a>
-                </li>
                 <li class="toctree-l2"><a class="reference internal" href="../timedrepeat/">TimedRepeat</a>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../timedwait/">TimedWait</a>
@@ -150,8 +116,6 @@
                   <li class="toctree-l1"><a class="reference internal" href="../utils/">Utilities</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../about/">About</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../TODO/">Todo list</a>
                   </li>
               </ul>
       </div>
@@ -180,304 +144,234 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="tutorial-example-up-down">Tutorial example "Up &amp; Down"</h1>
-<p>One needs to give permission for the devcontainer to display graphical windows on the host computer.
-These needs to be executed on the host computer, outside Visual Studio.
-  <code>xhost +</code>
-To be checked if it also works (where local=localhost and root is users)
-  <code>xhost +local:root</code>
-To retract the permissions:
-  <code>xhost -</code></p>
-<p>This test setup needs the following nodes running: </p>
-<p><strong>RVIZ</strong> : visualization of UR10 robot:</p>
-<pre><code>  ros2 launch etasl_ros2_application_template load_ur10_setup.launch.py
-</code></pre>
-<p>Running the <strong>eTaSL node</strong>:</p>
-<pre><code>   ros2 run etasl_ros2 etasl_node
-</code></pre>
-<p>This will start up a server that can execute eTaSL.</p>
-<p>The <strong>example action server</strong> in this repository is run by:</p>
-<pre><code>   ros2 run betfsm_demos example_action_server
-</code></pre>
-<p>You are now listening for incomming actions.
-A small script in the <code>./scripts</code> directory calls an action handled by the example_action_server:</p>
-<pre><code>   ./scripts/send_up_and_down.sh
-</code></pre>
-<p>Try interrupting the script with ctrl-C while its waiting to finish. You'll see that this is passed to
-the state-machine, that will also finish, this is done by checking a variable on the blackboard
-while running your statemachine.
-There are two examples that deal in a different way with cancelation of the action:</p>
+<p>This introduction showcases several ways to define a state machine, and shows some<br />
+of the possibilities of BeTFSM:</p>
+<p>Different BeTFSM nodes are implemented in different ways: </p>
 <ul>
-<li><code>example_action_server.py</code> continuously checks for cancelation and interupts the robot motion by
-   deactivating the eTaSL server.  The example shows how to specify a shutdown procedure.</li>
-<li><code>example_action_server2.py</code> uses a state to detect cancelation such that robot motion can be interrupted at a specified time.</li>
+<li>Up &amp; Down, specified as a function:   specifies a simple sequence of actions.</li>
+<li>Up &amp; Down, specified as a function and with a timer running concurrently: concurrently starts a timer that goes off at 3 seconds,
+  and executes a sequence of actions.  The whole tree returns SUCCEED when the timer goes passed 3 seconds.</li>
+<li>Up &amp; Down, specified as a class: specifies a simple sequence using a class.  A class is usefull when you need
+  to perform more advanced configuration or construction of the children of the sequence.</li>
+<li>Up &amp; Down, with eTaSL tasks with input and output parameters: An example that shows how to pass parameters to and from eTaSL 
+  state machines.</li>
+<li>Up &amp; Down, with eTaSL tasks with input and output parameters using lambda functions: Often it is useful to use python lambda
+  function to ensure execution at run-time.</li>
 </ul>
-<p>These examples also start a state that publishes the statemachine on a String topic in graphviz format.</p>
-<p>You can startup a webserver that publishes an svg file using:</p>
-<pre><code>   ros2 run betfsm web_server
+<p>The example library with state machines also shows the definition of a schema for the action server.
+This schema (called my_schema) defines the parameters of the action.</p>
+<h3 id="full-code-of-up-and-down-examples">Full code of up-and-down examples:</h3>
+<pre><code class="language-python"># sm_up_and_down.py
+#
+# A simple demo statemachine that moves up and down.
+#
+# Copyright (C) Erwin Aertbeliën, 2024
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program; if not, write to the Free Software Foundation,
+# Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+
+from rclpy.duration import Duration
+
+from betfsm.betfsm import *
+from betfsm.betfsm_ros import *
+from betfsm.betfsm_etasl import *
+from betfsm.betfsm_action_server import *
+#from betfsm.graphviz_visitor import *
+
+
+from betfsm.betfsm_action_server import CheckForCanceledAction
+
+import math
+
+#
+#
+# A state machine that moves home, up, down and up again
+#
+# Different versions of the same functionality:
+#
+
+
+def up_and_down_as_a_function(node=None):
+    &quot;&quot;&quot;
+    &quot;&quot;&quot;
+    return  Sequence(&quot;my_sequence&quot;, children=[
+                                        eTaSL_StateMachine(&quot;movinghome&quot;,&quot;MovingHome&quot;,node=node),
+                                        eTaSL_StateMachine(&quot;movingup&quot;,&quot;MovingUp&quot;,node=node),
+                                        eTaSL_StateMachine(&quot;movingdown&quot;,&quot;MovingDown&quot;,node=node),            
+                                        eTaSL_StateMachine(&quot;movingup2&quot;,&quot;MovingUp&quot;,node=node),
+                                        Message(&quot;Robot is finished&quot;)
+                                    ] )
+
+
+def up_and_down_as_a_function_and_a_timer(node=None):
+    &quot;&quot;&quot;
+    &quot;&quot;&quot;
+    return ConcurrentSequence(&quot;up_and_down_as_a_function&quot;, children=[
+            Sequence(&quot;my_sequence&quot;, children=[
+                                        eTaSL_StateMachine(&quot;movinghome&quot;,&quot;MovingHome&quot;,node=node),
+                                        eTaSL_StateMachine(&quot;movingup&quot;,&quot;MovingUp&quot;,node=node),
+                                        eTaSL_StateMachine(&quot;movingdown&quot;,&quot;MovingDown&quot;,node=node),            
+                                        eTaSL_StateMachine(&quot;movingup2&quot;,&quot;MovingUp&quot;,node=node),
+                                        Message(&quot;Robot is finished&quot;)
+                                    ] ),
+            Sequence(&quot;timer&quot;, children=[
+                                TimedWait(&quot;timed_wait&quot;,Duration(seconds=3.0),node=node ),
+                                Message(msg=&quot;Timer went off!&quot;)
+                              ] )
+            ])
+
+class Up_and_down_as_a_class(Sequence):
+    &quot;&quot;&quot;
+    &quot;&quot;&quot;
+    def __init__(self,node=None):
+        &quot;&quot;&quot;
+        &quot;&quot;&quot;
+        super().__init__(&quot;Up_and_down_as_a_class&quot;)
+        self.add_state(eTaSL_StateMachine(&quot;movinghome&quot;,&quot;MovingHome&quot;,node=node))
+        self.add_state(eTaSL_StateMachine(&quot;movingup&quot;,&quot;MovingUp&quot;,node=node))
+        self.add_state(eTaSL_StateMachine(&quot;movingdown&quot;,&quot;MovingDown&quot;,node=node))
+        self.add_state(eTaSL_StateMachine(&quot;movingup2&quot;,&quot;MovingUp&quot;,node=node))
+        self.add_state(Message(&quot;Hello world&quot;))
+
+
+
+
+class Up_and_down_with_parameters(Sequence):
+    def __init__(self,node):
+        &quot;&quot;&quot;
+        &quot;&quot;&quot;
+        super().__init__(&quot;Up_and_down_as_a_class&quot;)
+
+        class MyComputations(Generator):
+            def __init__(self):
+                super().__init__(&quot;MyComputations&quot;,[SUCCEED])
+            def co_execute(self,bb):
+                bb[&quot;home_computations&quot;]={}
+                bb[&quot;home_computations&quot;][&quot;joint_1&quot;] = bb[&quot;output&quot;][&quot;home1&quot;][&quot;jpos1&quot;]*180.0/math.pi +100.0
+                yield SUCCEED 
+
+        def my_parameters(bb:Blackboard)-&gt;Dict:
+            result = {}
+            result[&quot;joint_1&quot;] = bb[&quot;home_computations&quot;][&quot;joint_1&quot;]
+            result[&quot;joint_2&quot;] = bb[&quot;output&quot;][&quot;home1&quot;][&quot;jpos2&quot;]*180.0/math.pi+5
+            return result
+
+        self.add_state(eTaSL_StateMachine(&quot;home1&quot;,&quot;MovingHome&quot; ,node=node))
+        self.add_state(LogBlackboard(&quot;LogBlackboard1&quot;,[&quot;output&quot;]))
+        self.add_state( MyComputations() )
+        self.add_state(LogBlackboard(&quot;LogBlackboard1&quot;,[&quot;home_computations&quot;]))
+        self.add_state(eTaSL_StateMachine(&quot;home2&quot;,&quot;MovingHome&quot;, cb=my_parameters, node=node) )
+        self.add_state(eTaSL_StateMachine(&quot;home3&quot;,&quot;MovingHome&quot;,node=node))
+        self.add_state(LogBlackboard(&quot;Logblackboard2&quot;,[&quot;output&quot;] ))
+        self.add_state(eTaSL_StateMachine(&quot;movingup&quot;,&quot;MovingUp&quot;,node=node),)
+        self.add_state(FeedbackState(&quot;feedback1&quot;,&quot;up&quot;,
+                                     lambda bb:{
+                                                &quot;x_tcp&quot;: bb[&quot;output&quot;][&quot;movingup&quot;][&quot;x_tcp&quot;],
+                                                &quot;y_tcp&quot;: bb[&quot;output&quot;][&quot;movingup&quot;][&quot;y_tcp&quot;],
+                                                &quot;z_tcp&quot;: bb[&quot;output&quot;][&quot;movingup&quot;][&quot;z_tcp&quot;]
+                                                }))
+        self.add_state(eTaSL_StateMachine(&quot;movingdown&quot;,&quot;MovingDown&quot;,node=node))    
+        self.add_state(FeedbackState(&quot;feedback1&quot;,&quot;up&quot;,lambda bb:{}))
+        self.add_state(eTaSL_StateMachine(&quot;movingup2&quot;,&quot;MovingUp&quot;,node=node))
+        self.add_state( Message(msg=&quot;Hello world&quot;) )
+
+
+
+class Up_and_down_with_parameters_lambda(Sequence):
+    def __init__(self, node):
+        &quot;&quot;&quot;
+        &quot;&quot;&quot;
+        super().__init__(&quot;Up_and_down_with_parameters_lambda&quot;)
+
+        self.add_state(eTaSL_StateMachine(&quot;home1&quot;,&quot;MovingHome&quot;,node=node))
+        self.add_state(LogBlackboard(&quot;LogBlackboard1&quot;,[&quot;output&quot;]))
+        self.add_state(Compute(&quot;compute_state&quot;,[&quot;home_computations&quot;], lambda bb: {&quot;joint_1&quot; : bb[&quot;output&quot;][&quot;home1&quot;][&quot;jpos1&quot;]*180.0/math.pi + 100.0} ))
+        self.add_state(LogBlackboard(&quot;LogBlackboard1&quot;,[&quot;home_computations&quot;]))                                                   
+        self.add_state(eTaSL_StateMachine(&quot;home2&quot;,&quot;MovingHome&quot;,
+                                            cb=lambda bb: {&quot;joint_1&quot;: bb[&quot;home_computations&quot;][&quot;joint_1&quot;],
+                                                           &quot;joint_2&quot;: bb[&quot;output&quot;][&quot;home1&quot;][&quot;jpos2&quot;]*180.0/math.pi+5,
+                                                          },
+                                            node=node) )
+        self.add_state(eTaSL_StateMachine(&quot;home3&quot;,&quot;MovingHome&quot;,node=node))
+        self.add_state(LogBlackboard(&quot;Logblackboard2&quot;,[&quot;output&quot;] ))
+        self.add_state(eTaSL_StateMachine(&quot;movingup&quot;,&quot;MovingUp&quot;,node=node),)
+        self.add_state(eTaSL_StateMachine(&quot;movingdown&quot;,&quot;MovingDown&quot;,node=node))
+        self.add_state(eTaSL_StateMachine(&quot;movingup2&quot;,&quot;MovingUp&quot;,node=node))
+        self.add_state( Message(msg=&quot;Hello world&quot;) )
+
+
+
+class Up_and_down_with_parameters_checking_for_cancel(Sequence):
+    def __init__(self, node):
+        &quot;&quot;&quot;
+        &quot;&quot;&quot;
+        super().__init__(&quot;Up_and_down_with_parameters_checking_for_cancel&quot;)
+
+        self.add_state(eTaSL_StateMachine(&quot;home1&quot;,&quot;MovingHome&quot;,node=node))
+        self.add_state(LogBlackboard(&quot;LogBlackboard1&quot;,[&quot;output&quot;]))
+        self.add_state(Compute(&quot;compute_state&quot;,[&quot;home_computations&quot;], lambda bb: {&quot;joint_1&quot; : bb[&quot;output&quot;][&quot;home1&quot;][&quot;jpos1&quot;]*180.0/math.pi + 100.0} ))
+        self.add_state(LogBlackboard(&quot;LogBlackboard1&quot;,[&quot;home_computations&quot;]))                                                   
+        self.add_state(eTaSL_StateMachine(&quot;home2&quot;,&quot;MovingHome&quot;,
+                                            cb=lambda bb: {&quot;joint_1&quot;: bb[&quot;home_computations&quot;][&quot;joint_1&quot;],
+                                                           &quot;joint_2&quot;: bb[&quot;output&quot;][&quot;home1&quot;][&quot;jpos2&quot;]*180.0/math.pi+5,
+                                                          },
+                                            node=node) )
+        self.add_state(eTaSL_StateMachine(&quot;home3&quot;,&quot;MovingHome&quot;,node=node))
+        self.add_state(LogBlackboard(&quot;Logblackboard2&quot;,[&quot;output&quot;] ))
+        # looping 10 times and checking for cancelled action at a specific point in the
+        # task. A CANCEL outcome will fall through the states &quot;up_and_down_cycle&quot;,&quot;repeat&quot;,&quot;
+        # Up_and_down_as_a_class&quot;
+        self.add_state(Repeat(&quot;repeat&quot;,10,
+                Sequence(&quot;up_and_down_cycle&quot;,
+                        [
+                            eTaSL_StateMachine(&quot;movingup&quot;,&quot;MovingUp&quot;,node=node,cb= lambda bb: {&quot;delta_z&quot;: bb[&quot;input_parameters&quot;][&quot;delta_z&quot;]}),
+                            eTaSL_StateMachine(&quot;movingdown&quot;,&quot;MovingDown&quot;,node=node,cb= lambda bb: {&quot;delta_z&quot;: -bb[&quot;input_parameters&quot;][&quot;delta_z&quot;]}),
+                            FeedbackState(&quot;feedback2&quot;,&quot;up&quot;,
+                                     lambda bb:{
+                                                &quot;x_tcp&quot;: bb[&quot;output&quot;][&quot;movingdown&quot;][&quot;x_tcp&quot;],
+                                                &quot;y_tcp&quot;: bb[&quot;output&quot;][&quot;movingdown&quot;][&quot;y_tcp&quot;],
+                                                &quot;z_tcp&quot;: bb[&quot;output&quot;][&quot;movingdown&quot;][&quot;z_tcp&quot;]
+                                                }),
+                            CheckForCanceledAction(&quot;check_for_cancel&quot;)
+                        ]
+                )
+        ))       
+
+#static member:    
+my_schema=json.loads(&quot;&quot;&quot;
+        {
+            &quot;title&quot;: &quot;upanddown&quot;,
+            &quot;description&quot;: &quot;task that moves up and down&quot;,
+            &quot;type&quot;: &quot;object&quot;,
+            &quot;properties&quot; : {
+                &quot;delta_z&quot; : { &quot;type&quot; : &quot;number&quot;, &quot;description&quot;: &quot;height to move up and down&quot; }
+            },
+            &quot;required&quot; : [ &quot;delta_z&quot;],
+            &quot;additionalProperties&quot; : false
+        }
+    &quot;&quot;&quot;)
+
+
+
 </code></pre>
-<p>I you look at the action scripts, you see that a <a class="autorefs autorefs-internal" title="betfsm.betfsm.Concurrent" href="../concurrent/#betfsm.betfsm.Concurrent">Concurrent</a> state runs the state
-machine in parallel with a GraphvizPublisher state that publishes the state machine on a topic <code>/gz</code>.  There is a 
-<code>do_not_expand_types</code> and <code>do_not_expand_instances</code> argument where you can limit what is displayed in the state machine
-(in order not to overload the figure)</p>
-<pre><code>Concurrent(&quot;concurrent&quot;,[
- sm,
- GraphvizPublisher(&quot;publisher&quot;,&quot;/gz&quot;,sm,None,skip=10,do_not_expand_types=[eTaSL_StateMachine])
-</code></pre>
-<div class="admonition warning">
-<p class="admonition-title">TODO</p>
-<p>still some work here...</p>
-</div>
-<p>in <code>sm_up_and_down.py</code> you find example statemachines that show different styles for specifying
-a simple state machine that moves up and down:</p>
-<h3 id="up-down-specified-as-a-function">Up &amp; Down, specified as a function:</h3>
-
-
-<div class="doc doc-object doc-function">
-
-
-<h2 id="betfsm_demos.sm_up_and_down.up_and_down_as_a_function" class="doc doc-heading">
-            <code class="highlight language-python">betfsm_demos.sm_up_and_down.up_and_down_as_a_function(node=None)</code>
-
-</h2>
-
-
-    <div class="doc doc-contents first">
-
-
-    </div>
-
-</div><p>options:
-      heading_level: 3
-      show_source: true
-      show_root_heading: true   </p>
-<h3 id="up-down-specified-as-a-function-and-with-a-timer-running-concurrently">Up &amp; Down, specified as a function and with a timer running concurrently:</h3>
-
-
-<div class="doc doc-object doc-function">
-
-
-<h2 id="betfsm_demos.sm_up_and_down.up_and_down_as_a_function_and_a_timer" class="doc doc-heading">
-            <code class="highlight language-python">betfsm_demos.sm_up_and_down.up_and_down_as_a_function_and_a_timer(node=None)</code>
-
-</h2>
-
-
-    <div class="doc doc-contents first">
-
-
-    </div>
-
-</div><p>options:
-      heading_level: 3
-      show_source: true
-      show_root_heading: true   </p>
-<h3 id="up-down-specified-as-a-class">Up &amp; Down, specified as a class:</h3>
-
-
-<div class="doc doc-object doc-class">
-
-
-
-<h2 id="betfsm_demos.sm_up_and_down.Up_and_down_as_a_class" class="doc doc-heading">
-            <code>betfsm_demos.sm_up_and_down.Up_and_down_as_a_class</code>
-
-
-</h2>
-
-
-    <div class="doc doc-contents first">
-            <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="betfsm.betfsm.Sequence (betfsm.betfsm_action_server.Sequence)" href="../sequence/#betfsm.betfsm.Sequence">Sequence</a></code></p>
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="doc doc-children">
-
-
-
-
-
-
-
-
-
-
-<div class="doc doc-object doc-function">
-
-
-<h3 id="betfsm_demos.sm_up_and_down.Up_and_down_as_a_class.__init__" class="doc doc-heading">
-            <code class="highlight language-python">__init__(node=None)</code>
-
-</h3>
-
-
-    <div class="doc doc-contents ">
-
-
-    </div>
-
-</div>
-
-
-
-  </div>
-
-    </div>
-
-
-</div><p>options:
-      heading_level: 3
-      show_source: true
-      show_root_heading: true   </p>
-<h3 id="up-down-with-etasl-tasks-with-input-and-output-parameters">Up &amp; Down, with eTaSL tasks with input and output parameters:</h3>
-
-
-<div class="doc doc-object doc-class">
-
-
-
-<h2 id="betfsm_demos.sm_up_and_down.Up_and_down_with_parameters" class="doc doc-heading">
-            <code>betfsm_demos.sm_up_and_down.Up_and_down_with_parameters</code>
-
-
-</h2>
-
-
-    <div class="doc doc-contents first">
-            <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="betfsm.betfsm.Sequence (betfsm.betfsm_action_server.Sequence)" href="../sequence/#betfsm.betfsm.Sequence">Sequence</a></code></p>
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="doc doc-children">
-
-
-
-
-
-
-
-
-
-
-<div class="doc doc-object doc-function">
-
-
-<h3 id="betfsm_demos.sm_up_and_down.Up_and_down_with_parameters.__init__" class="doc doc-heading">
-            <code class="highlight language-python">__init__(node)</code>
-
-</h3>
-
-
-    <div class="doc doc-contents ">
-
-
-    </div>
-
-</div>
-
-
-
-  </div>
-
-    </div>
-
-
-</div><p>options:
-      heading_level: 3
-      show_source: true
-      show_root_heading: true   </p>
-<h3 id="up-down-with-etasl-tasks-with-input-and-output-parameters-using-lambda-functions">Up &amp; Down, with eTaSL tasks with input and output parameters using lambda functions:</h3>
-
-
-<div class="doc doc-object doc-class">
-
-
-
-<h2 id="betfsm_demos.sm_up_and_down.Up_and_down_with_parameters_lambda" class="doc doc-heading">
-            <code>betfsm_demos.sm_up_and_down.Up_and_down_with_parameters_lambda</code>
-
-
-</h2>
-
-
-    <div class="doc doc-contents first">
-            <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="betfsm.betfsm.Sequence (betfsm.betfsm_action_server.Sequence)" href="../sequence/#betfsm.betfsm.Sequence">Sequence</a></code></p>
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="doc doc-children">
-
-
-
-
-
-
-
-
-
-
-<div class="doc doc-object doc-function">
-
-
-<h3 id="betfsm_demos.sm_up_and_down.Up_and_down_with_parameters_lambda.__init__" class="doc doc-heading">
-            <code class="highlight language-python">__init__(node)</code>
-
-</h3>
-
-
-    <div class="doc doc-contents ">
-
-
-    </div>
-
-</div>
-
-
-
-  </div>
-
-    </div>
-
-
-</div><p>options:
-      heading_level: 3
-      show_source: true
-      show_root_heading: true   </p>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
         <a href=".." class="btn btn-neutral float-left" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../tickingstate/" class="btn btn-neutral float-right" title="TickingState">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../actionserver_ex/" class="btn btn-neutral float-right" title="Action servers">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -508,7 +402,7 @@ a simple state machine that moves up and down:</p>
       <span><a href=".." style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../tickingstate/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../actionserver_ex/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

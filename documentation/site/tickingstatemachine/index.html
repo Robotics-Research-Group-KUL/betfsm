@@ -49,6 +49,8 @@
     <ul>
                 <li class="toctree-l2"><a class="reference internal" href="../upanddown/">Up & Down</a>
                 </li>
+                <li class="toctree-l2"><a class="reference internal" href="../actionserver_ex/">Action servers</a>
+                </li>
     </ul>
                   </li>
                   <li class="toctree-l1 current"><a class="reference internal current" >BeTFSM</a>
@@ -107,8 +109,6 @@
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../lifecycle/">LifeCycle</a>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="../topicstate/">TopicState</a>
-                </li>
                 <li class="toctree-l2"><a class="reference internal" href="../timedrepeat/">TimedRepeat</a>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../timedwait/">TimedWait</a>
@@ -124,8 +124,6 @@
                   <li class="toctree-l1"><a class="reference internal" href="../utils/">Utilities</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../about/">About</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../TODO/">Todo list</a>
                   </li>
               </ul>
       </div>
@@ -204,7 +202,7 @@
 
 
 <h3 id="betfsm.betfsm.TickingStateMachine.__init__" class="doc doc-heading">
-            <code class="highlight language-python">__init__(name, outcomes, transitioncb=default_transitioncb, statecb=default_statecb)</code>
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">outcomes</span><span class="p">,</span> <span class="n">transitioncb</span><span class="o">=</span><span class="n">default_transitioncb</span><span class="p">,</span> <span class="n">statecb</span><span class="o">=</span><span class="n">default_statecb</span><span class="p">)</span></code>
 
 </h3>
 
@@ -272,7 +270,7 @@ See also </p>
 
 
 <h3 id="betfsm.betfsm.TickingStateMachine.accept" class="doc doc-heading">
-            <code class="highlight language-python">accept(visitor)</code>
+            <code class="highlight language-python"><span class="n">accept</span><span class="p">(</span><span class="n">visitor</span><span class="p">)</span></code>
 
 </h3>
 
@@ -290,7 +288,7 @@ See also </p>
 
 
 <h3 id="betfsm.betfsm.TickingStateMachine.add_state" class="doc doc-heading">
-            <code class="highlight language-python">add_state(state, transitions=None)</code>
+            <code class="highlight language-python"><span class="n">add_state</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">transitions</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h3>
 
@@ -343,7 +341,7 @@ with this state.</p>
 
 
 <h3 id="betfsm.betfsm.TickingStateMachine.reset" class="doc doc-heading">
-            <code class="highlight language-python">reset()</code>
+            <code class="highlight language-python"><span class="n">reset</span><span class="p">()</span></code>
 
 </h3>
 
@@ -362,7 +360,7 @@ from the starting state.  Calls reset on all the states it contains.</p>
 
 
 <h3 id="betfsm.betfsm.TickingStateMachine.set_start_state" class="doc doc-heading">
-            <code class="highlight language-python">set_start_state(name)</code>
+            <code class="highlight language-python"><span class="n">set_start_state</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></code>
 
 </h3>
 

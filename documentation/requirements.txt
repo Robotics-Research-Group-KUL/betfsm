@@ -6,4 +6,6 @@ pymdown-extensions~=10.8.1
 PyYAML~=6.0.1
 pyyaml_env_tag~=0.1
 mkdocs-graphviz~=1.5.3
+mkdocs-codeinclude-plugin~=0.2.1
+
 

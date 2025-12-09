@@ -45,6 +45,8 @@
 <ul>
 <li class="toctree-l2"><a class="reference internal" href="../upanddown/">Up &amp; Down</a>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../actionserver_ex/">Action servers</a>
+</li>
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="reference internal current">BeTFSM</a>
@@ -105,8 +107,6 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../lifecycle/">LifeCycle</a>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../topicstate/">TopicState</a>
-</li>
 <li class="toctree-l2"><a class="reference internal" href="../timedrepeat/">TimedRepeat</a>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../timedwait/">TimedWait</a>
@@ -122,8 +122,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../utils/">Utilities</a>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../about/">About</a>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../TODO/">Todo list</a>
 </li>
 </ul>
 </div>
@@ -202,7 +200,7 @@ if not, the user needs to call reset() before using the state again.</p>
 <div class="doc doc-children">
 <div class="doc doc-object doc-function">
 <h3 class="doc doc-heading" id="betfsm.betfsm.TickingState.__init__">
-<code class="highlight language-python">__init__(name, outcomes)</code>
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">outcomes</span><span class="p">)</span></code>
 </h3>
 <div class="doc doc-contents">
 <table class="field-list">
@@ -240,7 +238,7 @@ if not, the user needs to call reset() before using the state again.</p>
 </div>
 <div class="doc doc-object doc-function">
 <h3 class="doc doc-heading" id="betfsm.betfsm.TickingState.accept">
-<code class="highlight language-python">accept(visitor)</code>
+<code class="highlight language-python"><span class="n">accept</span><span class="p">(</span><span class="n">visitor</span><span class="p">)</span></code>
 </h3>
 <div class="doc doc-contents">
 <p>calls the visitor with itself and possibly iterates over its children.</p>
@@ -252,7 +250,7 @@ if not, the user needs to call reset() before using the state again.</p>
 </div>
 <div class="doc doc-object doc-function">
 <h3 class="doc doc-heading" id="betfsm.betfsm.TickingState.doo">
-<code class="highlight language-python">doo(blackboard)</code>
+<code class="highlight language-python"><span class="n">doo</span><span class="p">(</span><span class="n">blackboard</span><span class="p">)</span></code>
 </h3>
 <div class="doc doc-contents">
 <p>is repeatedly called after the first time execute() is called.</p>
@@ -316,7 +314,7 @@ If one likes more detailed behavior, doo needs to catch the exception itself.</p
 </div>
 <div class="doc doc-object doc-function">
 <h3 class="doc doc-heading" id="betfsm.betfsm.TickingState.entry">
-<code class="highlight language-python">entry(blackboard)</code>
+<code class="highlight language-python"><span class="n">entry</span><span class="p">(</span><span class="n">blackboard</span><span class="p">)</span></code>
 </h3>
 <div class="doc doc-contents">
 <p>called the first time execute() is called.</p>
@@ -376,7 +374,7 @@ If one likes more detailed behavior, entry needs to catch the exception itself.<
 </div>
 <div class="doc doc-object doc-function">
 <h3 class="doc doc-heading" id="betfsm.betfsm.TickingState.exit">
-<code class="highlight language-python">exit()</code>
+<code class="highlight language-python"><span class="n">exit</span><span class="p">()</span></code>
 </h3>
 <div class="doc doc-contents">
 <p>method that is always called when execute is called the last time</p>
@@ -415,7 +413,7 @@ which does not and should not know the blackboard parameter.</p>
 </div>
 <div class="doc doc-object doc-function">
 <h3 class="doc doc-heading" id="betfsm.betfsm.TickingState.reset">
-<code class="highlight language-python">reset()</code>
+<code class="highlight language-python"><span class="n">reset</span><span class="p">()</span></code>
 </h3>
 <div class="doc doc-contents">
 <p>External reset of the TickingState to its initial condition.
@@ -428,7 +426,7 @@ exit() is called when appropriate</p>
 </div>
 </div><footer>
 <div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">
-<a class="btn btn-neutral float-left" href="../upanddown/" title="Up &amp; Down"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+<a class="btn btn-neutral float-left" href="../actionserver_ex/" title="Action servers"><span class="icon icon-circle-arrow-left"></span> Previous</a>
 <a class="btn btn-neutral float-right" href="../tickingstatemachine/" title="TickingStateMachine">Next <span class="icon icon-circle-arrow-right"></span></a>
 </div>
 <hr/>
@@ -448,7 +446,7 @@ exit() is called when appropriate</p>
 <span>
 <a class="fa fa-code-fork" href="https://gitlab.kuleuven.be/rob-expressiongraphs/ros2/BeTFSM" style="color: #fcfcfc"> Gitlab</a>
 </span>
-<span><a href="../upanddown/" style="color: #fcfcfc">« Previous</a></span>
+<span><a href="../actionserver_ex/" style="color: #fcfcfc">« Previous</a></span>
 <span><a href="../tickingstatemachine/" style="color: #fcfcfc">Next »</a></span>
 </span>
 </div>

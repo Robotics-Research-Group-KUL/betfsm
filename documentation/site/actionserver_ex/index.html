@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Erwin Aertbelien" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Action servers - BeTFSM documentation</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../assets/_mkdocstrings.css" rel="stylesheet" />
+        <link href="../css/mkdocstrings.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Action servers";
+        var mkdocs_page_input_path = "actionserver_ex.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> BeTFSM documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Documentation</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" >Tutorials</a>
+    <ul class="current">
+                <li class="toctree-l2"><a class="reference internal" href="../upanddown/">Up & Down</a>
+                </li>
+                <li class="toctree-l2 current"><a class="reference internal current" href="#">Action servers</a>
+    <ul class="current">
+    <li class="toctree-l3"><a class="reference internal" href="#preparation-set-up-when-using-a-simulated-robot">Preparation / set-up when using a (simulated) robot</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#example_action_server">example_action_server</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#description">Description</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#full-code">Full code</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#example_action_server2">example_action_server2</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#description_1">Description</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#full-code_1">Full code</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >BeTFSM</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../tickingstate/">TickingState</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../tickingstatemachine/">TickingStateMachine</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../visitor/">Visitor</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../generator/">Generator</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../sequence/">Sequence</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../concurrentsequence/">ConcurrentSequence</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../fallback/">Fallback</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../concurrentfallback/">ConcurrentFallback</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../concurrent/">Concurrent</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../waitfor/">WaitFor</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../waitforever/">WaitForever</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../while/">While</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../repeat/">Repeat</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../message/">Message</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../logblackboard/">LogBlackboard</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../compute/">Compute</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../adapt/">Adapt</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >BeTFSM ROS2</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../serviceclient/">ServiceClient</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../lifecycle/">LifeCycle</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../timedrepeat/">TimedRepeat</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../timedwait/">TimedWait</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../timeout/">Timeout</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../etaslstatemachine/">BeTFSM eTaSL</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../actionserver/">Action server</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../utils/">Utilities</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../about/">About</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">BeTFSM documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Documentation</li>
+          <li class="breadcrumb-item">Tutorials</li>
+      <li class="breadcrumb-item active">Action servers</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="examples-of-action-server">Examples of Action Server</h1>
+<p>In the <a href="../actionserver/">Action server chapter</a> you find the explanation of our Action Server framework.  This allows
+BeTFSM to act as a ROS2 action server with a minimal effort from the user.</p>
+<p>The following examples deal with a full example of eTaSL and a BeTFSM state machine,
+together with an ActionServer example.</p>
+<h2 id="preparation-set-up-when-using-a-simulated-robot">Preparation / set-up when using a (simulated) robot</h2>
+<p>One needs to give permission for the devcontainer to display graphical windows on the host computer.
+These needs to be executed on the host computer, outside Visual Studio.
+  <code>xhost +</code>
+To be checked if it also works (where local=localhost and root is users)
+  <code>xhost +local:root</code>
+To retract the permissions:
+  <code>xhost -</code></p>
+<p>This test setup needs the following nodes running: </p>
+<p><strong>RVIZ</strong> : visualization of UR10 robot:</p>
+<pre><code>  ros2 launch etasl_ros2_application_template load_ur10_setup.launch.py
+</code></pre>
+<p>Running the <strong>eTaSL node</strong>:</p>
+<pre><code>   ros2 run etasl_ros2 etasl_node
+</code></pre>
+<p>This will start up a server that can execute eTaSL.</p>
+<p>The <strong>example action server</strong> in this repository is run by:</p>
+<pre><code>   ros2 run betfsm_demos example_action_server
+</code></pre>
+<p>You are now listening for incomming actions.
+A small script in the <code>./scripts</code> directory calls an action handled by the example_action_server:</p>
+<pre><code>   ./scripts/send_up_and_down.sh
+</code></pre>
+<p>Try interrupting the script with ctrl-C while its waiting to finish. You'll see that this is passed to
+the state-machine, that will also finish, this is done by checking a variable on the blackboard
+while running your statemachine.
+There are two examples that deal in a different way with cancelation of the action:</p>
+<ul>
+<li><code>example_action_server.py</code> continuously checks for cancelation and interupts the robot motion by
+   deactivating the eTaSL server.  The example shows how to specify a shutdown procedure.</li>
+<li><code>example_action_server2.py</code> uses a state to detect cancelation such that robot motion can be interrupted at a specified time.</li>
+</ul>
+<p>These examples also start a state that publishes the statemachine on a String topic in graphviz format.</p>
+<p>You can startup a webserver that publishes an svg file using:</p>
+<pre><code>   ros2 run betfsm web_server
+</code></pre>
+<p>I you look at the action scripts, you see that a <a class="autorefs autorefs-internal" title="betfsm.betfsm.Concurrent" href="../concurrent/#betfsm.betfsm.Concurrent">Concurrent</a> state runs the state
+machine in parallel with a GraphvizPublisher state that publishes the state machine on a topic <code>/gz</code>.  There is a 
+<code>do_not_expand_types</code> and <code>do_not_expand_instances</code> argument where you can limit what is displayed in the state machine
+(in order not to overload the figure)</p>
+<pre><code>Concurrent(&quot;concurrent&quot;,[
+ sm,
+ GraphvizPublisher(&quot;publisher&quot;,&quot;/gz&quot;,sm,None,skip=10,do_not_expand_types=[eTaSL_StateMachine])
+</code></pre>
+<h2 id="example_action_server">example_action_server</h2>
+<h3 id="description">Description</h3>
+<p>The <code>example_action_server</code> example shows a case where we continuously check for an action and when an
+cancelation is detected go out of the state machines and perform a shutdown procedure.  The following class is
+used for this purpose:</p>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h4 id="betfsm.betfsm_action_server.WhileNotCanceled" class="doc doc-heading">
+            <code>betfsm.betfsm_action_server.WhileNotCanceled</code>
+
+
+</h4>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="betfsm.betfsm.GeneratorWithState (betfsm.graphviz_visitor.GeneratorWithState)" href="../generator/#betfsm.betfsm.GeneratorWithState">GeneratorWithState</a></code></p>
+
+
+
+        <p>Runs underlying state as long as not canceled. Returns outcome of state,
+yields CANCEL if there is a client side cancel request.</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h5 id="betfsm.betfsm_action_server.WhileNotCanceled.__init__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span></code>
+
+</h5>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Runs underlying state as long as not canceled. Returns outcome of state
+yields CANCEL if there is a client side cancel request.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>name</code></b>
+                  (<code><span title="str">str</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>name of this state</p>
+              </div>
+            </li>
+            <li>
+              <b><code>state</code></b>
+                  (<code><a class="autorefs autorefs-internal" title="betfsm.betfsm.TickingState (betfsm.graphviz_visitor.TickingState)" href="../tickingstate/#betfsm.betfsm.TickingState">TickingState</a></code>)
+              –
+              <div class="doc-md-description">
+                <p>underlying state</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+
+</div><p>This class runs its underlying state and has transitions that depend on the outcome of the underlying state or on cancelation requests.  With this we can build a simple statemachine to implement what should happen when cancel is requested:</p>
+<pre><code>class CheckingCancelAndShutdown(TickingStateMachine):
+    def __init__(self,name:str,state:TickingState,srv_name:str=&quot;/etasl_node&quot;,timeout:Duration = Duration(seconds=1.0), node : Node = None):
+        # execute in sequence but don't care about ABORT, only way to fail is TIMEOUT
+        super().__init__(name,[CANCEL,SUCCEED])
+
+        self.add_state(state=WhileNotCanceled(&quot;while_not_canceled&quot;,state), transitions={CANCEL:&quot;DEACTIVATE_ETASL&quot;,SUCCEED:SUCCEED, TIMEOUT:&quot;DEACTIVATE_ETASL&quot;})
+
+        self.add_state(state=LifeCycle(&quot;DEACTIVATE_ETASL&quot;,srv_name,Transition.DEACTIVATE,timeout,node),
+                       transitions={SUCCEED: &quot;CLEANUP_ETASL&quot;,  ABORT: &quot;CLEANUP_ETASL&quot;, TIMEOUT:&quot;CLEANUP_ETASL&quot;} )
+        self.add_state( state=LifeCycle(&quot;CLEANUP_ETASL&quot;,srv_name,Transition.CLEANUP,timeout,node),
+                       transitions={SUCCEED: CANCEL, ABORT: CANCEL,TIMEOUT: CANCEL} )
+</code></pre>
+<h3 id="full-code">Full code</h3>
+<pre><code class="language-python">from rclpy.executors import MultiThreadedExecutor
+from betfsm.betfsm_etasl import *
+from betfsm.logger import get_logger,set_logger
+from betfsm.graphviz_visitor import *
+from betfsm.betfsm_action_server import BeTFSMActionServer,CheckForCanceledAction,WhileNotCanceled
+import rclpy 
+
+
+
+# import some example state machines:
+from . import sm_up_and_down as examples
+
+
+# define your shutdown procefdure:
+class CheckingCancelAndShutdown(TickingStateMachine):
+    def __init__(self,name:str,state:TickingState,srv_name:str=&quot;/etasl_node&quot;,timeout:Duration = Duration(seconds=1.0), node : Node = None):
+        # execute in sequence but don't care about ABORT, only way to fail is TIMEOUT
+        super().__init__(name,[CANCEL,SUCCEED])
+
+        self.add_state(state=WhileNotCanceled(&quot;while_not_canceled&quot;,state), transitions={CANCEL:&quot;DEACTIVATE_ETASL&quot;,SUCCEED:SUCCEED, TIMEOUT:&quot;DEACTIVATE_ETASL&quot;})
+
+        self.add_state(state=LifeCycle(&quot;DEACTIVATE_ETASL&quot;,srv_name,Transition.DEACTIVATE,timeout,node),
+                       transitions={SUCCEED: &quot;CLEANUP_ETASL&quot;,  ABORT: &quot;CLEANUP_ETASL&quot;, TIMEOUT:&quot;CLEANUP_ETASL&quot;} )
+        self.add_state( state=LifeCycle(&quot;CLEANUP_ETASL&quot;,srv_name,Transition.CLEANUP,timeout,node),
+                       transitions={SUCCEED: CANCEL, ABORT: CANCEL,TIMEOUT: CANCEL} )
+
+
+
+
+def run_while_publishing( sm):
+    &quot;&quot;&quot;
+    small state machine that executes `sm` while publishing graphviz to a topic /gz
+    &quot;&quot;&quot;
+
+    #do_not_expand_types doesn't work for now...
+    return Concurrent(&quot;concurrent&quot;,[
+            sm,
+            GraphvizPublisher(&quot;publisher&quot;,&quot;/gz&quot;,sm,None,skip=10,do_not_expand_types=[eTaSL_StateMachine])
+    ])
+
+
+
+
+
+
+
+def main(args=None):
+
+    rclpy.init(args=args)
+
+    node = BeTFSMNode.get_instance(&quot;betfsm_action_server&quot;)
+
+
+    set_logger(&quot;default&quot;,node.get_logger())
+    #set_logger(&quot;service&quot;,node.get_logger())
+    set_logger(&quot;state&quot;,node.get_logger())
+
+
+    blackboard = {} 
+    # load your tasks
+    load_task_list(&quot;$[betfsm_demos]/tasks/my_tasks.json&quot;,blackboard)
+
+
+    # which state-machine will be exeuted for which task name:
+    statemachines={}
+    statemachines[&quot;up_and_down_as_function&quot;] =  run_while_publishing( CheckingCancelAndShutdown(&quot;check&quot;, examples.up_and_down_as_a_function(node), node=node  ) )
+
+    statemachines[&quot;up_and_down&quot;] =  run_while_publishing( CheckingCancelAndShutdown(&quot;check&quot;, examples.Up_and_down_with_parameters_lambda(node), node=node  ) )
+    # if you add additional member `input_parameters_schema` the action server will use this to validate the input:
+    statemachines[&quot;up_and_down&quot;].input_parameters_schema=examples.my_schema
+
+    print(statemachines)
+
+    action_server = BeTFSMActionServer(blackboard,statemachines,100,node)
+
+    # single or multi threaded executor does not matter here, only default callback group is used (which is mutually exclusive)
+    executor = MultiThreadedExecutor()  
+    executor.add_node(action_server.node)    
+    executor.spin()
+
+    action_server.destroy()
+    rclpy.shutdown()
+
+if __name__ == '__main__':
+    main()
+
+</code></pre>
+<h2 id="example_action_server2">example_action_server2</h2>
+<h3 id="description_1">Description</h3>
+<p>The <code>example_action_server2</code> describes another approach where there is only a check for cancelation
+at specific locations of the state machine(s).  The following TickingState is used for this purpose:</p>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h4 id="betfsm.betfsm_action_server.CheckForCanceledAction" class="doc doc-heading">
+            <code>betfsm.betfsm_action_server.CheckForCanceledAction</code>
+
+
+</h4>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="betfsm.betfsm.Generator (betfsm.graphviz_visitor.Generator)" href="../generator/#betfsm.betfsm.Generator">Generator</a></code></p>
+
+
+
+        <p>Checks whether the Action that is running has received a cancel request.</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h5 id="betfsm.betfsm_action_server.CheckForCanceledAction.__init__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></code>
+
+</h5>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Checks whether the Action that is running has received a cancel request.
+Returns SUCCEED if nothing received, returns CANCEL if something received</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>name</code></b>
+                  (<code><span title="str">str</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>name of this state</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+
+</div><h3 id="full-code_1">Full code</h3>
+<pre><code class="language-python"># example_action_sever2
+#
+# An example of an action server with fine-grained control over when
+# to listen to a cancel request.
+#
+# Copyright (C) Erwin Aertbeliën, 2024
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program; if not, write to the Free Software Foundation,
+# Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+from rclpy.executors import MultiThreadedExecutor
+from betfsm.betfsm_etasl import *
+from betfsm.logger import get_logger,set_logger
+from betfsm.graphviz_visitor import *
+from betfsm.betfsm_action_server import BeTFSMActionServer
+from betfsm.tracer import TracePublisher
+import rclpy 
+
+
+
+# import some example state machines:
+from . import sm_up_and_down as examples
+
+def run_while_publishing( sm):
+    &quot;&quot;&quot;
+    small state machine that executes `sm` while publishing graphviz to a topic /gz
+    &quot;&quot;&quot;
+
+    #do_not_expand_types doesn't work for now...
+    return Concurrent(&quot;concurrent&quot;,[
+            sm,
+        GraphvizPublisher(&quot;publisher&quot;,&quot;/gz&quot;,sm,None,skip=10,do_not_expand_types=[eTaSL_StateMachine])
+        #GraphvizPublisher(&quot;publisher&quot;,&quot;/gz&quot;,sm,None,skip=10,do_not_expand_types=[])
+])
+
+
+
+def main(args=None):
+
+    rclpy.init(args=args)
+
+    node = BeTFSMNode.get_instance(&quot;betfsm_action_server2&quot;)
+
+
+    set_logger(&quot;default&quot;,node.get_logger())
+    #set_logger(&quot;service&quot;,node.get_logger())
+    set_logger(&quot;state&quot;,node.get_logger())
+
+
+    blackboard = {} #Blackboard()
+
+    # load your tasks
+    load_task_list(&quot;$[betfsm_demos]/tasks/my_tasks.json&quot;,blackboard)
+
+
+    # which state-machine will be exeuted for which task name:
+    statemachines={}
+
+    statemachines[&quot;up_and_down&quot;] =  run_while_publishing(examples.Up_and_down_with_parameters_checking_for_cancel(node) )
+    # if you add additional member `input_parameters_schema` the action server will use this to validate the input:    
+    statemachines[&quot;up_and_down&quot;].input_parameters_schema=examples.my_schema
+    action_server = BeTFSMActionServer(blackboard,statemachines,100,node)
+
+    # single or multi threaded executor does not matter here, only default callback group is used (which is mutually exclusive)
+    executor = MultiThreadedExecutor()  
+    executor.add_node(action_server.node)    
+    executor.spin()
+
+    action_server.destroy()
+    rclpy.shutdown()
+
+if __name__ == '__main__':
+    main()
+
+
+</code></pre>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../upanddown/" class="btn btn-neutral float-left" title="Up & Down"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../tickingstate/" class="btn btn-neutral float-right" title="TickingState">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>LGPL-3.0-only</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://gitlab.kuleuven.be/rob-expressiongraphs/ros2/BeTFSM" class="fa fa-code-fork" style="color: #fcfcfc"> Gitlab</a>
+        </span>
+    
+    
+      <span><a href="../upanddown/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../tickingstate/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="https://cdn.jsdelivr.net/gh/rod2ik/cdn@main/mkdocs/javascripts/mkdocs-graphviz.js"></script>
+      <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

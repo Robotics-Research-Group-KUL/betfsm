@@ -45,6 +45,8 @@
 <ul>
 <li class="toctree-l2"><a class="reference internal" href="../upanddown/">Up &amp; Down</a>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../actionserver_ex/">Action servers</a>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal">BeTFSM</a>
@@ -99,8 +101,6 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../lifecycle/">LifeCycle</a>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../topicstate/">TopicState</a>
-</li>
 <li class="toctree-l2"><a class="reference internal" href="../timedrepeat/">TimedRepeat</a>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../timedwait/">TimedWait</a>
@@ -116,8 +116,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../utils/">Utilities</a>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../about/">About</a>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../TODO/">Todo list</a>
 </li>
 </ul>
 </div>
@@ -185,7 +183,7 @@ returns (should be listed in <code>outcomes</code> argument to constructor)</p>
 <div class="doc doc-children">
 <div class="doc doc-object doc-function">
 <h3 class="doc doc-heading" id="betfsm.betfsm_ros.ServiceClient.__init__">
-<code class="highlight language-python">__init__(name, srv_name, srv_type, outcomes, timeout=Duration(seconds=1.0), node=None)</code>
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">srv_name</span><span class="p">,</span> <span class="n">srv_type</span><span class="p">,</span> <span class="n">outcomes</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">Duration</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mf">1.0</span><span class="p">),</span> <span class="n">node</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 </h3>
 <div class="doc doc-contents">
 <p>Creates a TickingState that calls a service and generates an outcome when the service returns back.
@@ -262,7 +260,7 @@ While waiting, it continues to tick.</p>
 </div>
 <div class="doc doc-object doc-function">
 <h3 class="doc doc-heading" id="betfsm.betfsm_ros.ServiceClient.fill_in_request">
-<code class="highlight language-python">fill_in_request(blackboard, request)</code>
+<code class="highlight language-python"><span class="n">fill_in_request</span><span class="p">(</span><span class="n">blackboard</span><span class="p">,</span> <span class="n">request</span><span class="p">)</span></code>
 </h3>
 <div class="doc doc-contents">
 <p>fills in the self.req object (of the type srv_type.Request) with
@@ -323,7 +321,7 @@ the appropriate parameters of the service call</p>
 </div>
 <div class="doc doc-object doc-function">
 <h3 class="doc doc-heading" id="betfsm.betfsm_ros.ServiceClient.process_result">
-<code class="highlight language-python">process_result(blackboard, result)</code>
+<code class="highlight language-python"><span class="n">process_result</span><span class="p">(</span><span class="n">blackboard</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span></code>
 </h3>
 <div class="doc doc-contents">
 <p>gets the result and puts it in the blackboard (if needed) and
