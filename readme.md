@@ -14,7 +14,7 @@ LGPL-3.0-only, see LICENSE file in this directory.
 
 This work was funded by the European Union’s Horizon 2020 research and innovation program under [grant agreement No. 101058589 AI-Prism](https://aiprism.eu/).
 
-![AI-PRISM](Ai-Prism_Logo_Horizontal.png)
+<img src="Ai-Prim_Logo_Horizontal.png" alt="AI-PRISM Logo" width="200"/>
 
 ## Generate most recent documentation (for developers)
 
