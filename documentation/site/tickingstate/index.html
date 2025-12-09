@@ -202,7 +202,7 @@ if not, the user needs to call reset() before using the state again.</p>
 <div class="doc doc-children">
 <div class="doc doc-object doc-function">
 <h3 class="doc doc-heading" id="betfsm.betfsm.TickingState.__init__">
-<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">outcomes</span><span class="p">)</span></code>
+<code class="highlight language-python">__init__(name, outcomes)</code>
 </h3>
 <div class="doc doc-contents">
 <table class="field-list">
@@ -217,7 +217,7 @@ if not, the user needs to call reset() before using the state again.</p>
 <ul class="first simple">
 <li>
 <b><code>name</code></b>
-                  (<code>str</code>)
+                  (<code><span title="str">str</span></code>)
               –
               <div class="doc-md-description">
 <p>name of the TickingState.  This is meant to be an instance-name, not a class-name.</p>
@@ -225,7 +225,7 @@ if not, the user needs to call reset() before using the state again.</p>
 </li>
 <li>
 <b><code>outcomes</code></b>
-                  (<code><span title="typing.List">List</span>[str]</code>)
+                  (<code><span title="typing.List">List</span>[<span title="str">str</span>]</code>)
               –
               <div class="doc-md-description">
 <p>all possible outcomes of the state, TICKING and ABORT will be added.</p>
@@ -240,7 +240,7 @@ if not, the user needs to call reset() before using the state again.</p>
 </div>
 <div class="doc doc-object doc-function">
 <h3 class="doc doc-heading" id="betfsm.betfsm.TickingState.accept">
-<code class="highlight language-python"><span class="n">accept</span><span class="p">(</span><span class="n">visitor</span><span class="p">)</span></code>
+<code class="highlight language-python">accept(visitor)</code>
 </h3>
 <div class="doc doc-contents">
 <p>calls the visitor with itself and possibly iterates over its children.</p>
@@ -252,7 +252,7 @@ if not, the user needs to call reset() before using the state again.</p>
 </div>
 <div class="doc doc-object doc-function">
 <h3 class="doc doc-heading" id="betfsm.betfsm.TickingState.doo">
-<code class="highlight language-python"><span class="n">doo</span><span class="p">(</span><span class="n">blackboard</span><span class="p">)</span></code>
+<code class="highlight language-python">doo(blackboard)</code>
 </h3>
 <div class="doc doc-contents">
 <p>is repeatedly called after the first time execute() is called.</p>
@@ -289,14 +289,14 @@ if not, the user needs to call reset() before using the state again.</p>
 <td class="field-body">
 <ul class="first simple">
 <li>
-<code>str</code>
+<code><span title="str">str</span></code>
               –
               <div class="doc-md-description">
 <p>A string with value: TICKING (execute will return and next time will call doo() );</p>
 </div>
 </li>
 <li>
-<code>str</code>
+<code><span title="str">str</span></code>
               –
               <div class="doc-md-description">
 <p>OTHER string (execute will call immediately exit(), i.e. without a tick )</p>
@@ -316,7 +316,7 @@ If one likes more detailed behavior, doo needs to catch the exception itself.</p
 </div>
 <div class="doc doc-object doc-function">
 <h3 class="doc doc-heading" id="betfsm.betfsm.TickingState.entry">
-<code class="highlight language-python"><span class="n">entry</span><span class="p">(</span><span class="n">blackboard</span><span class="p">)</span></code>
+<code class="highlight language-python">entry(blackboard)</code>
 </h3>
 <div class="doc doc-contents">
 <p>called the first time execute() is called.</p>
@@ -353,7 +353,7 @@ If one likes more detailed behavior, doo needs to catch the exception itself.</p
 <td class="field-body">
 <ul class="first simple">
 <li>
-<code>str</code>
+<code><span title="str">str</span></code>
               –
               <div class="doc-md-description">
 <p>A string with value:
@@ -376,7 +376,7 @@ If one likes more detailed behavior, entry needs to catch the exception itself.<
 </div>
 <div class="doc doc-object doc-function">
 <h3 class="doc doc-heading" id="betfsm.betfsm.TickingState.exit">
-<code class="highlight language-python"><span class="n">exit</span><span class="p">()</span></code>
+<code class="highlight language-python">exit()</code>
 </h3>
 <div class="doc doc-contents">
 <p>method that is always called when execute is called the last time</p>
@@ -391,7 +391,7 @@ If one likes more detailed behavior, entry needs to catch the exception itself.<
 <td class="field-body">
 <ul class="first simple">
 <li>
-<code>str</code>
+<code><span title="str">str</span></code>
               –
               <div class="doc-md-description">
 <p>A string the outcome (next time execute will call entry() )    </p>
@@ -415,7 +415,7 @@ which does not and should not know the blackboard parameter.</p>
 </div>
 <div class="doc doc-object doc-function">
 <h3 class="doc doc-heading" id="betfsm.betfsm.TickingState.reset">
-<code class="highlight language-python"><span class="n">reset</span><span class="p">()</span></code>
+<code class="highlight language-python">reset()</code>
 </h3>
 <div class="doc doc-contents">
 <p>External reset of the TickingState to its initial condition.

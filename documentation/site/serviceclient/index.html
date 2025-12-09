@@ -148,7 +148,7 @@
 </h2>
 <div class="doc doc-contents first">
 <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="betfsm.betfsm.Generator" href="../generator/#betfsm.betfsm.Generator">Generator</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" href="../generator/#betfsm.betfsm.Generator" title="betfsm.betfsm.Generator">Generator</a></code></p>
 <p>Creates a TickingState that calls a ROS2 service and generates an outcome when the service returns back.
 While waiting, it continues to tick.
 The methods <code>fill_in_request</code> and <code>process_results</code> should be overriden. Outcome is whatever <code>process_result</code>
@@ -185,7 +185,7 @@ returns (should be listed in <code>outcomes</code> argument to constructor)</p>
 <div class="doc doc-children">
 <div class="doc doc-object doc-function">
 <h3 class="doc doc-heading" id="betfsm.betfsm_ros.ServiceClient.__init__">
-<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">srv_name</span><span class="p">,</span> <span class="n">srv_type</span><span class="p">,</span> <span class="n">outcomes</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">Duration</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mf">1.0</span><span class="p">),</span> <span class="n">node</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+<code class="highlight language-python">__init__(name, srv_name, srv_type, outcomes, timeout=Duration(seconds=1.0), node=None)</code>
 </h3>
 <div class="doc doc-contents">
 <p>Creates a TickingState that calls a service and generates an outcome when the service returns back.
@@ -202,7 +202,7 @@ While waiting, it continues to tick.</p>
 <ul class="first simple">
 <li>
 <b><code>name</code></b>
-                  (<code>str</code>)
+                  (<code><span title="str">str</span></code>)
               –
               <div class="doc-md-description">
 <p>name of the state</p>
@@ -210,7 +210,7 @@ While waiting, it continues to tick.</p>
 </li>
 <li>
 <b><code>srv_name</code></b>
-                  (<code>str</code>)
+                  (<code><span title="str">str</span></code>)
               –
               <div class="doc-md-description">
 <p>name of the service</p>
@@ -226,7 +226,7 @@ While waiting, it continues to tick.</p>
 </li>
 <li>
 <b><code>outcomes</code></b>
-                  (<code><span title="betfsm.betfsm.List">List</span>[str]</code>)
+                  (<code><span title="betfsm.betfsm.List">List</span>[<span title="str">str</span>]</code>)
               –
               <div class="doc-md-description">
 <p>outcomes to be expected (TIMEOUT and TICKING will be added)</p>
@@ -262,7 +262,7 @@ While waiting, it continues to tick.</p>
 </div>
 <div class="doc doc-object doc-function">
 <h3 class="doc doc-heading" id="betfsm.betfsm_ros.ServiceClient.fill_in_request">
-<code class="highlight language-python"><span class="n">fill_in_request</span><span class="p">(</span><span class="n">blackboard</span><span class="p">,</span> <span class="n">request</span><span class="p">)</span></code>
+<code class="highlight language-python">fill_in_request(blackboard, request)</code>
 </h3>
 <div class="doc doc-contents">
 <p>fills in the self.req object (of the type srv_type.Request) with
@@ -286,8 +286,7 @@ the appropriate parameters of the service call</p>
 </div>
 </li>
 <li>
-<b><code>request</code></b>
-                  (<code>srv_type.Request) </code>)
+<b><code>request (srv_type.Request) </code></b>
               –
               <div class="doc-md-description">
 <p>request to be filled in</p>
@@ -324,7 +323,7 @@ the appropriate parameters of the service call</p>
 </div>
 <div class="doc doc-object doc-function">
 <h3 class="doc doc-heading" id="betfsm.betfsm_ros.ServiceClient.process_result">
-<code class="highlight language-python"><span class="n">process_result</span><span class="p">(</span><span class="n">blackboard</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span></code>
+<code class="highlight language-python">process_result(blackboard, result)</code>
 </h3>
 <div class="doc doc-contents">
 <p>gets the result and puts it in the blackboard (if needed) and
@@ -348,7 +347,8 @@ returns an outcome</p>
 </div>
 </li>
 <li>
-<b><code>result(srv_type.Result)</code></b>
+<b><code>result</code></b>
+                  (<code><span title="betfsm.betfsm_ros.ServiceClient.srv_type.Result">Result</span></code>)
               –
               <div class="doc-md-description">
 <p>result returned by the service</p>
@@ -370,7 +370,7 @@ returns an outcome</p>
 <td class="field-body">
 <ul class="first simple">
 <li>
-<b><code>outcome</code></b>(                  <code>str</code>
+<b><code>outcome</code></b>(                  <code><span title="str">str</span></code>
 )              –
               <div class="doc-md-description">
 <p>str

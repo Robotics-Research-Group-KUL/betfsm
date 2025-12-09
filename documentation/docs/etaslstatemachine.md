@@ -6,12 +6,6 @@ Description of the interface towards eTaSL.
 ## Utility functions
 Some utility functions to manage tasks are provided:
 
-::: betfsm.betfsm_etasl.get_task
-    options:
-      heading_level: 3
-      show_source: false
-      show_root_heading: true 
-
 ::: betfsm.betfsm_etasl.load_task_list
     options:
       heading_level: 3

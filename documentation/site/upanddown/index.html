@@ -64,24 +64,26 @@
         </ul>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#betfsm_demos.sm_up_and_down.Up_and_down_as_a_class">Up_and_down_as_a_class</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#betfsm_demos.sm_up_and_down.Up_and_down_as_a_class.__init__">__init__</a>
         <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#betfsm_demos.sm_up_and_down.Up_and_down_as_a_class.__init__">__init__</a>
+    </li>
     <li class="toctree-l4"><a class="reference internal" href="#up-down-with-etasl-tasks-with-input-and-output-parameters">Up &amp; Down, with eTaSL tasks with input and output parameters:</a>
     </li>
         </ul>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#betfsm_demos.sm_up_and_down.Up_and_down_with_parameters">Up_and_down_with_parameters</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#betfsm_demos.sm_up_and_down.Up_and_down_with_parameters.__init__">__init__</a>
         <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#betfsm_demos.sm_up_and_down.Up_and_down_with_parameters.__init__">__init__</a>
+    </li>
     <li class="toctree-l4"><a class="reference internal" href="#up-down-with-etasl-tasks-with-input-and-output-parameters-using-lambda-functions">Up &amp; Down, with eTaSL tasks with input and output parameters using lambda functions:</a>
     </li>
         </ul>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#betfsm_demos.sm_up_and_down.Up_and_down_with_parameters_lambda">Up_and_down_with_parameters_lambda</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#betfsm_demos.sm_up_and_down.Up_and_down_with_parameters_lambda.__init__">__init__</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#betfsm_demos.sm_up_and_down.Up_and_down_with_parameters_lambda.__init__">__init__</a>
+        </ul>
     </li>
     </ul>
                 </li>
@@ -213,7 +215,7 @@ There are two examples that deal in a different way with cancelation of the acti
 <p>You can startup a webserver that publishes an svg file using:</p>
 <pre><code>   ros2 run betfsm web_server
 </code></pre>
-<p>I you look at the action scripts, you see that a <a class="autorefs autorefs-internal" href="../concurrent/#betfsm.betfsm.Concurrent">Concurrent</a> state runs the state
+<p>I you look at the action scripts, you see that a <a class="autorefs autorefs-internal" title="betfsm.betfsm.Concurrent" href="../concurrent/#betfsm.betfsm.Concurrent">Concurrent</a> state runs the state
 machine in parallel with a GraphvizPublisher state that publishes the state machine on a topic <code>/gz</code>.  There is a 
 <code>do_not_expand_types</code> and <code>do_not_expand_instances</code> argument where you can limit what is displayed in the state machine
 (in order not to overload the figure)</p>
@@ -233,35 +235,15 @@ a simple state machine that moves up and down:</p>
 <div class="doc doc-object doc-function">
 
 
+<h2 id="betfsm_demos.sm_up_and_down.up_and_down_as_a_function" class="doc doc-heading">
+            <code class="highlight language-python">betfsm_demos.sm_up_and_down.up_and_down_as_a_function(node=None)</code>
 
-<a id="betfsm_demos.sm_up_and_down.up_and_down_as_a_function"></a>
+</h2>
+
+
     <div class="doc doc-contents first">
 
-        
 
-            <details class="quote">
-              <summary>Source code in <code>betfsm_demos/sm_up_and_down.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">up_and_down_as_a_function</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span>  <span class="n">Sequence</span><span class="p">(</span><span class="s2">&quot;my_sequence&quot;</span><span class="p">,</span> <span class="n">children</span><span class="o">=</span><span class="p">[</span>
-                                        <span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movinghome&quot;</span><span class="p">,</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">),</span>
-                                        <span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movingup&quot;</span><span class="p">,</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">),</span>
-                                        <span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movingdown&quot;</span><span class="p">,</span><span class="s2">&quot;MovingDown&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">),</span>            
-                                        <span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movingup2&quot;</span><span class="p">,</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">),</span>
-                                        <span class="n">Message</span><span class="p">(</span><span class="s2">&quot;Robot is finished&quot;</span><span class="p">)</span>
-                                    <span class="p">]</span> <span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-            </details>
     </div>
 
 </div><p>options:
@@ -274,47 +256,15 @@ a simple state machine that moves up and down:</p>
 <div class="doc doc-object doc-function">
 
 
+<h2 id="betfsm_demos.sm_up_and_down.up_and_down_as_a_function_and_a_timer" class="doc doc-heading">
+            <code class="highlight language-python">betfsm_demos.sm_up_and_down.up_and_down_as_a_function_and_a_timer(node=None)</code>
 
-<a id="betfsm_demos.sm_up_and_down.up_and_down_as_a_function_and_a_timer"></a>
+</h2>
+
+
     <div class="doc doc-contents first">
 
-        
 
-            <details class="quote">
-              <summary>Source code in <code>betfsm_demos/sm_up_and_down.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">up_and_down_as_a_function_and_a_timer</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">ConcurrentSequence</span><span class="p">(</span><span class="s2">&quot;up_and_down_as_a_function&quot;</span><span class="p">,</span> <span class="n">children</span><span class="o">=</span><span class="p">[</span>
-            <span class="n">Sequence</span><span class="p">(</span><span class="s2">&quot;my_sequence&quot;</span><span class="p">,</span> <span class="n">children</span><span class="o">=</span><span class="p">[</span>
-                                        <span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movinghome&quot;</span><span class="p">,</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">),</span>
-                                        <span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movingup&quot;</span><span class="p">,</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">),</span>
-                                        <span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movingdown&quot;</span><span class="p">,</span><span class="s2">&quot;MovingDown&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">),</span>            
-                                        <span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movingup2&quot;</span><span class="p">,</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">),</span>
-                                        <span class="n">Message</span><span class="p">(</span><span class="s2">&quot;Robot is finished&quot;</span><span class="p">)</span>
-                                    <span class="p">]</span> <span class="p">),</span>
-            <span class="n">Sequence</span><span class="p">(</span><span class="s2">&quot;timer&quot;</span><span class="p">,</span> <span class="n">children</span><span class="o">=</span><span class="p">[</span>
-                                <span class="n">TimedWait</span><span class="p">(</span><span class="s2">&quot;timed_wait&quot;</span><span class="p">,</span><span class="n">Duration</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mf">3.0</span><span class="p">),</span><span class="n">node</span><span class="o">=</span><span class="n">node</span> <span class="p">),</span>
-                                <span class="n">Message</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Timer went off!&quot;</span><span class="p">)</span>
-                              <span class="p">]</span> <span class="p">)</span>
-            <span class="p">])</span>
-</code></pre></div></td></tr></table></div>
-            </details>
     </div>
 
 </div><p>options:
@@ -328,50 +278,30 @@ a simple state machine that moves up and down:</p>
 
 
 
-<a id="betfsm_demos.sm_up_and_down.Up_and_down_as_a_class"></a>
+<h2 id="betfsm_demos.sm_up_and_down.Up_and_down_as_a_class" class="doc doc-heading">
+            <code>betfsm_demos.sm_up_and_down.Up_and_down_as_a_class</code>
+
+
+</h2>
+
+
     <div class="doc doc-contents first">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="betfsm.betfsm_action_server.Sequence" href="../sequence/#betfsm.betfsm.Sequence">Sequence</a></code></p>
-
-
-        
+              Bases: <code><a class="autorefs autorefs-internal" title="betfsm.betfsm.Sequence (betfsm.betfsm_action_server.Sequence)" href="../sequence/#betfsm.betfsm.Sequence">Sequence</a></code></p>
 
 
 
 
 
 
-              <details class="quote">
-                <summary>Source code in <code>betfsm_demos/sm_up_and_down.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Up_and_down_as_a_class</span><span class="p">(</span><span class="n">Sequence</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;Up_and_down_as_a_class&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movinghome&quot;</span><span class="p">,</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movingup&quot;</span><span class="p">,</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movingdown&quot;</span><span class="p">,</span><span class="s2">&quot;MovingDown&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movingup2&quot;</span><span class="p">,</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">Message</span><span class="p">(</span><span class="s2">&quot;Hello world&quot;</span><span class="p">))</span>
-</code></pre></div></td></tr></table></div>
-              </details>
 
 
 
-  <div class="doc doc-children">
+
+
+
+<div class="doc doc-children">
+
 
 
 
@@ -384,37 +314,15 @@ a simple state machine that moves up and down:</p>
 <div class="doc doc-object doc-function">
 
 
-<h2 id="betfsm_demos.sm_up_and_down.Up_and_down_as_a_class.__init__" class="doc doc-heading">
-            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+<h3 id="betfsm_demos.sm_up_and_down.Up_and_down_as_a_class.__init__" class="doc doc-heading">
+            <code class="highlight language-python">__init__(node=None)</code>
 
-</h2>
+</h3>
 
 
     <div class="doc doc-contents ">
 
-        
 
-            <details class="quote">
-              <summary>Source code in <code>betfsm_demos/sm_up_and_down.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;Up_and_down_as_a_class&quot;</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movinghome&quot;</span><span class="p">,</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">))</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movingup&quot;</span><span class="p">,</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">))</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movingdown&quot;</span><span class="p">,</span><span class="s2">&quot;MovingDown&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">))</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movingup2&quot;</span><span class="p">,</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">))</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">Message</span><span class="p">(</span><span class="s2">&quot;Hello world&quot;</span><span class="p">))</span>
-</code></pre></div></td></tr></table></div>
-            </details>
     </div>
 
 </div>
@@ -424,6 +332,7 @@ a simple state machine that moves up and down:</p>
   </div>
 
     </div>
+
 
 </div><p>options:
       heading_level: 3
@@ -436,10 +345,16 @@ a simple state machine that moves up and down:</p>
 
 
 
-<a id="betfsm_demos.sm_up_and_down.Up_and_down_with_parameters"></a>
+<h2 id="betfsm_demos.sm_up_and_down.Up_and_down_with_parameters" class="doc doc-heading">
+            <code>betfsm_demos.sm_up_and_down.Up_and_down_with_parameters</code>
+
+
+</h2>
+
+
     <div class="doc doc-contents first">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="betfsm.betfsm_action_server.Sequence" href="../sequence/#betfsm.betfsm.Sequence">Sequence</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="betfsm.betfsm.Sequence (betfsm.betfsm_action_server.Sequence)" href="../sequence/#betfsm.betfsm.Sequence">Sequence</a></code></p>
 
 
 
@@ -447,89 +362,13 @@ a simple state machine that moves up and down:</p>
 
 
 
-              <details class="quote">
-                <summary>Source code in <code>betfsm_demos/sm_up_and_down.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 88</span>
-<span class="normal"> 89</span>
-<span class="normal"> 90</span>
-<span class="normal"> 91</span>
-<span class="normal"> 92</span>
-<span class="normal"> 93</span>
-<span class="normal"> 94</span>
-<span class="normal"> 95</span>
-<span class="normal"> 96</span>
-<span class="normal"> 97</span>
-<span class="normal"> 98</span>
-<span class="normal"> 99</span>
-<span class="normal">100</span>
-<span class="normal">101</span>
-<span class="normal">102</span>
-<span class="normal">103</span>
-<span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span>
-<span class="normal">112</span>
-<span class="normal">113</span>
-<span class="normal">114</span>
-<span class="normal">115</span>
-<span class="normal">116</span>
-<span class="normal">117</span>
-<span class="normal">118</span>
-<span class="normal">119</span>
-<span class="normal">120</span>
-<span class="normal">121</span>
-<span class="normal">122</span>
-<span class="normal">123</span>
-<span class="normal">124</span>
-<span class="normal">125</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Up_and_down_with_parameters</span><span class="p">(</span><span class="n">Sequence</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">node</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;Up_and_down_as_a_class&quot;</span><span class="p">)</span>
-
-        <span class="k">class</span> <span class="nc">MyComputations</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
-            <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-                <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;MyComputations&quot;</span><span class="p">,[</span><span class="n">SUCCEED</span><span class="p">])</span>
-            <span class="k">def</span> <span class="nf">co_execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">bb</span><span class="p">):</span>
-                <span class="n">bb</span><span class="p">[</span><span class="s2">&quot;home_computations&quot;</span><span class="p">]</span><span class="o">=</span><span class="p">{}</span>
-                <span class="n">bb</span><span class="p">[</span><span class="s2">&quot;home_computations&quot;</span><span class="p">][</span><span class="s2">&quot;joint_1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bb</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">][</span><span class="s2">&quot;home1&quot;</span><span class="p">][</span><span class="s2">&quot;jpos1&quot;</span><span class="p">]</span><span class="o">*</span><span class="mf">180.0</span><span class="o">/</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">+</span><span class="mf">100.0</span>
-                <span class="k">yield</span> <span class="n">SUCCEED</span> 
-
-        <span class="k">def</span> <span class="nf">my_parameters</span><span class="p">(</span><span class="n">bb</span><span class="p">:</span><span class="n">Blackboard</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">Dict</span><span class="p">:</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="n">result</span><span class="p">[</span><span class="s2">&quot;joint_1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bb</span><span class="p">[</span><span class="s2">&quot;home_computations&quot;</span><span class="p">][</span><span class="s2">&quot;joint_1&quot;</span><span class="p">]</span>
-            <span class="n">result</span><span class="p">[</span><span class="s2">&quot;joint_2&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bb</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">][</span><span class="s2">&quot;home1&quot;</span><span class="p">][</span><span class="s2">&quot;jpos2&quot;</span><span class="p">]</span><span class="o">*</span><span class="mf">180.0</span><span class="o">/</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">+</span><span class="mi">5</span>
-            <span class="k">return</span> <span class="n">result</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;home1&quot;</span><span class="p">,</span><span class="s2">&quot;MovingHome&quot;</span> <span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">LogBlackboard</span><span class="p">(</span><span class="s2">&quot;LogBlackboard1&quot;</span><span class="p">,[</span><span class="s2">&quot;output&quot;</span><span class="p">]))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span> <span class="n">MyComputations</span><span class="p">()</span> <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">LogBlackboard</span><span class="p">(</span><span class="s2">&quot;LogBlackboard1&quot;</span><span class="p">,[</span><span class="s2">&quot;home_computations&quot;</span><span class="p">]))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;home2&quot;</span><span class="p">,</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">,</span> <span class="n">cb</span><span class="o">=</span><span class="n">my_parameters</span><span class="p">,</span> <span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">)</span> <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;home3&quot;</span><span class="p">,</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">LogBlackboard</span><span class="p">(</span><span class="s2">&quot;Logblackboard2&quot;</span><span class="p">,[</span><span class="s2">&quot;output&quot;</span><span class="p">]</span> <span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movingup&quot;</span><span class="p">,</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">),)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">FeedbackState</span><span class="p">(</span><span class="s2">&quot;feedback1&quot;</span><span class="p">,</span><span class="s2">&quot;up&quot;</span><span class="p">,</span>
-                                     <span class="k">lambda</span> <span class="n">bb</span><span class="p">:{</span>
-                                                <span class="s2">&quot;x_tcp&quot;</span><span class="p">:</span> <span class="n">bb</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">][</span><span class="s2">&quot;movingup&quot;</span><span class="p">][</span><span class="s2">&quot;x_tcp&quot;</span><span class="p">],</span>
-                                                <span class="s2">&quot;y_tcp&quot;</span><span class="p">:</span> <span class="n">bb</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">][</span><span class="s2">&quot;movingup&quot;</span><span class="p">][</span><span class="s2">&quot;y_tcp&quot;</span><span class="p">],</span>
-                                                <span class="s2">&quot;z_tcp&quot;</span><span class="p">:</span> <span class="n">bb</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">][</span><span class="s2">&quot;movingup&quot;</span><span class="p">][</span><span class="s2">&quot;z_tcp&quot;</span><span class="p">]</span>
-                                                <span class="p">}))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movingdown&quot;</span><span class="p">,</span><span class="s2">&quot;MovingDown&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">))</span>    
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">FeedbackState</span><span class="p">(</span><span class="s2">&quot;feedback1&quot;</span><span class="p">,</span><span class="s2">&quot;up&quot;</span><span class="p">,</span><span class="k">lambda</span> <span class="n">bb</span><span class="p">:{}))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movingup2&quot;</span><span class="p">,</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span> <span class="n">Message</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Hello world&quot;</span><span class="p">)</span> <span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-              </details>
 
 
 
-  <div class="doc doc-children">
+
+
+<div class="doc doc-children">
+
 
 
 
@@ -542,93 +381,15 @@ a simple state machine that moves up and down:</p>
 <div class="doc doc-object doc-function">
 
 
-<h2 id="betfsm_demos.sm_up_and_down.Up_and_down_with_parameters.__init__" class="doc doc-heading">
-            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">node</span><span class="p">)</span></code>
+<h3 id="betfsm_demos.sm_up_and_down.Up_and_down_with_parameters.__init__" class="doc doc-heading">
+            <code class="highlight language-python">__init__(node)</code>
 
-</h2>
+</h3>
 
 
     <div class="doc doc-contents ">
 
-        
 
-            <details class="quote">
-              <summary>Source code in <code>betfsm_demos/sm_up_and_down.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 89</span>
-<span class="normal"> 90</span>
-<span class="normal"> 91</span>
-<span class="normal"> 92</span>
-<span class="normal"> 93</span>
-<span class="normal"> 94</span>
-<span class="normal"> 95</span>
-<span class="normal"> 96</span>
-<span class="normal"> 97</span>
-<span class="normal"> 98</span>
-<span class="normal"> 99</span>
-<span class="normal">100</span>
-<span class="normal">101</span>
-<span class="normal">102</span>
-<span class="normal">103</span>
-<span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span>
-<span class="normal">112</span>
-<span class="normal">113</span>
-<span class="normal">114</span>
-<span class="normal">115</span>
-<span class="normal">116</span>
-<span class="normal">117</span>
-<span class="normal">118</span>
-<span class="normal">119</span>
-<span class="normal">120</span>
-<span class="normal">121</span>
-<span class="normal">122</span>
-<span class="normal">123</span>
-<span class="normal">124</span>
-<span class="normal">125</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">node</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;Up_and_down_as_a_class&quot;</span><span class="p">)</span>
-
-    <span class="k">class</span> <span class="nc">MyComputations</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
-        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;MyComputations&quot;</span><span class="p">,[</span><span class="n">SUCCEED</span><span class="p">])</span>
-        <span class="k">def</span> <span class="nf">co_execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">bb</span><span class="p">):</span>
-            <span class="n">bb</span><span class="p">[</span><span class="s2">&quot;home_computations&quot;</span><span class="p">]</span><span class="o">=</span><span class="p">{}</span>
-            <span class="n">bb</span><span class="p">[</span><span class="s2">&quot;home_computations&quot;</span><span class="p">][</span><span class="s2">&quot;joint_1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bb</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">][</span><span class="s2">&quot;home1&quot;</span><span class="p">][</span><span class="s2">&quot;jpos1&quot;</span><span class="p">]</span><span class="o">*</span><span class="mf">180.0</span><span class="o">/</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">+</span><span class="mf">100.0</span>
-            <span class="k">yield</span> <span class="n">SUCCEED</span> 
-
-    <span class="k">def</span> <span class="nf">my_parameters</span><span class="p">(</span><span class="n">bb</span><span class="p">:</span><span class="n">Blackboard</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">Dict</span><span class="p">:</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">result</span><span class="p">[</span><span class="s2">&quot;joint_1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bb</span><span class="p">[</span><span class="s2">&quot;home_computations&quot;</span><span class="p">][</span><span class="s2">&quot;joint_1&quot;</span><span class="p">]</span>
-        <span class="n">result</span><span class="p">[</span><span class="s2">&quot;joint_2&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bb</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">][</span><span class="s2">&quot;home1&quot;</span><span class="p">][</span><span class="s2">&quot;jpos2&quot;</span><span class="p">]</span><span class="o">*</span><span class="mf">180.0</span><span class="o">/</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">+</span><span class="mi">5</span>
-        <span class="k">return</span> <span class="n">result</span>
-
-    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;home1&quot;</span><span class="p">,</span><span class="s2">&quot;MovingHome&quot;</span> <span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">))</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">LogBlackboard</span><span class="p">(</span><span class="s2">&quot;LogBlackboard1&quot;</span><span class="p">,[</span><span class="s2">&quot;output&quot;</span><span class="p">]))</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span> <span class="n">MyComputations</span><span class="p">()</span> <span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">LogBlackboard</span><span class="p">(</span><span class="s2">&quot;LogBlackboard1&quot;</span><span class="p">,[</span><span class="s2">&quot;home_computations&quot;</span><span class="p">]))</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;home2&quot;</span><span class="p">,</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">,</span> <span class="n">cb</span><span class="o">=</span><span class="n">my_parameters</span><span class="p">,</span> <span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">)</span> <span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;home3&quot;</span><span class="p">,</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">))</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">LogBlackboard</span><span class="p">(</span><span class="s2">&quot;Logblackboard2&quot;</span><span class="p">,[</span><span class="s2">&quot;output&quot;</span><span class="p">]</span> <span class="p">))</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movingup&quot;</span><span class="p">,</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">),)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">FeedbackState</span><span class="p">(</span><span class="s2">&quot;feedback1&quot;</span><span class="p">,</span><span class="s2">&quot;up&quot;</span><span class="p">,</span>
-                                 <span class="k">lambda</span> <span class="n">bb</span><span class="p">:{</span>
-                                            <span class="s2">&quot;x_tcp&quot;</span><span class="p">:</span> <span class="n">bb</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">][</span><span class="s2">&quot;movingup&quot;</span><span class="p">][</span><span class="s2">&quot;x_tcp&quot;</span><span class="p">],</span>
-                                            <span class="s2">&quot;y_tcp&quot;</span><span class="p">:</span> <span class="n">bb</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">][</span><span class="s2">&quot;movingup&quot;</span><span class="p">][</span><span class="s2">&quot;y_tcp&quot;</span><span class="p">],</span>
-                                            <span class="s2">&quot;z_tcp&quot;</span><span class="p">:</span> <span class="n">bb</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">][</span><span class="s2">&quot;movingup&quot;</span><span class="p">][</span><span class="s2">&quot;z_tcp&quot;</span><span class="p">]</span>
-                                            <span class="p">}))</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movingdown&quot;</span><span class="p">,</span><span class="s2">&quot;MovingDown&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">))</span>    
-    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">FeedbackState</span><span class="p">(</span><span class="s2">&quot;feedback1&quot;</span><span class="p">,</span><span class="s2">&quot;up&quot;</span><span class="p">,</span><span class="k">lambda</span> <span class="n">bb</span><span class="p">:{}))</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movingup2&quot;</span><span class="p">,</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">))</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span> <span class="n">Message</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Hello world&quot;</span><span class="p">)</span> <span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-            </details>
     </div>
 
 </div>
@@ -638,6 +399,7 @@ a simple state machine that moves up and down:</p>
   </div>
 
     </div>
+
 
 </div><p>options:
       heading_level: 3
@@ -650,10 +412,16 @@ a simple state machine that moves up and down:</p>
 
 
 
-<a id="betfsm_demos.sm_up_and_down.Up_and_down_with_parameters_lambda"></a>
+<h2 id="betfsm_demos.sm_up_and_down.Up_and_down_with_parameters_lambda" class="doc doc-heading">
+            <code>betfsm_demos.sm_up_and_down.Up_and_down_with_parameters_lambda</code>
+
+
+</h2>
+
+
     <div class="doc doc-contents first">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="betfsm.betfsm_action_server.Sequence" href="../sequence/#betfsm.betfsm.Sequence">Sequence</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="betfsm.betfsm.Sequence (betfsm.betfsm_action_server.Sequence)" href="../sequence/#betfsm.betfsm.Sequence">Sequence</a></code></p>
 
 
 
@@ -661,55 +429,13 @@ a simple state machine that moves up and down:</p>
 
 
 
-              <details class="quote">
-                <summary>Source code in <code>betfsm_demos/sm_up_and_down.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">129</span>
-<span class="normal">130</span>
-<span class="normal">131</span>
-<span class="normal">132</span>
-<span class="normal">133</span>
-<span class="normal">134</span>
-<span class="normal">135</span>
-<span class="normal">136</span>
-<span class="normal">137</span>
-<span class="normal">138</span>
-<span class="normal">139</span>
-<span class="normal">140</span>
-<span class="normal">141</span>
-<span class="normal">142</span>
-<span class="normal">143</span>
-<span class="normal">144</span>
-<span class="normal">145</span>
-<span class="normal">146</span>
-<span class="normal">147</span>
-<span class="normal">148</span>
-<span class="normal">149</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Up_and_down_with_parameters_lambda</span><span class="p">(</span><span class="n">Sequence</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;Up_and_down_with_parameters_lambda&quot;</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;home1&quot;</span><span class="p">,</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">LogBlackboard</span><span class="p">(</span><span class="s2">&quot;LogBlackboard1&quot;</span><span class="p">,[</span><span class="s2">&quot;output&quot;</span><span class="p">]))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">Compute</span><span class="p">(</span><span class="s2">&quot;compute_state&quot;</span><span class="p">,[</span><span class="s2">&quot;home_computations&quot;</span><span class="p">],</span> <span class="k">lambda</span> <span class="n">bb</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;joint_1&quot;</span> <span class="p">:</span> <span class="n">bb</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">][</span><span class="s2">&quot;home1&quot;</span><span class="p">][</span><span class="s2">&quot;jpos1&quot;</span><span class="p">]</span><span class="o">*</span><span class="mf">180.0</span><span class="o">/</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">+</span> <span class="mf">100.0</span><span class="p">}</span> <span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">LogBlackboard</span><span class="p">(</span><span class="s2">&quot;LogBlackboard1&quot;</span><span class="p">,[</span><span class="s2">&quot;home_computations&quot;</span><span class="p">]))</span>                                                   
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;home2&quot;</span><span class="p">,</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">,</span>
-                                            <span class="n">cb</span><span class="o">=</span><span class="k">lambda</span> <span class="n">bb</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;joint_1&quot;</span><span class="p">:</span> <span class="n">bb</span><span class="p">[</span><span class="s2">&quot;home_computations&quot;</span><span class="p">][</span><span class="s2">&quot;joint_1&quot;</span><span class="p">],</span>
-                                                           <span class="s2">&quot;joint_2&quot;</span><span class="p">:</span> <span class="n">bb</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">][</span><span class="s2">&quot;home1&quot;</span><span class="p">][</span><span class="s2">&quot;jpos2&quot;</span><span class="p">]</span><span class="o">*</span><span class="mf">180.0</span><span class="o">/</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">+</span><span class="mi">5</span><span class="p">,</span>
-                                                          <span class="p">},</span>
-                                            <span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">)</span> <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;home3&quot;</span><span class="p">,</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">LogBlackboard</span><span class="p">(</span><span class="s2">&quot;Logblackboard2&quot;</span><span class="p">,[</span><span class="s2">&quot;output&quot;</span><span class="p">]</span> <span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movingup&quot;</span><span class="p">,</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">),)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movingdown&quot;</span><span class="p">,</span><span class="s2">&quot;MovingDown&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movingup2&quot;</span><span class="p">,</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span> <span class="n">Message</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Hello world&quot;</span><span class="p">)</span> <span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-              </details>
 
 
 
-  <div class="doc doc-children">
+
+
+<div class="doc doc-children">
+
 
 
 
@@ -722,59 +448,15 @@ a simple state machine that moves up and down:</p>
 <div class="doc doc-object doc-function">
 
 
-<h2 id="betfsm_demos.sm_up_and_down.Up_and_down_with_parameters_lambda.__init__" class="doc doc-heading">
-            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">node</span><span class="p">)</span></code>
+<h3 id="betfsm_demos.sm_up_and_down.Up_and_down_with_parameters_lambda.__init__" class="doc doc-heading">
+            <code class="highlight language-python">__init__(node)</code>
 
-</h2>
+</h3>
 
 
     <div class="doc doc-contents ">
 
-        
 
-            <details class="quote">
-              <summary>Source code in <code>betfsm_demos/sm_up_and_down.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">130</span>
-<span class="normal">131</span>
-<span class="normal">132</span>
-<span class="normal">133</span>
-<span class="normal">134</span>
-<span class="normal">135</span>
-<span class="normal">136</span>
-<span class="normal">137</span>
-<span class="normal">138</span>
-<span class="normal">139</span>
-<span class="normal">140</span>
-<span class="normal">141</span>
-<span class="normal">142</span>
-<span class="normal">143</span>
-<span class="normal">144</span>
-<span class="normal">145</span>
-<span class="normal">146</span>
-<span class="normal">147</span>
-<span class="normal">148</span>
-<span class="normal">149</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;Up_and_down_with_parameters_lambda&quot;</span><span class="p">)</span>
-
-    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;home1&quot;</span><span class="p">,</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">))</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">LogBlackboard</span><span class="p">(</span><span class="s2">&quot;LogBlackboard1&quot;</span><span class="p">,[</span><span class="s2">&quot;output&quot;</span><span class="p">]))</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">Compute</span><span class="p">(</span><span class="s2">&quot;compute_state&quot;</span><span class="p">,[</span><span class="s2">&quot;home_computations&quot;</span><span class="p">],</span> <span class="k">lambda</span> <span class="n">bb</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;joint_1&quot;</span> <span class="p">:</span> <span class="n">bb</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">][</span><span class="s2">&quot;home1&quot;</span><span class="p">][</span><span class="s2">&quot;jpos1&quot;</span><span class="p">]</span><span class="o">*</span><span class="mf">180.0</span><span class="o">/</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">+</span> <span class="mf">100.0</span><span class="p">}</span> <span class="p">))</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">LogBlackboard</span><span class="p">(</span><span class="s2">&quot;LogBlackboard1&quot;</span><span class="p">,[</span><span class="s2">&quot;home_computations&quot;</span><span class="p">]))</span>                                                   
-    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;home2&quot;</span><span class="p">,</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">,</span>
-                                        <span class="n">cb</span><span class="o">=</span><span class="k">lambda</span> <span class="n">bb</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;joint_1&quot;</span><span class="p">:</span> <span class="n">bb</span><span class="p">[</span><span class="s2">&quot;home_computations&quot;</span><span class="p">][</span><span class="s2">&quot;joint_1&quot;</span><span class="p">],</span>
-                                                       <span class="s2">&quot;joint_2&quot;</span><span class="p">:</span> <span class="n">bb</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">][</span><span class="s2">&quot;home1&quot;</span><span class="p">][</span><span class="s2">&quot;jpos2&quot;</span><span class="p">]</span><span class="o">*</span><span class="mf">180.0</span><span class="o">/</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">+</span><span class="mi">5</span><span class="p">,</span>
-                                                      <span class="p">},</span>
-                                        <span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">)</span> <span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;home3&quot;</span><span class="p">,</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">))</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">LogBlackboard</span><span class="p">(</span><span class="s2">&quot;Logblackboard2&quot;</span><span class="p">,[</span><span class="s2">&quot;output&quot;</span><span class="p">]</span> <span class="p">))</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movingup&quot;</span><span class="p">,</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">),)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movingdown&quot;</span><span class="p">,</span><span class="s2">&quot;MovingDown&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">))</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;movingup2&quot;</span><span class="p">,</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">))</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span> <span class="n">Message</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Hello world&quot;</span><span class="p">)</span> <span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-            </details>
     </div>
 
 </div>
@@ -784,6 +466,7 @@ a simple state machine that moves up and down:</p>
   </div>
 
     </div>
+
 
 </div><p>options:
       heading_level: 3

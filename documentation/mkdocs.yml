@@ -51,11 +51,13 @@ plugins:
   - mermaid2
   - mkdocstrings:
       handlers:
-        options:
-          show_source: false
-          show_root_heading: true 
-          docstring_style: google
-   
+        python:
+          paths: [../betfsm, ../betfsm_demos]
+          options: 
+            show_source: false
+            show_root_heading: true 
+            docstring_style: google
+     
 extra_css:
 - css/mkdocstrings.css
 

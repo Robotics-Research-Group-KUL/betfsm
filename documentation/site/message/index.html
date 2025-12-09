@@ -161,6 +161,7 @@
               Bases: <code><a class="autorefs autorefs-internal" title="betfsm.betfsm.Generator" href="../generator/#betfsm.betfsm.Generator">Generator</a></code></p>
 
 
+
         <p>Message(msg) returns a State that displays a message</p>
 
 
@@ -171,7 +172,9 @@
 
 
 
-  <div class="doc doc-children">
+
+<div class="doc doc-children">
+
 
 
 
@@ -185,7 +188,7 @@
 
 
 <h3 id="betfsm.betfsm.Message.__init__" class="doc doc-heading">
-            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;message&#39;</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cb</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+            <code class="highlight language-python">__init__(name='message', *, msg=None, cb=None)</code>
 
 </h3>
 
@@ -207,7 +210,7 @@
         <ul class="first simple">
             <li>
               <b><code>name</code></b>
-                  (<code>str</code>, default:
+                  (<code><span title="str">str</span></code>, default:
                       <code>&#39;message&#39;</code>
 )
               –
@@ -217,7 +220,7 @@
             </li>
             <li>
               <b><code>msg</code></b>
-                  (<code>str</code>, default:
+                  (<code><span title="str">str</span></code>, default:
                       <code>None</code>
 )
               –
@@ -253,6 +256,7 @@ e.g. to report on values on the blackboard.</p>
   <pre><code>Message(lambda bb: f'{bb[&quot;some_key_in_blackboard&quot;]=}' )
 </code></pre>
 </details>
+
     </div>
 
 </div>
@@ -262,6 +266,7 @@ e.g. to report on values on the blackboard.</p>
   </div>
 
     </div>
+
 
 </div>
               

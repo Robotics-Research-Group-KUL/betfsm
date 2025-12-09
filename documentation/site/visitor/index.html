@@ -163,6 +163,7 @@
               Bases: <code><span title="abc.ABC">ABC</span></code></p>
 
 
+
         <p>Visitor pattern.</p>
 <p>Called by accept() methods of TickingState and its subclasses. The Visitor is a base class that you
 can inherit from to have your object called throughout the hierarchy of states.  This mechanism
@@ -184,7 +185,9 @@ is completely generic.</p>
 
 
 
-  <div class="doc doc-children">
+
+<div class="doc doc-children">
+
 
 
 
@@ -198,7 +201,7 @@ is completely generic.</p>
 
 
 <h3 id="betfsm.betfsm.Visitor.post" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">post</span><span class="p">(</span><span class="n">state</span><span class="p">)</span></code>
+            <code class="highlight language-python">post(state)</code>
 
 </h3>
 
@@ -208,6 +211,7 @@ is completely generic.</p>
         <p>Processing done by the visitor after visiting the children.</p>
 <p>returns nothing.</p>
 
+
     </div>
 
 </div>
@@ -216,7 +220,7 @@ is completely generic.</p>
 
 
 <h3 id="betfsm.betfsm.Visitor.pre" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">pre</span><span class="p">(</span><span class="n">state</span><span class="p">)</span></code>
+            <code class="highlight language-python">pre(state)</code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
@@ -230,6 +234,7 @@ is completely generic.</p>
         <p>Processing done by visitor before visiting the children of the state.</p>
 <p>returns true if children needs to be explored</p>
 
+
     </div>
 
 </div>
@@ -239,6 +244,7 @@ is completely generic.</p>
   </div>
 
     </div>
+
 
 </div>
               

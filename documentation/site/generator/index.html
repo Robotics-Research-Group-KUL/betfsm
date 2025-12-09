@@ -161,6 +161,7 @@
               Bases: <code><a class="autorefs autorefs-internal" title="betfsm.betfsm.TickingState" href="../tickingstate/#betfsm.betfsm.TickingState">TickingState</a></code></p>
 
 
+
         <p>Uses a python generator to define a TickingState. It implements methods <code>entry</code>, <code>doo</code>, and <code>exit</code> of TickingState using
 the given callback function (which is a python generator that can return intermediate results usig <code>yield</code>).  This makes
 it easy to specify a TickingState.</p>
@@ -174,7 +175,9 @@ it easy to specify a TickingState.</p>
 
 
 
-  <div class="doc doc-children">
+
+<div class="doc doc-children">
+
 
 
 
@@ -188,7 +191,7 @@ it easy to specify a TickingState.</p>
 
 
 <h3 id="betfsm.betfsm.Generator.__init__" class="doc doc-heading">
-            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">outcomes</span><span class="p">)</span></code>
+            <code class="highlight language-python">__init__(name, outcomes)</code>
 
 </h3>
 
@@ -209,7 +212,7 @@ it easy to specify a TickingState.</p>
         <ul class="first simple">
             <li>
               <b><code>name</code></b>
-                  (<code>str</code>)
+                  (<code><span title="str">str</span></code>)
               –
               <div class="doc-md-description">
                 <p>name of the node</p>
@@ -217,7 +220,7 @@ it easy to specify a TickingState.</p>
             </li>
             <li>
               <b><code>outcomes</code></b>
-                  (<code><span title="typing.List">List</span>[str]</code>)
+                  (<code><span title="typing.List">List</span>[<span title="str">str</span>]</code>)
               –
               <div class="doc-md-description">
                 <p>a list of strings indicating the expected outcomes,  TICKING and ABORT will be
@@ -229,6 +232,7 @@ automatically added.</p>
     </tr>
   </tbody>
 </table>
+
     </div>
 
 </div>
@@ -238,6 +242,7 @@ automatically added.</p>
   </div>
 
     </div>
+
 
 </div>
 
@@ -257,6 +262,7 @@ automatically added.</p>
               Bases: <code><a class="autorefs autorefs-internal" title="betfsm.betfsm.Generator" href="#betfsm.betfsm.Generator">Generator</a></code></p>
 
 
+
         <p>A Generator with one underlying states</p>
 
 
@@ -267,7 +273,9 @@ automatically added.</p>
 
 
 
-  <div class="doc doc-children">
+
+<div class="doc doc-children">
+
 
 
 
@@ -281,7 +289,7 @@ automatically added.</p>
 
 
 <h3 id="betfsm.betfsm.GeneratorWithState.__init__" class="doc doc-heading">
-            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">outcomes</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span></code>
+            <code class="highlight language-python">__init__(name, outcomes, state)</code>
 
 </h3>
 
@@ -302,7 +310,7 @@ automatically added.</p>
         <ul class="first simple">
             <li>
               <b><code>name</code></b>
-                  (<code>str</code>)
+                  (<code><span title="str">str</span></code>)
               –
               <div class="doc-md-description">
                 <p>name of the node</p>
@@ -310,7 +318,7 @@ automatically added.</p>
             </li>
             <li>
               <b><code>outcomes</code></b>
-                  (<code><span title="typing.List">List</span>[str]</code>)
+                  (<code><span title="typing.List">List</span>[<span title="str">str</span>]</code>)
               –
               <div class="doc-md-description">
                 <p>a list of strings indicating the expected outcomes, the outcomes of the underlying
@@ -330,6 +338,7 @@ state are automatically added.        </p>
     </tr>
   </tbody>
 </table>
+
     </div>
 
 </div>
@@ -339,6 +348,7 @@ state are automatically added.        </p>
   </div>
 
     </div>
+
 
 </div>
 
@@ -358,6 +368,7 @@ state are automatically added.        </p>
               Bases: <code><a class="autorefs autorefs-internal" title="betfsm.betfsm.Generator" href="#betfsm.betfsm.Generator">Generator</a></code></p>
 
 
+
         <p>A generator with some facilities to maintain an ordered list of children</p>
 
 
@@ -368,7 +379,9 @@ state are automatically added.        </p>
 
 
 
-  <div class="doc doc-children">
+
+<div class="doc doc-children">
+
 
 
 
@@ -382,7 +395,7 @@ state are automatically added.        </p>
 
 
 <h3 id="betfsm.betfsm.GeneratorWithList.__init__" class="doc doc-heading">
-            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">outcomes</span><span class="p">,</span> <span class="n">children</span><span class="o">=</span><span class="p">[])</span></code>
+            <code class="highlight language-python">__init__(name, outcomes, children=[])</code>
 
 </h3>
 
@@ -403,7 +416,7 @@ state are automatically added.        </p>
         <ul class="first simple">
             <li>
               <b><code>name</code></b>
-                  (<code>str</code>)
+                  (<code><span title="str">str</span></code>)
               –
               <div class="doc-md-description">
                 <p>name </p>
@@ -411,7 +424,7 @@ state are automatically added.        </p>
             </li>
             <li>
               <b><code>outcomes</code></b>
-                  (<code><span title="typing.List">List</span>[str]</code>)
+                  (<code><span title="typing.List">List</span>[<span title="str">str</span>]</code>)
               –
               <div class="doc-md-description">
                 <p>list of possible outcomes (in addition to the outcomes of the underlying states)</p>
@@ -433,6 +446,7 @@ you can use add_state(...) to add children.</p>
     </tr>
   </tbody>
 </table>
+
     </div>
 
 </div>
@@ -441,7 +455,7 @@ you can use add_state(...) to add children.</p>
 
 
 <h3 id="betfsm.betfsm.GeneratorWithList.add_state" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">add_state</span><span class="p">(</span><span class="n">state</span><span class="p">)</span></code>
+            <code class="highlight language-python">add_state(state)</code>
 
 </h3>
 
@@ -455,6 +469,7 @@ parameters:
 returns:
     self (to allow method chaining)</p>
 
+
     </div>
 
 </div>
@@ -463,7 +478,7 @@ returns:
 
 
 <h3 id="betfsm.betfsm.GeneratorWithList.reset" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">reset</span><span class="p">()</span></code>
+            <code class="highlight language-python">reset()</code>
 
 </h3>
 
@@ -471,6 +486,7 @@ returns:
     <div class="doc doc-contents ">
 
         <p>resets the sequence and ensures tht the underlying states are also reset.</p>
+
 
     </div>
 
@@ -481,6 +497,7 @@ returns:
   </div>
 
     </div>
+
 
 </div>
               

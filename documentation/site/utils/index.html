@@ -187,7 +187,7 @@ set_logger(&quot;state&quot;,my_node.get_logger())
 
 
 <h3 id="betfsm.betfsm_ros.expand_package_ref" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">betfsm</span><span class="o">.</span><span class="n">betfsm_ros</span><span class="o">.</span><span class="n">expand_package_ref</span><span class="p">(</span><span class="n">pth</span><span class="p">)</span></code>
+            <code class="highlight language-python">betfsm.betfsm_ros.expand_package_ref(pth)</code>
 
 </h3>
 
@@ -209,7 +209,7 @@ set_logger(&quot;state&quot;,my_node.get_logger())
         <ul class="first simple">
             <li>
               <b><code>pth</code></b>
-                  (<code>str</code>)
+                  (<code><span title="str">str</span></code>)
               –
               <div class="doc-md-description">
                 <p>string to expand</p>
@@ -220,6 +220,7 @@ set_logger(&quot;state&quot;,my_node.get_logger())
     </tr>
   </tbody>
 </table>
+
     </div>
 
 </div>
@@ -228,7 +229,7 @@ set_logger(&quot;state&quot;,my_node.get_logger())
 
 
 <h3 id="betfsm.betfsm_ros.expand_env_ref" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">betfsm</span><span class="o">.</span><span class="n">betfsm_ros</span><span class="o">.</span><span class="n">expand_env_ref</span><span class="p">(</span><span class="n">pth</span><span class="p">)</span></code>
+            <code class="highlight language-python">betfsm.betfsm_ros.expand_env_ref(pth)</code>
 
 </h3>
 
@@ -239,6 +240,7 @@ set_logger(&quot;state&quot;,my_node.get_logger())
 Parameters:
     pth: string to expand</p>
 
+
     </div>
 
 </div>
@@ -247,7 +249,7 @@ Parameters:
 
 
 <h3 id="betfsm.betfsm_ros.expand_ref" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">betfsm</span><span class="o">.</span><span class="n">betfsm_ros</span><span class="o">.</span><span class="n">expand_ref</span><span class="p">(</span><span class="n">pth</span><span class="p">)</span></code>
+            <code class="highlight language-python">betfsm.betfsm_ros.expand_ref(pth)</code>
 
 </h3>
 
@@ -269,7 +271,7 @@ Parameters:
         <ul class="first simple">
             <li>
               <b><code>pth</code></b>
-                  (<code>str</code>)
+                  (<code><span title="str">str</span></code>)
               –
               <div class="doc-md-description">
                 <p>string to expand</p>
@@ -280,6 +282,7 @@ Parameters:
     </tr>
   </tbody>
 </table>
+
     </div>
 
 </div>
@@ -288,7 +291,7 @@ Parameters:
 
 
 <h3 id="betfsm.logger.set_logger" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">betfsm</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">set_logger</span><span class="p">(</span><span class="n">category</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span></code>
+            <code class="highlight language-python">betfsm.logger.set_logger(category, logger)</code>
 
 </h3>
 
@@ -310,7 +313,7 @@ Parameters:
         <ul class="first simple">
             <li>
               <b><code>category</code></b>
-                  (<code>str</code>)
+                  (<code><span title="str">str</span></code>)
               –
               <div class="doc-md-description">
                 <p>arbitrary name. You can associate a specific LogPrinter to a name,
@@ -351,6 +354,7 @@ You probably want to specify at least the "default" logger
 <li><code>DummyLogPrinter</code>(), i.e. does nothing</li>
 </ul>
 </details>
+
     </div>
 
 </div>
@@ -359,7 +363,7 @@ You probably want to specify at least the "default" logger
 
 
 <h3 id="betfsm.logger.get_logger" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">betfsm</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">)</span></code>
+            <code class="highlight language-python">betfsm.logger.get_logger(category='default')</code>
 
 </h3>
 
@@ -381,7 +385,7 @@ You probably want to specify at least the "default" logger
         <ul class="first simple">
             <li>
               <b><code>category</code></b>
-                  (<code>str</code>, default:
+                  (<code><span title="str">str</span></code>, default:
                       <code>&#39;default&#39;</code>
 )
               –
@@ -405,6 +409,7 @@ if not specified, "default" is used.</p>
 <li>state (entering/exiting states, with outcome)</li>
 </ul>
 </details>
+
     </div>
 
 </div>
@@ -413,7 +418,7 @@ if not specified, "default" is used.</p>
 
 
 <h3 id="betfsm.betfsm.cleanup_outcomes" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">betfsm</span><span class="o">.</span><span class="n">betfsm</span><span class="o">.</span><span class="n">cleanup_outcomes</span><span class="p">(</span><span class="n">outcomes</span><span class="p">)</span></code>
+            <code class="highlight language-python">betfsm.betfsm.cleanup_outcomes(outcomes)</code>
 
 </h3>
 
@@ -434,7 +439,7 @@ if not specified, "default" is used.</p>
       <td class="field-body">
         <ul class="first simple">
             <li>
-                  <code><span title="typing.List">List</span>[str]</code>
+                  <code><span title="typing.List">List</span>[<span title="str">str</span>]</code>
               –
               <div class="doc-md-description">
                 <p>list of outcomes with duplicate elements elliminated.</p>
@@ -445,6 +450,7 @@ if not specified, "default" is used.</p>
     </tr>
   </tbody>
 </table>
+
     </div>
 
 </div>
@@ -453,7 +459,7 @@ if not specified, "default" is used.</p>
 
 
 <h3 id="betfsm.betfsm_ros.dumps_blackboard" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">betfsm</span><span class="o">.</span><span class="n">betfsm_ros</span><span class="o">.</span><span class="n">dumps_blackboard</span><span class="p">(</span><span class="n">blackboard</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></code>
+            <code class="highlight language-python">betfsm.betfsm_ros.dumps_blackboard(blackboard, indent=0)</code>
 
 </h3>
 
@@ -492,6 +498,7 @@ if not specified, "default" is used.</p>
     </tr>
   </tbody>
 </table>
+
     </div>
 
 </div>

@@ -61,6 +61,12 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#defining-your-own-states">Defining your own states</a>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#facilitating-implementation-of-a-tickingstate">Facilitating implementation of a TickingState</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#action-server">Action server</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#action-client">Action client</a>
+</li>
 </ul>
 </li>
 </ul>
@@ -157,30 +163,44 @@
 </div>
 <div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
 <div class="section" itemprop="articleBody">
-<h1 id="home">Home</h1>
+<h1 id="betfsm">BeTFSM</h1>
+<p>Published under the GNU LESSER GENERAL PUBLIC LICENSE Version 3, 29 June 2007.</p>
+<p>Main author: Erwin Aertbeliën</p>
+<p>Contributors: Federico Ulloa Rios,  Santiago Iregui Rincon</p>
+<p>This work was funded by the European Union’s Horizon 2020 research and innovation program under grant agreement No.
+101058589 (AI-PRISM)</p>
 <h2 id="introduction">Introduction</h2>
-<p>This is a library for "ticking" statemachines, it is originally based upon the <a href="https://github.com/uleroboticsgroup/yasmin">Yasmin</a> library, but is substantially changed</p>
-<div class="admonition error">
-<p class="admonition-title">TODO</p>
-<p>Completely decouple from yasmin?  nothing substantial is left and would be easy to completely decouple from Yasmin.   Certainly in practice, it is used completely differently.  </p>
-</div>
-<p>Each <a class="autorefs autorefs-internal" href="tickingstate/#betfsm.betfsm.TickingState">TickingState</a> (see <a class="autorefs autorefs-internal" href="tickingstate/#betfsm.betfsm.TickingState">API</a> for detailed definition) is defined by the following methods:</p>
+<p>This is a library for "ticking" statemachines and behavior trees. In this
+unified framework, discrete tasks can be specified with the modularity of
+behavior trees and at the lower-level precise interaction can be specified
+using state machines.
+Each <a class="autorefs autorefs-internal" href="tickingstate/#betfsm.betfsm.TickingState" title="betfsm.betfsm.TickingState">TickingState</a> (see <a class="autorefs autorefs-internal" href="tickingstate/#betfsm.betfsm.TickingState" title="betfsm.betfsm.TickingState">API</a> for detailed definition) is defined by the following methods:</p>
 <ul>
 <li>
-<p><strong>entry(self,blackboard)</strong>:
+<p><strong>entry(self,blackboard:Blackboard)</strong>:
     executed when the state is entered</p>
 </li>
 <li>
-<p><strong>doo(self,blackboard)</strong>:
+<p><strong>doo(self,blackboard:Blackboard)</strong>:
     execute while the state is running.  The state can take a longer time
-    but should regularly yield by returning TICKING.</p>
+    but should regularly yield by returning TICKING. Is implemented by derived classes.</p>
 </li>
 <li><strong>exit(self)</strong>:
     is execute when the state exits, note that it does not has the blackboard as argument.
-    Will even be called when the other methods return an exception.</li>
+    Will even be called when the other methods return an exception. Is implemented by derived classes</li>
 <li><strong>reset(self)</strong>:
     Resets the state (i.e. calls exit() when appropriate and ensures that the next time, entry() will be called)</li>
+<li><strong>accept(self, visitor:Visitor)</strong>: calls the visitor that you pass as an argument and possibly iterates over
+    its children, e.g. to generate a visual representation of the behavior tree.</li>
 </ul>
+<p>There is an additional <strong>execute</strong> member function that typically should not be touched.</p>
+<div class="admonition error">
+<p class="admonition-title">WARNING</p>
+<p>A TickingState is low-overhead and synchronous. It is expected to return quickly, and 
+if further processing is needed to return TICK. If there is code in <strong>doo</strong> and <strong>entry</strong> that blocks,
+the execution of the whole BeTFSM tree blocks, including concurrent TickingStates.  For blocking code,
+the TickingState should create its own thread. </p>
+</div>
 <div class="mermaid">---
 title: Internal workings of TickingState
 ---
@@ -209,9 +229,24 @@ class entry centerClass
 <p>When using the state one calls it with the () operator. This calls then the execute() method that calls the entry,doo,exit methods
 appropriately, according to the figure above.</p>
 <p>The <a href="https://en.wikipedia.org/wiki/Visitor_pattern">visitor pattern</a> is used to be able to generically travers the hierarchy of states.
-the <strong>accept</strong> method of a TickingState calls the visitor appropriately.  Visitor is defined  <a class="autorefs autorefs-internal" href="visitor/#betfsm.betfsm.Visitor">here</a></p>
+the <strong>accept</strong> method of a TickingState calls the visitor appropriately.  Visitor is defined  <a class="autorefs autorefs-internal" href="visitor/#betfsm.betfsm.Visitor" title="betfsm.betfsm.Visitor">here</a></p>
+<div class="admonition blackboard">
+<p class="admonition-title">Blackboard</p>
+<p>All TickingStates can read and write from a common <strong>blackboard</strong> of type
+<strong>Blackboard: TypeAlias = Dict[str, Dict|any]</strong>, i.e. a hierarchically
+organized common storage where all TickingStates can update information or get
+information from.</p>
+</div>
+<div class="admonition parameters">
+<p class="admonition-title">Parameters</p>
+<p>When defining new TickingStates, remember to distinguish between
+construction-time (arguments given to constructor) and run-time (passed using a
+certain location in the blackboard) parameters.  Typically the <strong>location</strong>
+(not the value!) of the run-time parameters is passed as parameters to the
+constructor, such that the TickingState is easily reusable in different applications.</p>
+</div>
 <h2 id="summary-of-states-and-state-machines">Summary of states and state-machines</h2>
-<p>For full specification, see the API-documentation.</p>
+<p>This section explains the basics of BeTFSM.  You find more detailed information in the sections BeTFSM, BeTFSM ROS2, BeTFSM eTaSL which contain a full API-documentation.</p>
 <p>Sometimes states have underlying states, e.g. a state-machine or a sequence.  Typically they can be specfied in two ways:</p>
 <ul>
 <li>a list of children in the constructor. This is handy when the substates are also simple to construct.  If there is only one underlying state, the constructor argument is typically called <code>state</code>, if there are multiple underlying states, the constructor argument is typically called <code>children</code>.</li>
@@ -219,14 +254,14 @@ the <strong>accept</strong> method of a TickingState calls the visitor appropria
 </ul>
 <p>In some cases, more information needs to be given and only the <code>add_state</code> approach is applicable (e.g. TickingStateMachine).</p>
 <h3 id="the-state-machine-state">The state-machine state</h3>
-<p><a class="autorefs autorefs-internal" href="tickingstatemachine/#betfsm.betfsm.TickingStateMachine">TickingStateMachine</a> implements a basic state machine. You
-can add nodes using <a class="autorefs autorefs-internal" href="tickingstatemachine/#betfsm.betfsm.TickingStateMachine.add_state">add_state</a>.  In this call
+<p><a class="autorefs autorefs-internal" href="tickingstatemachine/#betfsm.betfsm.TickingStateMachine" title="betfsm.betfsm.TickingStateMachine">TickingStateMachine</a> implements a basic state machine. You
+can add nodes using <a class="autorefs autorefs-internal" href="tickingstatemachine/#betfsm.betfsm.TickingStateMachine.add_state" title="add_state(state, transitions=None)">add_state</a>.  In this call
 you also specify the transitions between states.  These transitions are specified by mapping an outcome of the state to the name of one of the states in the state machine.  </p>
-<p>The <a class="autorefs autorefs-internal" href="tickingstatemachine/#betfsm.betfsm.TickingStateMachine.__init__">constructor</a> takes a (<strong>instance</strong>) name of the state machine, its allowable outcomes and two optional callback functions <code>transitioncb</code> and <code>statecb</code>.
-Default implementations of the callbacks are described in <a class="autorefs autorefs-internal" href="default_callbacks/#betfsm.betfsm.default_transitioncb">default|_transition_cb</a> and <a class="autorefs autorefs-internal" href="default_callbacks/#betfsm.betfsm.default_statecb">default_statecb</a>.</p>
+<p>The <a class="autorefs autorefs-internal" href="tickingstatemachine/#betfsm.betfsm.TickingStateMachine.__init__" title="__init__(name, outcomes, transitioncb=default_transitioncb, statecb=default_statecb)">constructor</a> takes a (<strong>instance</strong>) name of the state machine, its allowable outcomes and two optional callback functions <code>transitioncb</code> and <code>statecb</code>.
+Default implementations of the callbacks are described in <a class="autorefs autorefs-internal" href="default_callbacks/#betfsm.betfsm.default_transitioncb" title="betfsm.betfsm.default_transitioncb(statemachine, blackboard, source, outcome)">default|_transition_cb</a> and <a class="autorefs autorefs-internal" href="default_callbacks/#betfsm.betfsm.default_statecb" title="betfsm.betfsm.default_statecb(statemachine, blackboard, state)">default_statecb</a>.</p>
 <h3 id="behavior-tree-like-states">Behavior-tree like states</h3>
-<p>The most important behavior-tree like states are <a class="autorefs autorefs-internal" href="sequence/#betfsm.betfsm.Sequence">Sequence</a>,<a class="autorefs autorefs-internal" href="fallback/#betfsm.betfsm.Fallback">Fallback</a>,
-<a class="autorefs autorefs-internal" href="concurrentsequence/#betfsm.betfsm.ConcurrentSequence">ConcurrentSequence</a>,<a class="autorefs autorefs-internal" href="concurrentfallback/#betfsm.betfsm.ConcurrentFallback">ConcurrentFallback</a>, and <a class="autorefs autorefs-internal" href="repeat/#betfsm.betfsm.Repeat">Repeat</a></p>
+<p>The most important behavior-tree like states are <a class="autorefs autorefs-internal" href="sequence/#betfsm.betfsm.Sequence" title="betfsm.betfsm.Sequence">Sequence</a>,<a class="autorefs autorefs-internal" href="fallback/#betfsm.betfsm.Fallback" title="betfsm.betfsm.Fallback">Fallback</a>,
+<a class="autorefs autorefs-internal" href="concurrentsequence/#betfsm.betfsm.ConcurrentSequence" title="betfsm.betfsm.ConcurrentSequence">ConcurrentSequence</a>,<a class="autorefs autorefs-internal" href="concurrentfallback/#betfsm.betfsm.ConcurrentFallback" title="betfsm.betfsm.ConcurrentFallback">ConcurrentFallback</a>, and <a class="autorefs autorefs-internal" href="repeat/#betfsm.betfsm.Repeat" title="betfsm.betfsm.Repeat">Repeat</a></p>
 <p>The main difference is that for a typical behavior-tree implementation the outcomes can only be RUNNING, SUCCESS or FAILURE. Here, there can be more types of outcome.   The mapping to traditional behavior trees is explained below, detailed behavior is documented in the diagrams in the API-documentation.</p>
 <ul>
 <li>
@@ -250,25 +285,25 @@ In other words, success can be differentiated by different outcomes.</p>
 In other words, failure can be differentiated by different outcomes.</p>
 </li>
 </ul>
-<p><a class="autorefs autorefs-internal" href="concurrentsequence/#betfsm.betfsm.ConcurrentSequence">ConcurrentSequence</a> and <a class="autorefs autorefs-internal" href="concurrentfallback/#betfsm.betfsm.ConcurrentFallback">ConcurrentFallback</a> are basically the same as <a class="autorefs autorefs-internal" href="sequence/#betfsm.betfsm.Sequence">Sequence</a> and <a class="autorefs autorefs-internal" href="fallback/#betfsm.betfsm.Fallback">Fallback</a> but execute concurrently: at each tick they go to their complete list of states and follow the logic of sequence or fallback. e.g. in a ConcurrentSequence the states are executed concurrently, but within one tick, they are executed in the order specified.</p>
-<p><a class="autorefs autorefs-internal" href="concurrent/#betfsm.betfsm.Concurrent">Concurrent</a> executes also its children concurrently (calling them in sequence for each tick). Concurrent stops executing when any child returns any outcome different from TICKING. See <a class="autorefs autorefs-internal" href="concurrent/#betfsm.betfsm.Concurrent">API</a> for description fo detailed behavior.</p>
+<p><a class="autorefs autorefs-internal" href="concurrentsequence/#betfsm.betfsm.ConcurrentSequence" title="betfsm.betfsm.ConcurrentSequence">ConcurrentSequence</a> and <a class="autorefs autorefs-internal" href="concurrentfallback/#betfsm.betfsm.ConcurrentFallback" title="betfsm.betfsm.ConcurrentFallback">ConcurrentFallback</a> are basically the same as <a class="autorefs autorefs-internal" href="sequence/#betfsm.betfsm.Sequence" title="betfsm.betfsm.Sequence">Sequence</a> and <a class="autorefs autorefs-internal" href="fallback/#betfsm.betfsm.Fallback" title="betfsm.betfsm.Fallback">Fallback</a> but execute concurrently: at each tick they go to their complete list of states and follow the logic of sequence or fallback. e.g. in a ConcurrentSequence the states are executed concurrently, but within one tick, they are executed in the order specified.</p>
+<p><a class="autorefs autorefs-internal" href="concurrent/#betfsm.betfsm.Concurrent" title="betfsm.betfsm.Concurrent">Concurrent</a> executes also its children concurrently (calling them in sequence for each tick). Concurrent stops executing when any child returns any outcome different from TICKING. See <a class="autorefs autorefs-internal" href="concurrent/#betfsm.betfsm.Concurrent" title="betfsm.betfsm.Concurrent">API</a> for description fo detailed behavior.</p>
 <p>The <strong>Repeat</strong> state has one underlying state and repeats this state for a given number of times.</p>
 <h3 id="related-to-conditions">Related to conditions</h3>
 <ul>
-<li><a class="autorefs autorefs-internal" href="waitfor/#betfsm.betfsm.WaitFor">waitFor</a> waits until a condition is satisfied.  This condition is given by a callback.
+<li><a class="autorefs autorefs-internal" href="waitfor/#betfsm.betfsm.WaitFor" title="betfsm.betfsm.WaitFor">waitFor</a> waits until a condition is satisfied.  This condition is given by a callback.
    Note that this callback can be defined using Python's <a href="https://python-reference.readthedocs.io/en/latest/docs/operators/lambda.html">lambda</a></li>
-<li><a class="autorefs autorefs-internal" href="waitforever/#betfsm.betfsm.WaitForever">WaitForever</a> waits forever, you probably want something to be running in parallel with this.</li>
-<li><a class="autorefs autorefs-internal" href="while/#betfsm.betfsm.While">While</a> continues to execute the underlying state while checking the given condition. It finishes with CANCEL when the condition returns false, it finishes also when the underlying state finishes and returns the outcome of the underlying state.</li>
+<li><a class="autorefs autorefs-internal" href="waitforever/#betfsm.betfsm.WaitForever" title="betfsm.betfsm.WaitForever">WaitForever</a> waits forever, you probably want something to be running in parallel with this.</li>
+<li><a class="autorefs autorefs-internal" href="while/#betfsm.betfsm.While" title="betfsm.betfsm.While">While</a> continues to execute the underlying state while checking the given condition. It finishes with CANCEL when the condition returns false, it finishes also when the underlying state finishes and returns the outcome of the underlying state.</li>
 </ul>
 <h3 id="related-to-output">Related to output</h3>
 <ul>
 <li>
-<p><a class="autorefs autorefs-internal" href="message/#betfsm.betfsm.Message">Message</a> is a state to quickly return send message to the log.
+<p><a class="autorefs autorefs-internal" href="message/#betfsm.betfsm.Message" title="betfsm.betfsm.Message">Message</a> is a state to quickly return send message to the log.
 Its arguments are either a string or either a callback function.  Since the string is specified at
 construction time, the callback function is handy when you want to return something depending on the actual state while running.  Python's <a href="https://python-reference.readthedocs.io/en/latest/docs/operators/lambda.html">lambda</a> could be useful to specify the callback.</p>
 </li>
 <li>
-<p><a class="autorefs autorefs-internal" href="logblackboard/#betfsm.betfsm.LogBlackboard">LogBlackboard</a> logs the blackboard or a part of the blackboard.
+<p><a class="autorefs autorefs-internal" href="logblackboard/#betfsm.betfsm.LogBlackboard" title="betfsm.betfsm.LogBlackboard">LogBlackboard</a> logs the blackboard or a part of the blackboard.
 The location to log is given by a list of strings.  </p>
 </li>
 </ul>
@@ -277,18 +312,18 @@ The location to log is given by a list of strings.  </p>
    Logs the content of the blackboard under <code>blackboard["output]["move_home"]</code></p>
 <h3 id="related-to-timing">Related to timing</h3>
 <ul>
-<li><a class="autorefs autorefs-internal" href="timedwait/#betfsm.betfsm_ros.TimedWait">TimedWait</a> waits for the given duration and returns SUCCEED.</li>
-<li><a class="autorefs autorefs-internal" href="timedwait/#betfsm.betfsm_ros.TimedWait">TimedRepeat</a> repeats the underlying state for a given number of time.  The time between two repetitions is specified.</li>
-<li><a class="autorefs autorefs-internal" href="timeout/#betfsm.betfsm_ros.Timeout">Timeout</a> executes the underlying state at long as its outcome is TICKING. It finishes when the outcome is not ticking and returns this outcome.  It also finishes when the given duration is exceeded and returns TIMEOUT.</li>
+<li><a class="autorefs autorefs-internal" href="timedwait/#betfsm.betfsm_ros.TimedWait" title="betfsm.betfsm_ros.TimedWait">TimedWait</a> waits for the given duration and returns SUCCEED.</li>
+<li><a class="autorefs autorefs-internal" href="timedwait/#betfsm.betfsm_ros.TimedWait" title="betfsm.betfsm_ros.TimedWait">TimedRepeat</a> repeats the underlying state for a given number of time.  The time between two repetitions is specified.</li>
+<li><a class="autorefs autorefs-internal" href="timeout/#betfsm.betfsm_ros.Timeout" title="betfsm.betfsm_ros.Timeout">Timeout</a> executes the underlying state at long as its outcome is TICKING. It finishes when the outcome is not ticking and returns this outcome.  It also finishes when the given duration is exceeded and returns TIMEOUT.</li>
 </ul>
 <h3 id="related-to-ros-2-services-life-cycle-and-topics">Related to ROS 2 services, life cycle and topics</h3>
-<p>To manage file locations in a ROS2 environment a function <a class="autorefs autorefs-internal" href="utils/#betfsm.betfsm_ros.expand_ref">expand_ref</a> is provided that expands references to ROS2 packages (or more preciselly ament packages) (using <code>$[packagename]</code>) or environmental variables (using <code>${environmental_variable}</code>)</p>
+<p>To manage file locations in a ROS2 environment a function <a class="autorefs autorefs-internal" href="utils/#betfsm.betfsm_ros.expand_ref" title="betfsm.betfsm_ros.expand_ref(pth)">expand_ref</a> is provided that expands references to ROS2 packages (or more preciselly ament packages) (using <code>$[packagename]</code>) or environmental variables (using <code>${environmental_variable}</code>)</p>
 <ul>
 <li>
-<p><a class="autorefs autorefs-internal" href="serviceclient/#betfsm.betfsm_ros.ServiceClient">ServiceClient</a> creates a TickingState that calls a ROS2 service and generates an outcome when the service returns back. While waiting, it continues to tick. Subclasses need to implement two methods <code>fill_in_request</code> to fill in the service request, most probably using information from the blackboard, and <code>process_result</code> to process the result from the service request, most probably putting some information in the blackboard.</p>
+<p><a class="autorefs autorefs-internal" href="serviceclient/#betfsm.betfsm_ros.ServiceClient" title="betfsm.betfsm_ros.ServiceClient">ServiceClient</a> creates a TickingState that calls a ROS2 service and generates an outcome when the service returns back. While waiting, it continues to tick. Subclasses need to implement two methods <code>fill_in_request</code> to fill in the service request, most probably using information from the blackboard, and <code>process_result</code> to process the result from the service request, most probably putting some information in the blackboard.</p>
 </li>
 <li>
-<p><a class="autorefs autorefs-internal" href="lifecycle/#betfsm.betfsm_ros.LifeCycle">LifeCycle</a> manages the lifecycle of some other ROS2 node.
+<p><a class="autorefs autorefs-internal" href="lifecycle/#betfsm.betfsm_ros.LifeCycle" title="betfsm.betfsm_ros.LifeCycle">LifeCycle</a> manages the lifecycle of some other ROS2 node.
   The node is constructed with service_name, transition (see below), timeout and the transition is requested during execution of the state.
   See below for a simplified view of this lifecycle (transition states not included):</p>
 </li>
@@ -330,10 +365,6 @@ The location to log is given by a list of strings.  </p>
 <li><code>def reset(self)-&gt;None:</code>  should call <code>super().exit()</code> at the end: to reset the state <em>and its children</em>.</li>
 <li><code>def accept(self, visitor:Visitor)</code> calls <code>pre</code> on the visitor, calls accept(visitor) on all its children, and then calls <code>post</code> on the visitor.  </li>
 </ul>
-<p>To facilitate the definition of tickingStates, you can use <a href="https://www.geeksforgeeks.org/generators-in-python/">Python generators</a>, for this 
-the <a class="autorefs autorefs-internal" href="generator/#betfsm.betfsm.Generator">Generator</a> class is defined.
-This allows to define TickingStates using a python generator method <code>co_execute(self, blackboard:Blackboard)</code>.  This routine has to regularly 
-yield control using a <code>yield &lt;outcom&gt;</code> statement. This makes it easy to specify a TickingState.</p>
 <p>Keep in mind that the <code>reset</code> and <code>accept</code> methods still need to be defined when the state has children (otherwise 
 the default implementations are sufficient)</p>
 <div class="admonition warning">
@@ -343,17 +374,33 @@ work the first time, but not the second time.</p>
 </div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>Outside code that repeately calls a state-machine has to call <code>reset</code> itself before calling the state-machine.    </p>
+<p>Outside code that repeately calls a state-machine has to call <code>reset</code> itself before calling the state-machine. This method
+calls the reset method of all its children and calls the reset method of its superclass <code>TickingState</code></p>
 </div>
-<p>For the <strong>common use cases</strong> of a Generator with <strong>one child state</strong> and a Generator 
-with a <strong>list of child states</strong> implementations are provided that implement <code>reset</code> and <code>accept</code> for you:
-<a class="autorefs autorefs-internal" href="generator/#betfsm.betfsm.GeneratorWithState">GeneratorWithState</a> and 
-[GeneratorWithList][betfsm.betfsm.GeneratorWithLists] are generic implementations to
- be uses to subclass from while implementing states with one or multiple underlying states.</p>
+<h3 id="facilitating-implementation-of-a-tickingstate">Facilitating implementation of a TickingState</h3>
+<p>To facilitate the definition of tickingStates, you can use <a href="https://www.geeksforgeeks.org/generators-in-python/">Python generators</a>, for this 
+the <a class="autorefs autorefs-internal" href="generator/#betfsm.betfsm.Generator" title="betfsm.betfsm.Generator">Generator</a> class is defined.  Generator is a generic TickingState that implements methods <strong>entry</strong>, <strong>doo</strong> and <strong>exit</strong>.<br/>
+Users can define new TickingStates by defining the method <code>co_execute(self, blackboard:Blackboard)</code>.  This method is a co-routine and can regularly 
+yield control using a <code>yield &lt;outcom&gt;</code> statement. This makes it easy to specify a TickingState.</p>
+<p>For common usecases, further (generic) specializations are provided by:</p>
+<ul>
+<li><a class="autorefs autorefs-internal" href="generator/#betfsm.betfsm.GeneratorWithState" title="betfsm.betfsm.GeneratorWithState">GeneratorWithState</a> for a Generator with <strong>one</strong> child state </li>
+<li>[GeneratorWithList][betfsm.betfsm.GeneratorWithLists]  for a Generator with <strong>a (ordered) list of</strong> childs. </li>
+</ul>
+<p>These implementations implement correctly <code>reset</code> and <code>accept</code> for you and manage the child nodes (TickingStates) of
+your TickingState.  Most of the other nodes are implemented using these auxiliary classes.</p>
 <div class="admonition recommendation">
 <p class="admonition-title">Recommendation</p>
-<p>Look a a few implementations such as <code>WaitFor</code>,<code>Repeat</code>, <code>Concurrent</code></p>
+<p>Look at a few implementations such as <code>WaitFor</code>,<code>Repeat</code>, <code>Concurrent</code>.  This will help making your own nodes.
+Often it is sufficient to implement the constructor and the co_execute(self,blackboard) method and yield when
+you want to yield control to BeTFSM, and come back at the same location the next tick of BeTFSM.</p>
 </div>
+<h3 id="action-server">Action server</h3>
+<p>There is also a ROS2 Action server provided that allows us to respond to ROS2 Actions.  This contains
+also a generic parameter-passing mechanism with a JSON message string that in the black-board of BeTFSM.</p>
+<h3 id="action-client">Action client</h3>
+<p><strong>ActionClientBTFSM</strong> contains a Tickingstate that calls and action and generates an outcome when the action 
+returns back.   While waiting it gets the response of the action.</p>
 </div>
 </div><footer>
 <div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">

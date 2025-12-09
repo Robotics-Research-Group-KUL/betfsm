@@ -146,7 +146,7 @@
 </h2>
 <div class="doc doc-contents first">
 <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="betfsm.betfsm.GeneratorWithList" href="../generator/#betfsm.betfsm.GeneratorWithList">GeneratorWithList</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" href="../generator/#betfsm.betfsm.GeneratorWithList" title="betfsm.betfsm.GeneratorWithList">GeneratorWithList</a></code></p>
 <details class="implements-a-behaviortree-like-sequence-node" open="">
 <summary>Implements a behaviortree-like Sequence node</summary>
 <ul>
@@ -202,7 +202,7 @@ ConcurrentSequence waits until all underlying states have finished ( a "join")</
 <div class="doc doc-children">
 <div class="doc doc-object doc-function">
 <h3 class="doc doc-heading" id="betfsm.betfsm.ConcurrentSequence.__init__">
-<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">children</span><span class="o">=</span><span class="p">[])</span></code>
+<code class="highlight language-python">__init__(name, children=[])</code>
 </h3>
 <div class="doc doc-contents">
 <table class="field-list">
@@ -217,7 +217,7 @@ ConcurrentSequence waits until all underlying states have finished ( a "join")</
 <ul class="first simple">
 <li>
 <b><code>name</code></b>
-                  (<code>str</code>)
+                  (<code><span title="str">str</span></code>)
               –
               <div class="doc-md-description">
 <p>name of the sequence</p>
@@ -225,7 +225,7 @@ ConcurrentSequence waits until all underlying states have finished ( a "join")</
 </li>
 <li>
 <b><code>children</code></b>
-                  (<code><span title="typing.List">List</span>[<a class="autorefs autorefs-internal" title="betfsm.betfsm.TickingState" href="../tickingstate/#betfsm.betfsm.TickingState">TickingState</a>]</code>, default:
+                  (<code><span title="typing.List">List</span>[<a class="autorefs autorefs-internal" href="../tickingstate/#betfsm.betfsm.TickingState" title="betfsm.betfsm.TickingState">TickingState</a>]</code>, default:
                       <code>[]</code>
 )
               –
@@ -243,7 +243,7 @@ you can use add_state(...) to add children.</p>
 </div>
 <div class="doc doc-object doc-function">
 <h3 class="doc doc-heading" id="betfsm.betfsm.ConcurrentSequence.co_execute">
-<code class="highlight language-python"><span class="n">co_execute</span><span class="p">(</span><span class="n">blackboard</span><span class="p">)</span></code>
+<code class="highlight language-python">co_execute(blackboard)</code>
 </h3>
 <div class="doc doc-contents">
 <p>executes the underlying states in sequence, as much as possible concurrently.

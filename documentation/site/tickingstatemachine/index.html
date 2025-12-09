@@ -169,6 +169,7 @@
               Bases: <code><a class="autorefs autorefs-internal" title="betfsm.betfsm.TickingState" href="../tickingstate/#betfsm.betfsm.TickingState">TickingState</a></code></p>
 
 
+
         <p>A StateMachine that calls a callback function before entering a state and/or at each transition.</p>
 <p>This statemachine is capable of working together with TickingState:</p>
 <ul>
@@ -187,7 +188,9 @@
 
 
 
-  <div class="doc doc-children">
+
+<div class="doc doc-children">
+
 
 
 
@@ -201,7 +204,7 @@
 
 
 <h3 id="betfsm.betfsm.TickingStateMachine.__init__" class="doc doc-heading">
-            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">outcomes</span><span class="p">,</span> <span class="n">transitioncb</span><span class="o">=</span><span class="n">default_transitioncb</span><span class="p">,</span> <span class="n">statecb</span><span class="o">=</span><span class="n">default_statecb</span><span class="p">)</span></code>
+            <code class="highlight language-python">__init__(name, outcomes, transitioncb=default_transitioncb, statecb=default_statecb)</code>
 
 </h3>
 
@@ -223,7 +226,7 @@
         <ul class="first simple">
             <li>
               <b><code>name</code></b>
-                  (<code>str</code>)
+                  (<code><span title="str">str</span></code>)
               –
               <div class="doc-md-description">
                 <p>(instance) name of the state machine</p>
@@ -231,7 +234,7 @@
             </li>
             <li>
               <b><code>outcomes</code></b>
-                  (<code><span title="typing.List">List</span>[str]</code>)
+                  (<code><span title="typing.List">List</span>[<span title="str">str</span>]</code>)
               –
               <div class="doc-md-description">
                 <p>the allowed outcomes of the state machine, any outcome not specified in transitions
@@ -260,6 +263,7 @@ See also </p>
     </tr>
   </tbody>
 </table>
+
     </div>
 
 </div>
@@ -268,7 +272,7 @@ See also </p>
 
 
 <h3 id="betfsm.betfsm.TickingStateMachine.accept" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">accept</span><span class="p">(</span><span class="n">visitor</span><span class="p">)</span></code>
+            <code class="highlight language-python">accept(visitor)</code>
 
 </h3>
 
@@ -276,6 +280,7 @@ See also </p>
     <div class="doc doc-contents ">
 
         <p>accepts a visitor to go through all states of an hierarchy</p>
+
 
     </div>
 
@@ -285,7 +290,7 @@ See also </p>
 
 
 <h3 id="betfsm.betfsm.TickingStateMachine.add_state" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">add_state</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">transitions</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+            <code class="highlight language-python">add_state(state, transitions=None)</code>
 
 </h3>
 
@@ -316,7 +321,7 @@ with this state.</p>
             </li>
             <li>
               <b><code>transitions</code></b>
-                  (<code><span title="typing.Dict">Dict</span>[str, str]</code>, default:
+                  (<code><span title="typing.Dict">Dict</span>[<span title="str">str</span>, <span title="str">str</span>]</code>, default:
                       <code>None</code>
 )
               –
@@ -329,6 +334,7 @@ with this state.</p>
     </tr>
   </tbody>
 </table>
+
     </div>
 
 </div>
@@ -337,7 +343,7 @@ with this state.</p>
 
 
 <h3 id="betfsm.betfsm.TickingStateMachine.reset" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">reset</span><span class="p">()</span></code>
+            <code class="highlight language-python">reset()</code>
 
 </h3>
 
@@ -347,6 +353,7 @@ with this state.</p>
         <p>Resets the state-machine.  Ensures that the next call will start again
 from the starting state.  Calls reset on all the states it contains.</p>
 
+
     </div>
 
 </div>
@@ -355,7 +362,7 @@ from the starting state.  Calls reset on all the states it contains.</p>
 
 
 <h3 id="betfsm.betfsm.TickingStateMachine.set_start_state" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">set_start_state</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></code>
+            <code class="highlight language-python">set_start_state(name)</code>
 
 </h3>
 
@@ -377,7 +384,7 @@ from the starting state.  Calls reset on all the states it contains.</p>
         <ul class="first simple">
             <li>
               <b><code>name</code></b>
-                  (<code>str</code>)
+                  (<code><span title="str">str</span></code>)
               –
               <div class="doc-md-description">
                 <p>set the state by which the state machine starts.  By default the first state 
@@ -389,6 +396,7 @@ added.</p>
     </tr>
   </tbody>
 </table>
+
     </div>
 
 </div>
@@ -398,6 +406,7 @@ added.</p>
   </div>
 
     </div>
+
 
 </div>
               
