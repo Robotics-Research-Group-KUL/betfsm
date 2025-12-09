@@ -1,4 +1,4 @@
-<img src="./logo_banner.png" alt="BeTFSM logo" style="height:86px; width:auto; display:block;" />
+<img src="./logo_banner.png" alt="BeTFSM logo" style="height:40px; width:auto; display:block;" />
 
 <p/>
 
@@ -16,14 +16,16 @@ Published under the GNU LESSER GENERAL PUBLIC LICENSE Version 3, 29 June 2007.
 contributions of Federico Ulloa Rios and Santiago Iregui Rincon
 
 <p>
-  <a href="https://aiprism.eu/"><img src="./Ai-Prism_Logo_Horizontal.png" alt="AI-PRISM Logo" width="250" align="left" style="margin-right:35px;"/></a>
+  <a href="https://aiprism.eu/"><img src="./Ai-Prism_Logo_Horizontal.png" alt="AI-PRISM Logo" width="150" align="left" style="margin-right:55px;"/></a>
   This work was funded by the European Union’s Horizon 2020 research and innovation program 
   under <a href="https://aiprism.eu/">grant agreement No. 101058589 AI-Prism</a>
-</p>
-</p>
-</p>
-</p>
+<p> </p>
 
+<p> </p>
+
+<p> </p>
+
+<p> </p>
 
 ## Documentation
 
