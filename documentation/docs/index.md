@@ -1,4 +1,17 @@
-# Home
+# BeTFSM 
+
+
+
+Published under the GNU LESSER GENERAL PUBLIC LICENSE Version 3, 29 June 2007.
+
+Main author: Erwin Aertbeliën
+
+Contributors: Federico Ulloa Rios,  Santiago Iregui Rincon
+
+This work was funded by the European Union’s Horizon 2020 research and innovation program under grant agreement No.
+101058589 (AI-PRISM)
+
+
 
 ## Introduction
 This is a library for "ticking" statemachines and behavior trees. In this
@@ -219,11 +232,6 @@ To implement a TickingState, you have to implement:
 - `def accept(self, visitor:Visitor)` calls `pre` on the visitor, calls accept(visitor) on all its children, and then calls `post` on the visitor.  
 
 
-To facilitate the definition of tickingStates, you can use [Python generators](https://www.geeksforgeeks.org/generators-in-python/), for this 
-the [Generator][betfsm.betfsm.Generator] class is defined.
-This allows to define TickingStates using a python generator method `co_execute(self, blackboard:Blackboard)`.  This routine has to regularly 
-yield control using a `yield <outcom>` statement. This makes it easy to specify a TickingState.
-
 
 Keep in mind that the `reset` and `accept` methods still need to be defined when the state has children (otherwise 
 the default implementations are sufficient)
@@ -233,20 +241,36 @@ the default implementations are sufficient)
     work the first time, but not the second time.
 
 !!! Warning
-    Outside code that repeately calls a state-machine has to call `reset` itself before calling the state-machine.    
+    Outside code that repeately calls a state-machine has to call `reset` itself before calling the state-machine. This method
+    calls the reset method of all its children and calls the reset method of its superclass `TickingState`
   
-For the **common use cases** of a Generator with **one child state** and a Generator 
-with a **list of child states** implementations are provided that implement `reset` and `accept` for you:
-[GeneratorWithState][betfsm.betfsm.GeneratorWithState] and 
-[GeneratorWithList][betfsm.betfsm.GeneratorWithLists] are generic implementations to
- be uses to subclass from while implementing states with one or multiple underlying states.
+### Facilitating implementation of a TickingState
 
+To facilitate the definition of tickingStates, you can use [Python generators](https://www.geeksforgeeks.org/generators-in-python/), for this 
+the [Generator][betfsm.betfsm.Generator] class is defined.  Generator is a generic TickingState that implements methods **entry**, **doo** and **exit**.  
+Users can define new TickingStates by defining the method `co_execute(self, blackboard:Blackboard)`.  This method is a co-routine and can regularly 
+yield control using a `yield <outcom>` statement. This makes it easy to specify a TickingState.
+
+For common usecases, further (generic) specializations are provided by:
+
+- [GeneratorWithState][betfsm.betfsm.GeneratorWithState] for a Generator with **one** child state 
+- [GeneratorWithList][betfsm.betfsm.GeneratorWithLists]  for a Generator with **a (ordered) list of** childs. 
+
+These implementations implement correctly `reset` and `accept` for you and manage the child nodes (TickingStates) of
+your TickingState.  Most of the other nodes are implemented using these auxiliary classes.
 
 !!! Recommendation
     Look at a few implementations such as `WaitFor`,`Repeat`, `Concurrent`.  This will help making your own nodes.
+    Often it is sufficient to implement the constructor and the co_execute(self,blackboard) method and yield when
+    you want to yield control to BeTFSM, and come back at the same location the next tick of BeTFSM.
 
 ### Action server
 
 There is also a ROS2 Action server provided that allows us to respond to ROS2 Actions.  This contains
 also a generic parameter-passing mechanism with a JSON message string that in the black-board of BeTFSM.
+
+### Action client
+
+**ActionClientBTFSM** contains a Tickingstate that calls and action and generates an outcome when the action 
+returns back.   While waiting it gets the response of the action.
 
