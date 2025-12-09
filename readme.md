@@ -1,12 +1,4 @@
-<div style="position:relative; width:100%; background:#004070;">
-  <div style="max-width:1200px; margin:0 auto; padding:16px; display:flex; align-items:center; gap:24px;">
-    <img src="./logo.png" alt="BeTFSM logo" style="height:86px; width:auto; display:block;" />
-    <div style="color:#ffffff;">
-      <div style="font-size:50px; font-weight:700; line-height:1.2;"> &nbsp; </div>
-      <div style="font-size:16px; font-weight:500; opacity:0.9;">Behavior Trees &amp; Finite State Machines for Robotics</div>
-    </div>
-  </div>
-</div>
+<img src="./logo_banner.png" alt="BeTFSM logo" style="height:86px; width:auto; display:block;" />
 
 <p/>
 
@@ -28,8 +20,9 @@ contributions of Federico Ulloa Rios and Santiago Iregui Rincon
   This work was funded by the European Union’s Horizon 2020 research and innovation program 
   under <a href="https://aiprism.eu/">grant agreement No. 101058589 AI-Prism</a>
 </p>
-
-
+</p>
+</p>
+</p>
 
 
 ## Documentation
