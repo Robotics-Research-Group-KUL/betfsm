@@ -7,10 +7,13 @@ Published under the GNU LESSER GENERAL PUBLIC LICENSE Version 3, 29 June 2007.
 (c) 2024, KU Leuven, Department of Mechanical Engineering, ROB-Group: Erwin Aertbeliën, 
 contributions of Federico Ulloa Rios and Santiago Iregui Rincon
 
+<p>
+  <a href="https://aiprism.eu/"><img src="./static/Ai-Prism_Logo_Horizontal.png" alt="AI-PRISM Logo" width="250" align="left" style="margin-right:15px;"/></a>
+  This work was funded by the European Union’s Horizon 2020 research and innovation program 
+  under <a href="https://aiprism.eu/">grant agreement No. 101058589 AI-Prism</a>
+</p>
 
-This work was funded by the European Union’s Horizon 2020 research and innovation program under [grant agreement No. 101058589 AI-Prism](https://aiprism.eu/).
 
-<img src="./static/Ai-Prim_Logo_Horizontal.png" alt="AI-PRISM Logo" width="200"/>
 
 ## Introduction
 This is a library for "ticking" statemachines and behavior trees. In this
