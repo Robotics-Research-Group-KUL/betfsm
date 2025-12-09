@@ -10,7 +10,7 @@ contributions of Federico Ulloa Rios and Santiago Iregui Rincon
 
 This work was funded by the European Union’s Horizon 2020 research and innovation program under [grant agreement No. 101058589 AI-Prism](https://aiprism.eu/).
 
-<img src="./Ai-Prim_Logo_Horizontal.png" alt="AI-PRISM Logo" width="200"/>
+<img src="./static/Ai-Prim_Logo_Horizontal.png" alt="AI-PRISM Logo" width="200"/>
 
 ## Introduction
 This is a library for "ticking" statemachines and behavior trees. In this
