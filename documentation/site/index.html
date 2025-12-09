@@ -41,34 +41,6 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal current" href="#">Home</a>
 <ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#summary-of-states-and-state-machines">Summary of states and state-machines</a>
-<ul>
-<li class="toctree-l3"><a class="reference internal" href="#the-state-machine-state">The state-machine state</a>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#behavior-tree-like-states">Behavior-tree like states</a>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#related-to-conditions">Related to conditions</a>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#related-to-output">Related to output</a>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#related-to-timing">Related to timing</a>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#related-to-ros-2-services-life-cycle-and-topics">Related to ROS 2 services, life cycle and topics</a>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#related-to-etasl">Related to eTaSL</a>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#defining-your-own-states">Defining your own states</a>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#facilitating-implementation-of-a-tickingstate">Facilitating implementation of a TickingState</a>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#action-server">Action server</a>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#action-client">Action client</a>
-</li>
-</ul>
-</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal">Tutorials</a>
@@ -163,20 +135,33 @@
 </div>
 <div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
 <div class="section" itemprop="articleBody">
-<h1 id="betfsm">BeTFSM</h1>
+<!-- Optional: full-bleed banner image with overlay text (use if your logo should sit on the left) -->
+<div style="position:relative; width:100%; background:#004070;">
+<div style="max-width:1200px; margin:0 auto; padding:16px; display:flex; align-items:center; gap:24px;">
+<img alt="BeTFSM logo" src="static/logo.png" style="height:86px; width:auto; display:block;"/>
+<div style="color:#ffffff;">
+<div style="font-size:50px; font-weight:700; line-height:1.2;">   </div>
+<div style="font-size:16px; font-weight:500; opacity:0.9;">Behavior Trees &amp; Finite State Machines for Robotics</div>
+</div>
+</div>
+</div>
+<p></p>
+<p>BeTFSM is a library for "ticking" statemachines and behavior trees. In this
+unified framework, discrete tasks can be specified with the modularity of
+behavior trees and at the lower-level precise interaction can be specified
+using state machines. It targets discrete coordination of robotic systems at
+both high- and low level.</p>
+<p></p>
 <p>Published under the GNU LESSER GENERAL PUBLIC LICENSE Version 3, 29 June 2007.</p>
 <p>(c) 2024, KU Leuven, Department of Mechanical Engineering, ROB-Group: Erwin Aertbeliën, 
 contributions of Federico Ulloa Rios and Santiago Iregui Rincon</p>
 <p>
-<a href="https://aiprism.eu/"><img align="left" alt="AI-PRISM Logo" src="./static/Ai-Prism_Logo_Horizontal.png" style="margin-right:15px;" width="250"/></a>
+<a href="https://aiprism.eu/"><img align="left" alt="AI-PRISM Logo" src="./static/Ai-Prism_Logo_Horizontal.png" style="margin-right:35px;" width="250"/></a>
   This work was funded by the European Union’s Horizon 2020 research and innovation program 
   under <a href="https://aiprism.eu/">grant agreement No. 101058589 AI-Prism</a>
 </p>
 <h2 id="introduction">Introduction</h2>
-<p>This is a library for "ticking" statemachines and behavior trees. In this
-unified framework, discrete tasks can be specified with the modularity of
-behavior trees and at the lower-level precise interaction can be specified
-using state machines.
+<p>The basic class from where all behavior tree nodes and state machines are derived is a TickingState.
 Each <a class="autorefs autorefs-internal" href="tickingstate/#betfsm.betfsm.TickingState" title="betfsm.betfsm.TickingState">TickingState</a> (see <a class="autorefs autorefs-internal" href="tickingstate/#betfsm.betfsm.TickingState" title="betfsm.betfsm.TickingState">API</a> for detailed definition) is defined by the following methods:</p>
 <ul>
 <li>
