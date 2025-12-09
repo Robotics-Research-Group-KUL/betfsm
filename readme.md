@@ -12,12 +12,9 @@ LGPL-3.0-only, see LICENSE file in this directory.
 
 (c) 2024, KU Leuven, department of Mechanical Engineering, ROB-group : Erwin Aertbelien, contributions of Santiago Iregui and Federico Ulloa Rios
 
-This work was funded by the European Union’s Horizon 2020 research and innovation program under grant agreement No. 101058589
-[AI-PRISM](https://aiprism.eu/).
+This work was funded by the European Union’s Horizon 2020 research and innovation program under [grant agreement No. 101058589 AI-Prism](https://aiprism.eu/).
 
-![AI-PRISM](/home/eaertbel/Temp/transfer/betfsm/Ai-Prism_Logo_Horizontal.png)
-
-
+![AI-PRISM](Ai-Prism_Logo_Horizontal.png)
 
 ## Generate most recent documentation (for developers)
 
