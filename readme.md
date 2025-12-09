@@ -1,9 +1,9 @@
 # BeTFSM
 
 
-## Read the gitlab pages documentation
+## Documentation
 
-[Gitlab pages documentation]()
+[Gitlab pages documentation](https://betfsm-90d316.pages.gitlab.kuleuven.be/)
 
 
 ## LICENSE
@@ -12,10 +12,13 @@ LGPL-3.0-only
 
 See LICENSE file in this directory.
 
-(c) Erwin Aertbelien, contributions of Santiago Iregui.
+(c) Erwin Aertbelien, contributions of Santiago Iregui and Federico Ulloa Rios
 
 
-## Generate most recent documentation
+This work was funded by the European Union’s Horizon 2020 research and innovation program under grant agreement No. 101058589 (AI-PRISM)
+
+
+## Generate most recent documentation (for developers)
 
 Documentation provided in mkdocs, with the library build and installed, you
 can access documentation by:
@@ -34,10 +37,6 @@ cd ./documentation
 venv/bin/mkdocs build
 ```
 
-A generated version of the documentation can be downloaded [here](https://kuleuven-my.sharepoint.com/:u:/g/personal/erwin_aertbelien_kuleuven_be/EQYMTeUUdZZHsbXG8kynaGIBXp-yeBkhDr0onEf9Q24IDw?e=zvCzHf)
-(should be replaced with CI/CD)
-
-
 ## Used documentation:
 [ros2-tutorial](https://ros2-tutorial.readthedocs.io/en/latest/python_node_explained.html)
 
@@ -45,7 +44,6 @@ A generated version of the documentation can be downloaded [here](https://kuleuv
 [demos](https://github.com/ros2/demos/tree/ea3661152a87bc48e3f277ca8131c85a1a23d661)
 
 [mkdocstrings](https://mkdocstrings.github.io/griffe/reference/docstrings/)
-
 
 
 [paper](https://arxiv.org/pdf/2208.04211)
