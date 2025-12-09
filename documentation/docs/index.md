@@ -1,24 +1,34 @@
 # Home
 
 ## Introduction
-This is a library for "ticking" statemachines, it is originally based upon the [Yasmin](https://github.com/uleroboticsgroup/yasmin) library, but is substantially changed
-
-!!! error "TODO"
-    Completely decouple from yasmin?  nothing substantial is left and would be easy to completely decouple from Yasmin.   Certainly in practice, it is used completely differently.  
-
+This is a library for "ticking" statemachines and behavior trees. In this
+unified framework, discrete tasks can be specified with the modularity of
+behavior trees and at the lower-level precise interaction can be specified
+using state machines.
 Each [TickingState][betfsm.betfsm.TickingState] (see [API][betfsm.betfsm.TickingState] for detailed definition) is defined by the following methods:
 
- - **entry(self,blackboard)**:
+ - **entry(self,blackboard:Blackboard)**:
     executed when the state is entered
     
- - **doo(self,blackboard)**:
+ - **doo(self,blackboard:Blackboard)**:
     execute while the state is running.  The state can take a longer time
-    but should regularly yield by returning TICKING.
+    but should regularly yield by returning TICKING. Is implemented by derived classes.
  - **exit(self)**:
     is execute when the state exits, note that it does not has the blackboard as argument.
-    Will even be called when the other methods return an exception.
+    Will even be called when the other methods return an exception. Is implemented by derived classes
  - **reset(self)**:
     Resets the state (i.e. calls exit() when appropriate and ensures that the next time, entry() will be called)
+ - **accept(self, visitor:Visitor)**: calls the visitor that you pass as an argument and possibly iterates over
+    its children, e.g. to generate a visual representation of the behavior tree.
+
+
+There is an additional **execute** member function that typically should not be touched.
+
+!!! error "WARNING"
+    A TickingState is low-overhead and synchronous. It is expected to return quickly, and 
+    if further processing is needed to return TICK. If there is code in **doo** and **entry** that blocks,
+    the execution of the whole BeTFSM tree blocks, including concurrent TickingStates.  For blocking code,
+    the TickingState should create its own thread. 
 
 
 ```mermaid
@@ -56,12 +66,22 @@ appropriately, according to the figure above.
 The [visitor pattern](https://en.wikipedia.org/wiki/Visitor_pattern) is used to be able to generically travers the hierarchy of states.
 the **accept** method of a TickingState calls the visitor appropriately.  Visitor is defined  [here][betfsm.betfsm.Visitor]
 
+!!! Blackboard
+    All TickingStates can read and write from a common **blackboard** of type
+    **Blackboard: TypeAlias = Dict[str, Dict|any]**, i.e. a hierarchically
+    organized common storage where all TickingStates can update information or get
+    information from.
 
-
+!!! Parameters
+    When defining new TickingStates, remember to distinguish between
+    construction-time (arguments given to constructor) and run-time (passed using a
+    certain location in the blackboard) parameters.  Typically the **location**
+    (not the value!) of the run-time parameters is passed as parameters to the
+    constructor, such that the TickingState is easily reusable in different applications.
 
 ## Summary of states and state-machines
 
-For full specification, see the API-documentation.
+This section explains the basics of BeTFSM.  You find more detailed information in the sections BeTFSM, BeTFSM ROS2, BeTFSM eTaSL which contain a full API-documentation.
 
 Sometimes states have underlying states, e.g. a state-machine or a sequence.  Typically they can be specfied in two ways:
 
@@ -71,7 +91,10 @@ Sometimes states have underlying states, e.g. a state-machine or a sequence.  Ty
 In some cases, more information needs to be given and only the `add_state` approach is applicable (e.g. TickingStateMachine).
 
 
+
 ### The state-machine state
+
+
 
 [TickingStateMachine][betfsm.betfsm.TickingStateMachine] implements a basic state machine. You
 can add nodes using [add_state][betfsm.betfsm.TickingStateMachine.add_state].  In this call
@@ -220,4 +243,10 @@ with a **list of child states** implementations are provided that implement `res
 
 
 !!! Recommendation
-    Look a a few implementations such as `WaitFor`,`Repeat`, `Concurrent`
+    Look at a few implementations such as `WaitFor`,`Repeat`, `Concurrent`.  This will help making your own nodes.
+
+### Action server
+
+There is also a ROS2 Action server provided that allows us to respond to ROS2 Actions.  This contains
+also a generic parameter-passing mechanism with a JSON message string that in the black-board of BeTFSM.
+
