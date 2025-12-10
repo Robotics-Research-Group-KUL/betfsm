@@ -1,4 +1,4 @@
-<img src="./logo_banner.png" alt="BeTFSM logo" style="width:1000px; display:block;" />
+/p<img src="./logo_banner.png" alt="BeTFSM logo" style="width:1000px; display:block;" />
 
 <p/>
 
@@ -16,10 +16,8 @@ both high- and low level.
 
 ## License and acknowledgements
 
-Published under the GNU LESSER GENERAL PUBLIC LICENSE Version 3, 29 June 2007.
+Published under the [GNU LESSER GENERAL PUBLIC LICENSE](LICENSE) Version 3, 29 June 2007.
 
-(c) 2024, KU Leuven, Department of Mechanical Engineering, ROB-Group: Erwin Aertbeliën, 
-contributions of Federico Ulloa Rios and Santiago Iregui Rincon
 
 <a href="https://aiprism.eu/"><img src="./Ai-Prism_Logo_Horizontal.png" alt="AI-PRISM Logo" width="150" /></a>
 This work was funded by the European Union’s Horizon 2020 research and innovation program 
@@ -31,6 +29,19 @@ under the grant agreement No. <a href="https://cordis.europa.eu/project/id/10105
 
 <p/>
 
+## Authors
+<p float="left">
+<a href="https://www.kuleuven.be/english/kuleuven/">
+    <img src="./logo_kuleuven.png" alt="KU Leuven Logo" width="150"/>
+</a>
+<a href="https://www.mech.kuleuven.be/en/research/ram">
+    <img src="./logo_RAM.png" alt="RAM Logo" width="110" />
+</a>
+</p>
+
+(c) 2024, KU Leuven, Department of Mechanical Engineering, ROB-Group:
+
+- [Erwin Aertbeliën](https://www.kuleuven.be/wieiswie/nl/person/00002405) with contributions of [Santiago Iregui Rincon](https://www.kuleuven.be/wieiswie/nl/person/00125886) and [Federico Ulloa Rios](https://www.kuleuven.be/wieiswie/nl/person/00141400)
 
 ## Generate most recent documentation (for developers)
 
