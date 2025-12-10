@@ -24,10 +24,10 @@ from rclpy.qos import QoSProfile
 
 from .betfsm_ros import *
 
-from etasl_interfaces.srv import TaskSpecificationFile
-from etasl_interfaces.srv import TaskSpecificationString
+from crospi_interfaces.srv import TaskSpecificationFile
+from crospi_interfaces.srv import TaskSpecificationString
 
-from etasl_ros2_py import etasl_params
+from crospi_py import etasl_params
 
 
 import json
@@ -37,7 +37,7 @@ from jsonschema import validate, exceptions
 #  - msg.names
 #  - msg.data
 #  - msg.is_declared    
-from etasl_interfaces.msg import Output
+from crospi_interfaces.msg import Output
     
 
 from std_msgs.msg import String
@@ -75,7 +75,7 @@ class SetTaskParameters(ServiceClient):
     def __init__(self,
                  name:str,
                  task_name:str,
-                 srv_name:str = "/etasl_node",
+                 srv_name:str = "/crospi_node",
                  cb: Callable = default_parameter_setter,
                  timeout:Duration = Duration(seconds=1.0), 
                  node:Node = None):
@@ -89,7 +89,7 @@ class SetTaskParameters(ServiceClient):
             task_name:
                 name that will be used to find back the task with specifies the robot specification file.
             srv_name:
-                name of the etasl node, by default `/etasl_node`
+                name of the etasl node, by default `/crospi_node`
             cb:
                 callback that sets the parameters, with signature `def param_setters(blackboard) ->param`
                 where param is a Dict with the parameters of the task.
@@ -146,7 +146,7 @@ class ReadRobotSpecification(ServiceClient):
     def __init__(self,
                  name:str,
                  task_name:str,
-                 srv_name:str = "/etasl_node",
+                 srv_name:str = "/crospi_node",
                  timeout:Duration = Duration(seconds=1.0), 
                  node:Node = None):
         """
@@ -159,7 +159,7 @@ class ReadRobotSpecification(ServiceClient):
             task_name:
                 name that will be used to find back the task with specifies the robot specification file.
             srv_name:
-                name of the etasl node, by default `/etasl_node`
+                name of the etasl node, by default `/crospi_node`
             timeout:
                 returns TIMEOUT if timeout is exceeded.
             node:
@@ -189,7 +189,7 @@ class ReadTaskSpecification(ServiceClient):
     def __init__(self,
                  name:str,
                  task_name:str,
-                 srv_name:str = "/etasl_node",
+                 srv_name:str = "/crospi_node",
                  timeout:Duration = Duration(seconds=1.0), 
                  node:Node = None):
         """
@@ -200,7 +200,7 @@ class ReadTaskSpecification(ServiceClient):
             task_name:
                 name that will be used to find back the task with specifies the task specification file.
             srv_name:
-                name of the etasl node, by default `/etasl_node`
+                name of the etasl node, by default `/crospi_node`
             timeout:
                 returns TIMEOUT if timeout is exceeded.
             node:
@@ -217,7 +217,7 @@ class ReadTaskSpecification(ServiceClient):
         # lookup task.
         task = etasl_params.get_task(blackboard,self.task_name)
         # extract file_path, and expand references    
-        # # we do expand refs, etasl_node does this already in his own ROS2 workspace    
+        # # we do expand refs, crospi_node does this already in his own ROS2 workspace    
         request.file_path = task["task_specification"]["file_path"]
         get_logger().info(f"task specification file {request.file_path}")
         return request
@@ -247,7 +247,7 @@ class eTaSLOutput(TickingState):
             name:
                 instance name
             topic:
-                topic to listen to, topics with interfacev `etasl_interfaces/msg/Output`
+                topic to listen to, topics with interfacev `crospi_interfaces/msg/Output`
                 are expected
             qos:
                 specification of the topic quality of service profile (QOSProfile)
@@ -309,7 +309,7 @@ class eTaSLEvent(TickingState):
             name: str,
             topic: str,
             qos:QoSProfile=10,
-            mapping:Dict[str,tuple[int,str]]={"e_finished@etasl_node":(1,SUCCEED)},
+            mapping:Dict[str,tuple[int,str]]={"e_finished@crospi_node":(1,SUCCEED)},
             node: Node = None,
         ) -> None:
         """
@@ -381,14 +381,12 @@ class eTaSL_StateMachine(TickingStateMachine):
     def __init__(self,
                  name : str,
                  task_name: str,
-                 srv_name: str = "/etasl_node",
+                 srv_name: str = "/crospi_node",
                  output_topic: str = "/my_topic",
-                 event_topic: str = "/etasl/events",
                  #display_in_viewer: bool= False, 
                  cb:Callable=default_parameter_setter,
                  timeout:Duration = Duration(seconds=1.0),
                  node : Node = None,
-                 deactivate_first: bool = True,
                  transitioncb:Callable=default_transitioncb, 
                  statecb:Callable=default_statecb
                  ):
@@ -405,9 +403,9 @@ class eTaSL_StateMachine(TickingStateMachine):
             task_name:
                 name of the task to be executed (i.e. task type) Will be looked up in the blackboard.
             srv_name:
-                name of the eTaSL node, by default /etasl_node
+                name of the eTaSL node, by default /crospi_node
             output_topic:
-                name of the topic where to find the output of eTaSL. A topic with interface *etasl_interfaces/msg/Output* is expected.
+                name of the topic where to find the output of eTaSL. A topic with interface *crospi_interfaces/msg/Output* is expected.
             cb:
                 callback that sets the parameters, with signature `def cb(blackboard) ->param`
                 where param is a Dict with the parameters of the task that will be used to update
@@ -427,13 +425,18 @@ class eTaSL_StateMachine(TickingStateMachine):
         """
         super().__init__(name,outcomes=[SUCCEED, ABORT,TIMEOUT],transitioncb=transitioncb,statecb=statecb)
 
+        #This state is just added in case that etasl is already running. If not possible (ABORT) still the task continues:
+        # I am not so sure that the transition will fail if inappropriate, only when there is an error for an appropriate transition.
         self.add_state(LifeCycle("DEACTIVATE_ETASL",srv_name,Transition.DEACTIVATE,timeout,node),
-                    transitions={SUCCEED: "CLEANUP_ETASL",
-                                ABORT: "CLEANUP_ETASL",
-                                TIMEOUT: ABORT}) 
+                transitions={SUCCEED: "CLEANUP_ETASL",
+                            ABORT: "CLEANUP_ETASL",
+                            TIMEOUT: ABORT}) 
+        
+        #This state is just added in case that etasl is already running. If not possible (ABORT) still the task continues
         self.add_state(LifeCycle("CLEANUP_ETASL",srv_name,Transition.CLEANUP,timeout,node),
-                    transitions={SUCCEED: "PARAMETER_CONFIG",
-                    ABORT: "PARAMETER_CONFIG"}) 
+                transitions={SUCCEED: "PARAMETER_CONFIG",
+                ABORT: "PARAMETER_CONFIG"}) 
+
         self.add_state(SetTaskParameters( "PARAMETER_CONFIG",task_name, srv_name, cb, timeout, node ),
                        transitions={
                            SUCCEED: "ROBOT_SPECIFICATION",
@@ -460,29 +463,10 @@ class eTaSL_StateMachine(TickingStateMachine):
                     ABORT: ABORT})
 
         # executes until one returns SUCCEED,  eTaSLOutput only returns TICKING
-        mapping={"e_finished@{}".format(srv_name[1:]):(1,SUCCEED)}
-        if deactivate_first:
-            transition_map_executing = {SUCCEED:SUCCEED}
-            
-        else:
-            transition_map_executing = {
-                SUCCEED: "DEACTIVATE_ETASL_LAST"
-            }
-            
         self.add_state(
             ConcurrentFallback("EXECUTING",[
-                eTaSLEvent(name="check_event",topic=event_topic, mapping=mapping,node=node),
+                eTaSLEvent(name="check_event",topic="/etasl/events",mapping={"e_finished@crospi_node":(1,SUCCEED)},node=node),
                 eTaSLOutput("output", topic=output_topic, bb_location=["output_param",name], node=node)
             ]),
-            transitions=transition_map_executing
-        )
-
-        if not deactivate_first:
-            self.add_state(LifeCycle("DEACTIVATE_ETASL_LAST",srv_name,Transition.DEACTIVATE,timeout,node),
-                    transitions={SUCCEED: "CLEANUP_ETASL_LAST",
-                                ABORT: "CLEANUP_ETASL_LAST",
-                                TIMEOUT: ABORT})
-            self.add_state(LifeCycle("CLEANUP_ETASL_LAST",srv_name,Transition.CLEANUP,timeout,node),
-                    transitions={SUCCEED: SUCCEED,
-                                 ABORT: ABORT,
-                                 TIMEOUT: ABORT}) 
+            transitions={SUCCEED:SUCCEED}
+        )        
