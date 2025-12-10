@@ -12,6 +12,7 @@
 # E. Aertbelien (2024)
 
 
+echo -e "Script to show the documentation locally\n\n"
 BASE=$(realpath --physical $(dirname "$0"))
 if ! test -d "$BASE/venv"; then
     echo "creating virtual environment..."

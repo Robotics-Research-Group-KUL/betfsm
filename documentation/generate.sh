@@ -10,6 +10,7 @@
 # in order to be able to create python virtual environments.
 #
 # E. Aertbelien (2024)
+echo "Generate locally a documentation site in the ./documentation/site directory"
 
 
 BASE=$(realpath --physical $(dirname "$0"))
