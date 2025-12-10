@@ -1419,11 +1419,15 @@ class TickingStateMachine(TickingState):
  
 class BeTFSMRunner:
     """
-    Runner for a BeTFSM ticking state machine
+    Runner for a BeTFSM ticking state machine.
+    Initializes the BeTFSMRunner.  This BeTFSMRunner has no other dependencies and
+    runs in the main thread.  You typically call this class in the main body of your program.
     """
     def __init__(self, statemachine: TickingStateMachine, blackboard: Blackboard, frequency: float=100.0):
         """
-        Initializes the BeTFSMRunner
+        Initializes the BeTFSMRunner.  This BeTFSMRunner has no other dependencies and
+        runs in the main thread.
+
         Parameters:
             statemachine:
                 the TickingStateMachine to be run

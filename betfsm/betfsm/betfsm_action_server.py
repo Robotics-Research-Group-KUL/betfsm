@@ -207,7 +207,7 @@ class BeTFSMActionServer:
     """Action server that processes BeTFSM tasks one goal at a time.  Each action starts state machine
     """
 
-    def __init__(self,blackboard, statemachines,frequency:int = 100,node:Node=None):
+    def __init__(self,blackboard:Blackboard, statemachines,frequency:int = 100,node:Node=None):
         """
         Parameters:
             blackboard:

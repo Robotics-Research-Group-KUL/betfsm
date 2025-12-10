@@ -33,6 +33,7 @@ nav:
       - "LogBlackboard" : 'logblackboard.md'
       - "Compute" : "compute.md"
       - "Adapt" : "adapt.md"
+      - "BeTFSMRunner": "betfsmrunner.md"
     - "BeTFSM ROS2":  
       - "ServiceClient" : 'serviceclient.md'
       - "LifeCycle" : 'lifecycle.md'
