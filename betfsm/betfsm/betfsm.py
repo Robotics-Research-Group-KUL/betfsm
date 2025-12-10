@@ -1417,7 +1417,42 @@ class TickingStateMachine(TickingState):
         self.current_state = self.start_state
         return super().exit()
  
+class BeTFSMRunner:
+    """
+    Runner for a BeTFSM ticking state machine
+    """
+    def __init__(self, statemachine: TickingStateMachine, blackboard: Blackboard, frequency: float=100.0):
+        """
+        Initializes the BeTFSMRunner
+        Parameters:
+            statemachine:
+                the TickingStateMachine to be run
+            blackboard:
+                the blackboard to be used
+            frequency:
+                frequency at which the statemachine is ticked (in Hz)
+        """
+        self.statemachine = statemachine
+        self.blackboard = blackboard
+        self.frequency = frequency
 
-    
+    def run(self):
+        """
+        Runs the statemachine until it returns an outcome different from TICKING
+        Returns:
+            the final outcome of the statemachine
+        """
+        import time
+        rate = 1.0 / self.frequency
+        outcome = self.statemachine(self.blackboard)
+        while outcome == TICKING:
+            start = time.time()
+            outcome = self.statemachine(self.blackboard)
+            elapsed = time.time() - start
+            sleep_time = rate - elapsed
+            if sleep_time > 0:
+                time.sleep(sleep_time)
+        return outcome
+        
 
 

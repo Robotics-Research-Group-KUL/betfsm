@@ -383,10 +383,12 @@ class eTaSL_StateMachine(TickingStateMachine):
                  task_name: str,
                  srv_name: str = "/etasl_node",
                  output_topic: str = "/my_topic",
+                 event_topic: str = "/etasl/events",
                  #display_in_viewer: bool= False, 
                  cb:Callable=default_parameter_setter,
                  timeout:Duration = Duration(seconds=1.0),
                  node : Node = None,
+                 deactivate_first: bool = True,
                  transitioncb:Callable=default_transitioncb, 
                  statecb:Callable=default_statecb
                  ):
@@ -425,18 +427,13 @@ class eTaSL_StateMachine(TickingStateMachine):
         """
         super().__init__(name,outcomes=[SUCCEED, ABORT,TIMEOUT],transitioncb=transitioncb,statecb=statecb)
 
-        #This state is just added in case that etasl is already running. If not possible (ABORT) still the task continues:
-        # I am not so sure that the transition will fail if inappropriate, only when there is an error for an appropriate transition.
         self.add_state(LifeCycle("DEACTIVATE_ETASL",srv_name,Transition.DEACTIVATE,timeout,node),
-                transitions={SUCCEED: "CLEANUP_ETASL",
-                            ABORT: "CLEANUP_ETASL",
-                            TIMEOUT: ABORT}) 
-        
-        #This state is just added in case that etasl is already running. If not possible (ABORT) still the task continues
+                    transitions={SUCCEED: "CLEANUP_ETASL",
+                                ABORT: "CLEANUP_ETASL",
+                                TIMEOUT: ABORT}) 
         self.add_state(LifeCycle("CLEANUP_ETASL",srv_name,Transition.CLEANUP,timeout,node),
-                transitions={SUCCEED: "PARAMETER_CONFIG",
-                ABORT: "PARAMETER_CONFIG"}) 
-
+                    transitions={SUCCEED: "PARAMETER_CONFIG",
+                    ABORT: "PARAMETER_CONFIG"}) 
         self.add_state(SetTaskParameters( "PARAMETER_CONFIG",task_name, srv_name, cb, timeout, node ),
                        transitions={
                            SUCCEED: "ROBOT_SPECIFICATION",
@@ -463,10 +460,29 @@ class eTaSL_StateMachine(TickingStateMachine):
                     ABORT: ABORT})
 
         # executes until one returns SUCCEED,  eTaSLOutput only returns TICKING
+        mapping={"e_finished@{}".format(srv_name[1:]):(1,SUCCEED)}
+        if deactivate_first:
+            transition_map_executing = {SUCCEED:SUCCEED}
+            
+        else:
+            transition_map_executing = {
+                SUCCEED: "DEACTIVATE_ETASL_LAST"
+            }
+            
         self.add_state(
             ConcurrentFallback("EXECUTING",[
-                eTaSLEvent(name="check_event",topic="/etasl/events",mapping={"e_finished@etasl_node":(1,SUCCEED)},node=node),
+                eTaSLEvent(name="check_event",topic=event_topic, mapping=mapping,node=node),
                 eTaSLOutput("output", topic=output_topic, bb_location=["output_param",name], node=node)
             ]),
-            transitions={SUCCEED:SUCCEED}
-        )        
+            transitions=transition_map_executing
+        )
+
+        if not deactivate_first:
+            self.add_state(LifeCycle("DEACTIVATE_ETASL_LAST",srv_name,Transition.DEACTIVATE,timeout,node),
+                    transitions={SUCCEED: "CLEANUP_ETASL_LAST",
+                                ABORT: "CLEANUP_ETASL_LAST",
+                                TIMEOUT: ABORT})
+            self.add_state(LifeCycle("CLEANUP_ETASL_LAST",srv_name,Transition.CLEANUP,timeout,node),
+                    transitions={SUCCEED: SUCCEED,
+                                 ABORT: ABORT,
+                                 TIMEOUT: ABORT}) 
