@@ -388,7 +388,7 @@ class eTaSL_StateMachine(TickingStateMachine):
                  cb:Callable=default_parameter_setter,
                  timeout:Duration = Duration(seconds=1.0),
                  node : Node = None,
-                 deactivate_first: bool = True,
+                 deactivate_last: bool = False,
                  transitioncb:Callable=default_transitioncb, 
                  statecb:Callable=default_statecb
                  ):
@@ -461,7 +461,7 @@ class eTaSL_StateMachine(TickingStateMachine):
 
         # executes until one returns SUCCEED,  eTaSLOutput only returns TICKING
         mapping={"e_finished@{}".format(srv_name[1:]):(1,SUCCEED)}
-        if deactivate_first:
+        if not deactivate_last:
             transition_map_executing = {SUCCEED:SUCCEED}
             
         else:
@@ -477,7 +477,7 @@ class eTaSL_StateMachine(TickingStateMachine):
             transitions=transition_map_executing
         )
 
-        if not deactivate_first:
+        if deactivate_last:
             self.add_state(LifeCycle("DEACTIVATE_ETASL_LAST",srv_name,Transition.DEACTIVATE,timeout,node),
                     transitions={SUCCEED: "CLEANUP_ETASL_LAST",
                                 ABORT: "CLEANUP_ETASL_LAST",
