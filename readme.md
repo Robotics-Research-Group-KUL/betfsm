@@ -11,8 +11,7 @@ both high- and low level.
 
 ## Documentation
 
-[Gitlab pages documentation](https://betfsm-90d316.pages.gitlab.kuleuven.be/)
-
+[Github pages for BeTFSM documentation](https://robotics-research-group-kul.github.io/betfsm/)
 
 
 ## License and acknowledgements
