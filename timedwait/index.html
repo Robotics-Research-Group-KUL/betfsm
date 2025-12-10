@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+
+<html class="writer-html5" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Erwin Aertbelien" name="author"/>
+<link href="../img/favicon.ico" rel="shortcut icon"/>
+<title>TimedWait - BeTFSM documentation</title>
+<link href="../css/theme.css" rel="stylesheet"/>
+<link href="../css/theme_extra.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" rel="stylesheet"/>
+<link href="../assets/_mkdocstrings.css" rel="stylesheet"/>
+<link href="../css/mkdocstrings.css" rel="stylesheet"/>
+<script>
+        // Current page data
+        var mkdocs_page_name = "TimedWait";
+        var mkdocs_page_input_path = "timedwait.md";
+        var mkdocs_page_url = null;
+      </script>
+<!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body class="wy-body-for-nav" role="document">
+<div class="wy-grid-for-nav">
+<nav class="wy-nav-side stickynav" data-toggle="wy-nav-shift">
+<div class="wy-side-scroll">
+<div class="wy-side-nav-search">
+<a class="icon icon-home" href=".."> BeTFSM documentation
+        </a><div role="search">
+<form action="../search.html" class="wy-form" id="rtd-search-form" method="get">
+<input aria-label="Search docs" name="q" placeholder="Search docs" title="Type search term here" type="text"/>
+</form>
+</div>
+</div>
+<div aria-label="Navigation menu" class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation">
+<p class="caption"><span class="caption-text">Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+</li>
+<li class="toctree-l1"><a class="reference internal">Tutorials</a>
+<ul>
+<li class="toctree-l2"><a class="reference internal" href="../upanddown/">Up &amp; Down</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../actionserver_ex/">Action servers</a>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal">BeTFSM</a>
+<ul>
+<li class="toctree-l2"><a class="reference internal" href="../tickingstate/">TickingState</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../tickingstatemachine/">TickingStateMachine</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../visitor/">Visitor</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../generator/">Generator</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../sequence/">Sequence</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../concurrentsequence/">ConcurrentSequence</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../fallback/">Fallback</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../concurrentfallback/">ConcurrentFallback</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../concurrent/">Concurrent</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../waitfor/">WaitFor</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../waitforever/">WaitForever</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../while/">While</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../repeat/">Repeat</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../message/">Message</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../logblackboard/">LogBlackboard</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../compute/">Compute</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../adapt/">Adapt</a>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal current">BeTFSM ROS2</a>
+<ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../serviceclient/">ServiceClient</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../lifecycle/">LifeCycle</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../timedrepeat/">TimedRepeat</a>
+</li>
+<li class="toctree-l2 current"><a class="reference internal current" href="#">TimedWait</a>
+<ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="#betfsm.betfsm_ros.TimedWait.__init__">__init__</a>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../timeout/">Timeout</a>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../etaslstatemachine/">BeTFSM eTaSL</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../actionserver/">Action server</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/">Utilities</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../about/">About</a>
+</li>
+</ul>
+</div>
+</div>
+</nav>
+<section class="wy-nav-content-wrap" data-toggle="wy-nav-shift">
+<nav aria-label="Mobile navigation menu" class="wy-nav-top" role="navigation">
+<i class="fa fa-bars" data-toggle="wy-nav-top"></i>
+<a href="..">BeTFSM documentation</a>
+</nav>
+<div class="wy-nav-content">
+<div class="rst-content"><div aria-label="breadcrumbs navigation" role="navigation">
+<ul class="wy-breadcrumbs">
+<li><a aria-label="Docs" class="icon icon-home" href=".."></a></li>
+<li class="breadcrumb-item">Documentation</li>
+<li class="breadcrumb-item">BeTFSM ROS2</li>
+<li class="breadcrumb-item active">TimedWait</li>
+<li class="wy-breadcrumbs-aside">
+</li>
+</ul>
+<hr/>
+</div>
+<div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
+<div class="section" itemprop="articleBody">
+<div class="doc doc-object doc-class">
+<h2 class="doc doc-heading" id="betfsm.betfsm_ros.TimedWait">
+<code>betfsm.betfsm_ros.TimedWait</code>
+</h2>
+<div class="doc doc-contents first">
+<p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" href="../generator/#betfsm.betfsm.Generator" title="betfsm.betfsm.Generator">Generator</a></code></p>
+<p>Node that waits for a given time and then returns succeed</p>
+<div class="mermaid">stateDiagram-v2
+    direction LR
+    classDef greenClass  fill:darkgreen,color:white
+    classDef yellowClass  fill:yellow,color:black
+    classDef redClass  fill:darkred,color:white
+
+    state "TimedWait (timeout )" as TimedWait
+    [*] --&gt; TimedWait
+    TimedWait --&gt; SUCCEED : timeout reached
+    SUCCEED --&gt; [*]
+    TimedWait --&gt; TICKING : ticking
+    TICKING --&gt; [*]
+
+
+    class SUCCEED greenClass
+    class TICKING yellowClass
+
+</div>
+<div class="doc doc-children">
+<div class="doc doc-object doc-function">
+<h3 class="doc doc-heading" id="betfsm.betfsm_ros.TimedWait.__init__">
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">Duration</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mf">1.0</span><span class="p">),</span> <span class="n">node</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+</h3>
+<div class="doc doc-contents">
+<p>TimedWait waits for a given time and then returns succeed.</p>
+<table class="field-list">
+<colgroup>
+<col class="field-name"/>
+<col class="field-body"/>
+</colgroup>
+<tbody valign="top">
+<tr class="field">
+<th class="field-name">Parameters:</th>
+<td class="field-body">
+<ul class="first simple">
+<li>
+<b><code>name</code></b>
+                  (<code><span title="str">str</span></code>)
+              –
+              <div class="doc-md-description">
+<p>instance name</p>
+</div>
+</li>
+<li>
+<b><code>timeout</code></b>
+                  (<code><span title="rclpy.time.Duration">Duration</span></code>, default:
+                      <code><span title="rclpy.time.Duration">Duration</span>(seconds=1.0)</code>
+)
+              –
+              <div class="doc-md-description">
+<p>duration to wait.</p>
+</div>
+</li>
+<li>
+<b><code>node</code></b>
+                  (<code><span title="rclpy.node.Node">Node</span></code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+<p>Node to use for clock, </p>
+</div>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="field-list">
+<colgroup>
+<col class="field-name"/>
+<col class="field-body"/>
+</colgroup>
+<tbody valign="top">
+<tr class="field">
+<th class="field-name">Returns:</th>
+<td class="field-body">
+<ul class="first simple">
+<li>
+              –
+              <div class="doc-md-description">
+<p>will return TICKING until timeout is passed after which it returns SUCCEED</p>
+</div>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div><footer>
+<div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">
+<a class="btn btn-neutral float-left" href="../timedrepeat/" title="TimedRepeat"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+<a class="btn btn-neutral float-right" href="../timeout/" title="Timeout">Next <span class="icon icon-circle-arrow-right"></span></a>
+</div>
+<hr/>
+<div role="contentinfo">
+<!-- Copyright etc -->
+<p>LGPL-3.0-only</p>
+</div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+</div>
+</div>
+</section>
+</div>
+<div aria-label="Versions" class="rst-versions" role="note">
+<span class="rst-current-version" data-toggle="rst-current-version">
+<span>
+<a class="fa fa-code-fork" href="https://gitlab.kuleuven.be/rob-expressiongraphs/ros2/BeTFSM" style="color: #fcfcfc"> Gitlab</a>
+</span>
+<span><a href="../timedrepeat/" style="color: #fcfcfc">« Previous</a></span>
+<span><a href="../timeout/" style="color: #fcfcfc">Next »</a></span>
+</span>
+</div>
+<script src="../js/jquery-3.6.0.min.js"></script>
+<script>var base_url = "..";</script>
+<script src="../js/theme_extra.js"></script>
+<script src="../js/theme.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/rod2ik/cdn@main/mkdocs/javascripts/mkdocs-graphviz.js"></script>
+<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+<script src="../search/main.js"></script>
+<script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+<script type="module">import mermaid from "https://unpkg.com/mermaid@10.4.0/dist/mermaid.esm.min.mjs";
+mermaid.initialize({});</script></body>
+</html>

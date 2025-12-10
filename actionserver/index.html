@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+
+<html class="writer-html5" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Erwin Aertbelien" name="author"/>
+<link href="../img/favicon.ico" rel="shortcut icon"/>
+<title>Action server - BeTFSM documentation</title>
+<link href="../css/theme.css" rel="stylesheet"/>
+<link href="../css/theme_extra.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" rel="stylesheet"/>
+<link href="../assets/_mkdocstrings.css" rel="stylesheet"/>
+<link href="../css/mkdocstrings.css" rel="stylesheet"/>
+<script>
+        // Current page data
+        var mkdocs_page_name = "Action server";
+        var mkdocs_page_input_path = "actionserver.md";
+        var mkdocs_page_url = null;
+      </script>
+<!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body class="wy-body-for-nav" role="document">
+<div class="wy-grid-for-nav">
+<nav class="wy-nav-side stickynav" data-toggle="wy-nav-shift">
+<div class="wy-side-scroll">
+<div class="wy-side-nav-search">
+<a class="icon icon-home" href=".."> BeTFSM documentation
+        </a><div role="search">
+<form action="../search.html" class="wy-form" id="rtd-search-form" method="get">
+<input aria-label="Search docs" name="q" placeholder="Search docs" title="Type search term here" type="text"/>
+</form>
+</div>
+</div>
+<div aria-label="Navigation menu" class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation">
+<p class="caption"><span class="caption-text">Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+</li>
+<li class="toctree-l1"><a class="reference internal">Tutorials</a>
+<ul>
+<li class="toctree-l2"><a class="reference internal" href="../upanddown/">Up &amp; Down</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../actionserver_ex/">Action servers</a>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal">BeTFSM</a>
+<ul>
+<li class="toctree-l2"><a class="reference internal" href="../tickingstate/">TickingState</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../tickingstatemachine/">TickingStateMachine</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../visitor/">Visitor</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../generator/">Generator</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../sequence/">Sequence</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../concurrentsequence/">ConcurrentSequence</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../fallback/">Fallback</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../concurrentfallback/">ConcurrentFallback</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../concurrent/">Concurrent</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../waitfor/">WaitFor</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../waitforever/">WaitForever</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../while/">While</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../repeat/">Repeat</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../message/">Message</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../logblackboard/">LogBlackboard</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../compute/">Compute</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../adapt/">Adapt</a>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal">BeTFSM ROS2</a>
+<ul>
+<li class="toctree-l2"><a class="reference internal" href="../serviceclient/">ServiceClient</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../lifecycle/">LifeCycle</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../timedrepeat/">TimedRepeat</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../timedwait/">TimedWait</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../timeout/">Timeout</a>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../etaslstatemachine/">BeTFSM eTaSL</a>
+</li>
+<li class="toctree-l1 current"><a class="reference internal current" href="#">Action server</a>
+<ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="#interface">Interface</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#server">Server</a>
+<ul>
+<li class="toctree-l3"><a class="reference internal" href="#betfsm.betfsm_action_server.BeTFSMActionServer">BeTFSMActionServer</a>
+<ul>
+<li class="toctree-l4"><a class="reference internal" href="#betfsm.betfsm_action_server.BeTFSMActionServer.__init__">__init__</a>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="#betfsm.betfsm_action_server.BeTFSMActionServer.cancel_callback">cancel_callback</a>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="#betfsm.betfsm_action_server.BeTFSMActionServer.execute_callback">execute_callback</a>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="#betfsm.betfsm_action_server.BeTFSMActionServer.goal_callback">goal_callback</a>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="#betfsm.betfsm_action_server.BeTFSMActionServer.handle_accepted_callback">handle_accepted_callback</a>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#giving-intermediate-feedback">Giving intermediate feedback</a>
+<ul>
+<li class="toctree-l3"><a class="reference internal" href="#betfsm.betfsm_action_server.FeedbackState">FeedbackState</a>
+<ul>
+<li class="toctree-l4"><a class="reference internal" href="#betfsm.betfsm_action_server.FeedbackState.__init__">__init__</a>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#checking-for-cancelation">Checking for cancelation</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#examples">Examples</a>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/">Utilities</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../about/">About</a>
+</li>
+</ul>
+</div>
+</div>
+</nav>
+<section class="wy-nav-content-wrap" data-toggle="wy-nav-shift">
+<nav aria-label="Mobile navigation menu" class="wy-nav-top" role="navigation">
+<i class="fa fa-bars" data-toggle="wy-nav-top"></i>
+<a href="..">BeTFSM documentation</a>
+</nav>
+<div class="wy-nav-content">
+<div class="rst-content"><div aria-label="breadcrumbs navigation" role="navigation">
+<ul class="wy-breadcrumbs">
+<li><a aria-label="Docs" class="icon icon-home" href=".."></a></li>
+<li class="breadcrumb-item">Documentation</li>
+<li class="breadcrumb-item active">Action server</li>
+<li class="wy-breadcrumbs-aside">
+</li>
+</ul>
+<hr/>
+</div>
+<div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
+<div class="section" itemprop="articleBody">
+<h1 id="action-server">Action Server</h1>
+<h2 id="interface">Interface</h2>
+<p>The following class implements an action server that respond to actions
+with idl:</p>
+<pre><code># only from the perspective of the state-machine
+# we can have generic handling of the parameters.
+# (perhaps needing adaptation of your handling of eTaSL parameters, such that they can also take parameters that are set beforehand
+# in the blackboard, i.e. not overwritten by defaults if they exist)
+#
+# goal
+string task
+string parameters
+---
+# result
+string outcome
+string parameters
+---
+# feedback
+string state
+string parameters
+</code></pre>
+<p>This interface is generic and applies to all state machines that are controlled:</p>
+<ul>
+<li>
+<p><strong>goal</strong>
+<code>task</code> is a label that indicates which state-machine needs to be executed
+  <code>parameters</code> is a string with JSON describing the parameters of the task.  These parameters will be put in BeTFSM's blackboard for use within the statemachine.
+  Optionally these parameters can be validated using a JSON-Schema </p>
+</li>
+<li>
+<p><strong>result</strong>
+<code>outcome</code> is <code>cancel</code> or <code>success</code>
+<code>parameters</code> is everything what is in <code>blackboard["result"]</code> encoded into a JSON string.</p>
+</li>
+<li>
+<p><strong>feedback</strong>
+<code>state</code> is the label of the currently active state of state-machine.
+<code>parameters</code> is everything what is in <code>blackboard["feedback"]</code> encoded into a JSON string</p>
+</li>
+</ul>
+<h2 id="server">Server</h2>
+<p><img alt="state machine of action server" src="../static/goal_state_machine.png"/></p>
+<p>The state machine is run in the EXECUTING state of the above figure from the ROS2 documentation.  The <a class="autorefs autorefs-internal" href="#betfsm.betfsm_action_server.BeTFSMActionServer.goal_callback" title="goal_callback(goal_request)">goal_callback</a> checks whether the task exists in the dictionary of state machines and optionally validates the input parameters of the task using a schema.<br/>
+The action server is implemented in the <a class="autorefs autorefs-internal" href="#betfsm.betfsm_action_server.BeTFSMActionServer" title="betfsm.betfsm_action_server.BeTFSMActionServer">BeTFSMActionServer</a> described below.</p>
+<p>The tasks that the action server can react to are described by a Dictionary that maps the name of the task to an instance of TickingState (a state machine)..</p>
+<ul>
+<li>Sequence diagram of interactions:</li>
+</ul>
+<div class="mermaid">sequenceDiagram
+  participant ActionClient
+  participant ActionServer
+  participant Execute
+
+  activate ActionClient
+  ActionClient -&gt;&gt; ActionServer: goal_request
+  activate ActionServer
+  ActionServer --) ActionClient: goal_response (accept only 1 simult.action)
+  ActionServer -&gt;&gt; Execute: handle_goal
+  deactivate ActionServer
+
+  activate Execute
+  ActionClient -&gt;&gt; ActionServer: get_result
+  activate ActionServer
+
+
+
+  Execute -&gt;&gt; Blackboard: set goal_handle
+  Execute -&gt;&gt; Blackboard: set and validate input_parameters
+
+  Note over Execute: state machine for task running
+
+
+
+
+  loop over state machine until outcome!=TICKING
+    Execute -&gt;&gt; Blackboard : get info from blackboard&lt;br&gt;always react at some point in time &lt;br&gt;to goal_handle.is_cancel_request&lt;br&gt;Generate feedback messages
+  end
+  Note over Execute: state machine stopped
+  Execute -&gt;&gt; Blackboard : get result.outcome and &lt;br&gt; result.parameters from blackboard
+  Execute -&gt;&gt; ActionServer: succeed() or cancel() &lt;br&gt; construct result msg
+
+
+  deactivate Execute
+
+  ActionServer--) ActionClient: result_request
+
+
+
+  deactivate ActionServer
+  deactivate ActionClient
+
+</div>
+<p>To specify a schema to validate the parameters, add <code>input_parameters_schema</code> member to the TickingState with the schena in python format (i.e. using json.loads("..." )</p>
+<div class="doc doc-object doc-class">
+<h3 class="doc doc-heading" id="betfsm.betfsm_action_server.BeTFSMActionServer">
+<code>betfsm.betfsm_action_server.BeTFSMActionServer</code>
+</h3>
+<div class="doc doc-contents first">
+<p>Action server that processes BeTFSM tasks one goal at a time.  Each action starts state machine</p>
+<div class="doc doc-children">
+<div class="doc doc-object doc-function">
+<h4 class="doc doc-heading" id="betfsm.betfsm_action_server.BeTFSMActionServer.__init__">
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">blackboard</span><span class="p">,</span> <span class="n">statemachines</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">node</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+</h4>
+<div class="doc doc-contents">
+<table class="field-list">
+<colgroup>
+<col class="field-name"/>
+<col class="field-body"/>
+</colgroup>
+<tbody valign="top">
+<tr class="field">
+<th class="field-name">Parameters:</th>
+<td class="field-body">
+<ul class="first simple">
+<li>
+<b><code>blackboard</code></b>
+              –
+              <div class="doc-md-description">
+<p>blackboard to use when responding to actions.</p>
+</div>
+</li>
+<li>
+<b><code>statemachines</code></b>
+              –
+              <div class="doc-md-description">
+<p>a list of task names and state machines.</p>
+</div>
+</li>
+<li>
+<b><code>frequency</code></b>
+                  (<code><span title="int">int</span></code>, default:
+                      <code>100</code>
+)
+              –
+              <div class="doc-md-description">
+<p>frequency at which to run the state machine once an action is received.</p>
+</div>
+</li>
+<li>
+<b><code>node</code></b>
+                  (<code><span title="betfsm.graphviz_visitor.Node">Node</span></code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+<p>ROS2 node for the action server,  if None, the singleton BeTFSMNode.get_instance() will be used.</p>
+</div>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="doc doc-object doc-function">
+<h4 class="doc doc-heading" id="betfsm.betfsm_action_server.BeTFSMActionServer.cancel_callback">
+<code class="highlight language-python"><span class="n">cancel_callback</span><span class="p">(</span><span class="n">goal</span><span class="p">)</span></code>
+</h4>
+<div class="doc doc-contents">
+<p>Accept or reject a client request to cancel an action.</p>
+</div>
+</div>
+<div class="doc doc-object doc-function">
+<h4 class="doc doc-heading" id="betfsm.betfsm_action_server.BeTFSMActionServer.execute_callback">
+<code class="highlight language-python"><span class="n">execute_callback</span><span class="p">(</span><span class="n">goal_handle</span><span class="p">)</span></code>
+</h4>
+<div class="doc doc-contents">
+<p>Execute the goal.</p>
+</div>
+</div>
+<div class="doc doc-object doc-function">
+<h4 class="doc doc-heading" id="betfsm.betfsm_action_server.BeTFSMActionServer.goal_callback">
+<code class="highlight language-python"><span class="n">goal_callback</span><span class="p">(</span><span class="n">goal_request</span><span class="p">)</span></code>
+</h4>
+<div class="doc doc-contents">
+<p>called to accept or reject a client request.</p>
+</div>
+</div>
+<div class="doc doc-object doc-function">
+<h4 class="doc doc-heading" id="betfsm.betfsm_action_server.BeTFSMActionServer.handle_accepted_callback">
+<code class="highlight language-python"><span class="n">handle_accepted_callback</span><span class="p">(</span><span class="n">goal_handle</span><span class="p">)</span></code>
+</h4>
+<div class="doc doc-contents">
+<p>handle an accepted action</p>
+</div>
+</div>
+</div>
+</div>
+</div><h2 id="giving-intermediate-feedback">Giving intermediate feedback</h2>
+<div class="doc doc-object doc-class">
+<h3 class="doc doc-heading" id="betfsm.betfsm_action_server.FeedbackState">
+<code>betfsm.betfsm_action_server.FeedbackState</code>
+</h3>
+<div class="doc doc-contents first">
+<p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" href="../tickingstate/#betfsm.betfsm.TickingState" title="betfsm.betfsm.TickingState (betfsm.graphviz_visitor.TickingState)">TickingState</a></code></p>
+<div class="doc doc-children">
+<div class="doc doc-object doc-function">
+<h4 class="doc doc-heading" id="betfsm.betfsm_action_server.FeedbackState.__init__">
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">cb</span><span class="p">)</span></code>
+</h4>
+<div class="doc doc-contents">
+<p>A ticking state that uses a callback function to publish to the feedback topic
+of an action.</p>
+<table class="field-list">
+<colgroup>
+<col class="field-name"/>
+<col class="field-body"/>
+</colgroup>
+<tbody valign="top">
+<tr class="field">
+<th class="field-name">Parameters:</th>
+<td class="field-body">
+<ul class="first simple">
+<li>
+<b><code>name</code></b>
+                  (<code><span title="str">str</span></code>)
+              –
+              <div class="doc-md-description">
+<p>name of the instance </p>
+</div>
+</li>
+<li>
+<b><code>state</code></b>
+                  (<code><span title="str">str</span></code>)
+              –
+              <div class="doc-md-description">
+<p>is passed as the <code>state</code> field of the feedback message</p>
+</div>
+</li>
+<li>
+<b><code>cb</code></b>
+                  (<code><span title="betfsm.graphviz_visitor.Dict">Dict</span></code>)
+              –
+              <div class="doc-md-description">
+<p>callback function that returns a dictionary, possibly hierarchical that will 
+be mapped to the parameters <strong>string</strong> field of the feedback message.
+The callback has signature <code>def cb(bbb) -&gt; Dict</code></p>
+</div>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div><h2 id="checking-for-cancelation">Checking for cancelation</h2>
+<p>Actions can be canceled and our action server and state machines need to react appropriately.</p>
+<h2 id="examples">Examples</h2>
+<p>See <a href="../actionserver_ex/">Action Server examples</a></p>
+</div>
+</div><footer>
+<div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">
+<a class="btn btn-neutral float-left" href="../etaslstatemachine/" title="BeTFSM eTaSL"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+<a class="btn btn-neutral float-right" href="../utils/" title="Utilities">Next <span class="icon icon-circle-arrow-right"></span></a>
+</div>
+<hr/>
+<div role="contentinfo">
+<!-- Copyright etc -->
+<p>LGPL-3.0-only</p>
+</div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+</div>
+</div>
+</section>
+</div>
+<div aria-label="Versions" class="rst-versions" role="note">
+<span class="rst-current-version" data-toggle="rst-current-version">
+<span>
+<a class="fa fa-code-fork" href="https://gitlab.kuleuven.be/rob-expressiongraphs/ros2/BeTFSM" style="color: #fcfcfc"> Gitlab</a>
+</span>
+<span><a href="../etaslstatemachine/" style="color: #fcfcfc">« Previous</a></span>
+<span><a href="../utils/" style="color: #fcfcfc">Next »</a></span>
+</span>
+</div>
+<script src="../js/jquery-3.6.0.min.js"></script>
+<script>var base_url = "..";</script>
+<script src="../js/theme_extra.js"></script>
+<script src="../js/theme.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/rod2ik/cdn@main/mkdocs/javascripts/mkdocs-graphviz.js"></script>
+<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+<script src="../search/main.js"></script>
+<script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+<script type="module">import mermaid from "https://unpkg.com/mermaid@10.4.0/dist/mermaid.esm.min.mjs";
+mermaid.initialize({});</script></body>
+</html>
