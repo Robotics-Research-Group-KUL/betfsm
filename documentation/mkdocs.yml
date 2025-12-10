@@ -1,6 +1,7 @@
 site_name: "BeTFSM documentation"
 site_author: "Erwin Aertbelien"
-repo_url: "https://gitlab.kuleuven.be/rob-expressiongraphs/ros2/BeTFSM"
+repo_url: "https://github.com/Robotics-Research-Group-KUL/betfsm"
+edit_uri: edit/main/documentation/docs
 copyright: "LGPL-3.0-only"
 theme:
   name: "readthedocs"
