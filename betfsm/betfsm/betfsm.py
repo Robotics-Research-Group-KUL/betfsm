@@ -1606,24 +1606,54 @@ class BeTFSMRunner:
         self.statemachine = statemachine
         self.blackboard = blackboard
         self.frequency = frequency
+        self.interval_sec = 1.0/frequency
+
+#    def run(self):
+#        """
+#        Runs the statemachine until it returns an outcome different from TICKING
+#        Returns:
+#            the final outcome of the statemachine
+#        """
+#        import time
+#        rate = 1.0 / self.frequency
+#        outcome = self.statemachine(self.blackboard)
+#        while outcome == TICKING:
+#            start = time.time()
+#            outcome = self.statemachine(self.blackboard)
+#            elapsed = time.time() - start
+#            sleep_time = rate - elapsed
+#            if sleep_time > 0:
+#                time.sleep(sleep_time)
+#        return outcome
+#       
 
     def run(self):
         """
         Runs the statemachine until it returns an outcome different from TICKING
+
+        Refers to absolute time to avoid drifting. Uses monotonic clock to 
+        avoid problems with system time changes.
+
         Returns:
             the final outcome of the statemachine
         """
-        import time
-        rate = 1.0 / self.frequency
-        outcome = self.statemachine(self.blackboard)
+
+        # Use monotonic clock to avoid issues with system time changes
+        start    = time.monotonic()
+        next_run = start + self.interval_sec
+        outcome  = TICKING
         while outcome == TICKING:
-            start = time.time()
             outcome = self.statemachine(self.blackboard)
-            elapsed = time.time() - start
-            sleep_time = rate - elapsed
+            # Sleep until the next scheduled time
+            now = time.monotonic()
+            sleep_time = next_run - now
+
             if sleep_time > 0:
                 time.sleep(sleep_time)
-        return outcome
-        
+            else:
+                # If we're behind schedule, log drift
+                get_logger().warn(f"[Warning] Drift detected: {abs(sleep_time):.3f}s late")
 
+            # Schedule next run
+            next_run += self.interval_sec
 
