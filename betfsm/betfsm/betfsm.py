@@ -1244,6 +1244,149 @@ class Adapt(GeneratorWithState):
                 new_out = out
             yield out
 
+class TimedWait(Generator):
+    """Node that waits for a given time and then returns succeed
+
+    This is the plain python version, there also exists a ROS2 version.
+
+    ```mermaid
+    stateDiagram-v2
+        direction LR
+        classDef greenClass  fill:darkgreen,color:white
+        classDef yellowClass  fill:yellow,color:black
+        classDef redClass  fill:darkred,color:white
+
+        state "TimedWait (timeout )" as TimedWait
+        [*] --> TimedWait
+        TimedWait --> SUCCEED : timeout reached
+        SUCCEED --> [*]
+        TimedWait --> TICKING : ticking
+        TICKING --> [*]
+            
+    
+        class SUCCEED greenClass
+        class TICKING yellowClass
+        
+    ```
+    """
+    def __init__(self,name:str,timeout:float =1.0 ):
+        """
+        TimedWait waits for a given time and then returns succeed.
+
+        Parameters:
+            name:
+                instance name
+            timeout:
+                duration to wait.
+
+        Returns:
+            will return TICKING until timeout is passed after which it returns SUCCEED
+        """
+        outcomes = [SUCCEED,ABORT]
+        super().__init__(name,outcomes)
+        self.timeout = timeout
+    
+    def co_execute(self,blackboard):     
+        get_logger().info(f"{self.name} : waiting for {self.timeout}")
+        start_time = time.monotonic()
+        while (time.monotonic()-start_time) < self.timeout:
+            yield TICKING
+        get_logger().info(f"{self.name} : finished waiting")
+        yield SUCCEED
+
+
+class TimedRepeat(GeneratorWithState):
+    """
+    Repeats an underlying state for a given number of times and a given time interval.
+
+    This is the pure python version of this class, there also exists a ROS2 version.
+
+    ```mermaid
+        stateDiagram-v2
+            direction LR
+            classDef successClass  fill:darkgreen,color:white
+            classDef tickingClass  fill:yellow,color:black
+            classDef otherClass  fill:darkorange,color:white
+            classDef abortClass  fill:darkred,color:white
+
+
+            state TimedRepeat {
+                direction TB
+                [*] --> my_state
+                state "State" as my_state
+                state "Waiting" as waiting
+                my_state --> waiting : succeed
+                waiting --> my_state : timeout
+            }
+            [*] --> TimedRepeat
+            my_state --> SUCCEED : #succeed > maxcount
+            my_state --> OTHER   : other outcome
+            my_state --> TICKING : ticking
+            waiting  --> TICKING : ticking
+            waiting --> ABORT : time > timeout
+            class SUCCEED successClass
+            class OTHER otherClass
+            class TICKING tickingClass
+            class ABORT abortClass
+    ``` 
+    """    
+    def __init__(
+            self,
+            name:str,
+            maxcount:int, 
+            timeout: float,
+            state: TickingState
+        ):
+        """
+        TimedRepeat repeats the underlying state each `timeout` duration, until either the specified maxcount 
+        iterations is reached or the underlying state returns anything else besides TICKING or SUCCEED.
+        TimedRepeat returns TICKING or finishes with SUCCEED if maxcount is reached, or another outcome if 
+        such outcome  is returned by the underlying state.
+
+        Parameters:
+            name:
+                instance name
+            maxcount: 
+                maximum of iterations, if maxcount==0, repeat until SUCCEED is returned.   
+            timeout: 
+                underlying state is triggered every `timeout` duration
+            state:
+                underlying state
+
+        Note:
+            if the underlying state returns later than `timeout` with a non-ticking outcome, an exception will be raised 
+            and abort is called.
+        """
+        super().__init__(name,[SUCCEED],state)
+        self.maxcount = maxcount
+        self.timeout = timeout
+        self.log  = get_logger()
+    
+    def co_execute(self,blackboard):        
+        starttime = time.monotonic()
+        looptime = starttime + self.timeout
+        # for c in range(self.maxcount):
+        count = 0
+        while (self.maxcount==0) or (count < self.maxcount):
+            # execute underlying state while ticking if necessary
+            outcome = self.state(blackboard)
+            while outcome==TICKING:
+                yield TICKING
+                outcome = self.state(blackboard)
+            if outcome!=SUCCEED:
+                yield outcome
+            # check if time exceeded
+            current_time = time.monotonic()
+            if current_time >= 2*looptime:
+                raise Exception("Loop time is more than 2 times exceeded by underlying state")
+            # tick until next timeout interval            
+            while current_time < looptime:
+                yield TICKING
+                current_time = time.monotonic()
+            looptime = looptime + self.timeout
+            count    = count + 1
+        yield SUCCEED
+    
 
 
 # class StateMachineElement:
@@ -1338,17 +1481,20 @@ class TickingStateMachine(TickingState):
     def add_state(
         self,
         state: TickingState,
-        transitions: Dict[str, str] = None
+        transitions: Dict[str, str|TickingState] = None
     ) -> None:
         """
         add_state(state,transitions) adds a state and associates transitions in this state-machine
-        with this state.
+        with this state.  By default to first state added will be the start state. This can be changed
+        using the method `set_start_state`.
 
         Parameters:
             state: 
                 state to be added, it will be added under its name (i.e. state.name, as defined in TickingState)
             transitions:
                 a dictionary that maps outcomes of the state to names of a state in this state machine.
+                As a shortcut/alternative, this can also be a dictionary that maps outcomes to TickingState 
+                (in that case TickingState.name is used)
         """
         if not isinstance(state,TickingState):
             raise Exception("TickingStateMachine.add_state() only accepts states that are subclasses of TickingState")
@@ -1356,6 +1502,13 @@ class TickingStateMachine(TickingState):
             transitions = {}
         if not isinstance( transitions , Dict):
             raise ValueError("transitions should be a dictionary")            
+        for k,v in transitions.items():
+            if not isinstance(k,str):
+                raise Exception("TickingStateMachine.add_state() the key of the transitions dictionary should be a string")
+            if isinstance(v,TickingState):
+                transitions[k] = v.name 
+            elif not isinstance(v,str):
+                raise Exception("TickingStateMachine.add_state() the value of the transitions dictionary should be a string or a derived class from TickingState")
         self.states[state.name] = {
             "state": state,
             "transitions": transitions
@@ -1365,15 +1518,18 @@ class TickingStateMachine(TickingState):
             self.current_state = state.name
         
         
-    def set_start_state(self, name: str) -> None:
+    def set_start_state(self, name: str|TickingState) -> None:
         """
         Explicitly states the starting state. States are specified using their name
 
         Parameters:
             name:
                 set the state by which the state machine starts.  By default the first state 
-                added.
+                added. Can also be an instance of TickingState descendant, in that case this
+                is the same as name.name
         """
+        if isinstance(name,TickingState):
+            name = name.name
         self.start_state = name
         self.current_state = name
 
