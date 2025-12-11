@@ -20,15 +20,13 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import sys
-import rclpy
-from rclpy.node import Node
 
 from colorama import Fore, Back, Style
 
 
 class DummyLogPrinter:
     """
-    Can be used with set_looger for a do-nothing logger.
+    Can be used with set_logger for a do-nothing logger.
     """
     def debug(self,*args):
         pass
