@@ -1,7 +1,7 @@
-__pycache__
 documentation/venv
 t.dot
 t.svg
 
-
-
+# Python packaging artifacts
+*.egg-info/
+__pycache__

@@ -20,7 +20,7 @@
 
 
 from .betfsm import *
-from .betfsm_ros import *
+# from .betfsm_ros import *
 #from .betfsm_etasl import *
 
 
@@ -131,63 +131,6 @@ digraph G {
         return self.preamble + self.doc + self.postamble
 
 
-from std_msgs.msg import String
-
-class GraphvizPublisher(Generator):
-    "Simple state to print the graphviz representation of a statemachine to a file"
-    def __init__(self, name:str,topic:str, sm:TickingState, node=None,skip=10, do_not_expand_types:List[type]=[], do_not_expand_instances:List[str]=[]):
-        """
-        Publishes a graphviz representation on a topic.  This node runs forever.
-        ( probably you want to run it in parallel with some statemachine using
-         a ConcurrentFallback)
-
-        Parameters:
-            name:
-                name of the node
-            topic:
-                topic to publish on
-            sm:
-                statemachine whose representation you want to publish
-            node:
-                node, BeTFSMNode.get_instance() if None
-            skip:
-                skip this amount of cycles before sending out a topic
-            do_not_expand_types:
-                list of typenames that you don't want to expand (go in detail).
-                The names correspond to `type(class).__name__` (i.e. without module)
-            do_not_expand_instances
-                list of instance names that you don't want to expand (go in detail)
-        """
-        if node is None:
-            node = BeTFSMNode.get_instance()
-        self.node = node
-        super().__init__("print_graphviz",[SUCCEED])
-        self.sm = sm
-        self.topic = topic
-        self.publisher = node.create_publisher(String,topic,10)        
-        self.skip = skip
-        self.do_not_expand_types = do_not_expand_types
-        self.do_not_expand_instances = do_not_expand_instances
-
-        
-    def co_execute(self,bb):
-        count = 0
-        while True:
-            count = count +1
-            if count < self.skip:                
-                yield TICKING
-                continue
-            count = 0
-            vis = GraphViz_Visitor(do_not_expand_instances=self.do_not_expand_instances, do_not_expand_types=self.do_not_expand_types)
-            self.sm.accept(vis)    
-            msg = String()
-            msg.data = vis.graphviz()
-            self.publisher.publish(msg)
-            yield TICKING
-
-
-
-
 
 class GraphViz_Visitor2(Visitor):
     """
@@ -265,3 +208,23 @@ digraph G {
 
     def graphviz(self):
         return self.preamble + self.doc + self.postamble
+
+
+
+def to_graphviz_dotfile(filename, sm):
+    """
+    Prints a graphviz dot representation of a statemachine-tree to a file with
+    the given filename.  Use the xdot tool to visualize or the dot tool from 
+    graphviz to convert to other image formats.
+
+    Parameters:
+        filename:
+            name of the file to write to
+        sm:
+            TickingState that is the root of a tree of statemachines/behavior-tree nodes.
+    """
+    viz = GraphViz_Visitor()
+    sm.accept(viz)
+    with open(filename,"w") as f:
+        print(viz.graphviz(),file=f)
+

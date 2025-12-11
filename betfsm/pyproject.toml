@@ -2,6 +2,9 @@
 requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools.packages.find]
+exclude = ["resource*"]
+
 [project]
 name = "betfsm"
 authors=[{name = "Erwin Aertbeliën", email="Erwin.Aertbelien@kuleuven.be"}]
@@ -9,6 +12,7 @@ version = "1.0.0"
 description = "BeTFSM is a library for ticking statemachines and behavior trees. In this unified framework, discrete tasks can be specified with the modularity of behavior trees and at the lower-level precise interaction can be specified using state machines. It targets discrete coordination of robotic systems at both high- and low level."
 
 dependencies = [
+    "colorama"
 ]
 
 [project.urls]
@@ -16,5 +20,5 @@ homepage="https://crospi-website-907f83.pages.gitlab.kuleuven.be/"
 documentation="https://betfsm-90d316.pages.gitlab.kuleuven.be/"
 repository="https://github.com/Robotics-Research-Group-KUL/betfsm"
 
-# [project.scripts]
-# betfsm_gui = "betfsm.web_server:main"
+[project.scripts]
+example_runner = "betfsm_demos.example_runner:main"

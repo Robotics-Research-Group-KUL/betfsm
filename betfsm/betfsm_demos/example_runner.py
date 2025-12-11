@@ -6,6 +6,7 @@ from betfsm.betfsm import (
     Message, SUCCEED, TICKING, CANCEL, Generator, Blackboard,
     Repeat, Fallback
 )
+from betfsm.graphviz_visitor import to_graphviz_dotfile
 from betfsm.logger import get_logger
 
 class CountDown(Generator):
@@ -83,6 +84,9 @@ def main():
     
     # Set the initial state
     sm.set_start_state("sequence_phase")
+
+    
+    to_graphviz_dotfile("example_runner.dot", sm)
 
     # 6. Run it using BeTFSMRunner at 100 Hz
     runner = BeTFSMRunner(sm, bb, frequency=100.0) # Hz
