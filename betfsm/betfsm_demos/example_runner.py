@@ -77,9 +77,9 @@ def main():
     sm = TickingStateMachine("root_sm", [SUCCEED])
     
     # Add the states to the State Machine and link them
-    sm.add_state(seq, transitions={SUCCEED: "concurrent_phase"})
-    sm.add_state(conc_seq, transitions={SUCCEED: "repeat_phase"})
-    sm.add_state(rep, transitions={SUCCEED: "fallback_phase"})
+    sm.add_state(seq, transitions={SUCCEED: conc_seq}) # you can refer to a state by its instance
+    sm.add_state(conc_seq, transitions={SUCCEED: rep})
+    sm.add_state(rep, transitions={SUCCEED: "fallback_phase"}) # you can also refer to a state by its name
     sm.add_state(fallback, transitions={SUCCEED: SUCCEED}) # If fallback succeeds (returns SUCCEED), SM finishes.
     
     # Set the initial state
