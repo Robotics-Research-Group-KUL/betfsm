@@ -43,6 +43,34 @@ from .betfsm import *
 
 
 
+import re
+import hashlib
+
+def make_identifier(s: str, prefix: str = "id") -> str:
+    """
+    Convert an arbitrary string into a safe identifier.
+    
+    - Lowercases the string
+    - Replaces non-alphanumeric characters with underscores
+    - Ensures it starts with a letter (prefix added if needed)
+    - Appends a short hash to guarantee uniqueness
+    """
+    # Normalize: lowercase and replace non-alphanumeric with underscores
+    safe = re.sub(r'[^0-9a-zA-Z]+', '_', s).lower()
+    
+    # Ensure it doesn't start with a digit
+    if safe and safe[0].isdigit():
+        safe = prefix + "_" + safe
+    
+    # Trim leading/trailing underscores
+    safe = safe.strip("_")
+    
+    # Add a short hash for uniqueness
+    short_hash = hashlib.sha1(s.encode()).hexdigest()[:8]
+    
+    return f"{safe}_{short_hash}"
+
+
 
 
 
@@ -92,7 +120,7 @@ digraph G {
         # self.stack is never empty:
         self.childnr.append(0)
         self.childnr[-2] += 1
-        self.stack.append(f"{self.stack[-1]}_{state.name}_{self.childnr[-2]}")
+        self.stack.append(f"{self.stack[-1]}_{make_identifier(state.name)}_{self.childnr[-2]}")
         return self.stack[-1], self.stack[-2]
         
 
