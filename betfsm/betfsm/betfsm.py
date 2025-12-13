@@ -371,9 +371,6 @@ class Generator(TickingState):
 
         
 
-    def __str__(self) -> str:
-        pass
-
 
 class GeneratorWithList(Generator):
     """
