@@ -187,6 +187,9 @@ class TickingState:
         self.outcomes = outcomes
         self.outcomes.append(TICKING)
         self.outcomes.append(ABORT)
+        for outc in self.outcomes:
+            if outc==CONTINUE:
+                raise ValueError(f"{name} state:  outcome {CONTINUE} is reserved for internal use!")
         self.name = name
         self.parent = None
         self.uid = uuid.uuid4()
