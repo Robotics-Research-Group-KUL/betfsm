@@ -1603,7 +1603,7 @@ class BeTFSMRunner:
     Initializes the BeTFSMRunner.  This BeTFSMRunner has no other dependencies and
     runs in the main thread.  You typically call this class in the main body of your program.
     """
-    def __init__(self, statemachine: TickingStateMachine, blackboard: Blackboard, frequency: float=100.0):
+    def __init__(self, statemachine: TickingStateMachine, blackboard: Blackboard, frequency: float=100.0, debug: bool = False):
         """
         Initializes the BeTFSMRunner.  This BeTFSMRunner has no other dependencies and
         runs in the main thread.
@@ -1614,12 +1614,15 @@ class BeTFSMRunner:
             blackboard:
                 the blackboard to be used
             frequency:
-                frequency at which the statemachine is ticked (in Hz)
+                frequency at which the statemachine is ticked (in Hz) (default=100Hz)
+            debug:
+                If true outputs debug info each tick. (default=False)
         """
         self.statemachine = statemachine
         self.blackboard = blackboard
         self.frequency = frequency
         self.interval_sec = 1.0/frequency
+        self.debug = debug
 
 #    def run(self):
 #        """
@@ -1650,22 +1653,27 @@ class BeTFSMRunner:
         Returns:
             the final outcome of the statemachine
         """
-
         # Use monotonic clock to avoid issues with system time changes
         start    = time.monotonic()
+        if self.debug:
+            get_logger().debug(f"BeTFSMRunner time: {start:10.3f} s started (frequency:{self.frequency})")
         next_run = start + self.interval_sec
         outcome  = TICKING
+        now      = start
         while outcome == TICKING:
             outcome = self.statemachine(self.blackboard)
-            # Sleep until the next scheduled time
             now = time.monotonic()
+            if self.debug:
+                get_logger().debug(f"BeTFSMRunner time: {now:10.3f} s : looping ")
+ 
+            # Sleep until the next scheduled time
             sleep_time = next_run - now
 
             if sleep_time > 0:
                 time.sleep(sleep_time)
             else:
                 # If we're behind schedule, log drift
-                get_logger().warn(f"[Warning] Drift detected: {abs(sleep_time):.3f}s late")
+                get_logger().warn(f"[Warning] Drift detected: {abs(sleep_time):.3f} s late")
 
             # Schedule next run
             next_run += self.interval_sec
