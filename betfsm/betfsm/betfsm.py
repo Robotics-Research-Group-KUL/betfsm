@@ -932,6 +932,12 @@ class GeneratorWithState(Generator):
         """
         if state is not None:
             outcomes = cleanup_outcomes(outcomes + state.get_outcomes())
+        if not isinstance(state,TickingState):
+            raise ValueError(f"{name} : state should be an instance of a subclass of State")
+        if state.parent is not None:
+            raise ValueError(f"{state.name} already belongs to {state.parent.name}")
+        state.parent = self
+ 
         super().__init__(name,outcomes)
         self.state=state
 
