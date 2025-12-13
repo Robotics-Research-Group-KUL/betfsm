@@ -30,6 +30,7 @@ from abc import ABC, abstractmethod
 import traceback
 
 import time
+import uuid
 from .logger import get_logger
 
 
@@ -187,6 +188,8 @@ class TickingState:
         self.outcomes.append(TICKING)
         self.outcomes.append(ABORT)
         self.name = name
+        self.parent = None
+        self.uid = uuid.uuid4()
         self.status = TickingState_Status.ENTRY
         self.outcome = "" # will contain the last used outcome
 
@@ -403,7 +406,10 @@ class GeneratorWithList(Generator):
             self (to allow method chaining)
         """
         if not isinstance(state,TickingState):
-            raise Exception("add_state expects as second argument an instance of a subclass of State")
+            raise ValueError("add_state expects as second argument an instance of a subclass of State")
+        if state.parent is not None:
+            raise ValueError(f"{state.name} already belongs to {state.parent.name}")
+        state.parent = self
         self.states.append({"name":state.name,"state":state,"active":False}) 
         self.outcomes = cleanup_outcomes(self.outcomes + state.get_outcomes())
         self._outcomes = self.outcomes  # dirty hack to fix a bug
@@ -1092,6 +1098,7 @@ class Message(Generator):
             Message._name_counter +=1
             name = f"message_{Message._name_counter}"
         super().__init__(name,[SUCCEED,])
+        if msg is None: raise ValueError("Message : you should specify a message (did you only specify a name?)\nTip:  Message(msg='my message text') or Message('message_name','message text')  ") 
         self.msg = msg
         self.cb  = cb
         if logFunc is None:
