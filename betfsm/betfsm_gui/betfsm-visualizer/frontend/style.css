@@ -1,0 +1,4 @@
+
+.node-rect { fill: #eee; stroke: #666; }
+.node-rect.active { fill: #4caf50; }
+.node-rect.inactive { fill: #ddd; }
