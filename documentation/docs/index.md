@@ -109,6 +109,23 @@ the **accept** method of a TickingState calls the visitor appropriately.  Visito
     (not the value!) of the run-time parameters is passed as parameters to the
     constructor, such that the TickingState is easily reusable in different applications.
 
+!!! Predefined outcomes
+    There are a series of predefined outcome strings.  Other outcome strings can be defined,
+    but it is recommended to use the predefined outcomes, as long as it fits your semantics.
+    This helps interoperability of different nodes in the behavior tree.
+
+    - SUCCEED  = "succeeded"    # everything is fine, continue as normal
+    - CANCEL   = "canceled"     # voluntary stop, deliberatly provoked, e.g. reacting to cancel request of an action
+    - TIMEOUT  = "timeout"      # some operation times out.
+
+!!! Reserved outcomes
+    These outcome names are reserved and have a specific meaning enforced by the framework.
+
+    - ABORT    = "aborted"      # involuntary stop, e.g. due to exception raised, communication failure,... Allows the state machine to deal with exceptions.
+    - TICKING  = "ticking"      # only use this to yield and expecting to be called back the next tick
+    - CONTINUE = "continue"     # only used in the entry() method of TickingState, to signal tht you want to directly continue with Doo().  Don't use it anywhere else
+
+
 ## Summary of states and state-machines
 
 This section explains the basics of BeTFSM.  You find more detailed information in the sections BeTFSM, BeTFSM ROS2, BeTFSM eTaSL which contain a full API-documentation.
