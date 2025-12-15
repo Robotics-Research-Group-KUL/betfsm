@@ -2,6 +2,7 @@
 from fastapi import FastAPI, WebSocket
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
+from starlette.websockets import WebSocketDisconnect
 import asyncio, json, time
 
 from backend.jsonvisitor import JsonVisitor
@@ -18,7 +19,7 @@ import time
 app = FastAPI()
 
 # Serve files from the "static" directory at the URL path "/static"
-app.mount("/static", StaticFiles(directory="frontend"), name="static")
+app.mount("/static", StaticFiles(directory="frontend",html=True), name="static")
 
 
 clients = set()
@@ -81,11 +82,12 @@ root = {}
 
 @app.get("/api/tree")
 def get_tree():
+    get_logger().warn("/api/tree called")
     global root
     visitor = JsonVisitor()
-    print(root)
     if root is not None:
        root.accept(visitor)
+    get_logger().info(f"response={visitor.result}")
     return JSONResponse(visitor.result())
 
 @app.websocket("/ws/stream")
@@ -94,14 +96,27 @@ async def ws_stream(ws: WebSocket):
     clients.add(ws)
     try:
         while True:
-            await asyncio.sleep(1)
+            try:
+                await asyncio.sleep(1)
+                # Send current active states periodically to keep connection alive
+                active_ids = list(TickingState.get_global_log().keys())
+                msg = {"type": "tick", "tick": int(time.time()*1000), "active": active_ids}
+                await ws.send_text(json.dumps(msg))
+            except (RuntimeError, WebSocketDisconnect):
+                # Client disconnected, break the loop
+                break
+    except Exception as e:
+        print(f"WebSocket error: {e}")
     finally:
         clients.discard(ws)
 
 @app.get("/api/history")
 def get_history(from_ts: float, to_ts: float):
+    get_logger().warn("/api/history called")
     frames = history.slice(from_ts, to_ts)
-    return JSONResponse([{"timestamp": ts, "active": ids} for ts, ids in frames])
+    resp =  JSONResponse([{"timestamp": ts, "active": ids} for ts, ids in frames])
+    get_logger().info(f"/api/history response = {resp}")
+    return resp
 
 def publish_tick():
     active_ids = list(TickingState.get_global_log().keys())

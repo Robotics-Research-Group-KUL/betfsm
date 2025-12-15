@@ -1,4 +1,44 @@
-
+/* KULeuven colors:
+ * https://admin.kuleuven.be/mykuleuven/en/channel/50000725/identity
+ * darkblue #00407a
+ * lightblue #52bdec 
+ * primary blue #1d8db0
+ * sec. blue #1c7aa0
+ * highlight: #e7b037
+ * kulgray: 333;
+ */
 .node-rect { fill: #eee; stroke: #666; }
 .node-rect.active { fill: #4caf50; }
 .node-rect.inactive { fill: #ddd; }
+
+body {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+header, footer {
+  background-color: #00407a;
+  color: #52bdec;
+  padding: 1rem;
+}
+.splitline {
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.logo {
+    background-color: white;
+    color: #00407a;
+}
+main {
+  flex: 1;
+  overflow: auto; /* adds scroll bar if needed */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+svg {
+  max-width: 100%;
+  height: auto;
+}

@@ -1,5 +1,4 @@
-
-from betfsm.betfsm import TickingState, GeneratorWithList
+from betfsm.betfsm import TickingState, GeneratorWithList,GeneratorWithState
 
 class JsonVisitor:
     def __init__(self):
@@ -12,12 +11,16 @@ class JsonVisitor:
             "name": state.name,
             "type": type(state).__name__,
             "status": state.status.name,
-            "outcomes": list(state.get_outcomes()),
+            "available_outcomes": list(state.get_outcomes()),
             "children": [],
+            "parentId": state.parent.uid if state.parent is not None else None,
             "collapsible": isinstance(state, GeneratorWithList)
         }
         if isinstance(state, GeneratorWithList):
             node["children"] = [s["state"].uid for s in state.states]
+
+        if isinstance(state, GeneratorWithState):
+            node["children"] = [state.state.uid]
         self.nodes[state.uid] = node
         if state.parent is None:
             self.root_id = state.uid

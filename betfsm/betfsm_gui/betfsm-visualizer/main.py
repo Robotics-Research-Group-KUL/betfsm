@@ -45,6 +45,6 @@ if __name__ == "__main__":
 
     # Start FastAPI server
     import uvicorn
-    webbrowser.open("http://127.0.0.1:8000/static/index.html")
+    # webbrowser.open("http://127.0.0.1:8000/static/index.html")
     uvicorn.run("backend.app:app", host="0.0.0.0", port=8000, reload=False)
 

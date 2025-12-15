@@ -8,11 +8,39 @@
   <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 <body>
-  <div id="controls">
-    <button id="play">Play</button>
-    <input type="range" id="slider" min="0" max="100" value="0">
-  </div>
-  <svg id="tree" width="1200" height="800"></svg>
+    <header class="splitline">
+    <span>
+        <h1>BeTFSM Visualizer</h1>
+    </span>
+    <span>
+        <a href="https://www.kuleuven.be/english/kuleuven/">
+            <img src="./logo_kuleuven.png" alt="KU Leuven Logo" width="120"/>
+        </a>
+        <a href="https://www.mech.kuleuven.be/en/research/ram">
+            <img src="./logo_RAM.png" alt="RAM Logo" width="100" />
+        </a>
+    </span>
+    </header>
+    <div id="controls">
+        <button id="play">Play</button>
+        <input type="range" id="slider" min="0" max="100" value="0">
+    </div>
+    <main>
+        <svg id="tree" width="1200" height="800"></svg>
+    </main>
+    <footer class="splitline">
+        <span class="logo">
+        <a href="https://aiprism.eu/"><img src="./Ai-Prism_Logo_Horizontal.png" alt="AI-PRISM Logo" width="150" /></a>
+        agreement No. <a href="https://cordis.europa.eu/project/id/101058589">101058589</a> 
+        </span>
+        <span/>
+        <span>
+        &copy; 2025 KU Leuven - ROB research group
+       </span>
+    </div>
+
+        </p>
+  </footer>
   <script src="script.js"></script>
 </body>
 </html>
