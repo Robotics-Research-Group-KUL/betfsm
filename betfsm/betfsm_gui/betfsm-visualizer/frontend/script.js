@@ -47,6 +47,26 @@ function toggleChildren(d) {
     }
 }
 
+// Collapse every node that has children
+function collapseAll(root) {
+    root.each(d => {
+        if (d.children) {
+            d._children = d.children;
+            d.children = null;
+        }
+    });
+}
+
+// Expand every node that has hidden children
+function expandAll(root) {
+    root.each(d => {
+        if (d._children) {
+            d.children = d._children;
+            d._children = null;
+        }
+    });
+}
+
 // Collect only visible descendants
 function getVisibleDescendants(root) {
     const nodes = [];
@@ -141,12 +161,17 @@ function renderTree(root) {
     const nodes = getVisibleDescendants(root);
     const minX = d3.min(nodes, d => d.x);
     const maxX = d3.max(nodes, d => d.x);
+    const minY = d3.min(nodes, d => d.y);
+    const maxY = d3.max(nodes, d => d.y);
+
 
     root.each(d => {
-      d.x = d.x - minX;  // ensures topmost node starts at 0
+      d.x = d.x - minX+2;  // ensures topmost node starts at 0
+      d.y = d.y - minY+2;  // ensures topmost node starts at 0
     });
 
     svg.attr("height", maxX - minX + NODE_HEIGHT + 50);
+    svg.attr("width", maxY - minY + NODE_WIDTH + 50);
     // Normalize y by depth so columns are consistent regardless of collapse
     //root.each(d => {
     //    d.y = d.depth * H_SPACING;
@@ -161,9 +186,9 @@ function renderTree(root) {
     link.join(
         enter => enter.append("path")
             .attr("class", "link")
-            .attr("fill", "none")
-            .attr("stroke", "#ccc")
-            .attr("stroke-width", 1.5)
+            //.attr("fill", "none")
+            //.attr("stroke", "#000")
+            //.attr("stroke-width", 2)
             .attr("d", d3.linkHorizontal()
                 .source(d => [d.source.y + NODE_WIDTH, d.source.x + NODE_HEIGHT / 2])
                 .target(d => [d.target.y, d.target.x + NODE_HEIGHT / 2])),
@@ -218,114 +243,18 @@ function renderTree(root) {
         .attr("text-anchor", "middle")
         .attr("alignment-baseline", "middle")
         .style("pointer-events", "none")
-        .text(d => d._children ? "▶" : d.children ? "▼" : "");
+        .text(d => d._children ? "+" : d.children ? "--" : "");
+        //.text(d => d._children ? "▶" : d.children ? "▼" : "");
 
     nodesSelection.merge(nodesEnter)
         .attr("transform", d => `translate(${d.y},${d.x})`);
 
     svg.selectAll(".toggle-marker")
-        .text(d => d._children ? "▶" : d.children ? "▼" : "");
+        //.text(d => d._children ? "▶" : d.children ? "▼" : "");
+        .text(d => d._children ? "+" : d.children ? "--" : "");
 
     nodesSelection.exit().remove();
 
-    svg.selectAll(".node-rect")
-        .classed("collapsed", d => d._children);
-}
-//function renderTree(data) {
-//    console.log("renderTree called")
-//    const nodes = data.nodes.map(node => ({
-//        id: node.id,
-//        name: node.name,
-//        type: node.type,
-//        parentId: node.parentId
-//    }));
-//
-//    const stratify = d3.stratify().id(d => d.id).parentId(d => d.parentId);
-//    const root = stratify(nodes);
-//    window.root = root
-//    console.log(root)
-//
-function renderTree_obsolete(root) {
-    const treeLayout = d3.tree().size([800, 1000]);
-    treeLayout(root);
-
-    const NODE_WIDTH = 200;
-    const NODE_HEIGHT = 46;
-
-    // ----------------------------------------------------------------------
-    // LINKS (only visible ones)
-    // ----------------------------------------------------------------------
-    const link = svg.selectAll(".link")
-        .data(getVisibleLinks(root), d => d.target.id);
-
-    link.join(
-        enter => enter.append("path")
-            .attr("class", "link")
-            .attr("fill", "none")
-            .attr("stroke", "#ccc")
-            .attr("stroke-width", 1.5)
-            .attr("d", d3.linkHorizontal()
-                .source(d => [d.source.y + NODE_WIDTH, d.source.x + NODE_HEIGHT/2])
-                .target(d => [d.target.y, d.target.x + NODE_HEIGHT/2])),
-        update => update,
-        exit => exit.remove()
-    );
-
-    // ----------------------------------------------------------------------
-    // NODES (only visible ones)
-    // ----------------------------------------------------------------------
-    const nodesSelection = svg.selectAll("g.node")
-        .data(getVisibleDescendants(root), d => d.id);
-
-    const nodesEnter = nodesSelection.enter()
-        .append("g")
-        .attr("class", "node")
-        .attr("transform", d => `translate(${d.y},${d.x})`)
-        .on("click", handleNodeClick);   // click anywhere in group
-
-    // Background rect covers full node area
-    nodesEnter.append("rect")
-        .attr("rx", 8).attr("ry", 8)
-        .attr("width", NODE_WIDTH).attr("height", NODE_HEIGHT)
-        .attr("class", "node-rect")
-        .style("cursor", "pointer")
-        .style("pointer-events", "all");
-
-    nodesEnter.append("text")
-        .attr("dy", "2.5em")
-        .attr("x", NODE_WIDTH/2)
-        .attr("text-anchor", "middle")
-        .style("pointer-events", "none")
-        .text(d => d.data.name);
-
-    nodesEnter.append("text")
-        .attr("dy", "1.1em")
-        .attr("x", NODE_WIDTH/2)
-        .attr("text-anchor", "middle")
-        .style("pointer-events", "none")
-        .text(d => `<${d.data.type}>`);
-
-    // Expand/collapse marker
-    nodesEnter.append("text")
-        .attr("class", "toggle-marker")
-        .attr("x", NODE_WIDTH - 10)
-        .attr("y", NODE_HEIGHT / 2)
-        .attr("text-anchor", "middle")
-        .attr("alignment-baseline", "middle")
-        .style("pointer-events", "none")
-        .text(d => d._children ? "▶" : d.children ? "▼" : "");
-
-    // Update positions
-    nodesSelection.merge(nodesEnter)
-        .attr("transform", d => `translate(${d.y},${d.x})`);
-
-    // Update marker on update
-    svg.selectAll(".toggle-marker")
-        .text(d => d._children ? "▶" : d.children ? "▼" : "");
-
-    nodesSelection.exit().remove();
-
-    // Highlight collapsed nodes
     svg.selectAll(".node-rect")
         .classed("collapsed", d => d._children);
 }
@@ -373,4 +302,15 @@ function stepReplay() {
     setTimeout(stepReplay, 33);
 }
 
+document.getElementById("collapseAll").onclick = () => {
+    collapseAll(window.root);
+    renderTree(window.root);
+    applyActivity();
+};
+
+document.getElementById("expandAll").onclick = () => {
+    expandAll(window.root);
+    renderTree(window.root);
+    applyActivity();
+};
 loadTree();
