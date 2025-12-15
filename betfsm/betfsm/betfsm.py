@@ -130,6 +130,13 @@ class Visitor(ABC):
 
 
 class TickingState:
+    _global_log = {}
+
+    @classmethod
+    def get_global_log(cls):
+        return cls._global_log
+
+
     """
     Implements a 'ticking' state, i.e. a state that takes a longer time, but cooperatively yields
     the initiative back to the caller (cooperative concurrency):
@@ -192,7 +199,7 @@ class TickingState:
                 raise ValueError(f"{name} state:  outcome {CONTINUE} is reserved for internal use!")
         self.name = name
         self.parent = None
-        self.uid = uuid.uuid4()
+        self.uid = str(uuid.uuid4())
         self.status = TickingState_Status.ENTRY
         self.outcome = "" # will contain the last used outcome
 
@@ -224,6 +231,7 @@ class TickingState:
             get_logger("state").info(f"Entering {self.name}")
             try:
                 self.outcome = self.entry(blackboard)
+                TickingState._global_log[self.uid] = self
             except Exception as e:
                 get_logger().error("exception occurred : "+ traceback.format_exc())
                 self.outcome = ABORT
@@ -249,6 +257,7 @@ class TickingState:
 
         if self.status == TickingState_Status.EXIT:
             self.outcome = self.exit()
+            del TickingState._global_log[self.uid]
             self.status = TickingState_Status.ENTRY
             get_logger("state").info(f"Exit {self.name} with {self.outcome}")
             return self.outcome
@@ -1603,7 +1612,7 @@ class BeTFSMRunner:
     Initializes the BeTFSMRunner.  This BeTFSMRunner has no other dependencies and
     runs in the main thread.  You typically call this class in the main body of your program.
     """
-    def __init__(self, statemachine: TickingStateMachine, blackboard: Blackboard, frequency: float=100.0, debug: bool = False):
+    def __init__(self, statemachine: TickingState, blackboard: Blackboard, frequency: float=100.0, debug: bool = False, display_active=False):
         """
         Initializes the BeTFSMRunner.  This BeTFSMRunner has no other dependencies and
         runs in the main thread.
@@ -1623,6 +1632,7 @@ class BeTFSMRunner:
         self.frequency = frequency
         self.interval_sec = 1.0/frequency
         self.debug = debug
+        self.display_active = display_active
 
 #    def run(self):
 #        """
@@ -1663,9 +1673,16 @@ class BeTFSMRunner:
         while outcome == TICKING:
             outcome = self.statemachine(self.blackboard)
             now = time.monotonic()
-            if self.debug:
-                get_logger().debug(f"BeTFSMRunner time: {now:10.3f} s : looping ")
- 
+            if self.display_active:
+                gl=TickingState.get_global_log()
+                active = "active: ("
+                for k,v in TickingState.get_global_log().items():
+                    active = active + v.name + " "
+                active=active+")"
+            else:
+                active=""
+            if self.debug or self.display_active:
+                get_logger().debug(f"{now:10.3f} s : looping {active}")
             # Sleep until the next scheduled time
             sleep_time = next_run - now
 
