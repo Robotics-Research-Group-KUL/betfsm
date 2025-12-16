@@ -180,8 +180,11 @@ function renderTree(root) {
     // ----------------------------------------------------------------------
     // LINKS
     // ----------------------------------------------------------------------
+    //const link = svg.selectAll(".link")
+    //    .data(getVisibleLinks(root), d => d.target.id);
+
     const link = svg.selectAll(".link")
-        .data(getVisibleLinks(root), d => d.target.id);
+        .data(getVisibleLinks(root), d => `${d.source.id}-${d.target.id}`);
 
     link.join(
         enter => enter.append("path")
