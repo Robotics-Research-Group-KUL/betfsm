@@ -5,19 +5,6 @@ const svg = d3.select("#tree");
 const activeIds = new Set();
 let replayFrames = [], replayIndex = 0, playing = false;
 
-async function loadTree_obsolete() {
-    console.log("loadTree called")
-    try {
-        const res = await fetch("/api/tree");
-        const data = await res.json();
-        window.data = data;
-        renderTree(data);
-    } catch (error) {
-        console.error("Error occurred", error);
-    }
-}
-
-
 
 
 async function loadTree() {
@@ -159,12 +146,8 @@ function recomputeDepthAndHeight(root) {
   setHeight(root);
 }
 
-
 function renderTree(root) {
-    console.log("renderTree called")
-
-    //const treeLayout = d3.tree().size([800, 1000]);
-    //treeLayout(root);
+    console.log("renderTree called");
 
     const NODE_WIDTH = 200;
     const NODE_HEIGHT = 46;
@@ -177,12 +160,8 @@ function renderTree(root) {
 
     const treeLayout = d3.tree().nodeSize([V_SPACING, H_SPACING]);
     treeLayout(root);
-    
 
-
-    //assignVisibleDepths(root);
-    recomputeDepthAndHeight(root)
-
+    recomputeDepthAndHeight(root);
 
     const nodes = getVisibleDescendants(root);
     const minX = d3.min(nodes, d => d.x);
@@ -190,21 +169,16 @@ function renderTree(root) {
     const minY = d3.min(nodes, d => d.y);
     const maxY = d3.max(nodes, d => d.y);
 
-
     root.each(d => {
-      d.x = d.x - minX+TOP_PADDING;  // ensures topmost node starts at 0
-      d.y = d.y - minY+LEFT_PADDING;  // ensures topmost node starts at 0
+        d.x = d.x - minX + TOP_PADDING;
+        d.y = d.y - minY + LEFT_PADDING;
     });
 
     svg.attr("height", maxX - minX + NODE_HEIGHT + TOP_PADDING + 50);
     svg.attr("width", maxY - minY + NODE_WIDTH + LEFT_PADDING + 50);
-    // Normalize y by depth so columns are consistent regardless of collapse
-    //root.each(d => {
-    //    d.y = d.depth * H_SPACING;
-    //});
 
     // ----------------------------------------------------------------------
-    // LINKS (only visible ones)
+    // LINKS
     // ----------------------------------------------------------------------
     const link = svg.selectAll(".link")
         .data(getVisibleLinks(root), d => d.target.id);
@@ -212,33 +186,32 @@ function renderTree(root) {
     link.join(
         enter => enter.append("path")
             .attr("class", "link")
-            //.attr("fill", "none")
-            //.attr("stroke", "#000")
-            //.attr("stroke-width", 2)
+            .attr("d", d3.linkHorizontal()
+                .source(d => [d.source.y + NODE_WIDTH, d.source.x + NODE_HEIGHT / 2])
+                .target(d => [d.source.y + NODE_WIDTH, d.source.x + NODE_HEIGHT / 2]) // start collapsed
+            )
+            .transition().duration(500).ease(d3.easeCubic)
             .attr("d", d3.linkHorizontal()
                 .source(d => [d.source.y + NODE_WIDTH, d.source.x + NODE_HEIGHT / 2])
                 .target(d => [d.target.y, d.target.x + NODE_HEIGHT / 2])),
-        update => update
+        update => update.transition().duration(500).ease(d3.easeCubic)
             .attr("d", d3.linkHorizontal()
                 .source(d => [d.source.y + NODE_WIDTH, d.source.x + NODE_HEIGHT / 2])
                 .target(d => [d.target.y, d.target.x + NODE_HEIGHT / 2])),
-        exit => exit.remove()
+        exit => exit.transition().duration(500).style("opacity", 0).remove()
     );
 
     // ----------------------------------------------------------------------
-    // NODES (only visible ones)
+    // NODES
     // ----------------------------------------------------------------------
     const nodesSelection = svg.selectAll("g.node")
         .data(getVisibleDescendants(root), d => d.id);
 
-
-
-
-
     const nodesEnter = nodesSelection.enter()
         .append("g")
         .attr("class", "node")
-        .attr("transform", d => `translate(${d.y},${d.x})`)
+        .attr("transform", d => `translate(${d.parent ? d.parent.y : d.y},${d.parent ? d.parent.x : d.x})`) // start at parent
+        .style("opacity", 0)
         .on("click", handleNodeClick);
 
     nodesEnter.append("rect")
@@ -270,21 +243,29 @@ function renderTree(root) {
         .attr("alignment-baseline", "middle")
         .style("pointer-events", "none")
         .text(d => d._children ? "+" : d.children ? "--" : "");
-        //.text(d => d._children ? "▶" : d.children ? "▼" : "");
 
-    nodesSelection.merge(nodesEnter)
+    // Animate entering nodes to their position
+    nodesEnter.transition().duration(500).ease(d3.easeCubic)
+        .attr("transform", d => `translate(${d.y},${d.x})`)
+        .style("opacity", 1);
+
+    // Animate updates
+    nodesSelection.transition().duration(500).ease(d3.easeCubic)
         .attr("transform", d => `translate(${d.y},${d.x})`);
 
+    // Update toggle markers
     svg.selectAll(".toggle-marker")
-        //.text(d => d._children ? "▶" : d.children ? "▼" : "");
         .text(d => d._children ? "+" : d.children ? "--" : "");
 
-    nodesSelection.exit().remove();
+    // Animate exit
+    nodesSelection.exit()
+        .transition().duration(500).ease(d3.easeCubic)
+        .style("opacity", 0)
+        .remove();
 
     svg.selectAll(".node-rect")
         .classed("collapsed", d => d._children);
 }
-
 function applyActivity() {
     svg.selectAll(".node-rect")
         .classed("active", d => activeIds.has(d.data.id))
