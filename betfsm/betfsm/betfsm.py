@@ -136,6 +136,13 @@ class TickingState:
     def get_global_log(cls):
         return cls._global_log
 
+    """
+        A log where nodes are only added, a single publisher can periodically 
+        erase all nodes from this log.  This allows to capture all notes that 
+        where active during a period. This is only done when it is turned
+        on by assigning an empty dict to global_publish_log
+    """
+    global_publish_log = None 
 
     """
     Implements a 'ticking' state, i.e. a state that takes a longer time, but cooperatively yields
@@ -232,6 +239,8 @@ class TickingState:
             try:
                 self.outcome = self.entry(blackboard)
                 TickingState._global_log[self.uid] = self
+                if TickingState.global_publish_log is not None:
+                    TickingState.global_publish_log[self.uid] = self
             except Exception as e:
                 get_logger().error("exception occurred : "+ traceback.format_exc())
                 self.outcome = ABORT
@@ -247,6 +256,8 @@ class TickingState:
         if self.status == TickingState_Status.DOO:
             try:
                 self.outcome = self.doo(blackboard)
+                if TickingState.global_publish_log is not None:
+                    TickingState.global_publish_log[self.uid] = self
             except Exception as e:
                 get_logger().error(f"{self.name} : exception occured : "+ traceback.format_exc())
                 self.outcome = ABORT
@@ -258,6 +269,7 @@ class TickingState:
         if self.status == TickingState_Status.EXIT:
             self.outcome = self.exit()
             del TickingState._global_log[self.uid]
+            # do not remove anything from global_publish_log
             self.status = TickingState_Status.ENTRY
             get_logger("state").info(f"Exit {self.name} with {self.outcome}")
             return self.outcome

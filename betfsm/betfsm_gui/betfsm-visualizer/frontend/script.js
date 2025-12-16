@@ -4,7 +4,7 @@
 const svg = d3.select("#tree");
 const activeIds = new Set();
 let replayFrames = [], replayIndex = 0, playing = false;
-
+let isTransitioning = false;
 
 
 async function loadTree() {
@@ -193,11 +193,19 @@ function renderTree(root) {
                 .source(d => [d.source.y + NODE_WIDTH, d.source.x + NODE_HEIGHT / 2])
                 .target(d => [d.source.y + NODE_WIDTH, d.source.x + NODE_HEIGHT / 2]) // start collapsed
             )
-            .transition().duration(500).ease(d3.easeCubic)
-            .attr("d", d3.linkHorizontal()
+            .transition()
+                .duration(500)
+                .on("start", () => {isTransitioning=true;})
+                .on("end", () => {isTransitioning=false;})
+                .ease(d3.easeCubic)
+                .attr("d", d3.linkHorizontal()
                 .source(d => [d.source.y + NODE_WIDTH, d.source.x + NODE_HEIGHT / 2])
                 .target(d => [d.target.y, d.target.x + NODE_HEIGHT / 2])),
-        update => update.transition().duration(500).ease(d3.easeCubic)
+        update => update.transition()
+            .duration(500)
+            .on("start", () => {isTransitioning=true;})
+            .on("end", () => {isTransitioning=false;})
+            .ease(d3.easeCubic)
             .attr("d", d3.linkHorizontal()
                 .source(d => [d.source.y + NODE_WIDTH, d.source.x + NODE_HEIGHT / 2])
                 .target(d => [d.target.y, d.target.x + NODE_HEIGHT / 2])),
@@ -248,7 +256,11 @@ function renderTree(root) {
         .text(d => d._children ? "+" : d.children ? "--" : "");
 
     // Animate entering nodes to their position
-    nodesEnter.transition().duration(500).ease(d3.easeCubic)
+    nodesEnter.transition()
+        .duration(500)
+        .on("start", () => { isTransitioning = true; }) 
+        .on("end", () => { isTransitioning = false; })
+        .ease(d3.easeCubic)
         .attr("transform", d => `translate(${d.y},${d.x})`)
         .style("opacity", 1);
 
@@ -276,6 +288,9 @@ function applyActivity() {
 }
 
 function handleTick(msg) {
+    if (isTransitioning) {
+        return;
+    }
     activeIds.clear();
     if (msg.active) {
         msg.active.forEach(id => activeIds.add(id));

@@ -119,7 +119,7 @@ def get_history(from_ts: float, to_ts: float):
     return resp
 
 def publish_tick():
-    active_ids = list(TickingState.get_global_log().keys())
+    active_ids = list(TickingState.global_publish_log.keys())
     history.append(active_ids)
     msg = {"type": "tick", "tick": int(time.time()*1000), "active": active_ids}
     broadcaster.broadcast(msg)
@@ -131,7 +131,7 @@ class BeTFSMRunnerGUI:
     Initializes the BeTFSMRunner.  This BeTFSMRunner has no other dependencies and
     runs in the main thread.  You typically call this class in the main body of your program.
     """
-    def __init__(self, statemachine: TickingState, blackboard: Blackboard, frequency: float=100.0, debug: bool = False, display_active=False):
+    def __init__(self, statemachine: TickingState, blackboard: Blackboard, frequency: float=100.0, publish_frequency=10,debug: bool = False, display_active=False):
         """
         Initializes the BeTFSMRunner.  This BeTFSMRunner has no other dependencies and
         runs in the main thread.
@@ -143,8 +143,12 @@ class BeTFSMRunnerGUI:
                 the blackboard to be used
             frequency:
                 frequency at which the statemachine is ticked (in Hz) (default=100Hz)
+            publish_frequency:
+                frequency at which to publish to the webbrowser (default= 10Hz)
             debug:
-                If true outputs debug info each tick. (default=False)
+                If true outputs debug info on console each tick. (default=False)
+            display_active:
+                displays all active nodes on console
         """
         global root
         self.statemachine = statemachine
@@ -153,6 +157,7 @@ class BeTFSMRunnerGUI:
         self.interval_sec = 1.0/frequency
         self.debug = debug
         self.display_active = display_active
+        self.publish_period = 1.0/publish_frequency
         root = statemachine
 
     def run(self):
@@ -172,9 +177,14 @@ class BeTFSMRunnerGUI:
         next_run = start + self.interval_sec
         outcome  = TICKING
         now      = start
+        next_publish = now - self.publish_period
+        TickingState.global_publish_log = {}  # turn on global_publish_log
         while outcome == TICKING:
             outcome = self.statemachine(self.blackboard)
-            publish_tick()
+            if now >= next_publish:
+                publish_tick() # publishes all states that where active between calls to publish_tick!
+                TickingState.global_publish_log.clear()
+                next_publish = now + self.publish_period  
             now = time.monotonic()
             if self.display_active:
                 gl=TickingState.get_global_log()

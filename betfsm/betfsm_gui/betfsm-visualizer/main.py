@@ -60,7 +60,7 @@ root = build_tree_larger()
 
 def run_machine():
     bb = {}
-    runner = BeTFSMRunnerGUI(root, bb, frequency=1.0, debug=True, display_active=True)
+    runner = BeTFSMRunnerGUI(root, bb, frequency=100.0, publish_frequency=5.0, debug=False, display_active=False)
     runner.run()
 
 if __name__ == "__main__":
