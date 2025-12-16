@@ -67,6 +67,29 @@ function expandAll(root) {
     });
 }
 
+function expandActiveBranches(root) {
+    root.each(d => {
+        if (d._children && hasActiveDescendant(d)) {
+            d.children = d._children;
+            d._children = null;
+        } else if (d.children && !hasActiveDescendant(d)) {
+            d._children = d.children;
+            d.children = null;
+        }
+    });
+}
+
+function hasActiveDescendant(node) {
+    if (activeIds.has(node.data.id)) return true;
+    if (node.children) {
+        return node.children.some(child => hasActiveDescendant(child));
+    }
+    if (node._children) {
+        return node._children.some(child => hasActiveDescendant(child));
+    }
+    return false;
+}
+
 // Collect only visible descendants
 function getVisibleDescendants(root) {
     const nodes = [];
@@ -270,9 +293,12 @@ function handleTick(msg) {
     if (msg.active) {
         msg.active.forEach(id => activeIds.add(id));
     }
+    if (autoExpand) {
+        expandActiveBranches(window.root);
+        renderTree(window.root);
+    }
     applyActivity();
 }
-
 function handleNodeClick(event, d) {
     console.log("handleNodeClick")
     console.log(d)
@@ -301,6 +327,11 @@ function stepReplay() {
     replayIndex = (replayIndex + 1) % replayFrames.length;
     setTimeout(stepReplay, 33);
 }
+
+let autoExpand = false;
+document.getElementById("autoExpand").onchange = ev => {
+  autoExpand = ev.target.checked;
+};
 
 document.getElementById("collapseAll").onclick = () => {
     collapseAll(window.root);
