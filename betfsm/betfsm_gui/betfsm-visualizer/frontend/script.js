@@ -170,7 +170,10 @@ function renderTree(root) {
     const NODE_HEIGHT = 46;
 
     const H_SPACING = NODE_WIDTH + 60;
-    const V_SPACING = NODE_HEIGHT + 40;
+    const V_SPACING = NODE_HEIGHT + 20;
+
+    const TOP_PADDING = 40;
+    const LEFT_PADDING = 20;
 
     const treeLayout = d3.tree().nodeSize([V_SPACING, H_SPACING]);
     treeLayout(root);
@@ -189,12 +192,12 @@ function renderTree(root) {
 
 
     root.each(d => {
-      d.x = d.x - minX+2;  // ensures topmost node starts at 0
-      d.y = d.y - minY+2;  // ensures topmost node starts at 0
+      d.x = d.x - minX+TOP_PADDING;  // ensures topmost node starts at 0
+      d.y = d.y - minY+LEFT_PADDING;  // ensures topmost node starts at 0
     });
 
-    svg.attr("height", maxX - minX + NODE_HEIGHT + 50);
-    svg.attr("width", maxY - minY + NODE_WIDTH + 50);
+    svg.attr("height", maxX - minX + NODE_HEIGHT + TOP_PADDING + 50);
+    svg.attr("width", maxY - minY + NODE_WIDTH + LEFT_PADDING + 50);
     // Normalize y by depth so columns are consistent regardless of collapse
     //root.each(d => {
     //    d.y = d.depth * H_SPACING;
