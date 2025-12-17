@@ -1,11 +1,12 @@
-
+import importlib.resources
 from fastapi import FastAPI, WebSocket
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.websockets import WebSocketDisconnect
 import asyncio, json, time
 
-from backend.jsonvisitor import JsonVisitor
+import betfsm
+from betfsm.jsonvisitor import JsonVisitor
 from betfsm.betfsm import (
     BeTFSMRunner, Sequence, ConcurrentSequence,TimedWait,TimedRepeat,
     Message, SUCCEED, TICKING, CANCEL, Generator, Blackboard, TickingState
@@ -18,7 +19,8 @@ import time
 app = FastAPI()
 
 # Serve files from the "static" directory at the URL path "/static"
-app.mount("/static", StaticFiles(directory="frontend",html=True), name="static")
+frontend_path = importlib.resources.files(betfsm)
+app.mount("/static", StaticFiles(directory=str(frontend_path),html=True), name="static")
 
 
 clients = set()
