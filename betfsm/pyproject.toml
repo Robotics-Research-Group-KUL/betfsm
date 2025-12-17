@@ -2,8 +2,14 @@
 requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools]
+include-package-data = true
+
 [tool.setuptools.packages.find]
 exclude = ["resource*"]
+
+[tool.setuptools.package-data]
+"betfsm" = ["frontend/*"]
 
 [project]
 name = "betfsm"
