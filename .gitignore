@@ -1,6 +1,7 @@
 documentation/venv
 t.dot
 t.svg
+.venv
 
 # Python packaging artifacts
 *.egg-info/
