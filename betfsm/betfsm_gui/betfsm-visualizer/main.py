@@ -1,5 +1,4 @@
 import threading
-from backend.app import BeTFSMRunnerGUI
 import webbrowser
 
 # ---- building the state machine -----
@@ -7,6 +6,7 @@ from betfsm.betfsm import (
         Sequence, ConcurrentSequence, TimedWait, TimedRepeat, Message, SUCCEED, Generator, Repeat
 )
 from betfsm.logger import get_logger
+from backend.betfsmrunnergui import BeTFSMRunnerGUI
 
 def build_tree():
     sm = Sequence("concurrent_sequence_outer", [
@@ -53,14 +53,14 @@ def build_tree_larger():
     return sm
 
 
-root = build_tree_larger()
 
 # ---------------------------------------
 
 
 def run_machine():
     bb = {}
-    runner = BeTFSMRunnerGUI(root, bb, frequency=100.0, publish_frequency=5.0, debug=False, display_active=False)
+    sm = build_tree_larger()
+    runner = BeTFSMRunnerGUI(sm, bb, frequency=100.0, publish_frequency=5.0, debug=False, display_active=False)
     runner.run()
 
 if __name__ == "__main__":

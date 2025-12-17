@@ -13,7 +13,7 @@
 .node-rect.inactive { fill: #ddd; }
 */
 
-.node-rect { fill: #52bdec; stroke: #00407a; stroke-width:2;  }
+.node-rect { fill: #52bdec; stroke: #00407a; stroke-width:1;  }
 .node-rect.active { fill: #e7b037; }
 .node-rect.inactive { fill: #52bdec; }
 .link {fill:none; stroke:#00407a; stroke-width:2;}

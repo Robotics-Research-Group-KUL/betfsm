@@ -5,6 +5,42 @@ const svg = d3.select("#tree");
 const activeIds = new Set();
 let replayFrames = [], replayIndex = 0, playing = false;
 let isTransitioning = false;
+let timeoutWebServer = 3000;
+
+function loadDisconnectedTree() {
+    data = {
+       "nodes" : [
+          {
+             "available_outcomes" : [
+                "aborted",
+                "ticking",
+                "succeeded",
+                "ticking",
+                "aborted"
+             ],
+             "children" : [
+                "fdd1bc35-ab25-44b9-9ae4-e8539e93db5d"
+             ],
+             "collapsible" : false,
+             "id" : "c7c9e9fd-bc93-4ba7-9964-1f833b1b5c1f",
+             "name" : "DISCONNECTED",
+             "parentId" : null,
+             "status" : "DOO",
+             "type" : "BeTFSMRunnerGUI"
+          }],
+       "rootId" : "c7c9e9fd-bc93-4ba7-9964-1f833b1b5c1f"
+    }
+    const nodes = data.nodes.map(node => ({
+        id: node.id,
+        name: node.name,
+        type: node.type,
+        parentId: node.parentId
+    }));
+    const stratify = d3.stratify().id(d => d.id).parentId(d => d.parentId);
+    const root = stratify(nodes);
+    window.root = root;
+    renderTree(root);
+}
 
 
 async function loadTree() {
@@ -310,10 +346,48 @@ function handleNodeClick(event, d) {
     applyActivity();
 }
 
-// WebSocket
-const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-const ws = new WebSocket(`${wsProtocol}//${location.host}/ws/stream`);
-ws.onmessage = ev => handleTick(JSON.parse(ev.data));
+function connectWebSocket() {
+  const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+  const ws = new WebSocket(`${wsProtocol}//${location.host}/ws/stream`);
+
+  ws.onmessage = ev => handleTick(JSON.parse(ev.data));
+
+  ws.onclose = () => {
+    console.warn("WebSocket closed. Will retry...");
+    loadDisconnectedTree()
+    scheduleReconnect();
+  };
+
+  ws.onerror = () => {
+    console.error("WebSocket error. Will retry...");
+    loadDisconnectedTree()
+    ws.close();
+  };
+}
+
+connectWebSocket()
+
+
+function scheduleReconnect() {
+  // Try again in 1 second
+  setTimeout(async () => {
+    try {
+      // Probe the server with a lightweight request
+      const res = await fetch("/api/alive", { cache: "no-store" });
+      if (res.ok) {
+        console.log("Server is back, reloading tree...");
+        await loadTree();   // reload the tree
+        connectWebSocket(); // reconnect
+      } else {
+        console.log("Server still down, retrying...");
+        scheduleReconnect();
+      }
+    } catch (err) {
+      console.log("Server unreachable, retrying...");
+      scheduleReconnect();
+    }
+  }, timeoutWebServer);
+}
 
 document.getElementById("play").onclick = () => {
     playing = !playing;
