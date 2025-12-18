@@ -40,7 +40,7 @@ def run_machine():
     runner = BeTFSMRunnerGUI(sm, bb, frequency=100.0, publish_frequency=5.0, debug=False, display_active=False)
     runner.run()
 
-if __name__ == "__main__":
+def main():
     # Start the runner in a background thread
     threading.Thread(target=run_machine, daemon=True).start()
 
@@ -49,3 +49,5 @@ if __name__ == "__main__":
     # webbrowser.open("http://127.0.0.1:8000/static/index.html")
     uvicorn.run("betfsm.backend.app:app", host="0.0.0.0", port=8000, reload=False)
 
+if __name__ == "__main__":
+    main()

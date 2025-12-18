@@ -15,11 +15,13 @@ from betfsm.logger import get_logger
 from collections import deque
 import time
 
+from pathlib import Path
 
 app = FastAPI()
 
 # Serve files from the "static" directory at the URL path "/static"
-frontend_path = importlib.resources.files(betfsm)
+frontend_path = importlib.resources.files(betfsm) / Path("frontend")
+get_logger().warn(f"frontend_path={frontend_path}")
 app.mount("/static", StaticFiles(directory=str(frontend_path),html=True), name="static")
 
 

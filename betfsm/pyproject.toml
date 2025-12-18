@@ -30,4 +30,13 @@ documentation="https://betfsm-90d316.pages.gitlab.kuleuven.be/"
 repository="https://github.com/Robotics-Research-Group-KUL/betfsm"
 
 [project.scripts]
-example_runner = "betfsm_demos.example_runner:main"
+betfsm_example_runner        = "betfsm_demos.example_runner:main"
+betfsm_example_concurrentseq = "betfsm_demos.example_concurrentseq:main"
+betfsm_example_sequence1     = "betfsm_demos.example_sequence1:main"  
+betfsm_example_sequence2     = "betfsm_demos.example_sequence2:main"  
+betfsm_example_sequence3     = "betfsm_demos.example_sequence3:main"  
+betfsm_example_statemachine  = "betfsm_demos.example_statemachine:main"  
+betfsm_gui_example_simple1   = "betfsm_demos.guiexample_simple1:main" 
+betfsm_gui_example_simple2   = "betfsm_demos.guiexample_simple2:main" 
+betfsm_gui_example_large     = "betfsm_demos.guiexample_large:main" 
+
