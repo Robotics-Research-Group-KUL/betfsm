@@ -1,7 +1,7 @@
-
+import uvicorn
 import threading
 import time
-from betfsm.backend.app import publish_tick,set_state_machine
+from betfsm.backend.app import app,publish_tick,set_state_machine
 from betfsm.betfsm import TickingState,Blackboard,TICKING
 
 class BeTFSMRunnerGUI:
@@ -10,7 +10,7 @@ class BeTFSMRunnerGUI:
     Initializes the BeTFSMRunner.  This BeTFSMRunner has no other dependencies and
     runs in the main thread.  You typically call this class in the main body of your program.
     """
-    def __init__(self, statemachine: TickingState, blackboard: Blackboard, frequency: float=100.0, publish_frequency=10,debug: bool = False, display_active=False):
+    def __init__(self, statemachine: TickingState, blackboard: Blackboard, frequency: float=100.0, publish_frequency=10,debug: bool = False, display_active=False, serve=True):
         """
         Initializes the BeTFSMRunner.  This BeTFSMRunner has no other dependencies and
         runs in the main thread.
@@ -37,6 +37,14 @@ class BeTFSMRunnerGUI:
         self.display_active = display_active
         self.publish_period = 1.0/publish_frequency
         set_state_machine(statemachine)  # set state machine for web-app
+
+        self.serve = serve
+        if self.serve:
+            set_state_machine(statemachine)
+            threading.Thread(
+                target=lambda: uvicorn.run(app, host="0.0.0.0", port=8000, reload=False),
+                daemon=True
+            ).start()
 
     def run(self):
         """

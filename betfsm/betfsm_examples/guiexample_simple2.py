@@ -28,23 +28,17 @@ def build_tree():
             Message(msg="--- concurrent_sequence ended   ---")
         ])
     )
+
 # ---------------------------------------
 
-
-def run_machine():
+def main():
     bb = {}
     sm = build_tree()
-    runner = BeTFSMRunnerGUI(sm, bb, frequency=100.0, publish_frequency=5.0, debug=False, display_active=False)
+    runner = BeTFSMRunnerGUI(sm,bb, frequency=100.0, publish_frequency=5.0, debug=False, display_active=False)
     runner.run()
-
-def main():
-    # Start the runner in a background thread
-    threading.Thread(target=run_machine, daemon=True).start()
-
-    # Start FastAPI server
-    import uvicorn
-    # webbrowser.open("http://127.0.0.1:8000/static/index.html")
-    uvicorn.run("betfsm.backend.app:app", host="0.0.0.0", port=8000, reload=False)
 
 if __name__ == "__main__":
     main()
+
+
+

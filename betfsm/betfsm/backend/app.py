@@ -1,6 +1,6 @@
 import importlib.resources
 from fastapi import FastAPI, WebSocket
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.websockets import WebSocketDisconnect
 import asyncio, json, time
@@ -77,6 +77,18 @@ class Broadcaster:
             
             
 broadcaster = Broadcaster()
+
+
+
+
+@app.get("/")
+def main_page():
+    # Point to your frontend index.html inside the betfsm/frontend directory
+    index_file = frontend_path / "index.html"
+    return FileResponse(str(index_file))
+
+
+
 
 @app.get("/api/alive")
 def alive():

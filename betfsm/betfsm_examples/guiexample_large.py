@@ -1,6 +1,3 @@
-import threading
-import webbrowser
-
 # ---- building the state machine -----
 from betfsm.betfsm import (
         Sequence, ConcurrentSequence, TimedWait, TimedRepeat, Message, SUCCEED, Generator, Repeat
@@ -33,25 +30,16 @@ def build_tree_larger():
     return sm
 
 
-
 # ---------------------------------------
 
-
-def run_machine():
+def main():
     bb = {}
     sm = build_tree_larger()
-    runner = BeTFSMRunnerGUI(sm, bb, frequency=100.0, publish_frequency=5.0, debug=False, display_active=False)
+    runner = BeTFSMRunnerGUI(sm,bb, frequency=100.0, publish_frequency=5.0, debug=False, display_active=False)
     runner.run()
-
-def main():
-    # Start the runner in a background thread
-    threading.Thread(target=run_machine, daemon=True).start()
-
-    # Start FastAPI server
-    import uvicorn
-    # webbrowser.open("http://127.0.0.1:8000/static/index.html")
-    uvicorn.run("betfsm.backend.app:app", host="0.0.0.0", port=8000, reload=False)
 
 if __name__ == "__main__":
     main()
+
+
 
