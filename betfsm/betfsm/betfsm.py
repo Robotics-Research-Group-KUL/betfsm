@@ -701,6 +701,7 @@ class Concurrent(GeneratorWithList):
             for s in self.states:
                 outcome = s["state"](blackboard)
                 if outcome!=TICKING:
+                    self.reset()
                     yield outcome
             yield TICKING
 
