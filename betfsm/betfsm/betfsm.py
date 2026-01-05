@@ -434,7 +434,7 @@ class GeneratorWithList(Generator):
             self (to allow method chaining)
         """
         if not isinstance(state,TickingState):
-            raise ValueError("add_state expects as second argument an instance of a subclass of State")
+            raise ValueError(f"add_state expects as second argument an instance of a subclass of TickingState but got {type(state)}")
         if state.parent is not None:
             raise ValueError(f"{state.name} already belongs to {state.parent.name}")
         state.parent = self
@@ -451,6 +451,8 @@ class GeneratorWithList(Generator):
             s["active"]=False
             if isinstance(s["state"],TickingState):
                 s["state"].reset()
+            else:
+                raise ValueError(f"{self.name}.reset() : state {s['name']} is not a TickingState, but is of type {type(s['state'])} ")
         super().reset()  
 
     
@@ -638,7 +640,8 @@ class ConcurrentSequence(GeneratorWithList):
 class Concurrent(GeneratorWithList):
     """
     Implements Concurrency, the children are executed at each tick concurrently
-    until a child returns an outcome different from TICKING.
+    until a child returns an outcome different from TICKING. After such an outcome,
+    the other children are also reset/stopped.
 
     ```mermaid
     stateDiagram-v2     
