@@ -14,6 +14,7 @@ nav:
     - "Home": 'index.md'
     - "Tutorials":
       - "My first BETFSM tree" : "tutorial_sequence1.md"
+      - "Example with common nodes" : "tutorial_common_nodes.md"
       - "Up & Down": "upanddown.md"
       - "Action servers": "actionserver_ex.md" 
     - "BeTFSM":
