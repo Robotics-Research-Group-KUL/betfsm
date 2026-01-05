@@ -13,10 +13,12 @@ nav:
   - "Documentation":
     - "Home": 'index.md'
     - "Tutorials":
-      - "My first BETFSM tree" : "tutorial_sequence1.md"
+      - "My first BeTFSM tree" : "tutorial_sequence1.md"
+      - "BeTFSM GUI" : "tutorial_gui.md"
+      - "Defining state machines" : "tutorial_statemachine.md"
       - "Example with common nodes" : "tutorial_common_nodes.md"
-      - "Up & Down": "upanddown.md"
-      - "Action servers": "actionserver_ex.md" 
+#      - "Up & Down": "upanddown.md"
+#      - "Action servers": "actionserver_ex.md" 
     - "BeTFSM":
       - "TickingState" : "tickingstate.md"
       - "TickingStateMachine" : "tickingstatemachine.md"
