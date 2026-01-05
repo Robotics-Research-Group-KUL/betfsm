@@ -35,8 +35,9 @@ class MySequence(Sequence):
         self.add_state( Message(msg="--- Starting Sequence Phase ---") )
         self.add_state( CountDown("seq_counter_1", self.count) )
         self.add_state( Message(msg="--- Sequence Phase Finished ---") )
-
-
+        self.add_state( Message(msg="--- Sequence Phase Finished --- (message 1 of 2)"))
+        self.add_state( Message(msg="--- Sequence Phase Finished --- (message 2 of 2)"))
+ 
 
 def main():
     # Create a blackboard
@@ -47,10 +48,10 @@ def main():
     sm = MySequence(5)
 
     # 2. Run it using BeTFSMRunner at 100 Hz
-    runner = BeTFSMRunner(sm, bb, frequency=100.0) # Hz
-    get_logger().info("Running State Machine...")
+    runner = BeTFSMRunner(sm, bb, frequency=100.0,debug=True) # Hz
+    get_logger().info("Running State Machine... (explicitly logged in main)")
     outcome = runner.run()
-    get_logger().info(f"State Machine Finished with outcome: {outcome}")
+    get_logger().info(f"State Machine Finished with outcome: {outcome} (explicitly logged in main)")
     
 
 if __name__ == "__main__":

@@ -35,13 +35,14 @@ def main():
     sm = Sequence("sequence_phase")
     sm.add_state( Message(msg="--- Starting Sequence Phase ---") )
     sm.add_state( CountDown("seq_counter_1", 4) )
-    sm.add_state( Message(msg="--- Sequence Phase Finished ---") )
-
+    sm.add_state( Message(msg="--- Sequence Phase Finished --- (message 1 of 2)"))
+    sm.add_state( Message(msg="--- Sequence Phase Finished --- (message 2 of 2)"))
+ 
     # 2. Run it using BeTFSMRunner at 100 Hz
-    runner = BeTFSMRunner(sm, bb, frequency=100.0) # Hz
-    get_logger().info("Running State Machine...")
+    runner = BeTFSMRunner(sm, bb, frequency=100.0,debug=True) # Hz
+    get_logger().info("Running State Machine... (explicitly logged in main)")
     outcome = runner.run()
-    get_logger().info(f"State Machine Finished with outcome: {outcome}")
+    get_logger().info(f"State Machine Finished with outcome: {outcome} (explicitly logged in main)")
     
 
 if __name__ == "__main__":
