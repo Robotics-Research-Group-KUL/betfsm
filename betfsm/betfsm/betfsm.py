@@ -230,12 +230,15 @@ class TickingState:
         """
         if self.status == TickingState_Status.DOO:
             self.exit()
+            if self.uid in TickingState._global_log:
+                del TickingState._global_log[self.uid]
+            get_logger("state").debug(f"Exit {self.name} with no outcome")
         self.status = TickingState_Status.ENTRY
 
     def execute(self, blackboard: Blackboard) -> str:        
         #self.log.info("TickintState.execute")
         if self.status == TickingState_Status.ENTRY: 
-            get_logger("state").info(f"Entering {self.name}")
+            get_logger("state").debug(f"Entering {self.name}")
             try:
                 self.outcome = self.entry(blackboard)
                 TickingState._global_log[self.uid] = self
@@ -268,12 +271,13 @@ class TickingState:
 
         if self.status == TickingState_Status.EXIT:
             self.outcome = self.exit()
-            del TickingState._global_log[self.uid]
+            if self.uid in TickingState._global_log: 
+                del TickingState._global_log[self.uid]
             # do not remove anything from global_publish_log
             self.status = TickingState_Status.ENTRY
-            get_logger("state").info(f"Exit {self.name} with {self.outcome}")
+            get_logger("state").debug(f"Exit {self.name} with {self.outcome}")
             return self.outcome
-        get_logger("state").info(f"Exit {self.name} with {self.outcome}")
+        get_logger("state").debug(f"Exit {self.name} with {self.outcome}")
         return self.outcome # in case of ABORT
 
     def entry(self, blackboard: Blackboard) -> str:
