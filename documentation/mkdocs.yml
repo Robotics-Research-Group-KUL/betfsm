@@ -13,6 +13,7 @@ nav:
   - "Documentation":
     - "Home": 'index.md'
     - "Tutorials":
+      - "My first BETFSM tree" : "tutorial_sequence1.md"
       - "Up & Down": "upanddown.md"
       - "Action servers": "actionserver_ex.md" 
     - "BeTFSM":
@@ -27,6 +28,8 @@ nav:
       - "Concurrent" : "concurrent.md"
       - "WaitFor" : 'waitfor.md'
       - "WaitForever" : 'waitforever.md'
+      - "TimedWait" : 'timedwait.md'
+      - "TimedRepeat" : "timedrepeat.md"
       - "While" : 'while.md'
       - "Repeat" : 'repeat.md'        
       - "Message" : "message.md"
@@ -34,14 +37,14 @@ nav:
       - "Compute" : "compute.md"
       - "Adapt" : "adapt.md"
       - "BeTFSMRunner": "betfsmrunner.md"
-    - "BeTFSM ROS2":  
-      - "ServiceClient" : 'serviceclient.md'
-      - "LifeCycle" : 'lifecycle.md'
-      - "TimedRepeat" : timedrepeat.md
-      - "TimedWait" : 'timedwait.md'
-      - "Timeout" : "timeout.md"
-    - "BeTFSM eTaSL": 'etaslstatemachine.md'
-    - "Action server": "actionserver.md"
+#    - "BeTFSM ROS2":  
+#      - "ServiceClient" : 'serviceclient.md'
+#      - "LifeCycle" : 'lifecycle.md'
+#      - "TimedRepeat for ROS2" : timedrepeat_ros2.md
+#      - "TimedWait for ROS2" : 'rostimedwait_ros2.md'
+#      - "Timeout" : "timeout.md"
+#    - "BeTFSM eTaSL": 'etaslstatemachine.md'
+##    - "Action server": "actionserver.md"
     - "Utilities" : 'utils.md'
     - "About": 'about.md'
 
@@ -55,7 +58,7 @@ plugins:
   - mkdocstrings:
       handlers:
         python:
-          paths: [../betfsm, ../betfsm_demos]
+          paths: [../betfsm, ../betfsm_demos, ../betfsm_ros, ../betfsm_crospi,..]
           options: 
             show_source: false
             show_root_heading: true 
