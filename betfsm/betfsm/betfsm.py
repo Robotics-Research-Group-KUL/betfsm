@@ -1717,4 +1717,4 @@ class BeTFSMRunner:
 
             # Schedule next run
             next_run += self.interval_sec
-
+        return outcome

@@ -3,6 +3,7 @@ import threading
 import time
 from betfsm.backend.app import app,publish_tick,set_state_machine
 from betfsm.betfsm import TickingState,Blackboard,TICKING
+from betfsm.logger import get_logger
 
 class BeTFSMRunnerGUI:
     """
@@ -93,5 +94,5 @@ class BeTFSMRunnerGUI:
 
             # Schedule next run
             next_run += self.interval_sec
-
+        return outcome
 
