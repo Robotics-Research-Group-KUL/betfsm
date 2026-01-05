@@ -1555,6 +1555,9 @@ class TickingStateMachine(TickingState):
             "state": state,
             "transitions": transitions
         }
+        if state.parent is not None:
+            raise ValueError(f"{state.name} already belongs to {state.parent.name}")
+        state.parent = self
         if self.start_state is None:
             self.start_state = state.name
             self.current_state = state.name
