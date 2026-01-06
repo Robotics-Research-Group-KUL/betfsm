@@ -1,5 +1,6 @@
 import uvicorn
 import threading
+import argparse
 import time
 from betfsm.backend.app import app,publish_tick,set_state_machine
 from betfsm.betfsm import TickingState,Blackboard,TICKING
@@ -11,10 +12,13 @@ class BeTFSMRunnerGUI:
     Initializes the BeTFSMRunner.  This BeTFSMRunner has no other dependencies and
     runs in the main thread.  You typically call this class in the main body of your program.
     """
-    def __init__(self, statemachine: TickingState, blackboard: Blackboard, frequency: float=100.0, publish_frequency=10,debug: bool = False, display_active=False, serve=True):
+    def __init__(self, statemachine: TickingState, blackboard: Blackboard, frequency: float=100.0, publish_frequency=10,debug: bool = False, display_active=False, serve=True,
+                 host="0.0.0.0", port=8000, workers=1, log_level="info"):
         """
         Initializes the BeTFSMRunner.  This BeTFSMRunner has no other dependencies and
-        runs in the main thread.
+        runs in the main thread.  The parameters frequency, publish_frequency, debug, display_active,
+        and serve can be overridden by command-line parameters.  Use "--help" to show all command-line
+        parameters.
 
         Parameters:
             statemachine:
@@ -29,21 +33,71 @@ class BeTFSMRunnerGUI:
                 If true outputs debug info on console each tick. (default=False)
             display_active:
                 displays all active nodes on console
+            host:
+                the host IP of the network interface to bind to.  Default=0.0.0.0. 
+                Typical values are:
+                - 127.0.0.1 for only local acces and high security, for local development or production behind reverse proxy. 
+                - localhost usually 127.0.0.1
+                - 0.0.0.0 for anyone who knows your IP, lower security, for Docker, VM's or public access
+                - 192.168.x.x for only your local network
+            port:
+                bind socket of server to this port, default=8000
+            workers:
+                number of worker processes, default=1
+            log-level:
+                log-level of the web-server (not BeTFSM), default = "info"
+                choices are "critical", "error", "warning", "info", "debug", "trace"
+
         """
         self.statemachine = statemachine
         self.blackboard = blackboard
-        self.frequency = frequency
-        self.interval_sec = 1.0/frequency
-        self.debug = debug
-        self.display_active = display_active
-        self.publish_period = 1.0/publish_frequency
-        set_state_machine(statemachine)  # set state machine for web-app
 
-        self.serve = serve
+        parser = argparse.ArgumentParser(description="BeTFSMRunnerGUI command line options")
+
+        # --- 1. YOUR Custom Arguments ---
+        group_app = parser.add_argument_group("BeTFSMRunnerGUI Options")
+        group_app.add_argument("--frequency",type=float, default=frequency, help=f"frequency at which BeTFSM runs [default:{frequency}]")
+        group_app.add_argument("--publish_frequency",type=float, default=publish_frequency, help=f"publishing frequency for GUI [default:{publish_frequency} ]")
+        group_app.add_argument("--debug", action=argparse.BooleanOptionalAction, default=debug,help=f"Log the timing of each tick [default: {debug}]")
+        group_app.add_argument("--display_active",action=argparse.BooleanOptionalAction,default=display_active, help=f"Log the active nodes at rate equal to publish_frequency[default: {display_active}] ")
+        group_app.add_argument("--serve",action=argparse.BooleanOptionalAction,default=serve,help=f"Start-up server with graphical user interface [default:{serve}]")
+
+        # --- 2. UVICORN Specific Arguments ---
+        # We use the exact names uvicorn.run() expects as kwargs
+        group_uvr = parser.add_argument_group("Uvicorn Web Server Options")
+        group_uvr.add_argument("--host", type=str, default=host, help=f"Bind socket to this host [default: {host}]")
+        group_uvr.add_argument("--port", type=int, default=port, help=f"Bind socket to this port [default: {port}]")
+        group_uvr.add_argument("--workers", type=int, default=workers, help=f"Number of worker processes[default: {workers}]")
+        group_uvr.add_argument("--log-level", type=str, default=log_level, 
+                               choices=['critical', 'error', 'warning', 'info', 'debug', 'trace'], 
+                               help=f"log-level of the web-server [default: {log_level} ]")
+        args = parser.parse_args()
+
+
+        # 3. Pass arguments to uvicorn.run()
+        # We convert the namespace to a dict and extract only what Uvicorn needs
+        uvicorn_kwargs = {
+            "host": args.host,
+            "port": args.port,
+            "workers": args.workers,
+            "log_level": args.log_level,
+        }
+
+
+        # 4. set parameters for BeTFSMRunner:
+        self.frequency = args.frequency
+        self.interval_sec = 1.0/args.frequency
+        self.debug = args.debug
+        self.display_active = args.display_active
+        self.publish_period = 1.0/args.publish_frequency
+        set_state_machine(statemachine)  # set state machine for web-app
+        self.serve = args.serve
+
+        get_logger().info(f"BeTFSMRunnerGUI parameters: {args}")
         if self.serve:
             set_state_machine(statemachine)
             threading.Thread(
-                target=lambda: uvicorn.run(app, host="0.0.0.0", port=8000, reload=False),
+                target=lambda: uvicorn.run(app, **uvicorn_kwargs),
                 daemon=True
             ).start()
 
