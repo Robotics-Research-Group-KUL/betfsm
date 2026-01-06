@@ -30,13 +30,15 @@ documentation="https://betfsm-90d316.pages.gitlab.kuleuven.be/"
 repository="https://github.com/Robotics-Research-Group-KUL/betfsm"
 
 [project.scripts]
-betfsm_example_runner        = "betfsm_examples.example_runner:main"
 betfsm_example_concurrentseq = "betfsm_examples.example_concurrentseq:main"
-betfsm_example_sequence1     = "betfsm_examples.example_sequence1:main"  
-betfsm_example_sequence2     = "betfsm_examples.example_sequence2:main"  
-betfsm_example_sequence3     = "betfsm_examples.example_sequence3:main"  
-betfsm_example_statemachine  = "betfsm_examples.example_statemachine:main"  
-betfsm_gui_example_simple1   = "betfsm_examples.guiexample_simple1:main" 
-betfsm_gui_example_simple2   = "betfsm_examples.guiexample_simple2:main" 
-betfsm_gui_example_large     = "betfsm_examples.guiexample_large:main" 
+example_sequence1     = "betfsm_examples.example_sequence1:main"  
+example_sequence2     = "betfsm_examples.example_sequence2:main"  
+example_sequence3     = "betfsm_examples.example_sequence3:main"  
+example_statemachine  = "betfsm_examples.example_statemachine:main"  
+gui_example_simple1   = "betfsm_examples.guiexample_simple1:main" 
+gui_example_simple2   = "betfsm_examples.guiexample_simple2:main" 
+gui_example_large     = "betfsm_examples.guiexample_large:main" 
+example_common_nodes  = "betfsm_examples.example_common_nodes:main"
+example_logging       = "betfsm_examples.example_logging:main"
+
 

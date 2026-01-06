@@ -6,6 +6,6 @@ Provides also the BeTFSM visualiser web application.
 
 Currently developed in a separate branch.  To directly install this development version:
 ```
-    pip install "git+https://github.com/Robotics-Research-Group-KUL/betfsm.git@devel/restructuring_vis#egg=betfsm&subdirectory=betfsm"
+    pip install "git+https://github.com/Robotics-Research-Group-KUL/betfsm.git@devel/restructuring#egg=betfsm&subdirectory=betfsm"
 ```
 
