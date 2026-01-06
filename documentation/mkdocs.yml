@@ -40,6 +40,7 @@ nav:
       - "Compute" : "compute.md"
       - "Adapt" : "adapt.md"
       - "BeTFSMRunner": "betfsmrunner.md"
+      - "BeTFSMRunnerGUI": "betfsmrunnergui.md"
 #    - "BeTFSM ROS2":  
 #      - "ServiceClient" : 'serviceclient.md'
 #      - "LifeCycle" : 'lifecycle.md'

@@ -59,6 +59,42 @@ class LogPrinter:
     def fatal(self,*args):
         print(Style.NORMAL+Fore.RED+"FATAL : " + str(*args) +Style.RESET_ALL)              
 
+class ConfigurableLogPrinter:
+
+    DEBUG=0
+    INFO=1
+    WARN=2
+    ERROR=3
+    FATAL=4
+
+    def __init__(self, level=DEBUG, name=""):
+        self.level = level
+        self.name = f"{name}: " if name else ""
+
+    """
+    Can be used with set_logger to install a logger that prints to console.
+    Is the default if not overridden by a call to set_logger()
+    """
+    def debug(self,*args):
+        if self.level <= ConfigurableLogPrinter.DEBUG:
+            print(Style.DIM    +Fore.WHITE+self.name+"DEBUG : " + str(*args) +Style.RESET_ALL)              
+
+    def info(self,*args):
+        if self.level <= ConfigurableLogPrinter.INFO:
+            print(Style.NORMAL +Fore.WHITE+self.name+"INFO : " + str(*args) +Style.RESET_ALL)              
+
+    def warn(self,*args):
+        if self.level <= ConfigurableLogPrinter.WARN:
+            print(Style.NORMAL +Fore.YELLOW+self.name+"WARN : " + str(*args) +Style.RESET_ALL)              
+
+    def error(self,*args):
+        if self.level <= ConfigurableLogPrinter.ERROR:
+            print(Style.NORMAL +Fore.RED+self.name+"ERROR : " + str(*args) +Style.RESET_ALL)              
+
+    def fatal(self,*args):
+        if self.level <= ConfigurableLogPrinter.FATAL:
+            print(Style.NORMAL+Fore.RED+self.name+"FATAL : " + str(*args) +Style.RESET_ALL)              
+
 
 default_loggers={"default":LogPrinter(),"unknown":DummyLogPrinter()}
 
@@ -116,4 +152,46 @@ def set_logger(category:str,logger):
     """
     global default_loggers
     default_loggers[category]=logger
+
+
+def set_loggers_from_specification_string(s: str="", add_name: bool=""):
+    """
+    Sets the loggers using a specification string s.
+    e.g.: "default:DEBUG,state:INFO"
+
+    The add_name argument specifies whether to add the name of the category
+    to the log line.
+
+    If s is empty does nothing.
+    """
+    level_map = {
+        "DEBUG": ConfigurableLogPrinter.DEBUG,
+        "INFO":  ConfigurableLogPrinter.INFO,
+        "WARN":  ConfigurableLogPrinter.WARN,
+        "ERROR": ConfigurableLogPrinter.ERROR,
+        "FATAL": ConfigurableLogPrinter.FATAL,
+    }
+
+    if not s or not s.strip():
+        return
+
+    pairs = s.split(",")
+    for pair in pairs:
+        if ":" not in pair:
+            continue
+            
+        category, level_str = pair.split(":", 1)
+        category = category.strip()
+        level_str = level_str.strip().upper()
+
+        # 3. Determine the integer level
+        level_int = level_map.get(level_str, ConfigurableLogPrinter.INFO)
+
+        # 4. Determine if we should pass the category name to the printer
+        logger_name = category if add_name else ""
+
+        # 5. Create the printer and register it
+        new_logger = ConfigurableLogPrinter(level=level_int, name=logger_name)
+        set_logger(category, new_logger)
+
 

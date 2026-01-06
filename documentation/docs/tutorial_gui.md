@@ -3,10 +3,11 @@
 ### Running the BeTFSM web-server user interface
 
 
-A graphical user interface is provided to monitor a BeTFSM-tree.
+BeTFSMRunnerGUI is not only a graphical user interface to monitor a BeTFSM-tree, but is also a way to configure
+your BeTFSM from the command prompt.
 
 Using the graphical user interface is very easy.  One needs just to replace
-the BeTFSMRunner with BeTFSMRunnerGUI.  A webserver will be started that serves
+the BeTFSMRunner with [BeTFSMRunnerGUI][betfsm.betfsmrunnergui.BeTFSMRunnerGUI].  A webserver will be started that serves
 the graphical user interface at `localhost:8000`.
 
 
@@ -80,4 +81,62 @@ Very handy is the AutoExpand option, this will collapse the tree but expand all 
 The Play button and sliding bar are currently not implemented. Their purpose will be to go back and forward in time using a history of the execution.
 
 ![GUI](static/gui.png)
+
+### BeTFSMRunnerGUI is more than a GUI
+
+This runner also offers configurability on the command line:
+
+```
+usage: your_betfsm_prog.py [-h] [--frequency FREQUENCY]
+                           [--publish_frequency PUBLISH_FREQUENCY] [--debug | --no-debug]
+                           [--display_active | --no-display_active]
+                           [--betfsm_log BETFSM_LOG] [--generate_dot GENERATE_DOT]
+                           [--generate_json GENERATE_JSON] [--serve | --no-serve]
+                           [--host HOST] [--port PORT] [--workers WORKERS]
+                           [--log-level {critical,error,warning,info,debug,trace}]
+
+BeTFSMRunnerGUI command line options
+
+options:
+  -h, --help            show this help message and exit
+
+BeTFSMRunnerGUI Options:
+  --frequency FREQUENCY
+                        frequency at which BeTFSM runs [default:100.0]
+  --publish_frequency PUBLISH_FREQUENCY
+                        publishing frequency for GUI [default:5.0 ]
+  --debug, --no-debug   Log the timing of each tick [default: False]
+  --display_active, --no-display_active
+                        Log the active nodes at rate equal to publish_frequency[default:
+                        False]
+  --betfsm_log BETFSM_LOG
+                        BeTFSM Log specification string, a comma-separated list of
+                        category:level e.g. 'default:INFO, state:FATAL' with levels
+                        DEBUG,INFO,WARNING,ERROR,FATAL. Known categories are default and
+                        state, but there can be user-defined categories [default: '']
+  --generate_dot GENERATE_DOT
+                        generate a graphviz .dot file from the state machine and store in
+                        the specified file (and quit the program without running)
+  --generate_json GENERATE_JSON
+                        generate a json file from the state machine and store in the
+                        specified file (and quit the program without running)
+  --serve, --no-serve   Start-up server with graphical user interface [default:True]
+
+Uvicorn Web Server Options:
+  --host HOST           Bind socket to this host [default: 0.0.0.0]
+  --port PORT           Bind socket to this port [default: 8000]
+  --workers WORKERS     Number of worker processes[default: 1]
+  --log-level {critical,error,warning,info,debug,trace}
+                        log-level of the web-server [default: info ]
+```
+
+
+- It allows you to set the parameters of the web-server, e.g. to configure it to run from a docker image. 
+- It also can configure the BeTFSM logging and the web-server logging.
+- It allows you to **generate graphviz dot** files and json files describing the BeTFSM tree. These can
+be visualized using GraphViz ("sudo apt install xdot"    and "xdot filename.dot")
+- You can turn-off webserver and GUI if you only want the configurability.
+
+See the constructor of [BeTFSMRunnerGUI][betfsm.betfsmrunnergui.BeTFSMRunnerGUI] on how to set the parameters
+of the BeTFSMRunnerGUI, these parameters can be overridden by the command-line parameters.  
 

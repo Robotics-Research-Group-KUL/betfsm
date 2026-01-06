@@ -4,7 +4,11 @@ import argparse
 import time
 from betfsm.backend.app import app,publish_tick,set_state_machine
 from betfsm.betfsm import TickingState,Blackboard,TICKING
-from betfsm.logger import get_logger
+from betfsm.logger import get_logger, set_loggers_from_specification_string
+from betfsm.graphviz_visitor import to_graphviz_dotfile
+from betfsm.jsonvisitor import JsonVisitor
+import json
+import sys
 
 class BeTFSMRunnerGUI:
     """
@@ -12,7 +16,8 @@ class BeTFSMRunnerGUI:
     Initializes the BeTFSMRunner.  This BeTFSMRunner has no other dependencies and
     runs in the main thread.  You typically call this class in the main body of your program.
     """
-    def __init__(self, statemachine: TickingState, blackboard: Blackboard, frequency: float=100.0, publish_frequency=10,debug: bool = False, display_active=False, serve=True,
+    def __init__(self, statemachine: TickingState, blackboard: Blackboard, frequency: float=100.0, publish_frequency=10,debug: bool = False, 
+                 display_active=False, betfsm_log="",allow_generate_dot=True,allow_generate_json=True,serve=True,
                  host="0.0.0.0", port=8000, workers=1, log_level="info"):
         """
         Initializes the BeTFSMRunner.  This BeTFSMRunner has no other dependencies and
@@ -33,6 +38,14 @@ class BeTFSMRunnerGUI:
                 If true outputs debug info on console each tick. (default=False)
             display_active:
                 displays all active nodes on console
+            betfsm_log:
+                betfsm log specification string, e.g.  "default:INFO, state:FATAL",
+                levels are: DEBUG,INFO,WARN, ERROR, FATAL. An empty string will not
+                change the logger. Default="".
+            allow_generate_dot:
+                adds the generate_dot command-line parameter. [default: True]
+            allow_generate_json:
+                adds the generate_json command-line parameter. [default: True]
             host:
                 the host IP of the network interface to bind to.  Default=0.0.0.0. 
                 Typical values are:
@@ -60,6 +73,12 @@ class BeTFSMRunnerGUI:
         group_app.add_argument("--publish_frequency",type=float, default=publish_frequency, help=f"publishing frequency for GUI [default:{publish_frequency} ]")
         group_app.add_argument("--debug", action=argparse.BooleanOptionalAction, default=debug,help=f"Log the timing of each tick [default: {debug}]")
         group_app.add_argument("--display_active",action=argparse.BooleanOptionalAction,default=display_active, help=f"Log the active nodes at rate equal to publish_frequency[default: {display_active}] ")
+        group_app.add_argument("--betfsm_log",type=str,default=betfsm_log, help=f"BeTFSM Log specification string, a comma-separated list of category:level  e.g. 'default:INFO, state:FATAL' with levels DEBUG,INFO,WARNING,ERROR,FATAL. Known categories are default and state, but there can be user-defined categories   [default: '{betfsm_log}'] ")
+        if allow_generate_dot:
+            group_app.add_argument("--generate_dot",type=str, default="", help="generate a graphviz .dot file from the state machine and store in the specified file (and quit the program without running)")
+        if allow_generate_json:
+            group_app.add_argument("--generate_json",type=str, default="", help="generate a json file from the state machine and store in the specified file (and quit the program without running)")
+ 
         group_app.add_argument("--serve",action=argparse.BooleanOptionalAction,default=serve,help=f"Start-up server with graphical user interface [default:{serve}]")
 
         # --- 2. UVICORN Specific Arguments ---
@@ -73,7 +92,18 @@ class BeTFSMRunnerGUI:
                                help=f"log-level of the web-server [default: {log_level} ]")
         args = parser.parse_args()
 
-
+        if allow_generate_dot:
+            if args.generate_dot:
+                to_graphviz_dotfile(args.generate_dot, statemachine)
+                print(f"graphviz file '{args.generate_dot}' is generated, and program will be terminated")
+                sys.exit()
+        if allow_generate_json:
+            if args.generate_json:
+                visitor = JsonVisitor()
+                statemachine.accept(visitor)
+                with open(args.generate_json,"w") as f:
+                    json.dump(visitor.result(), f, indent=4)
+                sys.exit()
         # 3. Pass arguments to uvicorn.run()
         # We convert the namespace to a dict and extract only what Uvicorn needs
         uvicorn_kwargs = {
@@ -92,6 +122,8 @@ class BeTFSMRunnerGUI:
         self.publish_period = 1.0/args.publish_frequency
         set_state_machine(statemachine)  # set state machine for web-app
         self.serve = args.serve
+
+        set_loggers_from_specification_string(args.betfsm_log)
 
         get_logger().info(f"BeTFSMRunnerGUI parameters: {args}")
         if self.serve:
