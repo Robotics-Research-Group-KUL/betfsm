@@ -1,39 +1,26 @@
+# jsonvisitor.py 
+#
+# Copyright (C) Erwin Aertbeliën, 2025
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program; if not, write to the Free Software Foundation,
+# Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+
+
 from betfsm.betfsm import TickingState, GeneratorWithList,GeneratorWithState
 import re
 from typing import List
-
-#
-#class JsonVisitor:
-#    def __init__(self):
-#        self.nodes = {}
-#        self.root_id = None
-#
-#    def pre(self, state) -> bool:
-#        node = {
-#            "id": state.uid,
-#            "name": state.name,
-#            "type": type(state).__name__,
-#            "status": state.status.name,
-#            "available_outcomes": list(state.get_outcomes()),
-#            "children": [],
-#            "parentId": state.parent.uid if state.parent is not None else None,
-#            "collapsible": isinstance(state, GeneratorWithList)
-#        }
-#        if isinstance(state, GeneratorWithList):
-#            node["children"] = [s["state"].uid for s in state.states]
-#
-#        if isinstance(state, GeneratorWithState):
-#            node["children"] = [state.state.uid]
-#        self.nodes[state.uid] = node
-#        if state.parent is None:
-#            self.root_id = state.uid
-#        return True
-#
-#    def post(self, state): pass
-#
-#    def result(self):
-#        return {"rootId": self.root_id, "nodes": list(self.nodes.values())}
-#
 
 import re
 from betfsm.betfsm import TickingState, GeneratorWithList, GeneratorWithState
