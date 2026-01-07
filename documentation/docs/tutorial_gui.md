@@ -87,13 +87,14 @@ The Play button and sliding bar are currently not implemented. Their purpose wil
 This runner also offers configurability on the command line:
 
 ```
-usage: your_betfsm_prog.py [-h] [--frequency FREQUENCY]
-                           [--publish_frequency PUBLISH_FREQUENCY] [--debug | --no-debug]
-                           [--display_active | --no-display_active]
-                           [--betfsm_log BETFSM_LOG] [--generate_dot GENERATE_DOT]
-                           [--generate_json GENERATE_JSON] [--serve | --no-serve]
-                           [--host HOST] [--port PORT] [--workers WORKERS]
-                           [--log-level {critical,error,warning,info,debug,trace}]
+Usage: your_betfsm_progr [-h] [--frequency FREQUENCY]
+                         [--publish_frequency PUBLISH_FREQUENCY] [--debug | --no-debug]
+                         [--display_active | --no-display_active]
+                         [--betfsm_log BETFSM_LOG] [--name-filter NAME_FILTER]
+                         [--generate_dot GENERATE_DOT] [--generate_json GENERATE_JSON]
+                         [--serve | --no-serve] [--host HOST] [--port PORT]
+                         [--workers WORKERS]
+                         [--log-level {critical,error,warning,info,debug,trace}]
 
 BeTFSMRunnerGUI command line options
 
@@ -107,16 +108,20 @@ BeTFSMRunnerGUI Options:
                         publishing frequency for GUI [default:5.0 ]
   --debug, --no-debug   Log the timing of each tick [default: False]
   --display_active, --no-display_active
-                        Log the active nodes at rate equal to publish_frequency[default:
-                        False]
+                        Log the active nodes at rate equal to
+                        publish_frequency[default: False]
   --betfsm_log BETFSM_LOG
                         BeTFSM Log specification string, a comma-separated list of
                         category:level e.g. 'default:INFO, state:FATAL' with levels
-                        DEBUG,INFO,WARNING,ERROR,FATAL. Known categories are default and
-                        state, but there can be user-defined categories [default: '']
+                        DEBUG,INFO,WARNING,ERROR,FATAL. Known categories are default
+                        and state, but there can be user-defined categories [default:
+                        '']
+  --name-filter NAME_FILTER
+                        specifies a comma-separated list of names (can be regular
+                        expressions) to filter out.[default: ''
   --generate_dot GENERATE_DOT
-                        generate a graphviz .dot file from the state machine and store in
-                        the specified file (and quit the program without running)
+                        generate a graphviz .dot file from the state machine and store
+                        in the specified file (and quit the program without running)
   --generate_json GENERATE_JSON
                         generate a json file from the state machine and store in the
                         specified file (and quit the program without running)
@@ -128,6 +133,7 @@ Uvicorn Web Server Options:
   --workers WORKERS     Number of worker processes[default: 1]
   --log-level {critical,error,warning,info,debug,trace}
                         log-level of the web-server [default: info ]
+
 ```
 
 
@@ -135,6 +141,7 @@ Uvicorn Web Server Options:
 - It also can configure the BeTFSM logging and the web-server logging.
 - It allows you to **generate graphviz dot** files and json files describing the BeTFSM tree. These can
 be visualized using GraphViz ("sudo apt install xdot"    and "xdot filename.dot")
+- It allows to specify names of nodes that are not expanded in the GUI (name-filter)
 - You can turn-off webserver and GUI if you only want the configurability.
 
 See the constructor of [BeTFSMRunnerGUI][betfsm.betfsmrunnergui.BeTFSMRunnerGUI] on how to set the parameters

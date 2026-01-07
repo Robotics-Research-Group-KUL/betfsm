@@ -27,10 +27,26 @@ app.mount("/static", StaticFiles(directory=str(frontend_path),html=True), name="
 
 clients = set()
 root = None   # root state machine to display. (set from outside)
+name_filter = None
+type_filter = None
 
-def set_state_machine(sm):
-    global root
+def set_webserver_param(sm, my_name_filter=None, my_type_filter=None):
+    """
+    Sets parameters for the webserver:
+
+    Parameters:
+        sm:
+            A BeTFSM tree
+        my_name_filter:
+            do not descend further into nodes that match the names in this list.
+            The name can be a regular expression.
+        my_type_filter:
+            do not descend further into nodes that are an instance of the types in this list.
+    """
+    global root, name_filter, type_filter
     root = sm
+    name_filter = my_name_filter
+    type_filter = my_type_filter
 
 class HistoryBuffer:
     def __init__(self, seconds=300):
@@ -98,7 +114,7 @@ def alive():
 def get_tree():
     get_logger().info("/api/tree called")
     global root
-    visitor = JsonVisitor()
+    visitor = JsonVisitor(name_filter,type_filter)
     if root is not None:
        root.accept(visitor)
     else:
