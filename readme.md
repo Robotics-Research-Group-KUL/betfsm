@@ -9,6 +9,8 @@ both high- and low level.
 
 <p/>
 
+[![Humble Build and Test](https://github.com/Robotics-Research-Group-KUL/betfsm/actions/workflows/build-and-test-ros2-humble.yml/badge.svg?branch=main)](https://github.com/Robotics-Research-Group-KUL/betfsm/actions/workflows/build-and-test-ros2-humble.yml?branch=main)
+
 ## Documentation
 
 [Github pages for BeTFSM documentation](https://robotics-research-group-kul.github.io/betfsm/)
