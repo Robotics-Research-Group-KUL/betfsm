@@ -17,7 +17,7 @@ jobs:
       - name: Build and Test
         uses: ros-tooling/action-ros-ci@v0.4
         with:
-          package-name: betfsm betfsm_interfaces
+          package-name: betfsm betfsm_interfaces betfsm_demos
           target-ros2-distro: foxy
           skip-tests: true
           coverage-result: false
