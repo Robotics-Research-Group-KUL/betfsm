@@ -17,6 +17,6 @@ jobs:
       - name: Build and Test
         uses: ros-tooling/action-ros-ci@v0.4
         with:
-          package-name: betfsm betfsm_interface betfsm_demos
+          package-name: betfsm betfsm_interfaces betfsm_demos
           target-ros2-distro: humble
           coverage-result: false
