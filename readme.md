@@ -1,5 +1,17 @@
 <img src="./logo_banner.png" alt="BeTFSM logo" style="width:1000px; display:block;" />
 
+<div align="center">
+
+[![Foxy Build](https://github.com/Robotics-Research-Group-KUL/betfsm/actions/workflows/build-and-test-ros2-foxy.yml/badge.svg?branch=main)](https://github.com/Robotics-Research-Group-KUL/betfsm/actions/workflows/build-and-test-ros2-foxy.yml?branch=main)
+[![Galactic Build](https://github.com/Robotics-Research-Group-KUL/betfsm/actions/workflows/build-and-test-ros2-galactic.yml/badge.svg?branch=main)](https://github.com/Robotics-Research-Group-KUL/betfsm/actions/workflows/build-and-test-ros2-galactic.yml?branch=main)
+[![Humble Build](https://github.com/Robotics-Research-Group-KUL/betfsm/actions/workflows/build-and-test-ros2-humble.yml/badge.svg?branch=main)](https://github.com/Robotics-Research-Group-KUL/betfsm/actions/workflows/build-and-test-ros2-humble.yml?branch=main)
+[![Iron Build](https://github.com/Robotics-Research-Group-KUL/betfsm/actions/workflows/build-and-test-ros2-iron.yml/badge.svg?branch=main)](https://github.com/Robotics-Research-Group-KUL/betfsm/actions/workflows/build-and-test-ros2-iron.yml?branch=main)
+[![Jazzy Build](https://github.com/Robotics-Research-Group-KUL/betfsm/actions/workflows/build-and-test-ros2-jazzy.yml/badge.svg?branch=main)](https://github.com/Robotics-Research-Group-KUL/betfsm/actions/workflows/build-and-test-ros2-jazzy.yml?branch=main)
+[![Kilted Build](https://github.com/Robotics-Research-Group-KUL/betfsm/actions/workflows/build-and-test-ros2-kilted.yml/badge.svg?branch=main)](https://github.com/Robotics-Research-Group-KUL/betfsm/actions/workflows/build-and-test-ros2-kilted.yml?branch=main)
+[![Rolling Build](https://github.com/Robotics-Research-Group-KUL/betfsm/actions/workflows/build-and-test-ros2-rolling.yml/badge.svg?branch=main)](https://github.com/Robotics-Research-Group-KUL/betfsm/actions/workflows/build-and-test-ros2-rolling.yml?branch=main)
+
+<div align="left">
+
 <p/>
 
 
@@ -9,13 +21,7 @@ both high- and low level.
 
 <p/>
 
-[![Foxy Build](https://github.com/Robotics-Research-Group-KUL/betfsm/actions/workflows/build-and-test-ros2-foxy.yml/badge.svg?branch=main)](https://github.com/Robotics-Research-Group-KUL/betfsm/actions/workflows/build-and-test-ros2-foxy.yml?branch=main)
-[![Galactic Build](https://github.com/Robotics-Research-Group-KUL/betfsm/actions/workflows/build-and-test-ros2-galactic.yml/badge.svg?branch=main)](https://github.com/Robotics-Research-Group-KUL/betfsm/actions/workflows/build-and-test-ros2-galactic.yml?branch=main)
-[![Humble Build](https://github.com/Robotics-Research-Group-KUL/betfsm/actions/workflows/build-and-test-ros2-humble.yml/badge.svg?branch=main)](https://github.com/Robotics-Research-Group-KUL/betfsm/actions/workflows/build-and-test-ros2-humble.yml?branch=main)
-[![Iron Build](https://github.com/Robotics-Research-Group-KUL/betfsm/actions/workflows/build-and-test-ros2-iron.yml/badge.svg?branch=main)](https://github.com/Robotics-Research-Group-KUL/betfsm/actions/workflows/build-and-test-ros2-iron.yml?branch=main)
-[![Jazzy Build](https://github.com/Robotics-Research-Group-KUL/betfsm/actions/workflows/build-and-test-ros2-jazzy.yml/badge.svg?branch=main)](https://github.com/Robotics-Research-Group-KUL/betfsm/actions/workflows/build-and-test-ros2-jazzy.yml?branch=main)
-[![Kilted Build](https://github.com/Robotics-Research-Group-KUL/betfsm/actions/workflows/build-and-test-ros2-kilted.yml/badge.svg?branch=main)](https://github.com/Robotics-Research-Group-KUL/betfsm/actions/workflows/build-and-test-ros2-kilted.yml?branch=main)
-[![Rolling Build](https://github.com/Robotics-Research-Group-KUL/betfsm/actions/workflows/build-and-test-ros2-rolling.yml/badge.svg?branch=main)](https://github.com/Robotics-Research-Group-KUL/betfsm/actions/workflows/build-and-test-ros2-rolling.yml?branch=main)
+
 
 ## Documentation
 
