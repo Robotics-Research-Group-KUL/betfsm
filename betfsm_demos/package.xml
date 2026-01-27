@@ -9,8 +9,6 @@
 
   <depend>betfsm_interfaces</depend>
   <depend>betfsm</depend>
-  <depend>crospi_core</depend>
-  <depend>crospi_application_template</depend>
   <exec_depend>rclpy</exec_depend>
 
   <test_depend>ament_copyright</test_depend>
