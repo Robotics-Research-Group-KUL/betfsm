@@ -12,7 +12,7 @@ jobs:
   galactic_build_and_test:
     runs-on: ubuntu-latest
     container:
-      image: rostooling/setup-ros-docker:ubuntu-focal-latest 
+      image: ros:galactic
     steps:
       - name: Build and Test
         uses: ros-tooling/action-ros-ci@v0.4
