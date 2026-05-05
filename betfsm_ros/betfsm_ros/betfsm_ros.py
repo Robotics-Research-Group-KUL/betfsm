@@ -29,7 +29,7 @@ from rclpy.qos import QoSHistoryPolicy, QoSProfile, QoSReliabilityPolicy, QoSDur
 from rclpy.time import Duration
 from rclpy.action import ActionClient
 
-from .betfsm import *
+from betfsm.betfsm import *
 from .betfsm_node import BeTFSMNode
 
 

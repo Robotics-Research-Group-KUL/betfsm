@@ -22,7 +22,7 @@ BeTFSM states related to eTaSL
 """
 from rclpy.qos import QoSProfile
 
-from .betfsm_ros import *
+from betfsm_ros.betfsm_ros import *
 
 from crospi_interfaces.srv import TaskSpecificationFile
 from crospi_interfaces.srv import TaskSpecificationString
