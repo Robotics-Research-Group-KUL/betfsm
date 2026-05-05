@@ -2,20 +2,26 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>betfsm</name>
-  <version>0.0.0</version>
-  <description> A behavior tree and finite state machine framework in Python using cooperative multitasking where new state machines or behavior-tree nodes can be easily specified </description>
-  <maintainer email="Erwin.Aertbelien@kuleuven.be">ros2</maintainer>
+  <version>1.1.0</version>
+  <description>BeTFSM is a library for ticking statemachines and behavior trees.</description>
+  <maintainer email="Erwin.Aertbelien@kuleuven.be">Erwin Aertbeliën</maintainer>
   <license>LGPL-3.0-only</license>
 
-  <depend>betfsm_interfaces</depend>
-  <depend>crospi_core</depend>
-  <depend>crospi_application_template</depend>
-  <exec_depend>rclpy</exec_depend>
+  <url type="website">https://betfsm-90d316.pages.gitlab.kuleuven.be/</url>
+  <url type="repository">https://github.com/Robotics-Research-Group-KUL/betfsm</url>
 
-  <test_depend>ament_copyright</test_depend>
-  <test_depend>ament_flake8</test_depend>
-  <test_depend>ament_pep257</test_depend>
-  <test_depend>python3-pytest</test_depend>
+  <buildtool_depend>setuptools</buildtool_depend>
+  <buildtool_depend>python3-colcon-common-extensions</buildtool_depend>
+
+  <!-- Python Dependencies -->
+  <exec_depend>python3-colorama</exec_depend>
+  <exec_depend>python3-websockets</exec_depend>
+  <!-- Note: fastapi and uvicorn might need to be installed via pip if not in rosdep -->
+  <exec_depend>python3-fastapi</exec_depend>
+  <exec_depend>python3-uvicorn</exec_depend>
+
+  <!-- ROS 2 Specific -->
+  <exec_depend>rclpy</exec_depend>
 
   <export>
     <build_type>ament_python</build_type>
