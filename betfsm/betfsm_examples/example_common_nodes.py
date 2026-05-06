@@ -1,14 +1,11 @@
 #!/usr/bin/env python3
 
-import time
-from betfsm.betfsm import (
+from betfsm import (
     TickingStateMachine, BeTFSMRunner, Sequence, ConcurrentSequence, 
     Message, SUCCEED, TICKING, CANCEL, Generator, Blackboard,
-    Repeat, Fallback, TimedWait, Concurrent, TimedRepeat
+    Repeat, Fallback, TimedWait, Concurrent, TimedRepeat,
+    to_graphviz_dotfile, get_logger, BeTFSMRunnerGUI
 )
-from betfsm.graphviz_visitor import to_graphviz_dotfile
-from betfsm.logger import get_logger, LogPrinter, set_logger
-from betfsm.betfsmrunnergui import BeTFSMRunnerGUI
 
 class CountDown(Generator):
     """
@@ -103,19 +100,20 @@ def main():
 
     # 6. State Machine Definition
     # Define the possible outcomes of the SM.
-    #sm = TickingStateMachine("root_sm", [SUCCEED])
+    sm = TickingStateMachine("root_sm", [SUCCEED])
     
     # Add the states to the State Machine and link them
-    #sm.add_state(seq, transitions={SUCCEED: conc_seq}) # you can refer to a state by its instance
-    #sm.add_state(conc_seq, transitions={SUCCEED: conc})
-    #sm.add_state(conc, transitions={SUCCEED: rep})
-    #sm.add_state(rep, transitions={SUCCEED: "fallback_phase"}) # you can also refer to a state by its name
-    #sm.add_state(fallback, transitions={SUCCEED: SUCCEED}) # If fallback succeeds (returns SUCCEED), SM finishes. 
+    sm.add_state(seq, transitions={SUCCEED: conc_seq}) # you can refer to a state by its instance
+    sm.add_state(conc_seq, transitions={SUCCEED: conc})
+    sm.add_state(conc, transitions={SUCCEED: rep})
+    sm.add_state(rep, transitions={SUCCEED: "fallback_phase"}) # you can also refer to a state by its name
+    sm.add_state(fallback, transitions={SUCCEED: SUCCEED}) # If fallback succeeds (returns SUCCEED), SM finishes. 
                                                            # if the value in the transitions map is an outcome, it indicates that the statemachine exits. 
     # Set the initial state
-    #sm.set_start_state("sequence_phase")
+    sm.set_start_state("sequence_phase")
 
-    sm = Sequence("application",[seq, conc_seq, conc, rep, fallback])
+    # Alternative to the state machine (much shorter):
+    #sm = Sequence("application",[seq, conc_seq, conc, rep, fallback])
     
     to_graphviz_dotfile("example_runner_gui.dot", sm)
 

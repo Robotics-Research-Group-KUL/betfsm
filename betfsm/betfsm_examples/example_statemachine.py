@@ -5,13 +5,11 @@
 #
 
 import time
-from betfsm.betfsm import (
+from betfsm import (
     BeTFSMRunner, Sequence,  TickingStateMachine,
     TimedWait, Message, TimedRepeat,
-    SUCCEED, TICKING, CANCEL, Generator, Blackboard
+    SUCCEED, TICKING, CANCEL, Generator, to_graphviz_dotfile, get_logger
 )
-from betfsm.graphviz_visitor import to_graphviz_dotfile
-from betfsm.logger import get_logger
 import random
 
 # A user defined TickingState:

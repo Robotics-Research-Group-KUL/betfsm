@@ -2,12 +2,10 @@
 #!/usr/bin/env python3
 
 import time
-from betfsm.betfsm import (
+from betfsm import (
     BeTFSMRunner, Sequence, ConcurrentSequence,TimedWait,TimedRepeat,
-    Message, SUCCEED, TICKING, CANCEL, Generator, Blackboard
+    Message, SUCCEED, TICKING, CANCEL, Generator, to_graphviz_dotfile, get_logger
 )
-from betfsm.graphviz_visitor import to_graphviz_dotfile
-from betfsm.logger import get_logger
 
 
 # A user defined TickingState:

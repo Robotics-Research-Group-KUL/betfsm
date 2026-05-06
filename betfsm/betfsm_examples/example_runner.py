@@ -1,13 +1,10 @@
 #!/usr/bin/env python3
 
-import time
-from betfsm.betfsm import (
+from betfsm import (
     TickingStateMachine, BeTFSMRunner, Sequence, ConcurrentSequence, 
-    Message, SUCCEED, TICKING, CANCEL, Generator, Blackboard,
-    Repeat, Fallback
+    Message, SUCCEED, TICKING, CANCEL, Generator,
+    Repeat, Fallback, to_graphviz_dotfile,get_logger
 )
-from betfsm.graphviz_visitor import to_graphviz_dotfile
-from betfsm.logger import get_logger
 
 class CountDown(Generator):
     """

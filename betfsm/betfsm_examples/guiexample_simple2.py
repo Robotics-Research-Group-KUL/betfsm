@@ -3,10 +3,8 @@ import webbrowser
 
 # ---- building the state machine -----
 from betfsm.betfsm import (
-        Sequence, ConcurrentSequence, TimedWait, TimedRepeat, Message, SUCCEED, Generator, Repeat
+        Sequence, ConcurrentSequence, TimedWait, TimedRepeat, Message, SUCCEED, Repeat, get_logger,BeTFSMRunnerGUI
 )
-from betfsm.logger import get_logger
-from betfsm.betfsmrunnergui import BeTFSMRunnerGUI
 
 
 # ---------------------------------------

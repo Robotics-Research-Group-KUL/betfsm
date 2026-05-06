@@ -9,12 +9,10 @@
 
 import time
 
-from betfsm.betfsm import (
-    BeTFSMRunner, Sequence,  
-    Message, SUCCEED, TICKING, CANCEL, Generator, Blackboard
+from betfsm import (
+    SUCCEED, TICKING, CANCEL, get_logger, set_logger,LogPrinter, DummyLogPrinter
 )
 
-from betfsm.logger import get_logger, set_logger,LogPrinter, DummyLogPrinter
 
 
 class MyLogPrinter:

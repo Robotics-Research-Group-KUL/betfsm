@@ -2,11 +2,9 @@ import threading
 import webbrowser
 
 # ---- building the state machine -----
-from betfsm.betfsm import (
-        Sequence, ConcurrentSequence, TimedWait, TimedRepeat, Message, SUCCEED, Generator, Repeat
+from betfsm import (
+        Sequence, ConcurrentSequence, TimedWait, TimedRepeat, Message, SUCCEED, get_logger,BeTFSMRunnerGUI
 )
-from betfsm.logger import get_logger
-from betfsm.betfsmrunnergui import BeTFSMRunnerGUI
 
 # ---------------------------------------
 def build_tree():

@@ -2,12 +2,11 @@
 #!/usr/bin/env python3
 
 import time
-from betfsm.betfsm import (
+from betfsm import (
     BeTFSMRunner, Sequence,  
-    Message, SUCCEED, TICKING, CANCEL, Generator, Blackboard
+    Message, SUCCEED, TICKING, CANCEL, Generator, Blackboard, get_logger,
+    to_graphviz_dotfile
 )
-from betfsm.graphviz_visitor import to_graphviz_dotfile
-from betfsm.logger import get_logger
 
 
 # A user defined TickingState:
@@ -40,7 +39,12 @@ def main():
  
     # 2. Run it using BeTFSMRunner at 100 Hz
     runner = BeTFSMRunner(sm, bb, frequency=100.0,debug=True) # Hz
+
+    print("I have written a graphviz dot file representing the tree in example_sequence2.dot")
+    to_graphviz_dotfile("example_sequence2.dot",sm)
+
     get_logger().info("Running State Machine... (explicitly logged in main)")
+    
     outcome = runner.run()
     get_logger().info(f"State Machine Finished with outcome: {outcome} (explicitly logged in main)")
     

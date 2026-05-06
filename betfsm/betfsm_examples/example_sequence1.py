@@ -1,13 +1,12 @@
 # Example of a sequence
 #!/usr/bin/env python3
 
-import time
 from betfsm.betfsm import (
     BeTFSMRunner, Sequence,  
-    Message, SUCCEED, TICKING, CANCEL, Generator, Blackboard
+    Message, SUCCEED, TICKING, CANCEL, Generator, Blackboard,
+    get_logger
 )
-from betfsm.graphviz_visitor import to_graphviz_dotfile
-from betfsm.logger import get_logger
+
 
 
 # A user defined TickingState:
