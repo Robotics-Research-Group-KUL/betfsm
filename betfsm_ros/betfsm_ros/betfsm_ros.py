@@ -656,7 +656,20 @@ def expand_ref(pth: str) -> str:
     """    
     return expand_package_ref(expand_env_ref(pth))
 
+
 class BeTFSMROSRunner:
+    """
+    Runner for a BeTFSM ticking state machine running under ROS.
+
+
+    Usage scenario:
+        rclpy.init(args=args)
+        blackboard = {}
+        my_node = BeTFSMNode.get_instance("skill_example")
+        sm = MyStateMachine()
+        runner = BeTFSMROSRunner(my_node,sm,blackboard,0.01)
+        rclpy.spin(my_node)
+    """
     def __init__(self,node:Node, statemachine:TickingState, blackboard: Blackboard, sampletime):
         get_logger().info(f"BeTFSMROSRunner started with sample time {sampletime}")
         self.node  = node
@@ -680,3 +693,143 @@ class BeTFSMROSRunner:
         with self.outcome_lock:
             outcome = self.outcome
         return outcome
+
+
+
+
+
+
+# starting to adapt: but switched to the more generic BeTFSMRosRunnerGUI
+# 
+# from rclpy.clock import Clock, ClockType
+# class BeTFSMROSRunner:
+#     """
+#     Runner for a BeTFSM ticking state machine running under ROS.
+
+
+#     Usage scenario:
+#         rclpy.init(args=args)
+#         blackboard = {}
+#         my_node = BeTFSMNode.get_instance("skill_example")
+#         sm = MyStateMachine()
+#         runner = BeTFSMROSRunner(my_node,sm,blackboard,0.01)
+#         rclpy.spin(my_node)
+#     """
+#     def __init__(self,node:Node, statemachine:TickingState, blackboard: Blackboard, frequency: float=100.0, 
+#                  debug: bool = False, display_active:bool = False):
+#         get_logger().info(f"BeTFSMROSRunner started with sample frequency {frequency}")
+#         self.node  = node
+#         self.sm    = statemachine
+#         self.bm    = blackboard
+#         self.timer = self.node.create_timer(1.0/frequency, self.timer_cb)
+#         self.outcome = "TICKING"
+#         self.outcome_lock = Lock()
+#         self.debug = debug
+#         self.display_active = display_active
+#         self.steady_clock = Clock(clock_type=ClockType.STEADY_TIME) 
+#         self.first_time = True
+#         #steady_now = steady_clock.now()
+
+#     def timer_cb(self):
+#         if self.first_time:
+#             self.previous    = self.steady_clock.now()
+#             if self.debug:
+#                 get_logger().debug(f"BeTFSMRunner time: {self.previous.nanoseconds/1.0e9:10.3f} s started (frequency:{self.frequency})")
+#         outcome = self.sm(self.bm)
+#         now = self.steady_clock.now()
+#         if self.display_active:
+#             gl=TickingState.get_global_log()
+#             active = "active: ("
+#             for k,v in TickingState.get_global_log().items():
+#                 active = active + v.name + " "
+#             active=active+")"
+#         else:
+#             active=""
+#         if self.debug or self.display_active:
+#             get_logger().debug(f"{now.nanoseconds/1.0E-9:10.3f} s : looping {active}")
+#         if (now - previous)
+#         if outcome!=TICKING:
+#             self.timer.cancel()
+#             self.set_outcome(outcome)
+
+#     def set_outcome(self, outcome):
+#         with self.outcome_lock:
+#             self.outcome = outcome
+
+#     def get_outcome(self):
+#         with self.outcome_lock:
+#             outcome = self.outcome
+#         return outcome
+
+# Example of the simple runner:
+# class BeTFSMRunner:
+#     """
+#     Runner for a BeTFSM ticking state machine.
+#     Initializes the BeTFSMRunner.  This BeTFSMRunner has no other dependencies and
+#     runs in the main thread.  You typically call this class in the main body of your program.
+#     """
+#     def __init__(self, statemachine: TickingState, blackboard: Blackboard, frequency: float=100.0, debug: bool = False, display_active=False):
+#         """
+#         Initializes the BeTFSMRunner.  This BeTFSMRunner has no other dependencies and
+#         runs in the main thread.
+
+#         Parameters:
+#             statemachine:
+#                 the TickingStateMachine to be run
+#             blackboard:
+#                 the blackboard to be used
+#             frequency:
+#                 frequency at which the statemachine is ticked (in Hz) (default=100Hz)
+#             debug:
+#                 If true outputs debug info each tick. (default=False)
+#         """
+#         self.statemachine = statemachine
+#         self.blackboard = blackboard
+#         self.frequency = frequency
+#         self.interval_sec = 1.0/frequency
+#         self.debug = debug
+#         self.display_active = display_active
+
+
+#     def run(self):
+#         """
+#         Runs the statemachine until it returns an outcome different from TICKING
+
+#         Refers to absolute time to avoid drifting. Uses monotonic clock to 
+#         avoid problems with system time changes.
+
+#         Returns:
+#             the final outcome of the statemachine
+#         """
+#         # Use monotonic clock to avoid issues with system time changes
+#         start    = time.monotonic()
+#         if self.debug:
+#             get_logger().debug(f"BeTFSMRunner time: {start:10.3f} s started (frequency:{self.frequency})")
+#         next_run = start + self.interval_sec
+#         outcome  = TICKING
+#         now      = start
+#         while outcome == TICKING:
+#             outcome = self.statemachine(self.blackboard)
+#             now = time.monotonic()
+#             if self.display_active:
+#                 gl=TickingState.get_global_log()
+#                 active = "active: ("
+#                 for k,v in TickingState.get_global_log().items():
+#                     active = active + v.name + " "
+#                 active=active+")"
+#             else:
+#                 active=""
+#             if self.debug or self.display_active:
+#                 get_logger().debug(f"{now:10.3f} s : looping {active}")
+#             # Sleep until the next scheduled time
+#             sleep_time = next_run - now
+
+#             if sleep_time > 0:
+#                 time.sleep(sleep_time)
+#             else:
+#                 # If we're behind schedule, log drift
+#                 get_logger().warn(f"[Warning] Drift detected: {abs(sleep_time):.3f} s late")
+
+#             # Schedule next run
+#             next_run += self.interval_sec
+#         return outcome
