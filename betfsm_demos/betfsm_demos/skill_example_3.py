@@ -1,0 +1,98 @@
+#!/usr/bin/env python3
+
+#  Copyright (c) 2025 KU Leuven, Belgium
+#
+#  Author: Santiago Iregui, Erwin Aertbelien
+#  email: <santiago.iregui@kuleuven.be>
+#
+#  GNU Lesser General Public License Usage
+#  Alternatively, this file may be used under the terms of the GNU Lesser
+#  General Public License version 3 as published by the Free Software
+#  Foundation and appearing in the file LICENSE.LGPLv3 included in the
+#  packaging of this file. Please review the following information to
+#  ensure the GNU Lesser General Public License version 3 requirements
+#  will be met: https://www.gnu.org/licenses/lgpl.html.
+# 
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Lesser General Public License for more details.
+
+import rclpy
+import sys
+
+from betfsm import (
+    Sequence,  Message, SUCCEED, TICKING, CANCEL, ABORT,TIMEOUT,Generator, Blackboard,
+    TickingState,TickingStateMachine,BeTFSMRunnerGUI, get_logger,set_logger,
+    Ctrl_C_Handler,CheckCancel, get_path_value
+)
+from betfsm_crospi import load_task_list, eTaSL_StateMachine
+from betfsm_ros import BeTFSMNode,BeTFSMRosRunnerGUI,Node,Duration,LifeCycle,Transition
+
+
+class MySequence(Sequence):
+    def __init__(self):
+        super().__init__("my_sequence", [
+            eTaSL_StateMachine("MovingHome","MovingHome"),
+            eTaSL_StateMachine("MovingDown","MovingDown"),
+            eTaSL_StateMachine("MovingUp","MovingUp"),
+            eTaSL_StateMachine("MovingSpline","MovingSpline") ]
+        )
+
+class MyCleanup(TickingStateMachine):
+    """
+    Cleaning up eTaSL i.e. stop any motion and put the crospi node in a cleaned up state
+    """
+    def __init__(self,srv_name:str="/etasl_node",timeout:Duration = Duration(seconds=1.0), node : Node = None):
+        # execute in sequence but don't care about ABORT, only way to fail is TIMEOUT
+        super().__init__("Cleanup",[CANCEL,SUCCEED])
+
+        #self.add_state(state=LifeCycle("DEACTIVATE_ETASL",srv_name,Transition.DEACTIVATE,timeout,node),
+        #               transitions={SUCCEED: "CLEANUP_ETASL",  ABORT: "CLEANUP_ETASL", TIMEOUT:"CLEANUP_ETASL"} )
+        #self.add_state( state=LifeCycle("CLEANUP_ETASL",srv_name,Transition.CLEANUP,timeout,node),
+        #               transitions={SUCCEED: CANCEL, ABORT: CANCEL,TIMEOUT: CANCEL} )
+        self.add_state(LifeCycle("DEACTIVATE_ETASL",srv_name,Transition.DEACTIVATE,timeout,node),
+                    transitions={SUCCEED: "CLEANUP_ETASL",
+                                ABORT: "CLEANUP_ETASL",
+                                TIMEOUT: ABORT}) 
+        self.add_state(LifeCycle("CLEANUP_ETASL",srv_name,Transition.CLEANUP,timeout,node),
+                    transitions={SUCCEED: "CANCEL",
+                    ABORT: "CANCEL"}) 
+
+# main
+def main(args=None):
+    rclpy.init(args=args)    
+    my_node = BeTFSMNode.get_instance("skill_example")
+
+    set_logger("default",my_node.get_logger())
+
+    get_logger().info("skill_example_3 started")
+    blackboard = {}
+
+    load_task_list("$[crospi_application_template]/skill_specifications/libraries/skill_lib_example/tasks/skill_example.json",blackboard)
+    
+    get_logger().info("Now cleaning up after a ctrl-c using a cleanup TickingState")
+
+
+    
+    Ctrl_C_Handler(blackboard,"/cancelation/ctrl_c",repeated=3)    
+    nominal_sm = MySequence()
+    cleanup_sm = MyCleanup()
+    sm = CheckCancel("check_cancelation", lambda bb: get_path_value(bb,"/cancelation/ctrl_c"), nominal_sm, cleanup_sm)
+
+    # This is now working and recommended, accepts command-line parameters (see --help)
+    # has many more optional arguments, see API documentation
+    # checks whether timing exceeds sample period.
+    runner = BeTFSMRosRunnerGUI(my_node,sm,blackboard, frequency=100.0, publish_frequency=5.0, debug=False, display_active=False,betfsm_log="default:INFO, state:FATAL,service:FATAL")
+
+    try:
+        runner.run()
+    except KeyboardInterrupt:
+        my_node.destroy_node()
+        return   
+    my_node.destroy_node()
+    rclpy.shutdown()
+    print("shutdown")
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv))

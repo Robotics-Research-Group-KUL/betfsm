@@ -72,7 +72,6 @@ class MyStateMachine(TickingStateMachine):
         )
 
 
-
 # main
 def main(args=None):
     rclpy.init(args=args)    
@@ -83,7 +82,7 @@ def main(args=None):
     #set_logger("state",my_node.get_logger())   
 
 
-    get_logger().info("BeTFSM started")
+    get_logger().info("skill_example_1 started")
     blackboard = {}
 
     load_task_list("$[crospi_application_template]/skill_specifications/libraries/skill_lib_example/tasks/skill_example.json",blackboard)
@@ -95,7 +94,15 @@ def main(args=None):
     # has many more optional arguments, see API documentation
     # checks whether timing exceeds sample period.
     runner = BeTFSMRosRunnerGUI(my_node,sm,blackboard, frequency=100.0, publish_frequency=5.0, debug=False, display_active=False,betfsm_log="default:INFO, state:FATAL,service:FATAL")
-    runner.run()
+
+    try:
+        runner.run()
+    except KeyboardInterrupt:
+        my_node.destroy_node()
+        return   
+    my_node.destroy_node()
+    rclpy.shutdown()
+    print("shutdown")
 
     # alternatively you can do rclpy.spin(my_node) instead of run()
     # ("run" used for uniformity with/without ros)

@@ -33,6 +33,8 @@ from rclpy.clock import Clock, ClockType
 from betfsm import Lock
 from rclpy.node import Node
 import rclpy
+from rclpy.task import Future
+import signal
 
 
 class BeTFSMRosRunnerGUI:
@@ -158,6 +160,7 @@ class BeTFSMRosRunnerGUI:
         set_loggers_from_specification_string(args.betfsm_log)
 
         # 5. local variables of the run() that now have to be stored in the class and create ROS2 timer
+        self.shutdown_future = Future()
         self.node = node
         self.steady_clock = Clock(clock_type=ClockType.STEADY_TIME)  #steady_now = steady_clock.now()
         self.first_time = True
@@ -207,8 +210,12 @@ class BeTFSMRosRunnerGUI:
             get_logger().warn(f"[Warning] Sample period exceeded : {abs(self.now-self.next_run)/1E-9:.6f} s late")
         self.next_run += self.interval_ns
         if outcome!=TICKING:
-            self.timer.cancel()
+            self.timer.cancel()            
             self.set_outcome(outcome)
+            get_logger().info(f"BeTFSM finished with outcome {outcome}")
+            self.shutdown_future.set_result(True)
+            
+            
 
     def set_outcome(self, outcome):
         with self.outcome_lock:
@@ -221,6 +228,55 @@ class BeTFSMRosRunnerGUI:
 
     def run(self):
         self.first_time = True
-        rclpy.spin(self.node)
+        rclpy.spin_until_future_complete(self.node, self.shutdown_future, executor=None,timeout_sec=None)
+        
+
+# TODO PROPER USE OF FUTURE
 
 
+# import rclpy
+# from rclpy.node import Node
+# from rclpy.task import Future
+
+# class BehaviorTreeNode(Node):
+#     def __init__(self):
+#         super().__init__('bt_node')
+        
+#         # 1. The Future that controls the executable's life
+#         self.shutdown_future = Future()
+        
+#         # 2. Fixed frequency ticking (e.g., 100Hz)
+#         self.timer = self.create_timer(0.01, self.bt_tick_callback)
+        
+#         self.get_logger().info("BT Node initialized. Ticking at 100Hz...")
+
+#     def bt_tick_callback(self):
+#         # Your Behavior Tree ticking logic goes here
+#         # status = self.tree.tick()
+        
+#         # Example condition to stop the executable
+#         # if status == SUCCESS or status == FAILURE:
+#         #     self.shutdown_future.set_result(True)
+#         pass
+
+# def main():
+#     rclpy.init()
+    
+#     node = BehaviorTreeNode()
+
+#     try:
+#         # This blocks and processes all callbacks (including the 100Hz timer)
+#         # It ONLY returns when node.shutdown_future.set_result() is called.
+#         rclpy.spin_until_future_complete(node, node.shutdown_future)
+        
+#         node.get_logger().info("Shutdown future triggered. Exiting...")
+
+#     except KeyboardInterrupt:
+#         node.get_logger().info("Keyboard interrupt detected.")
+#     finally:
+#         # Cleanup
+#         node.destroy_node()
+#         rclpy.shutdown()
+
+# if __name__ == '__main__':
+#     main()
