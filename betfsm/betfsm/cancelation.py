@@ -20,7 +20,7 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 from betfsm.logger import *
-from betfsm import (TICKING,SUCCEED, CANCEL, ABORT, Generator,GeneratorWithList,TickingState,Callable)
+from betfsm import (TICKING,SUCCEED, CANCEL, ABORT, Generator,GeneratorWithList,TickingState,Callable,AlwaysOutcome)
 import signal
 import math
 
@@ -50,44 +50,6 @@ def set_path_value(blackboard, path, value, delimiter='/'):
     if keys:
         current[keys[-1]] = value
 
-# def blackboard_ctrl_c_handler(blackboard,pth:str, message:str = None, repeated=math.inf):
-#     """
-#     Configures the system SIGINT (Ctrl+C) handler to interact with a blackboard.
-#     1. If `pth` is None: Restores the default Python SIGINT handler, which 
-#        raises a `KeyboardInterrupt` exception.
-#     2. If `pth` is a string: Installs a custom handler that updates a boolean 
-#        flag at the specified path in the blackboard to `True` when Ctrl+C 
-#        is pressed. It also initializes that path to `False` upon installation.
-
-#     Args:
-#         blackboard (dict): The nested dictionary structure acting as the blackboard.
-#         pth (str): The filesystem-style path (e.g., "/sys/stop_requested") 
-#             where the interrupt status is stored. If None, resets to default.
-#         message (str, optional): An optional log message to emit via the 
-#             logger when the interrupt is captured. Defaults to None.
-#         repeated (int, None): number of times to repeat ctrl-c before KeyboardInterrupt is raised
-
-#     Example:
-#         # To start monitoring for Ctrl+C
-#         blackboard_ctrl_c_handler(bb, "/cancellation/ctrl_c", "Ctrl-c signal received")
-        
-#         # To restore normal Python behavior later
-#         blackboard_ctrl_c_handler(bb, None)
-#     """    
-#     if pth is None:
-#         signal.signal(signal.SIGINT, signal.default_int_handler)
-#         return signal.default_int_handler
-#     set_path_value(blackboard,pth,False)
-#     count=0
-#     def handler(signum, frame):
-#         set_path_value(blackboard,pth, True)
-#         count = count+1
-#         if message is not None:
-#             get_logger().info(message)            
-#         if count >= repeated:
-#             raise KeyboardInterrupt
-#     signal.signal(signal.SIGINT, handler )
-#     return handler
 
 class Ctrl_C_Handler:        
     def __init__(self,blackboard,pth:str=None, repeated=math.inf):
@@ -124,13 +86,7 @@ class Ctrl_C_Handler:
             raise KeyboardInterrupt
     
 
-class AlwaysOutcome(Generator):
-    def __init__(self,name:str,outcome) -> None:
-        super().__init__(name)
-        assert(outcome != TICKING)
-        self.outcome = outcome
-    def co_execute(self,blackboard):
-        yield self.outcome
+
 
 class CheckCancel(GeneratorWithList):
     
@@ -180,8 +136,9 @@ class CheckCancel(GeneratorWithList):
                 if self.cb(blackboard):
                     self.nominal=False
                     outcome = self.states[0]["state"].reset()
-                outcome = self.states[0]["state"](blackboard)
-                yield outcome
+                else:
+                    outcome = self.states[0]["state"](blackboard)
+                    yield outcome
             else:
                 outcome = self.states[1]["state"](blackboard)
                 yield outcome

@@ -375,14 +375,14 @@ class Generator(TickingState):
         return CONTINUE
 
     def doo(self,blackboard:Blackboard) -> str:
-        while True:
-            outcome = next(self.generator)
-            if outcome==TICKING:
-                return TICKING
-            else:
-                self.outcome = outcome
-                return outcome
-        
+        #while True:
+        outcome = next(self.generator)        
+        if outcome==TICKING:
+            return TICKING
+        else:
+            self.outcome = outcome
+            return outcome
+    
     def exit(self) -> str:
         if self.outcome is None:
             raise Exception("outcome should not be None")
@@ -1280,6 +1280,48 @@ class Adapt(GeneratorWithState):
             if new_out is None:
                 new_out = out
             yield out
+class AlwaysOutcome(TickingState):
+    def __init__(self,name:str,outcome:str=None) -> None:
+        """
+        Returns a TickingState that always returns the same outcome.
+
+        Parameters:
+            name(str): 
+                name of the Ticking state
+            outcome(str):
+                outcome that will be returned (typically, but not necessarily: SUCCEED, CANCEL)
+        """
+        if outcome is None:
+            outcome = name
+            name = "always_outcome"
+        assert(outcome != TICKING)    
+        super().__init__(name,[outcome,])        
+        self.outcome = outcome
+    def entry(self, blackboard):
+        return self.outcome
+
+
+# class AlwaysOutcome(Generator):
+#     def __init__(self,name:str,outcome:str=None) -> None:
+#         """
+#         Returns a TickingState that always returns the same outcome.
+
+#         Parameters:
+#             name(str): 
+#                 name of the Ticking state
+#             outcome(str):
+#                 outcome that will be returned (typically, but not necessarily: SUCCEED, CANCEL)
+#         """
+#         if outcome is None:
+#             outcome = name
+#             name = "always_outcome"
+#         super().__init__(name,[outcome,])
+#         assert(outcome != TICKING)
+#         self.outcome = outcome
+#     def co_execute(self,blackboard):
+#         while True:
+#             yield self.outcome
+
 
 class TimedWait(Generator):
     """Node that waits for a given time and then returns succeed
@@ -1626,6 +1668,8 @@ class TickingStateMachine(TickingState):
  
 class BeTFSMRunner:
     """
+    SHOULD THIS BE OBSOLETE?
+
     Runner for a BeTFSM ticking state machine.
     Initializes the BeTFSMRunner.  This BeTFSMRunner has no other dependencies and
     runs in the main thread.  You typically call this class in the main body of your program.
