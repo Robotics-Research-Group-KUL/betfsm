@@ -1,9 +1,18 @@
 #!/usr/bin/env python3
 
+#
+# using a Sequence (stops after one time going through the sequence)
+#
+# Also illustrates proper shutdown
+#
+# If control-C is pressed, a cleanup statemachine is called that directly shuts down
+# the currently running crospi task
+#
+
+
 #  Copyright (c) 2025 KU Leuven, Belgium
 #
 #  Author: Santiago Iregui, Erwin Aertbelien
-#  email: <santiago.iregui@kuleuven.be>
 #
 #  GNU Lesser General Public License Usage
 #  Alternatively, this file may be used under the terms of the GNU Lesser
@@ -43,21 +52,28 @@ class MyCleanup(TickingStateMachine):
     """
     Cleaning up eTaSL i.e. stop any motion and put the crospi node in a cleaned up state
     """
-    def __init__(self,srv_name:str="/etasl_node",timeout:Duration = Duration(seconds=1.0), node : Node = None):
+    def __init__(self,srv_name:str="/crospi_node",timeout:Duration = Duration(seconds=0.1), node : Node = None):
         # execute in sequence but don't care about ABORT, only way to fail is TIMEOUT
         super().__init__("Cleanup",[CANCEL,SUCCEED])
 
-        #self.add_state(state=LifeCycle("DEACTIVATE_ETASL",srv_name,Transition.DEACTIVATE,timeout,node),
-        #               transitions={SUCCEED: "CLEANUP_ETASL",  ABORT: "CLEANUP_ETASL", TIMEOUT:"CLEANUP_ETASL"} )
-        #self.add_state( state=LifeCycle("CLEANUP_ETASL",srv_name,Transition.CLEANUP,timeout,node),
-        #               transitions={SUCCEED: CANCEL, ABORT: CANCEL,TIMEOUT: CANCEL} )
-        self.add_state(LifeCycle("DEACTIVATE_ETASL",srv_name,Transition.DEACTIVATE,timeout,node),
-                    transitions={SUCCEED: "CLEANUP_ETASL",
-                                ABORT: "CLEANUP_ETASL",
-                                TIMEOUT: ABORT}) 
-        self.add_state(LifeCycle("CLEANUP_ETASL",srv_name,Transition.CLEANUP,timeout,node),
-                    transitions={SUCCEED: "CANCEL",
-                    ABORT: "CANCEL"}) 
+        msg        =  Message(msg="State machine to cleanup is now running")
+        deactivate =  LifeCycle("DEACTIVATE_ETASL",srv_name,Transition.DEACTIVATE,timeout,node)
+        cleanup    =  LifeCycle("CLEANUP_ETASL",srv_name,Transition.CLEANUP,timeout,node)
+
+        self.add_state(msg, transitions={
+            SUCCEED:deactivate
+        })
+        self.add_state(deactivate, transitions={
+            SUCCEED: cleanup,
+            ABORT:   cleanup,
+            TIMEOUT: cleanup
+        })
+        self.add_state(cleanup, transitions={
+            SUCCEED:     CANCEL,
+            TIMEOUT:     CANCEL,
+            ABORT:       CANCEL
+        })
+
 
 # main
 def main(args=None):
@@ -77,7 +93,7 @@ def main(args=None):
     
     Ctrl_C_Handler(blackboard,"/cancelation/ctrl_c",repeated=3)    
     nominal_sm = MySequence()
-    cleanup_sm = MyCleanup()
+    cleanup_sm = MyCleanup(node=my_node)
     sm = CheckCancel("check_cancelation", lambda bb: get_path_value(bb,"/cancelation/ctrl_c"), nominal_sm, cleanup_sm)
 
     # This is now working and recommended, accepts command-line parameters (see --help)

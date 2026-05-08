@@ -1,9 +1,16 @@
 #!/usr/bin/env python3
 
+#
+# Using a TickingStateMachine ( infinite loop)
+#
+# Also illustrates proper shutdown
+# 
+# If control-C is pressed, the currently running crospi task will continue to run
+#
+
 #  Copyright (c) 2025 KU Leuven, Belgium
 #
 #  Author: Santiago Iregui, Erwin Aertbelien
-#  email: <santiago.iregui@kuleuven.be>
 #
 #  GNU Lesser General Public License Usage
 #  Alternatively, this file may be used under the terms of the GNU Lesser
@@ -22,7 +29,7 @@ import rclpy
 import sys
 
 from betfsm import (
-    Sequence,  Message, SUCCEED, TICKING, CANCEL, ABORT,Generator, Blackboard,
+    Sequence,  Message, SUCCEED, TICKING, CANCEL, TIMEOUT,ABORT,Generator, Blackboard,
     TickingState,TickingStateMachine,BeTFSMRunnerGUI, get_logger,set_logger
 )
 from betfsm_crospi import load_task_list, eTaSL_StateMachine
@@ -44,32 +51,27 @@ from betfsm_ros import BeTFSMNode,BeTFSMRosRunnerGUI
 
 class MyStateMachine(TickingStateMachine):
     def __init__(self):
-        super().__init__("my_state_machine",[SUCCEED, ABORT])
+        super().__init__("my_state_machine",[SUCCEED, ABORT,TIMEOUT])
 
-        # Uncomment for example sequence
-        self.add_state(
-            eTaSL_StateMachine("MovingHome","MovingHome",node=None), 
-            transitions={SUCCEED: "MovingDown", 
-                        ABORT: ABORT}
-        )
+        # you can also use the names of the states in the transitions, but using the variables
+        # avoids issues with spelling errors in the name and is "cleaner"
+        movinghome   = eTaSL_StateMachine("MovingHome","MovingHome")
+        movingdown   = eTaSL_StateMachine("MovingDown","MovingDown")
+        movingup     = eTaSL_StateMachine("MovingUp","MovingUp")
+        movingspline = eTaSL_StateMachine("MovingUp","MovingUp")
 
-        self.add_state(
-            eTaSL_StateMachine("MovingDown","MovingDown",node=None), 
-            transitions={SUCCEED: "MovingUp", 
-                        ABORT: ABORT}
-        )
-
-        self.add_state(
-            eTaSL_StateMachine("MovingUp","MovingUp",node=None), 
-            transitions={SUCCEED: "MovingSpline", 
-                        ABORT: ABORT}
-        )
-
-        self.add_state(
-            eTaSL_StateMachine("MovingSpline","MovingSpline",node=None), 
-            transitions={SUCCEED: "MovingHome", 
-                        ABORT: ABORT}
-        )
+        self.add_state(movinghome, transitions={
+            SUCCEED:   movingdown
+        })
+        self.add_state(movingdown,transitions={
+            SUCCEED:   movingup
+        })
+        self.add_state(movingup, transitions={
+            SUCCEED:   movingspline
+        })
+        self.add_state(movingspline, transitions={
+            SUCCEED:   movinghome
+        })
 
 
 # main

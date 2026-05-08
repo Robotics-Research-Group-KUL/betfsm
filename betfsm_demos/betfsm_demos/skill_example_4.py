@@ -62,7 +62,7 @@ def main(args=None):
 
     set_logger("default",my_node.get_logger())
 
-    get_logger().info("skill_example_3 started")
+    get_logger().info("skill_example_4 started")
     blackboard = {}
 
     load_task_list("$[crospi_application_template]/skill_specifications/libraries/skill_lib_example/tasks/skill_example.json",blackboard)

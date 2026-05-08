@@ -20,35 +20,10 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 from betfsm.logger import *
-from betfsm import (TICKING,SUCCEED, CANCEL, ABORT, Generator,GeneratorWithList,TickingState,Callable,AlwaysOutcome)
+from betfsm import (SUCCEED, CANCEL,GeneratorWithList,TickingState,Callable,AlwaysOutcome,set_path_value,get_path_value)
 import signal
 import math
 
-def get_path_value(blackboard, path, default=None, delimiter='/'):
-    """
-    gets a value in the blackboard at the given path
-    """
-    keys = [k for k in path.split(delimiter) if k]
-    current = blackboard
-    for key in keys:
-        if isinstance(current, dict) and key in current:
-            current = current[key]
-        else:
-            return default
-    return current
-
-def set_path_value(blackboard, path, value, delimiter='/'):
-    """
-    sets a value in the blackboard at the given path
-    """
-    keys = [k for k in path.split(delimiter) if k]   
-    current = blackboard
-    for i, key in enumerate(keys[:-1]):
-        if key not in current or not isinstance(current[key], dict):
-            current[key] = {}
-        current = current[key]
-    if keys:
-        current[keys[-1]] = value
 
 
 class Ctrl_C_Handler:        

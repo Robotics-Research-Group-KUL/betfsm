@@ -1,9 +1,17 @@
 #!/usr/bin/env python3
 
+#
+# using a Sequence (stops after one time going through the sequence)
+#
+# Also illustrates proper shutdown
+#
+# If control-C is pressed, the currently running crospi task will continue to run
+#
+
+
 #  Copyright (c) 2025 KU Leuven, Belgium
 #
 #  Author: Santiago Iregui, Erwin Aertbelien
-#  email: <santiago.iregui@kuleuven.be>
 #
 #  GNU Lesser General Public License Usage
 #  Alternatively, this file may be used under the terms of the GNU Lesser
