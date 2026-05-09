@@ -81,15 +81,14 @@ def main(args=None):
     my_node = BeTFSMNode.get_instance("skill_example")
 
     set_logger("default",my_node.get_logger())
+    set_logger("crospi",my_node.get_logger())
 
     get_logger().info("skill_example_3 started")
+    get_logger().info("This example cleans up after a ctrl-c using a cleanup state machine")
+    
     blackboard = {}
-
     load_task_list("$[crospi_application_template]/skill_specifications/libraries/skill_lib_example/tasks/skill_example.json",blackboard)
     
-    get_logger().info("Now cleaning up after a ctrl-c using a cleanup TickingState")
-
-
     
     Ctrl_C_Handler(blackboard,"/cancelation/ctrl_c",repeated=3)    
     nominal_sm = MySequence()
@@ -99,7 +98,7 @@ def main(args=None):
     # This is now working and recommended, accepts command-line parameters (see --help)
     # has many more optional arguments, see API documentation
     # checks whether timing exceeds sample period.
-    runner = BeTFSMRosRunnerGUI(my_node,sm,blackboard, frequency=100.0, publish_frequency=5.0, debug=False, display_active=False,betfsm_log="default:INFO, state:FATAL,service:FATAL")
+    runner = BeTFSMRosRunnerGUI(my_node,sm,blackboard, frequency=100.0, publish_frequency=5.0, debug=False, display_active=False)
 
     try:
         runner.run()

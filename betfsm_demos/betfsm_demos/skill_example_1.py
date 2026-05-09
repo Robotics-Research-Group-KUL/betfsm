@@ -80,6 +80,7 @@ def main(args=None):
     my_node = BeTFSMNode.get_instance("skill_example")
 
     set_logger("default",my_node.get_logger())
+    set_logger("crospi",my_node.get_logger())
     #set_logger("service",my_node.get_logger()) 
     #set_logger("state",my_node.get_logger())   
 
@@ -95,7 +96,7 @@ def main(args=None):
     # This is now working and recommended, accepts command-line parameters (see --help)
     # has many more optional arguments, see API documentation
     # checks whether timing exceeds sample period.
-    runner = BeTFSMRosRunnerGUI(my_node,sm,blackboard, frequency=100.0, publish_frequency=5.0, debug=False, display_active=False,betfsm_log="default:INFO, state:FATAL,service:FATAL")
+    runner = BeTFSMRosRunnerGUI(my_node,sm,blackboard, frequency=100.0, publish_frequency=5.0, debug=False, display_active=False)
 
     try:
         runner.run()

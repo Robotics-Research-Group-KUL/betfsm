@@ -54,6 +54,7 @@ def main(args=None):
     my_node = BeTFSMNode.get_instance("skill_example")
 
     set_logger("default",my_node.get_logger())
+    set_logger("crospi",my_node.get_logger())
 
     get_logger().info("skill_example_2 started")
     blackboard = {}

@@ -52,7 +52,7 @@ from operator import and_
         #     durability=QoSDurabilityPolicy.VOLATILE #Volatile, may not use first msgs if subscribed late (will not happen in this context)
         # )  
 
-
+add_logger_category("crospi")
 
 def load_task_list( json_file_name: str, blackboard: Blackboard) -> None:
     """
@@ -130,7 +130,7 @@ class SetTaskParameters(ServiceClient):
             param.update( self.cb(blackboard)  )
 
         request.str = json.dumps(param)
-        get_logger().info(f"Set parameters for eTaSL task {self.task_name}\n{request.str}")
+        get_logger("crospi").info(f"Set parameters for cROSpi task {self.task_name}\n{request.str}")
         return request    
     
     def process_result(self, blackboard: Blackboard, response) -> str:
@@ -174,6 +174,7 @@ class ReadRobotSpecification(ServiceClient):
 
     def fill_in_request(self, blackboard: Blackboard, request) -> None:
         request.file_path = etasl_params.get_robot_specification_for_task(blackboard, self.task_name)
+        get_logger("crospi").info(f"robot specification file {request.file_path}")
         return request
             
         raise Exception(f"Task with name {self.task_name} was not found")
@@ -219,7 +220,7 @@ class ReadTaskSpecification(ServiceClient):
         # extract file_path, and expand references    
         # # we do expand refs, etasl_node does this already in his own ROS2 workspace    
         request.file_path = task["task_specification"]["file_path"]
-        get_logger().info(f"task specification file {request.file_path}")
+        get_logger("crospi").info(f"task specification file {request.file_path}")
         return request
     
     def process_result(self, blackboard: Blackboard, response) -> str:
@@ -280,10 +281,12 @@ class eTaSLOutput(TickingState):
 
     def cb_msg(self,msg) -> None:
         # if reduce(and_,msg.is_declared):
-        if reduce(and_,msg.is_declared, True): #TODO: Should this be used instead? (Santiago and Federico)
+        # if reduce(and_,msg.is_declared, True): #TODO: Should this be used instead? (Santiago and Federico)
+        if all(msg.is_declared):
             self.msgbuffer = msg
 
-    def entry(self,blackboard:Blackboard):      
+    def entry(self,blackboard:Blackboard):
+        get_logger("crospi").info(f"eTaSLOutput: subscribing to topic {self.topic}")
         self.msgbuffer=None
         self.subscription = self.node.create_subscription(Output,self.topic,self.cb_msg,self.qos)
         return TICKING
@@ -426,7 +429,9 @@ class eTaSL_StateMachine(TickingStateMachine):
             TODO: name of output topic needs to be changed.
         """
         super().__init__(name,outcomes=[SUCCEED, ABORT,TIMEOUT],transitioncb=transitioncb,statecb=statecb)
-
+        msg = Message(name="display_name", msg=f"cROSpi task {name}", logCategory="crospi")
+        self.add_state(msg,transitions={SUCCEED: "DEACTIVATE_ETASL"})
+        self.set_start_state(msg)
         self.add_state(LifeCycle("DEACTIVATE_ETASL",srv_name,Transition.DEACTIVATE,timeout,node),
                     transitions={SUCCEED: "CLEANUP_ETASL",
                                 ABORT: "CLEANUP_ETASL",
@@ -462,12 +467,9 @@ class eTaSL_StateMachine(TickingStateMachine):
         # executes until one returns SUCCEED,  eTaSLOutput only returns TICKING
         mapping={"e_finished@{}".format(srv_name[1:]):(1,SUCCEED)}
         if not deactivate_last:
-            transition_map_executing = {SUCCEED:SUCCEED}
-            
+            transition_map_executing = {SUCCEED:  SUCCEED }
         else:
-            transition_map_executing = {
-                SUCCEED: "DEACTIVATE_ETASL_LAST"
-            }
+            transition_map_executing = {SUCCEED: "DEACTIVATE_ETASL_LAST"}
             
         self.add_state(
             ConcurrentFallback("EXECUTING",[

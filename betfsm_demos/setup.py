@@ -34,10 +34,14 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'test_ea = ' + package_name + ".test_ea:main",
-            'example_graphviz = ' +package_name + ".example_graphviz:main",
-            'example_action_server = ' +package_name + ".example_action_server:main",            
-            'example_action_server2 = ' +package_name + ".example_action_server2:main"            
+            "skill_example_1  = betfsm_demos.skill_example_1:main",
+            "skill_example_2  = betfsm_demos.skill_example_2:main",
+            "skill_example_3  = betfsm_demos.skill_example_3:main",
+            "skill_example_4  = betfsm_demos.skill_example_4:main"
+            #'test_ea = ' + package_name + ".test_ea:main",
+            #'example_graphviz = ' +package_name + ".example_graphviz:main",
+            #'example_action_server = ' +package_name + ".example_action_server:main",            
+            #'example_action_server2 = ' +package_name + ".example_action_server2:main"            
         ],
     },
 )

@@ -26,7 +26,12 @@ import traceback
 
 import time
 import uuid
-from .logger import get_logger
+from .logger import get_logger,add_logger_category,get_logger_categories
+
+add_logger_category("state")
+add_logger_category("service")
+
+
 
 
 
@@ -265,13 +270,13 @@ class TickingState:
             self.exit()
             if self.uid in TickingState._global_log:
                 del TickingState._global_log[self.uid]
-            get_logger("state").debug(f"Exit {self.name} with no outcome")
+            get_logger("state").info(f"Exit {self.name} with no outcome")
         self.status = TickingState_Status.ENTRY
 
     def execute(self, blackboard: Blackboard) -> str:        
         #self.log.info("TickintState.execute")
         if self.status == TickingState_Status.ENTRY: 
-            get_logger("state").debug(f"Entering {self.name}")
+            get_logger("state").info(f"Entering {self.name}")
             try:
                 self.outcome = self.entry(blackboard)
                 TickingState._global_log[self.uid] = self
@@ -308,9 +313,9 @@ class TickingState:
                 del TickingState._global_log[self.uid]
             # do not remove anything from global_publish_log
             self.status = TickingState_Status.ENTRY
-            get_logger("state").debug(f"Exit {self.name} with {self.outcome}")
+            get_logger("state").info(f"Exit {self.name} with {self.outcome}")
             return self.outcome
-        get_logger("state").debug(f"Exit {self.name} with {self.outcome}")
+        get_logger("state").info(f"Exit {self.name} with {self.outcome}")
         return self.outcome # in case of ABORT
 
     def entry(self, blackboard: Blackboard) -> str:
@@ -1141,7 +1146,7 @@ class Message(Generator):
 
     _name_counter=0
 
-    def __init__(self,name:str=None,*,msg:str=None, cb:Callable=None, logFunc=None) -> None:
+    def __init__(self,name:str=None,*,msg:str=None, cb:Callable=None, logCategory:str="default") -> None:
         """
         Displays a message to the log. 
 
@@ -1154,8 +1159,8 @@ class Message(Generator):
                 callback returning the message.  Signature `def cb(blackboard)->str`.
                 The callback allows the user to compute the message at time of evaluation,
                 e.g. to report on values on the blackboard.
-            logFunc:
-                function to call for logging the message, by default get_logger.info()
+            logCategory:
+                the category under which to log the message
                 
         warning:
             Only one of the arguments msg or cb can be specified
@@ -1172,10 +1177,7 @@ class Message(Generator):
         if msg is None: raise ValueError("Message : you should specify a message (did you only specify a name?)\nTip:  Message(msg='my message text') or Message('message_name','message text')  ") 
         self.msg = msg
         self.cb  = cb
-        if logFunc is None:
-            self.log = get_logger().info
-        else:
-            self.log = logFunc
+        self.logcat = logCategory
         if not(self.msg is None) and not(self.cb is None) and not(self.msg is None and self.cb is None):
             raise ValueError("Message: you have to specify exactly one of the msg or cb arguments in the constructor")
         
@@ -1183,9 +1185,9 @@ class Message(Generator):
         #log = my_node.get_logger()
         #log.info(f'Entering MyMessage : {self.msg}')
         if self.msg is not None:
-            self.log(self.msg)
+            get_logger(self.logcat).info( self.msg )
         if self.cb is not None:
-            self.log(self.cb(blackboard))
+            get_logger(self.logcat).info( self.cb(blackboard) )
         yield SUCCEED
 
 

@@ -1,7 +1,7 @@
 # logger.py
 #
 # A bit of glue code to print to the console if ROS2 is not available 
-# and use ROS2 otherwise.
+# and use ROS2 otherwise. Allows to turn on/off logging for categories.
 #
 # Copyright (C) Erwin Aertbeliën, Santiago Iregui, 2024
 #
@@ -59,6 +59,9 @@ class LogPrinter:
     def fatal(self,*args):
         print(Style.NORMAL+Fore.RED+"FATAL : " + str(*args) +Style.RESET_ALL)              
 
+
+
+# Will be obsolete after going towards: set_loggers_from_specification_string_v2
 class ConfigurableLogPrinter:
 
     DEBUG=0
@@ -98,6 +101,15 @@ class ConfigurableLogPrinter:
 
 default_loggers={"default":LogPrinter(),"unknown":DummyLogPrinter()}
 
+known_categories={"default","unknown"}
+
+
+def add_logger_category(str):
+    known_categories.add(str)
+
+def get_logger_categories():
+    return known_categories
+
 def get_logger(category:str="default"):
     """
     Use this to get a logger
@@ -108,7 +120,7 @@ def get_logger(category:str="default"):
             if not specified, "default" is used.
 
     Note:
-      Known categories used in betfsm_etasl:
+      Known categories used in betfsm_crospi:
 
         - unknown (used when the category is not known or specified)
         - default
@@ -156,6 +168,7 @@ def set_logger(category:str,logger):
 
 def set_loggers_from_specification_string(s: str="", add_name: bool=""):
     """
+    =================== OBSOLETE to be replaced with _v2 if betfsmrunnergui is adapted ===========================
     Sets the loggers using a specification string s.
     e.g.: "default:DEBUG,state:INFO"
 
@@ -195,3 +208,38 @@ def set_loggers_from_specification_string(s: str="", add_name: bool=""):
         set_logger(category, new_logger)
 
 
+# def set_loggers_from_specification_string_v2(s: str, logger):
+#     """
+#     calls set_logger(category, logger) for all categories listed in the string (separated with ':')
+#     """
+#     if not s or not s.strip():
+#         return
+#     categories = s.split(":")
+#     for cat in categories:
+#         cat = cat.strip()
+#         set_logger(cat,logger)
+    
+
+def set_loggers_from_specification_string_v2(s: str, logger):
+    """
+    Calls set_logger(category, logger) for all categories listed in the string.
+    If a category is prepended with '-', the entry is deleted from the global loggers.
+    """
+    if not s or not s.strip():
+        return
+        
+    global default_loggers
+    categories = s.split(":")
+    
+    for cat in categories:
+        cat = cat.strip()
+        if not cat:
+            continue
+            
+        if cat.startswith("-"):
+            category_to_remove = cat[1:].strip()
+            # Use pop with None as default to avoid KeyError if the cat doesn't exist
+            if category_to_remove:
+                default_loggers.pop(category_to_remove, None)
+        else:
+            set_logger(cat, logger)
