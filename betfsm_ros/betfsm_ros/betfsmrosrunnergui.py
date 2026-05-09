@@ -23,8 +23,8 @@ import threading
 import argparse
 #import time
 from betfsm.backend.app import app,publish_tick,set_webserver_param
-from betfsm.betfsm import TickingState,Blackboard,TICKING
-from betfsm.logger import get_logger, set_loggers_from_specification_string
+from betfsm.betfsm import TickingState,Blackboard,TICKING, get_logger_categories
+from betfsm import get_logger, set_loggers_from_specification_string_v2
 from betfsm.graphviz_visitor import to_graphviz_dotfile
 from betfsm.jsonvisitor import JsonVisitor, parse_name_filter
 import json
@@ -34,9 +34,35 @@ from betfsm import Lock
 from rclpy.node import Node
 import rclpy
 from rclpy.task import Future
+from rclpy.utilities import remove_ros_args
 import signal
+import math
 
 
+class TimerStats:
+    def __init__(self):
+        self.reset();
+    
+    def reset(self):
+        self.sum   = 0
+        self.N     = 0
+        self.sumsq = 0
+        self.min   = math.inf
+        self.max   = -math.inf
+    
+    def add(self, value):
+        self.N     += 1
+        self.sum   += value
+        self.sumsq += value*value
+        self.min   = min(self.min, value)
+        self.max   = max(self.max, value)
+
+    def __str__(self):
+        mean = self.sum / self.N
+        var  = (self.sumsq - self.sum*self.sum/self.N)/self.N
+        std  =  math.sqrt(var)
+        return f"mean = {mean:10.6f}, std = {std:10.6f}, min = {self.min:10.6f}, max = {self.max:10.6f}"
+    
 class BeTFSMRosRunnerGUI:
     """
     Runner for a BeTFSM ticking state machine.
@@ -46,7 +72,7 @@ class BeTFSMRosRunnerGUI:
     This is multi-threaded, only access member variables using the methods designed for this. (i.e. set_outcome, get_outcome)
     """
     def __init__(self, node:Node, statemachine: TickingState, blackboard: Blackboard, frequency: float=100.0, publish_frequency=10,debug: bool = False, 
-                 display_active=False, betfsm_log="",name_filter="", allow_generate_dot=True,allow_generate_json=True,serve=True,
+                 display_active=False, betfsm_log=None,name_filter="", allow_generate_dot=True,allow_generate_json=True,serve=True,
                  host="0.0.0.0", port=8000, workers=1, log_level="info"):
         """
         Initializes the BeTFSMRunner.  This BeTFSMRunner has no other dependencies and
@@ -68,11 +94,10 @@ class BeTFSMRosRunnerGUI:
             debug:
                 If true outputs debug info on console each tick. (default=False)
             display_active:
-                displays all active nodes on console
+                displays all active nodes on log at publish_frequency (only if changed!)
             betfsm_log:
-                betfsm log specification string, e.g.  "default:INFO, state:FATAL",
-                levels are: DEBUG,INFO,WARN, ERROR, FATAL. An empty string will not
-                change the logger. Default="".
+                A list of categories, separated by ':' that will be logged, known categories
+                are default, state, service,... But users and libraries can add their own.
             name_filter:
                 comma-separated list of names of nodes that are not descended into in
                 the graphical user interface
@@ -80,6 +105,8 @@ class BeTFSMRosRunnerGUI:
                 adds the generate_dot command-line parameter. [default: True]
             allow_generate_json:
                 adds the generate_json command-line parameter. [default: True]
+            serve:A : {active}
+                starts webserver if True [default: True]
             host:
                 the host IP of the network interface to bind to.  Default=0.0.0.0. 
                 Typical values are:
@@ -98,17 +125,20 @@ class BeTFSMRosRunnerGUI:
         """
         self.statemachine = statemachine
         self.blackboard = blackboard
-
-        parser = argparse.ArgumentParser(description="BeTFSMRunnerGUI command line options")
+        epilog="""
+        You can still pass ROS2 arguments according to ROS2 conventions: e.g.
+        adding : "--ros-args --log-level debug" to your arguments
+        """
+        parser = argparse.ArgumentParser(description="BeTFSMRunnerGUI command line options",epilog=epilog)
 
         # --- 1. YOUR Custom Arguments ---
         group_app = parser.add_argument_group("BeTFSMRunnerGUI Options")
         group_app.add_argument("--frequency",type=float, default=frequency, help=f"frequency at which BeTFSM runs [default:{frequency}]")
         group_app.add_argument("--publish_frequency",type=float, default=publish_frequency, help=f"publishing frequency for GUI [default:{publish_frequency} ]")
-        group_app.add_argument("--debug", action=argparse.BooleanOptionalAction, default=debug,help=f"Log the timing of each tick [default: {debug}]")
-        group_app.add_argument("--display_active",action=argparse.BooleanOptionalAction,default=display_active, help=f"Log the active nodes at rate equal to publish_frequency[default: {display_active}] ")
-        group_app.add_argument("--betfsm_log",type=str,default=betfsm_log, help=f"BeTFSM Log specification string, a comma-separated list of category:level  e.g. 'default:INFO, state:FATAL' with levels DEBUG,INFO,WARNING,ERROR,FATAL. Known categories are default and state, but there can be user-defined categories   [default: '{betfsm_log}'] ")
-        group_app.add_argument("--name-filter",type=str,default=name_filter, help=f"specifies a comma-separated list of names (can be regular expressions) to filter out.[default: '{name_filter}'")
+        group_app.add_argument("--debug", action=argparse.BooleanOptionalAction, default=debug,help=f"Log statistics of the timing of each tick at publish_frequency [default: {debug}]")
+        group_app.add_argument("--display_active",action=argparse.BooleanOptionalAction,default=display_active, help=f"Log the active nodes at rate equal to publish_frequency, only logs changes to activity[default: {display_active}] ")
+        group_app.add_argument("--betfsm_log",type=str,default=betfsm_log, help=f"BeTFSM Log specification string, i.e. a list of categories separated with ':'. Known categories are {get_logger_categories()} but there can be user-defined categories   [default: '{betfsm_log}'] ")
+        group_app.add_argument("--name-filter",type=str,default=name_filter, help=f"specifies a comma-separated list of naes (can be regular expressions) to filter out.[default: '{name_filter}'")
         if allow_generate_dot:
             group_app.add_argument("--generate_dot",type=str, default="", help="generate a graphviz .dot file from the state machine and store in the specified file (and quit the program without running)")
         if allow_generate_json:
@@ -125,7 +155,8 @@ class BeTFSMRosRunnerGUI:
         group_uvr.add_argument("--log-level", type=str, default=log_level, 
                                choices=['critical', 'error', 'warning', 'info', 'debug', 'trace'], 
                                help=f"log-level of the web-server [default: {log_level} ]")
-        args = parser.parse_args()
+        clean_args = remove_ros_args(args=sys.argv[1:])
+        args = parser.parse_args(clean_args)
 
         if allow_generate_dot:
             if args.generate_dot:
@@ -148,7 +179,6 @@ class BeTFSMRosRunnerGUI:
             "log_level": args.log_level,
         }
 
-
         # 4. set parameters for BeTFSMRunner:
         self.frequency = args.frequency
         self.interval_sec = 1.0/args.frequency
@@ -157,7 +187,8 @@ class BeTFSMRosRunnerGUI:
         self.display_active = args.display_active
         self.publish_period = int(1.0/args.publish_frequency*1E9)  # in nanoseconds  
         self.serve = args.serve
-        set_loggers_from_specification_string(args.betfsm_log)
+        #set_loggers_from_specification_string(args.betfsm_log)
+        set_loggers_from_specification_string_v2(args.betfsm_log, node.get_logger())
 
         # 5. local variables of the run() that now have to be stored in the class and create ROS2 timer
         self.shutdown_future = Future()
@@ -167,7 +198,7 @@ class BeTFSMRosRunnerGUI:
         self.timer = self.node.create_timer(self.interval_sec, self.timer_cb)
         self.outcome = "TICKING"
         self.outcome_lock = Lock()
-         
+        self.previous_active = []
 
         get_logger().info(f"BeTFSMRunnerGUI parameters: {args}")
         if self.serve:
@@ -178,44 +209,53 @@ class BeTFSMRosRunnerGUI:
                 target=lambda: uvicorn.run(app, **uvicorn_kwargs),
                 daemon=True
             ).start()
+        if self.debug:
+            self.stats = TimerStats()
 
     def timer_cb(self):
+        self.now = self.steady_clock.now().nanoseconds            
         if self.first_time:
-            self.now = self.steady_clock.now().nanoseconds
-            self.next_run = self.now + self.interval_ns
+            self.next_run = self.now
             self.next_publish = self.now - self.publish_period  # ensure publishing at start
-            TickingState.global_publish_log = {}  # turn on global_publish_log
+            if self.serve or self.display_active:
+                TickingState.global_publish_log = {}  # turn on global_publish_log
             if self.debug:
                 get_logger().debug(f"BeTFSMROSRunnerGUI time: {self.now/1.0E9:10.4f} s started (frequency:{self.frequency})")
             self.set_outcome("TICKING")
             self.first_time = False
+        if self.now > self.next_run + self.interval_ns*0.5:
+            self.next_run = self.now - self.interval_ns
+            get_logger().warn(f"Sample period exceeded/drifted : {(self.now-self.next_run)/1E9:.6f} s late")   
+        if self.debug:
+            self.stats.add((self.now - self.next_run)/1E9)
+        self.next_run += self.interval_ns            
         outcome = self.statemachine(self.blackboard)
         if (self.now >= self.next_publish) or (outcome != TICKING):
             # ensure the last one is always published
-            publish_tick() # publishes all states that where active between calls to publish_tick
-            TickingState.global_publish_log.clear()
+            if self.serve:
+                publish_tick() # publishes all states that where active between calls to publish_tick
+            if self.display_active:
+                gl=TickingState.get_global_log()
+                if gl != self.previous_active:
+                    active = "("
+                    for k,v in TickingState.get_global_log().items():
+                        active = active + v.name + " "
+                    active=active+")"
+                    get_logger().info(f"ACTIVE : {active}")
+                    self.previous_active = gl.copy()
+            else:
+                active=""                
+            if TickingState.global_publish_log is not None:
+                TickingState.global_publish_log.clear()
+            if self.debug:
+                get_logger().info(f"Timer statistics : {self.stats}")
+                self.stats.reset()
             self.next_publish = self.now + self.publish_period
-        self.now = self.steady_clock.now().nanoseconds
-        if self.display_active:
-            gl=TickingState.get_global_log()
-            active = "active: ("
-            for k,v in TickingState.get_global_log().items():
-                active = active + v.name + " "
-            active=active+")"
-        else:
-            active=""
-        if self.debug or self.display_active:
-            get_logger().debug(f"{self.now/1.0E9:10.4f} s : looping {active}")
-        if self.now > self.next_run:
-            get_logger().warn(f"[Warning] Sample period exceeded : {abs(self.now-self.next_run)/1E-9:.6f} s late")
-        self.next_run += self.interval_ns
         if outcome!=TICKING:
             self.timer.cancel()            
             self.set_outcome(outcome)
             get_logger().info(f"BeTFSM finished with outcome {outcome}")
-            self.shutdown_future.set_result(True)
-            
-            
+            self.shutdown_future.set_result(True)         
 
     def set_outcome(self, outcome):
         with self.outcome_lock:
@@ -231,52 +271,3 @@ class BeTFSMRosRunnerGUI:
         rclpy.spin_until_future_complete(self.node, self.shutdown_future, executor=None,timeout_sec=None)
         
 
-# TODO PROPER USE OF FUTURE
-
-
-# import rclpy
-# from rclpy.node import Node
-# from rclpy.task import Future
-
-# class BehaviorTreeNode(Node):
-#     def __init__(self):
-#         super().__init__('bt_node')
-        
-#         # 1. The Future that controls the executable's life
-#         self.shutdown_future = Future()
-        
-#         # 2. Fixed frequency ticking (e.g., 100Hz)
-#         self.timer = self.create_timer(0.01, self.bt_tick_callback)
-        
-#         self.get_logger().info("BT Node initialized. Ticking at 100Hz...")
-
-#     def bt_tick_callback(self):
-#         # Your Behavior Tree ticking logic goes here
-#         # status = self.tree.tick()
-        
-#         # Example condition to stop the executable
-#         # if status == SUCCESS or status == FAILURE:
-#         #     self.shutdown_future.set_result(True)
-#         pass
-
-# def main():
-#     rclpy.init()
-    
-#     node = BehaviorTreeNode()
-
-#     try:
-#         # This blocks and processes all callbacks (including the 100Hz timer)
-#         # It ONLY returns when node.shutdown_future.set_result() is called.
-#         rclpy.spin_until_future_complete(node, node.shutdown_future)
-        
-#         node.get_logger().info("Shutdown future triggered. Exiting...")
-
-#     except KeyboardInterrupt:
-#         node.get_logger().info("Keyboard interrupt detected.")
-#     finally:
-#         # Cleanup
-#         node.destroy_node()
-#         rclpy.shutdown()
-
-# if __name__ == '__main__':
-#     main()
