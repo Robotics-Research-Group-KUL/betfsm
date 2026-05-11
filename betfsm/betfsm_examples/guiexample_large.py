@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # ---- building the state machine -----
 from betfsm import (
         Sequence, ConcurrentSequence, TimedWait,  Message, SUCCEED, Repeat, get_logger,  Runner

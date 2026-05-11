@@ -1,9 +1,8 @@
-# Example of a sequence
 #!/usr/bin/env python3
 
 import time
 from betfsm import (
-    BeTFSMRunner, Sequence,  
+    Runner, Sequence,  
     Message, SUCCEED, TICKING, CANCEL, Generator, Blackboard, get_logger,
     to_graphviz_dotfile
 )
@@ -38,7 +37,7 @@ def main():
     sm.add_state( Message(msg="--- Sequence Phase Finished --- (message 2 of 2)"))
  
     # 2. Run it using BeTFSMRunner at 100 Hz
-    runner = BeTFSMRunner(sm, bb, frequency=100.0,debug=True) # Hz
+    runner = Runner(sm, bb, frequency=100.0,debug=True) # Hz
 
     print("I have written a graphviz dot file representing the tree in example_sequence2.dot")
     to_graphviz_dotfile("example_sequence2.dot",sm)

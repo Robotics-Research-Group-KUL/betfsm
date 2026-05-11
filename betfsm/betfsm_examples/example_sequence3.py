@@ -1,9 +1,8 @@
-# Example of a sequence
 #!/usr/bin/env python3
 
 import time
 from betfsm import (
-    BeTFSMRunner, Sequence,  
+    Runner, Sequence,  
     Message, SUCCEED, TICKING, CANCEL, Generator, get_logger
 )
 
@@ -46,7 +45,7 @@ def main():
     sm = MySequence(5)
 
     # 2. Run it using BeTFSMRunner at 100 Hz
-    runner = BeTFSMRunner(sm, bb, frequency=100.0,debug=True) # Hz
+    runner = Runner(sm, bb, frequency=100.0,debug=True,serve=False) # Hz
     get_logger().info("Running State Machine... (explicitly logged in main)")
     outcome = runner.run()
     get_logger().info(f"State Machine Finished with outcome: {outcome} (explicitly logged in main)")

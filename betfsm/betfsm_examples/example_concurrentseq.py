@@ -1,9 +1,9 @@
-# Example of a sequence
 #!/usr/bin/env python3
 
+# Example of a sequence
 import time
 from betfsm import (
-    BeTFSMRunner, Sequence, ConcurrentSequence,TimedWait,TimedRepeat,
+    Runner, Sequence, ConcurrentSequence,TimedWait,TimedRepeat,
     Message, SUCCEED, TICKING, CANCEL, Generator, to_graphviz_dotfile, get_logger
 )
 
@@ -43,7 +43,7 @@ def main():
                         Message(msg="   --- sequence 2 started ---"),
                         TimedRepeat("timedrepeat1", 10, 0.6, Message(msg="      sequence 2: 10 times every 0.6 second")),
                         Message(msg="   --- sequence 2 ended   ---")]),
-                    Sequence("sequence3", [TimedWait("waiting 5 sec",5.0), Message(msg="I like to interrupt!",logFunc=get_logger().warn) ]),
+                    Sequence("sequence3", [TimedWait("waiting 5 sec",5.0), Message(msg="I like to interrupt!") ]),
                 ]),
             Message(msg="--- concurrent_sequence ended   ---")
         ])
@@ -54,7 +54,7 @@ def main():
     # 3. Run it using BeTFSMRunner at 100 Hz
 
     # Here we show a demo of the debugging output of BeTFSMRunner, 
-    runner = BeTFSMRunner(sm, bb, frequency=10.0, debug=True, display_active=True)
+    runner = Runner(sm, bb, frequency=10.0, debug=True, display_active=True,serve=False)
     get_logger().info("Running State Machine...")
     outcome = runner.run()
     get_logger().info(f"State Machine Finished with outcome: {outcome}")

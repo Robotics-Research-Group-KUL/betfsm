@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
 from betfsm import (
-    TickingStateMachine, BeTFSMRunner, Sequence, ConcurrentSequence, 
+    TickingStateMachine, Sequence, ConcurrentSequence, 
     Message, SUCCEED, TICKING, CANCEL, Generator, Blackboard,
     Repeat, Fallback, TimedWait, Concurrent, TimedRepeat,
-    to_graphviz_dotfile, get_logger, BeTFSMRunnerGUI
+    to_graphviz_dotfile, get_logger, Runner
 )
 
 class CountDown(Generator):
@@ -119,7 +119,7 @@ def main():
 
     # 7. Run it using BeTFSMRunner at 100 Hz
     # display_active == True if you'd like to log all active states
-    runner = BeTFSMRunnerGUI(sm, bb, frequency=10.0,publish_frequency=5,display_active=False) # Hz
+    runner = Runner(sm, bb, frequency=100.0,publish_frequency=5,display_active=False, serve=False) # Hz
     
     print("Running State Machine...")
     outcome = runner.run()

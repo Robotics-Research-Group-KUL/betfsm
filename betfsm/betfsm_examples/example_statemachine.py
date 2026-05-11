@@ -6,8 +6,8 @@
 
 import time
 from betfsm import (
-    BeTFSMRunner, Sequence,  TickingStateMachine,
-    TimedWait, Message, TimedRepeat,
+    Runner,   TickingStateMachine,
+    TimedWait, Message,
     SUCCEED, TICKING, CANCEL, Generator, to_graphviz_dotfile, get_logger
 )
 import random
@@ -26,7 +26,7 @@ class CountDown(Generator):
             get_logger().info(f"{self.name}: {i}")
             yield TICKING
         get_logger().info(f"{self.name}: Finished counting down!")
-        yield SUCCEED
+        yield SUCCEED# Example of a sequence
 
 # A user defined TickingState:
 class FailSometimes(Generator):
@@ -47,8 +47,6 @@ class FailSometimes(Generator):
             yield SUCCEED
 
 
-
-
 class MyStateMachine(TickingStateMachine):
     def __init__(self,name):
         super().__init__(name,[SUCCEED])
@@ -66,8 +64,6 @@ class MyStateMachine(TickingStateMachine):
         self.set_start_state(self.home)
 
 
-
-
 def main():
     # Create a blackboard
     bb = {}
@@ -81,7 +77,7 @@ def main():
     to_graphviz_dotfile("example_statemachine.dot", sm)
 
     # 3. Run it using BeTFSMRunner at 100 Hz
-    runner = BeTFSMRunner(sm, bb, frequency=100.0) # Hz
+    runner = Runner(sm, bb, frequency=100.0) # Hz
     get_logger().info("Running State Machine...")
     outcome = runner.run()
     get_logger().info(f"State Machine Finished with outcome: {outcome}")

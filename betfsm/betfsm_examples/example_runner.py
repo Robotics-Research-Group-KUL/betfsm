@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from betfsm import (
-    TickingStateMachine, BeTFSMRunner, Sequence, ConcurrentSequence, 
+    TickingStateMachine, Runner, Sequence, ConcurrentSequence, 
     Message, SUCCEED, TICKING, CANCEL, Generator,
     Repeat, Fallback, to_graphviz_dotfile,get_logger
 )
@@ -86,7 +86,7 @@ def main():
     to_graphviz_dotfile("example_runner.dot", sm)
 
     # 6. Run it using BeTFSMRunner at 100 Hz
-    runner = BeTFSMRunner(sm, bb, frequency=100.0) # Hz
+    runner = Runner(sm, bb, frequency=100.0) # Hz
     
     print("Running State Machine...")
     outcome = runner.run()

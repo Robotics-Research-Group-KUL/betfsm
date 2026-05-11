@@ -1,9 +1,10 @@
+#!/usr/bin/env python3
 import threading
 import webbrowser
 
 # ---- building the state machine -----
-from betfsm.betfsm import (
-        Sequence, ConcurrentSequence, TimedWait, TimedRepeat, Message, SUCCEED, Repeat, get_logger,BeTFSMRunnerGUI
+from betfsm import (
+        Sequence, ConcurrentSequence, TimedWait, TimedRepeat, Message, SUCCEED, Repeat, get_logger,Runner
 )
 
 
@@ -21,7 +22,7 @@ def build_tree():
                         Message(msg="   --- sequence 2 started ---"),
                         TimedRepeat("timedrepeat1", 10, 0.6, Message(msg="      sequence 2: 10 times every 0.4 second")),
                         Message(msg="   --- sequence 2 ended   ---")]),
-                    Sequence("sequence3", [TimedWait("waiting 3 sec",5.0), Message(msg="I like to interrupt!",logFunc=get_logger().warn) ]),
+                    Sequence("sequence3", [TimedWait("waiting 3 sec",5.0), Message(msg="I like to interrupt!") ]),
                 ]),
             Message(msg="--- concurrent_sequence ended   ---")
         ])
@@ -32,7 +33,7 @@ def build_tree():
 def main():
     bb = {}
     sm = build_tree()
-    runner = BeTFSMRunnerGUI(sm,bb, frequency=100.0, publish_frequency=5.0, debug=False, display_active=False)
+    runner = Runner(sm,bb, frequency=100.0, publish_frequency=5.0, debug=False, display_active=False)
     runner.run()
 
 if __name__ == "__main__":

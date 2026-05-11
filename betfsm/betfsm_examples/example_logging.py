@@ -18,6 +18,7 @@ from betfsm import (
 class MyLogPrinter:
     """
     Can be used with set_logger for a do-nothing logger.
+    or to connect to your own logging mechanism.
     """
     def debug(self,*args):
         print(str(*args)) 

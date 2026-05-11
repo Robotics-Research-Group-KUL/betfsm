@@ -17,7 +17,7 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
-
+from betfsm.betfsm import TickingState
 import importlib.resources
 from fastapi import FastAPI, WebSocket
 from fastapi.responses import JSONResponse, FileResponse
@@ -27,10 +27,6 @@ import asyncio, json, time
 
 import betfsm
 from betfsm.jsonvisitor import JsonVisitor
-from betfsm.betfsm import (
-    BeTFSMRunner, Sequence, ConcurrentSequence,TimedWait,TimedRepeat,
-    Message, SUCCEED, TICKING, CANCEL, Generator, Blackboard, TickingState
-        )
 from betfsm.logger import get_logger
 from collections import deque
 import time
