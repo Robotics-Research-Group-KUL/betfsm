@@ -39,8 +39,7 @@ from betfsm import (
     Ctrl_C_Handler,CheckCancel, get_path_value
 )
 from betfsm_crospi import load_task_list, eTaSL_StateMachine
-from betfsm_ros import BeTFSMNode,BeTFSMRosRunnerGUI
-
+from betfsm_ros import BeTFSMNode, RunnerBase,ROSRunner
 
 
 class MyTree(Repeat):
@@ -55,7 +54,7 @@ class MyTree(Repeat):
         ])
         super().__init__("my_tree",-1,sequence)
 
-# main
+
 def main(args=None):
     rclpy.init(args=args)    
     my_node = BeTFSMNode.get_instance("skill_example")
@@ -79,8 +78,8 @@ def main(args=None):
     # This is now working and recommended, accepts command-line parameters (see --help)
     # has many more optional arguments, see API documentation
     # checks whether timing exceeds sample period.
-    runner = BeTFSMRosRunnerGUI(my_node,sm,blackboard, frequency=100.0, publish_frequency=5.0, debug=False, display_active=False)
-
+    #runner = BeTFSMRosRunnerGUI(my_node,sm,blackboard, frequency=100.0, publish_frequency=5.0, debug=False, display_active=False)
+    runner = ROSRunner(my_node,sm,blackboard, frequency=100.0, publish_frequency=5.0, debug=False, display_active=False)
     try:
         runner.run()
     except KeyboardInterrupt:

@@ -166,46 +166,46 @@ def set_logger(category:str,logger):
     default_loggers[category]=logger
 
 
-def set_loggers_from_specification_string(s: str="", add_name: bool=""):
-    """
-    =================== OBSOLETE to be replaced with _v2 if betfsmrunnergui is adapted ===========================
-    Sets the loggers using a specification string s.
-    e.g.: "default:DEBUG,state:INFO"
+# def set_loggers_from_specification_string(s: str="", add_name: bool=""):
+#     """
+#     =================== OBSOLETE to be replaced with _v2 if betfsmrunnergui is adapted ===========================
+#     Sets the loggers using a specification string s.
+#     e.g.: "default:DEBUG,state:INFO"
 
-    The add_name argument specifies whether to add the name of the category
-    to the log line.
+#     The add_name argument specifies whether to add the name of the category
+#     to the log line.
 
-    If s is empty does nothing.
-    """
-    level_map = {
-        "DEBUG": ConfigurableLogPrinter.DEBUG,
-        "INFO":  ConfigurableLogPrinter.INFO,
-        "WARN":  ConfigurableLogPrinter.WARN,
-        "ERROR": ConfigurableLogPrinter.ERROR,
-        "FATAL": ConfigurableLogPrinter.FATAL,
-    }
+#     If s is empty does nothing.
+#     """
+#     level_map = {
+#         "DEBUG": ConfigurableLogPrinter.DEBUG,
+#         "INFO":  ConfigurableLogPrinter.INFO,
+#         "WARN":  ConfigurableLogPrinter.WARN,
+#         "ERROR": ConfigurableLogPrinter.ERROR,
+#         "FATAL": ConfigurableLogPrinter.FATAL,
+#     }
 
-    if not s or not s.strip():
-        return
+#     if not s or not s.strip():
+#         return
 
-    pairs = s.split(",")
-    for pair in pairs:
-        if ":" not in pair:
-            continue
+#     pairs = s.split(",")
+#     for pair in pairs:
+#         if ":" not in pair:
+#             continue
             
-        category, level_str = pair.split(":", 1)
-        category = category.strip()
-        level_str = level_str.strip().upper()
+#         category, level_str = pair.split(":", 1)
+#         category = category.strip()
+#         level_str = level_str.strip().upper()
 
-        # 3. Determine the integer level
-        level_int = level_map.get(level_str, ConfigurableLogPrinter.INFO)
+#         # 3. Determine the integer level
+#         level_int = level_map.get(level_str, ConfigurableLogPrinter.INFO)
 
-        # 4. Determine if we should pass the category name to the printer
-        logger_name = category if add_name else ""
+#         # 4. Determine if we should pass the category name to the printer
+#         logger_name = category if add_name else ""
 
-        # 5. Create the printer and register it
-        new_logger = ConfigurableLogPrinter(level=level_int, name=logger_name)
-        set_logger(category, new_logger)
+#         # 5. Create the printer and register it
+#         new_logger = ConfigurableLogPrinter(level=level_int, name=logger_name)
+#         set_logger(category, new_logger)
 
 
 # def set_loggers_from_specification_string_v2(s: str, logger):
@@ -220,7 +220,7 @@ def set_loggers_from_specification_string(s: str="", add_name: bool=""):
 #         set_logger(cat,logger)
     
 
-def set_loggers_from_specification_string_v2(s: str, logger):
+def set_loggers_from_specification_string(s: str, logger):
     """
     Calls set_logger(category, logger) for all categories listed in the string.
     If a category is prepended with '-', the entry is deleted from the global loggers.

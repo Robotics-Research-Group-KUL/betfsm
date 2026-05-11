@@ -1,13 +1,13 @@
 # ---- building the state machine -----
 from betfsm import (
-        Sequence, ConcurrentSequence, TimedWait,  Message, SUCCEED, Repeat, get_logger, BeTFSMRunnerGUI
+        Sequence, ConcurrentSequence, TimedWait,  Message, SUCCEED, Repeat, get_logger,  Runner
 )
 
 # ---------------------------------------
 def subtree(nr:int, sz:int, sec: float):
     sm = Sequence(f"subseq{nr}")
     for i in range(sz):
-        sm.add_state( TimedWait("waiting {sec}",sec)),
+        sm.add_state( TimedWait(f"waiting {sec}",sec)),
         sm.add_state( Message(msg=f"subseq{nr} says {i}"))
     return sm
 
@@ -33,7 +33,7 @@ def build_tree_larger():
 def main():
     bb = {}
     sm = build_tree_larger()
-    runner = BeTFSMRunnerGUI(sm,bb, frequency=100.0, publish_frequency=5.0, debug=False, display_active=False)
+    runner = Runner(sm,bb, frequency=100.0, publish_frequency=5.0, debug=False, display_active=False)
     runner.run()
 
 if __name__ == "__main__":

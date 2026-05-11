@@ -36,7 +36,7 @@ from betfsm import (
     Ctrl_C_Handler,CheckCancel, get_path_value
 )
 from betfsm_crospi import load_task_list, eTaSL_StateMachine
-from betfsm_ros import BeTFSMNode,BeTFSMRosRunnerGUI,Node,Duration,LifeCycle,Transition
+from betfsm_ros import BeTFSMNode,ROSRunner,Node,Duration,LifeCycle,Transition
 
 
 class MySequence(Sequence):
@@ -98,7 +98,7 @@ def main(args=None):
     # This is now working and recommended, accepts command-line parameters (see --help)
     # has many more optional arguments, see API documentation
     # checks whether timing exceeds sample period.
-    runner = BeTFSMRosRunnerGUI(my_node,sm,blackboard, frequency=100.0, publish_frequency=5.0, debug=False, display_active=False)
+    runner = ROSRunner(my_node,sm,blackboard, frequency=100.0, publish_frequency=5.0, debug=False, display_active=False)
 
     try:
         runner.run()
