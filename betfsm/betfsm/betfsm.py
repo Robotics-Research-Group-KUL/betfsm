@@ -168,20 +168,6 @@ class Visitor(ABC):
 
 
 class TickingState:
-    _global_log = {}
-
-    @classmethod
-    def get_global_log(cls):
-        return cls._global_log
-
-    """
-        A log where nodes are only added, a single publisher can periodically 
-        erase all nodes from this log.  This allows to capture all notes that 
-        where active during a period. This is only done when it is turned
-        on by assigning an empty dict to global_publish_log
-    """
-    global_publish_log = None 
-
     """
     Implements a 'ticking' state, i.e. a state that takes a longer time, but cooperatively yields
     the initiative back to the caller (cooperative concurrency):
@@ -228,6 +214,26 @@ class TickingState:
         if not, the user needs to call reset() before using the state again.
 
     """
+
+    _global_log = {}
+
+
+    @classmethod
+    def get_global_log(cls):
+        """
+            A log where nodes are only added, a single publisher can periodically 
+            erase all nodes from this log.  This allows to capture all notes that 
+            where active during a period. This is only done when it is turned
+            on by assigning an empty dict to global_publish_log
+        """        
+        return cls._global_log
+
+    global_publish_log = None 
+
+
+
+
+
     def __init__(self,name:str, outcomes: List[str]):
         """
         parameters:
