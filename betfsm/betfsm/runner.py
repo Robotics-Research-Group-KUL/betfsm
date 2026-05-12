@@ -81,9 +81,9 @@ class RunnerBase:
     
     # __init__() ensures that parsed arguments are available at self.args
     #
-    def __init__(self, statemachine: TickingState, blackboard: Blackboard, frequency: float=100.0, publish_frequency=10,debug: bool = False, 
-                 display_active=False, betfsm_log=None, name_filter="", allow_generate_dot=True,allow_generate_json=True,serve=True,
-                 host="0.0.0.0", port=8000, workers=1, log_level="info"):
+    def __init__(self, statemachine: TickingState, blackboard: Blackboard, frequency: float=100.0, publish_frequency : float=10,debug: bool = False, 
+                 display_active:bool =False, betfsm_log:str=None, name_filter:str="", allow_generate_dot:bool=True,allow_generate_json:bool=True,serve:bool=True,
+                 host:str="0.0.0.0", port:int=8000, workers:int=1, log_level:str="info"):
         """
         Initializes the BeTFSMRunner.  This BeTFSMRunner has no other dependencies and
         runs in the main thread.  The parameters frequency, publish_frequency, debug, display_active,
@@ -91,26 +91,22 @@ class RunnerBase:
         parameters.
 
         Parameters:
-            node: 
-                Ros node to be used to define the timed loop for the runner
             statemachine:
                 the TickingStateMachine to be run
 
-            blackboard:
+            blackboard(Blackboard):
                 the blackboard to be used
             frequency:
-                frequency at which the statemachine is ticked (in Hz) (default=100Hz)
+                frequency at which the statemachine is ticked, in Hz [default=100Hz]
             publish_frequency:
-                frequency at which to publish to the webbrowser (default= 10Hz)
+                frequency at which to publish to the webbrowser [default= 10Hz]
             debug:
-                If true outputs debug info on console each tick. (default=False)
+                If true outputs debug info on console each tick. [default=False]
             display_active:
-                displays all active nodes on log at publish_frequency (only if changed!)
+                displays all active nodes on log at publish_frequency. Only if activity changed!
             betfsm_log:
                 A list of categories, separated by ':' that will be logged, known categories
                 are default, state, service,... But users and libraries can add their own.
-            logger (not present for ROS):
-                logger to be used 
             name_filter:
                 comma-separated list of names of nodes that are not descended into in
                 the graphical user interface
@@ -131,7 +127,7 @@ class RunnerBase:
                 bind socket of server to this port, default=8000
             workers:
                 number of worker processes, default=1
-            log-level:
+            log_level:
                 log-level of the web-server (not BeTFSM), default = "info"
                 choices are "critical", "error", "warning", "info", "debug", "trace"
 
@@ -283,7 +279,7 @@ class Runner(RunnerBase):
         args              = parser.parse_args(clean_args)        
         return args
     
-    def run(self):
+    def run(self) -> int:
         """
         Runs the statemachine until it returns an outcome different from TICKING
 

@@ -43,7 +43,8 @@ def cleanup_outcomes(outcomes:List[str])->List[str]:
     cleans up a list of outcomes by elliminating duplicates.
 
     Parameters:
-        list of outcomes with possibly duplicate elements.
+        outcomes:
+            list of outcomes with possibly duplicate elements.
 
     Returns:
         list of outcomes with duplicate elements elliminated.
@@ -69,7 +70,7 @@ TickingState_Status = Enum("TickingState_Status",["ENTRY","DOO","EXIT"])
 
 
 
-def get_path_value(blackboard, path, default=None, delimiter='/'):
+def get_path_value(blackboard, path:str, default=None, delimiter:str='/') -> str:
     """
     gets a value in the blackboard at the given path
     """
@@ -734,7 +735,7 @@ class Concurrent(GeneratorWithList):
         super().__init__(name,[],children)
 
 
-    def co_execute(self,blackboard):
+    def co_execute(self,blackboard:Blackboard):
         """        
         Python generator routine (co-routine). You can use `yield <outcome>` to return intermediate results
 
@@ -892,7 +893,7 @@ class ConcurrentFallback(GeneratorWithList):
 
    
 
-    def co_execute(self,blackboard):
+    def co_execute(self,blackboard:Blackboard):
         """
         executes the underlying states in the fallback node, as much as possible concurrently.
         all outcomes except for CANCEL and TICKING indicate success.
@@ -948,7 +949,7 @@ class WaitFor(Generator):
             
     ```
     """
-    def __init__(self, condition_cb):
+    def __init__(self, condition_cb:Callable):
         """
         Ticks until condition is True and returns SUCCEED.
 
@@ -1197,12 +1198,13 @@ class Message(Generator):
         yield SUCCEED
 
 
-def dumps_blackboard(blackboard,indent=0):
+def dumps_blackboard(blackboard:Blackboard,indent:int=0):
     """
     returns a string-dump of a (piece of the ) blackboard
     
     Parameters:
         blackboard:
+            Blackboard to be dumped
         indent:
             determines the indentation for printing.
     """
@@ -1302,7 +1304,7 @@ class Compute(Generator):
 
 
 class Adapt(GeneratorWithState):
-    def __init__(self,name:str, state:TickingState, transitions=[])->None:
+    def __init__(self,name:str, state:TickingState, transitions:Dict[str,str]=[])->None:
         """
         Adapts the outcome of a state using a transition table
 
@@ -1404,8 +1406,7 @@ class TimedWait(Generator):
             timeout:
                 duration to wait.
 
-        Returns:
-            will return TICKING until timeout is passed after which it returns SUCCEED
+        will return TICKING until timeout is passed after which it returns SUCCEED
         """
         outcomes = [SUCCEED,ABORT]
         super().__init__(name,outcomes)
@@ -1577,8 +1578,10 @@ class TickingStateMachine(TickingState):
     - should be drop in replacement of Yasmin StateMachine, (but not the other way around, StateMachine can't
        handle TickingStates
         
-    """    
-    def __init__(self, name:str, outcomes: List[str]) -> None: #, transitioncb=default_transitioncb, statecb=default_statecb) -> None:
+    """ 
+
+    #, transitioncb=default_transitioncb, statecb=default_statecb) -> None:   
+    def __init__(self, name:str, outcomes: List[str]) -> None:         
         """
         TickintStatemachine is a statemachine that can maintain TickingStates.
 
@@ -1587,14 +1590,15 @@ class TickingStateMachine(TickingState):
                 (instance) name of the state machine
             outcomes: 
                 the allowed outcomes of the state machine, any outcome not specified in transitions
-                will be an outcome of the state machine and should be contained in outcomes (otherwise exception+abort) 
-            transitioncb: 
-                callback function called at each transition. 
-                Signature transitioncb(source_state:str, transtion:str, target_state:str).
-                See also 
-            statecb: callback function called before entering each state. 
-                    Signature statecb(name)        
+                will be an outcome of the state machine and should be contained in outcomes (otherwise exception+abort)         
         """
+
+            #         transitioncb: 
+            #     callback function called at each transition. 
+            #     Signature transitioncb(source_state:str, transtion:str, target_state:str).
+            #     See also 
+            # statecb: callback function called before entering each state. 
+            #         Signature statecb(name)
         outcomes.append(TICKING)
         super().__init__(name,outcomes)
 

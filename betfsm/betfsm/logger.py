@@ -24,7 +24,10 @@ import sys
 from colorama import Fore, Back, Style
 
 
-class DummyLogPrinter:
+class Logger:
+    None
+
+class DummyLogPrinter(Logger):
     """
     Can be used with set_logger for a do-nothing logger.
     """
@@ -39,7 +42,7 @@ class DummyLogPrinter:
     def fatal(self,*args):
         pass
 
-class LogPrinter:
+class LogPrinter(Logger):
     """
     Can be used with set_logger to install a logger that prints to console.
     Is the default if not overridden by a call to set_logger()
@@ -62,7 +65,7 @@ class LogPrinter:
 
 
 # Will be obsolete after going towards: set_loggers_from_specification_string_v2
-class ConfigurableLogPrinter:
+class ConfigurableLogPrinter(Logger):
 
     DEBUG=0
     INFO=1
@@ -132,7 +135,7 @@ def get_logger(category:str="default"):
     else:
         return default_loggers["unknown"]
 
-def set_logger(category:str,logger):
+def set_logger(category:str,logger: Logger):
     """
     Use this to set the logger, either LogPrinter() or ROS2node.get_logger()
 

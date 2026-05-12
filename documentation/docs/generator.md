@@ -5,13 +5,13 @@
       show_root_heading: true 
 
 
-::: betfsm.betfsm.GeneratorWithState
+::: betfsm.GeneratorWithState
     options:
       show_source: false
       show_root_heading: true 
 
 
-::: betfsm.betfsm.GeneratorWithList
+::: betfsm.GeneratorWithList
     options:
       show_source: false
       show_root_heading: true 

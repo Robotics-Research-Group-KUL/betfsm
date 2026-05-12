@@ -389,6 +389,9 @@ class eTaSLEvent(TickingState):
 
 
 # def nested_etasl_state(name: str, file_path: str, robot_path: str, display_in_viewer: bool= False):
+# ,                                                           This parameters are removed.
+# transitioncb:Callable=default_transitioncb, 
+# statecb:Callable=default_statecb
 class eTaSL_StateMachine(TickingStateMachine):
     """
 
@@ -405,16 +408,13 @@ class eTaSL_StateMachine(TickingStateMachine):
                  timeout:Duration = Duration(seconds=1.0),
                  node : Node = None,
                  deactivate_last: bool = False
-                 # ,                                                           This parameters are removed.
-                 # transitioncb:Callable=default_transitioncb, 
-                 # statecb:Callable=default_statecb
                  ):
         """
         Configurable statemachine to execute an eTaSL task that:
 
         - uses TickingStateMachine to provide callbacks for transtions and state changes and support TICKING;
         - uses a feedback to set parameters;
-        - puts the last message from the output topic in the blackboard under blackboard["output"][name].
+        - puts the last message from the output topic in the blackboard under `blackboard["output"][name]`.
 
         Parameters:
             name:
@@ -434,14 +434,18 @@ class eTaSL_StateMachine(TickingStateMachine):
                 Uses a duration of 1 second otherwise.
             node:
                 [optional] ROS2 node to be used. Uses BeTFSMNode.get_instance() otherwise.
-            transitioncb:
-                [optional] callback that is called at each transition, signature `def transitioncb(statemachine,blackboard,source,outcome)->outcome`
-            statecb:
-                [optional] callback that is called at each, signature `default_statecb(statemachine,blackboard,state)`
 
         warning:            
             TODO: default name of output topic needs to be changed.
         """
+
+        # commented out documentation
+        # """ 
+        #     transitioncb:
+        #         [optional] callback that is called at each transition, signature `def transitioncb(statemachine,blackboard,source,outcome)->outcome`
+        #     statecb:
+        #         [optional] callback that is called at each, signature `default_statecb(statemachine,blackboard,state)`
+        # """
         super().__init__(name,outcomes=[SUCCEED, ABORT,TIMEOUT]) # removed parameters: ,transitioncb=transitioncb,statecb=statecb)
         msg = Message(name="display_name", msg=f"cROSpi task {name}", logCategory="crospi")
         self.add_state(msg,transitions={SUCCEED: "DEACTIVATE_ETASL"})

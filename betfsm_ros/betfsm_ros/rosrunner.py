@@ -41,9 +41,9 @@ class ROSRunner(RunnerBase):
 
     This is multi-threaded, only access member variables using the methods designed for this. (i.e. set_outcome, get_outcome)
     """    
-    def __init__(self, node:Node, statemachine: TickingState, blackboard: Blackboard, frequency: float=100.0, publish_frequency=5,debug: bool = False, 
-                 display_active=False, betfsm_log=None,name_filter="", allow_generate_dot=True,allow_generate_json=True,serve=True,
-                 host="0.0.0.0", port=8000, workers=1, log_level="info"):
+    def __init__(self, node:Node, statemachine: TickingState, blackboard: Blackboard, frequency: float=100.0, publish_frequency:float=5,debug:bool=False, 
+                 display_active:bool=False, betfsm_log:str=None,name_filter:str="", allow_generate_dot:bool=True,allow_generate_json:bool=True,serve:bool=True,
+                 host:str="0.0.0.0", port:str=8000, workers:int=1, log_level:str="info"):
    
         super().__init__(statemachine, blackboard, frequency, publish_frequency, debug, display_active, betfsm_log,name_filter,allow_generate_dot,allow_generate_json,serve,
                  host, port, workers, log_level)
@@ -94,7 +94,7 @@ class ROSRunner(RunnerBase):
             get_logger().info(f"BeTFSM finished with outcome {outcome}")
             self.shutdown_future.set_result(True)         
 
-    def run(self):
+    def run(self) -> str:
         """
         Runs the statemachine until it returns an outcome different from TICKING
 
@@ -106,6 +106,7 @@ class ROSRunner(RunnerBase):
         """        
         self.first_time = True
         rclpy.spin_until_future_complete(self.node, self.shutdown_future, executor=None,timeout_sec=None)
+        return self.get_outcome()
         
 
     def set_outcome(self, outcome):

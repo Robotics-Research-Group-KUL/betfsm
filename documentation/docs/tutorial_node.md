@@ -24,12 +24,12 @@ class CountDown(Generator):
 
 ```
 
-A BeTFSM node is a python class that inherits from [TickingState][betfsm.betfsm.TickingState].  However, to simplify implementation, we mostly inherit from the subclass [Generator][betfsm.betfsm.Generator].  This sub-class uses [Python generators](https://www.geeksforgeeks.org/generators-in-python/) to simplify implementation. 
+A BeTFSM node is a python class that inherits from [TickingState][betfsm.TickingState].  However, to simplify implementation, we mostly inherit from the subclass [Generator][betfsm.Generator].  This sub-class uses [Python generators](https://www.geeksforgeeks.org/generators-in-python/) to simplify implementation. 
 
 To facilitate definitions of BeTFSM nodes, BeTFSM uses synchronous execution for cooperative multi-tasking, this avoids to deal with thread management, mutexes, etc.  
 The whole tree executes at **a fixed sample rate** and at each sample interval ('tick'), a node either returns TICKING (indicating that the node is not yet finished and wants to be called back the next tick) or another outcome (such as SUCCEED).  All outcomes are strings.  If really necessary, a BeTFSM node can still spawn and *manage* its own thread(s), but this is internal to the node and should not concern the framework.
 
-When you inherit from [Generator](betfsm.betfsm.Generator), 
+When you inherit from [Generator][betfsm.Generator], 
 the main implementation of functionality is in the method `co_execute` (the 'co' refers to co-routine), you can use python's yield to return control back to the system and pass the outcome of the state, the next tick control will resume at the same location in `co_execute` (or go to the next state when the outcome is different from SUCCEED).
 
 !!! Warning

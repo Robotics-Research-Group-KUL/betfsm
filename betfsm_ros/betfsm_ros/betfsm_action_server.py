@@ -117,90 +117,90 @@ class FeedbackState(TickingState):
 #         goal_handle.publish_feedback(feedback_msg)        
 
 
+# commented out May 2026: to be removed?
+
+# def check_cancel_transitioncb(cancel_outcome):
+#     """
+#     returns a handler to check whether cancel is requested of the ROS Action,
+#     This handler is handy when you want to be able to cancel after each transition in the state machine.
+#     Instead putting a CancelState() (see below) between each transtion, you just can add this callback function.
+#     In case of a cancel request it will transition to cancel_state (input parameter)
+
+#     parameters
+#     ----------
+#     cancel_outcome : transition will be come cancel_outcome when cancel was requested
+
+#     returns
+#     -------
+#     a method that can be used as a transition callback in a cb_state_machine:
+#     will have signature cb(statemachine,blackboard,source,transition)    
+
+#     see also
+#     --------
+#     default_transitioncb for help on the callback
+#     """ 
+#     def cb(statemachine,blackboard,source,outcome):
+#         if "goal_handle" in blackboard:
+#                 goal_handle=blackboard["goal_handle"]
+#                 if goal_handle.is_cancel_requested:
+#                     get_logger().info("CancelState observed is_cancel_requested")
+#                     del blackboard["goal_handle"] # we only listen once for an cancel_request during the duration of an action
+#                     return cancel_outcome
+#         return outcome
+#     return cb
 
 
-def check_cancel_transitioncb(cancel_outcome):
-    """
-    returns a handler to check whether cancel is requested of the ROS Action,
-    This handler is handy when you want to be able to cancel after each transition in the state machine.
-    Instead putting a CancelState() (see below) between each transtion, you just can add this callback function.
-    In case of a cancel request it will transition to cancel_state (input parameter)
 
-    parameters
-    ----------
-    cancel_outcome : transition will be come cancel_outcome when cancel was requested
+# # example of handling the cancel of an Action
+# # A state that polls until time out or cancel given
+# class CheckForCanceledAction(Generator):
+#     """
+#     Checks whether the Action that is running has received a cancel request.
+#     """
+#     def __init__(self,name:str) -> None:
+#         """
+#         Checks whether the Action that is running has received a cancel request.
+#         Returns SUCCEED if nothing received, returns CANCEL if something received
 
-    returns
-    -------
-    a method that can be used as a transition callback in a cb_state_machine:
-    will have signature cb(statemachine,blackboard,source,transition)    
+#         Parameters:
+#             name:
+#                 name of this state
+#         """
+#         super().__init__(name,outcomes=[SUCCEED,CANCEL])
 
-    see also
-    --------
-    default_transitioncb for help on the callback
-    """ 
-    def cb(statemachine,blackboard,source,outcome):
-        if "goal_handle" in blackboard:
-                goal_handle=blackboard["goal_handle"]
-                if goal_handle.is_cancel_requested:
-                    get_logger().info("CancelState observed is_cancel_requested")
-                    del blackboard["goal_handle"] # we only listen once for an cancel_request during the duration of an action
-                    return cancel_outcome
-        return outcome
-    return cb
+#     def co_execute(self, bb: Blackboard):
+#         if ("goal_handle" in bb) and bb["goal_handle"].is_cancel_requested:
+#             get_logger().info(f"{self.name} observed that the running action received a cancel request")            
+#             yield CANCEL
+#         else:
+#             yield SUCCEED
 
+# class WhileNotCanceled(GeneratorWithState):
+#     """
+#     Runs underlying state as long as not canceled. Returns outcome of state,
+#     yields CANCEL if there is a client side cancel request.
+#     """
+#     def __init__(self,name:str, state:TickingState) -> None:
+#         """
+#         Runs underlying state as long as not canceled. Returns outcome of state
+#         yields CANCEL if there is a client side cancel request.
 
-
-# example of handling the cancel of an Action
-# A state that polls until time out or cancel given
-class CheckForCanceledAction(Generator):
-    """
-    Checks whether the Action that is running has received a cancel request.
-    """
-    def __init__(self,name:str) -> None:
-        """
-        Checks whether the Action that is running has received a cancel request.
-        Returns SUCCEED if nothing received, returns CANCEL if something received
-
-        Parameters:
-            name:
-                name of this state
-        """
-        super().__init__(name,outcomes=[SUCCEED,CANCEL])
-
-    def co_execute(self, bb: Blackboard):
-        if ("goal_handle" in bb) and bb["goal_handle"].is_cancel_requested:
-            get_logger().info(f"{self.name} observed that the running action received a cancel request")            
-            yield CANCEL
-        else:
-            yield SUCCEED
-
-class WhileNotCanceled(GeneratorWithState):
-    """
-    Runs underlying state as long as not canceled. Returns outcome of state,
-    yields CANCEL if there is a client side cancel request.
-    """
-    def __init__(self,name:str, state:TickingState) -> None:
-        """
-        Runs underlying state as long as not canceled. Returns outcome of state
-        yields CANCEL if there is a client side cancel request.
-
-        Parameters:
-            name:
-                name of this state
-            state:
-                underlying state
-        """
-        super().__init__(name,[CANCEL],state)
+#         Parameters:
+#             name:
+#                 name of this state
+#             state:
+#                 underlying state
+#         """
+#         super().__init__(name,[CANCEL],state)
         
 
-    def co_execute(self, bm: Blackboard):
-        while not ("goal_handle" in bm and bm["goal_handle"].is_cancel_requested):
-            outcome = self.state(bm)
-            yield outcome        
-        get_logger().info(f"{self.name} observed that the running action received a cancel request")          
-        self.state.reset()  
-        yield CANCEL
+#     def co_execute(self, bm: Blackboard):
+#         while not ("goal_handle" in bm and bm["goal_handle"].is_cancel_requested):
+#             outcome = self.state(bm)
+#             yield outcome        
+#         get_logger().info(f"{self.name} observed that the running action received a cancel request")          
+#         self.state.reset()  
+#         yield CANCEL
             
 
 class BeTFSMActionServer:

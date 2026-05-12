@@ -62,7 +62,7 @@ appropriately, according to the figure above.
 
 
 The [visitor pattern](https://en.wikipedia.org/wiki/Visitor_pattern) is used to be able to generically travers the hierarchy of states.
-the **accept** method of a TickingState calls the visitor appropriately.  Visitor is defined  [here][betfsm.betfsm.Visitor]
+the **accept** method of a TickingState calls the visitor appropriately.  Visitor is defined  [here][betfsm.Visitor]
 
 !!! Blackboard
     All TickingStates can read and write from a common **blackboard** of type
@@ -111,17 +111,16 @@ In some cases, more information needs to be given and only the `add_state` appro
 
 
 
-[TickingStateMachine][betfsm.betfsm.TickingStateMachine] implements a basic state machine. You
-can add nodes using [add_state][betfsm.betfsm.TickingStateMachine.add_state].  In this call
+[TickingStateMachine][betfsm.TickingStateMachine] implements a basic state machine. You
+can add nodes using [add_state][betfsm.TickingStateMachine].  In this call
 you also specify the transitions between states.  These transitions are specified by mapping an outcome of the state to the name of one of the states in the state machine.  
 
-The [constructor][betfsm.betfsm.TickingStateMachine.__init__] takes a (**instance**) name of the state machine, its allowable outcomes and two optional callback functions `transitioncb` and `statecb`.
-Default implementations of the callbacks are described in [default|_transition_cb][betfsm.betfsm.default_transitioncb] and [default_statecb][betfsm.betfsm.default_statecb].
+The [constructor][betfsm.TickingStateMachine] takes a (**instance**) name of the state machine ands its allowable outcomes 
 
 ### Behavior-tree like states
 
-The most important behavior-tree like states are [Sequence][betfsm.betfsm.Sequence],[Fallback][betfsm.betfsm.Fallback],
-[ConcurrentSequence][betfsm.betfsm.ConcurrentSequence],[ConcurrentFallback][betfsm.betfsm.ConcurrentFallback], and [Repeat][betfsm.betfsm.Repeat]
+The most important behavior-tree like states are [Sequence][betfsm.Sequence],[Fallback][betfsm.Fallback],
+[ConcurrentSequence][betfsm.ConcurrentSequence],[ConcurrentFallback][betfsm.ConcurrentFallback], and [Repeat][betfsm.Repeat]
 
 The main difference is that for a typical behavior-tree implementation the outcomes can only be RUNNING, SUCCESS or FAILURE. Here, there can be more types of outcome.   The mapping to traditional behavior trees is explained below, detailed behavior is documented in the diagrams in the API-documentation.
 
@@ -142,9 +141,9 @@ The main difference is that for a typical behavior-tree implementation the outco
     Finishes if **all** have success. Success is defined by an outcome SUCCEED.
     In other words, failure can be differentiated by different outcomes.
 
-[ConcurrentSequence][betfsm.betfsm.ConcurrentSequence] and [ConcurrentFallback][betfsm.betfsm.ConcurrentFallback] are basically the same as [Sequence][betfsm.betfsm.Sequence] and [Fallback][betfsm.betfsm.Fallback] but execute concurrently: at each tick they go to their complete list of states and follow the logic of sequence or fallback. e.g. in a ConcurrentSequence the states are executed concurrently, but within one tick, they are executed in the order specified.
+[ConcurrentSequence][betfsm.ConcurrentSequence] and [ConcurrentFallback][betfsm.ConcurrentFallback] are basically the same as [Sequence][betfsm.Sequence] and [Fallback][betfsm.Fallback] but execute concurrently: at each tick they go to their complete list of states and follow the logic of sequence or fallback. e.g. in a ConcurrentSequence the states are executed concurrently, but within one tick, they are executed in the order specified.
 
-[Concurrent][betfsm.betfsm.Concurrent] executes also its children concurrently (calling them in sequence for each tick). Concurrent stops executing when any child returns any outcome different from TICKING. See [API][betfsm.betfsm.Concurrent] for description fo detailed behavior.
+[Concurrent][betfsm.Concurrent] executes also its children concurrently (calling them in sequence for each tick). Concurrent stops executing when any child returns any outcome different from TICKING. See [API][betfsm.Concurrent] for description fo detailed behavior.
 
 The **Repeat** state has one underlying state and repeats this state for a given number of times.
 
@@ -153,18 +152,18 @@ The **Repeat** state has one underlying state and repeats this state for a given
 
 ### Related to conditions
 
-- [waitFor][betfsm.betfsm.WaitFor] waits until a condition is satisfied.  This condition is given by a callback.
+- [waitFor][betfsm.WaitFor] waits until a condition is satisfied.  This condition is given by a callback.
    Note that this callback can be defined using Python's [lambda](https://python-reference.readthedocs.io/en/latest/docs/operators/lambda.html)
-- [WaitForever][betfsm.betfsm.WaitForever] waits forever, you probably want something to be running in parallel with this.
-- [While][betfsm.betfsm.While] continues to execute the underlying state while checking the given condition. It finishes with CANCEL when the condition returns false, it finishes also when the underlying state finishes and returns the outcome of the underlying state.
+- [WaitForever][betfsm.WaitForever] waits forever, you probably want something to be running in parallel with this.
+- [While][betfsm.While] continues to execute the underlying state while checking the given condition. It finishes with CANCEL when the condition returns false, it finishes also when the underlying state finishes and returns the outcome of the underlying state.
 
 ### Related to output
 
-- [Message][betfsm.betfsm.Message] is a state to quickly return send message to the log.
+- [Message][betfsm.Message] is a state to quickly return send message to the log.
 Its arguments are either a string or either a callback function.  Since the string is specified at
 construction time, the callback function is handy when you want to return something depending on the actual state while running.  Python's [lambda](https://python-reference.readthedocs.io/en/latest/docs/operators/lambda.html) could be useful to specify the callback.
 
-- [LogBlackboard][betfsm.betfsm.LogBlackboard] logs the blackboard or a part of the blackboard.
+- [LogBlackboard][betfsm.LogBlackboard] logs the blackboard or a part of the blackboard.
 The location to log is given by a list of strings.  
 
 Example:
@@ -175,19 +174,19 @@ Example:
 
 ### Related to timing
 
-- [TimedWait][betfsm.betfsm_ros.TimedWait] waits for the given duration and returns SUCCEED.
-- [TimedRepeat][betfsm.betfsm_ros.TimedWait] repeats the underlying state for a given number of time.  The time between two repetitions is specified.
-- [Timeout][betfsm.betfsm_ros.Timeout] executes the underlying state at long as its outcome is TICKING. It finishes when the outcome is not ticking and returns this outcome.  It also finishes when the given duration is exceeded and returns TIMEOUT.
+- [TimedWait][betfsm_ros.TimedWait] waits for the given duration and returns SUCCEED.
+- [TimedRepeat][betfsm_ros.TimedWait] repeats the underlying state for a given number of time.  The time between two repetitions is specified.
+- [Timeout][betfsm_ros.Timeout] executes the underlying state at long as its outcome is TICKING. It finishes when the outcome is not ticking and returns this outcome.  It also finishes when the given duration is exceeded and returns TIMEOUT.
 
 ### Related to ROS 2 services, life cycle and topics
 
-To manage file locations in a ROS2 environment a function [expand_ref][betfsm.betfsm_ros.expand_ref] is provided that expands references to ROS2 packages (or more preciselly ament packages) (using `$[packagename]`) or environmental variables (using `${environmental_variable}`)
+To manage file locations in a ROS2 environment a function [expand_ref][betfsm_ros.expand_ref] is provided that expands references to ROS2 packages (or more preciselly ament packages) (using `$[packagename]`) or environmental variables (using `${environmental_variable}`)
 
 
 
-- [ServiceClient][betfsm.betfsm_ros.ServiceClient] creates a TickingState that calls a ROS2 service and generates an outcome when the service returns back. While waiting, it continues to tick. Subclasses need to implement two methods `fill_in_request` to fill in the service request, most probably using information from the blackboard, and `process_result` to process the result from the service request, most probably putting some information in the blackboard.
+- [ServiceClient][betfsm_ros.ServiceClient] creates a TickingState that calls a ROS2 service and generates an outcome when the service returns back. While waiting, it continues to tick. Subclasses need to implement two methods `fill_in_request` to fill in the service request, most probably using information from the blackboard, and `process_result` to process the result from the service request, most probably putting some information in the blackboard.
 
-- [LifeCycle][betfsm.betfsm_ros.LifeCycle] manages the lifecycle of some other ROS2 node.
+- [LifeCycle][betfsm_ros.LifeCycle] manages the lifecycle of some other ROS2 node.
   The node is constructed with service_name, transition (see below), timeout and the transition is requested during execution of the state.
   See below for a simplified view of this lifecycle (transition states not included):
 ```mermaid
@@ -249,14 +248,14 @@ the default implementations are sufficient)
 ### Facilitating implementation of a TickingState
 
 To facilitate the definition of tickingStates, you can use [Python generators](https://www.geeksforgeeks.org/generators-in-python/), for this 
-the [Generator][betfsm.betfsm.Generator] class is defined.  Generator is a generic TickingState that implements methods **entry**, **doo** and **exit**.  
+the [Generator][betfsm.Generator] class is defined.  Generator is a generic TickingState that implements methods **entry**, **doo** and **exit**.  
 Users can define new TickingStates by defining the method `co_execute(self, blackboard:Blackboard)`.  This method is a co-routine and can regularly 
-yield control using a `yield <outcom>` statement. This makes it easy to specify a TickingState.
+yield control using a `yield <outcome>` statement. This makes it easy to specify a TickingState.
 
 For common usecases, further (generic) specializations are provided by:
 
-- [GeneratorWithState][betfsm.betfsm.GeneratorWithState] for a Generator with **one** child state 
-- [GeneratorWithList][betfsm.betfsm.GeneratorWithLists]  for a Generator with **a (ordered) list of** childs. 
+- [GeneratorWithState][betfsm.GeneratorWithState] for a Generator with **one** child state 
+- [GeneratorWithList][betfsm.GeneratorWithList]  for a Generator with **a (ordered) list of** childs. 
 
 These implementations implement correctly `reset` and `accept` for you and manage the child nodes (TickingStates) of
 your TickingState.  Most of the other nodes are implemented using these auxiliary classes.

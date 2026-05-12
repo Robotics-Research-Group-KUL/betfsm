@@ -74,8 +74,7 @@ class TimedWait(Generator):
             node:
                 Node to use for clock, 
 
-        Returns:
-            will return TICKING until timeout is passed after which it returns SUCCEED
+        will return TICKING until timeout is passed after which it returns SUCCEED
         """
         if node is None:
             self.node = BeTFSMNode.get_instance()
@@ -344,7 +343,7 @@ class ServiceClient(Generator):
         yield self.process_result(blackboard, result)        
 
 
-    def fill_in_request(self,blackboard:Blackboard, request):
+    def fill_in_request(self,blackboard:Blackboard, request:Type) -> Type:
         """
         fills in the self.req object (of the type srv_type.Request) with
         the appropriate parameters of the service call
@@ -352,12 +351,11 @@ class ServiceClient(Generator):
         Parameters:
             blackboard: 
                 blackboard to be used
-            request (srv_type.Request) : 
+            request: 
                 request to be filled in
 
         Returns:
-            request(srv_type.Request):
-                request that was filled in
+            request that was filled in
         """
         return request
 
@@ -465,7 +463,7 @@ class ActionClientBTFSM(Generator):
         get_logger("action").info(f"Received result from {self.action_name}")
         yield self.process_result(blackboard, result)
     
-    def fill_in_goal(self, blackboard: Blackboard):
+    def fill_in_goal(self, blackboard: Blackboard) -> Type:
         """
         fills in the self.action_type.Goal instance with
         the goal parameters of the action call
@@ -502,7 +500,7 @@ class ActionClientBTFSM(Generator):
         Callback for feedback messages from the action server
 
         Parameters:
-            feedback_msg:
+            feedback_msg ():
                 feedback message from the action
         """
         pass

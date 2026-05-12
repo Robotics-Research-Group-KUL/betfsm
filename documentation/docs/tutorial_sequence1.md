@@ -58,7 +58,7 @@ All of these alternatives result in the same BeTFSM tree.
 
 ### Running your BeTFSM tree
 
-To execute the BeTFSM tree, you use a BeTFSM runner.  Multiple BeTFSM runners exist, e.g. to interface with a graphical user interface while executing or to use ROS2 primitives for timing.  In this example we will use the pure python BeTFSM runner [BeTFSMRunner][betfsm.betfsm.BeTFSMRunner].
+To execute the BeTFSM tree, you use a BeTFSM runner.  Multiple BeTFSM runners exist, e.g. to interface with a graphical user interface while executing or to use ROS2 primitives for timing.  In this example we will use the pure python BeTFSM runner [Runner][betfsm.Runner] or the ROS2-version [ROSRunner][betfsm_ros.ROSRunner]
 
 You pass the BeTFSM tree `sm`, the (empty) blackboard, and the desired frequency to the constructor and call the ```run``
 method to run the BeTFSM tree.  It will return the outcome of the BeTFSM tree.
