@@ -27,6 +27,7 @@ nav:
 #      - "Up & Down": "upanddown.md"
 #      - "Action servers": "actionserver_ex.md" 
     - "API" :
+      - "Overview of the API" : "api_overview.md"
       - "BeTFSM":
         - "TickingState" : "tickingstate.md"
         - "TickingStateMachine" : "tickingstatemachine.md"
