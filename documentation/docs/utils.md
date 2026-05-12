@@ -66,7 +66,7 @@ This sets the ROS2 logger for all of the above categories.
       show_source: false
       show_root_heading: true
 
-::: betfsm_ros.dumps_blackboard
+::: betfsm.dumps_blackboard
     options:
       heading_level: 3
       show_source: false

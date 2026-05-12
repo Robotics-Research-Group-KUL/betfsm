@@ -56,6 +56,14 @@ nav:
         - "TimedRepeat for ROS2" : timedrepeat_ros.md
         - "TimedWait for ROS2" : 'timedwait_ros2.md'
         - "Timeout" : "timeout.md"
+      - "BeTFSM cROSpi":
+        - "load_task_list" : "load_task_list.md"
+        - "SetTaskParameters" : "settaskparameters.md"
+        - "ReadRobotSpecification" : "readrobotspecification.md"
+        - "ReadTaskSpecification" : "readtaskspecification.md"
+        - "eTaSLOutput" : "etasloutput.md"
+        - "eTaSLEvent"  : "etaslevent.md"
+        - "eTaSL_StateMachine" : "etasl_statemachine.md"
 #    - "BeTFSM eTaSL": 'etaslstatemachine.md'
 ##    - "Action server": "actionserver.md"
     

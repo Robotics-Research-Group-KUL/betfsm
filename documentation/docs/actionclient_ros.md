@@ -1,9 +1,6 @@
 
 ## ActionClient
 
-!!! warning "TODO"
-    Some strange errors when i want to include the code.
-
 ::: betfsm_ros.ActionClientBTFSM
 
     options:

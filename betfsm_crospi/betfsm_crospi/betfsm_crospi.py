@@ -440,7 +440,7 @@ class eTaSL_StateMachine(TickingStateMachine):
                 [optional] callback that is called at each, signature `default_statecb(statemachine,blackboard,state)`
 
         warning:            
-            TODO: name of output topic needs to be changed.
+            TODO: default name of output topic needs to be changed.
         """
         super().__init__(name,outcomes=[SUCCEED, ABORT,TIMEOUT]) # removed parameters: ,transitioncb=transitioncb,statecb=statecb)
         msg = Message(name="display_name", msg=f"cROSpi task {name}", logCategory="crospi")
