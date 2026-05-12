@@ -21,28 +21,41 @@
 BeTFSM states related to eTaSL
 """
 from rclpy.qos import QoSProfile
+from abc import abstractmethod
+from typing import Dict, List, Union, Callable,Type, TypeAlias
 
-from betfsm_ros.betfsm_ros import *
+# from betfsm_ros.betfsm_ros import *
+
+from betfsm_ros import (
+    Node,Duration,
+    BeTFSMNode,
+    ServiceClient, LifeCycle, Transition
+)
+
+from betfsm import (
+    SUCCEED,CANCEL,TIMEOUT, TICKING,ABORT,
+    add_logger_category, get_logger,
+    Blackboard, TickingState,Message,ConcurrentFallback, TickingStateMachine
+)
 
 from crospi_interfaces.srv import TaskSpecificationFile
 from crospi_interfaces.srv import TaskSpecificationString
-
-from crospi_py import etasl_params
-
-
-import json
-from jsonschema import validate, exceptions
-
 # Output:
 #  - msg.names
 #  - msg.data
 #  - msg.is_declared    
 from crospi_interfaces.msg import Output
-    
-
 from std_msgs.msg import String
 from functools import reduce
 from operator import and_
+
+
+from crospi_py import etasl_params
+import json
+from jsonschema import validate, exceptions
+
+    
+
 
         # qos_profile = QoSProfile(
         #     history=QoSHistoryPolicy.KEEP_LAST, #Keeps the last msgs received in case buffer is fulll
@@ -391,9 +404,10 @@ class eTaSL_StateMachine(TickingStateMachine):
                  cb:Callable=default_parameter_setter,
                  timeout:Duration = Duration(seconds=1.0),
                  node : Node = None,
-                 deactivate_last: bool = False,
-                 transitioncb:Callable=default_transitioncb, 
-                 statecb:Callable=default_statecb
+                 deactivate_last: bool = False
+                 # ,                                                           This parameters are removed.
+                 # transitioncb:Callable=default_transitioncb, 
+                 # statecb:Callable=default_statecb
                  ):
         """
         Configurable statemachine to execute an eTaSL task that:
@@ -428,7 +442,7 @@ class eTaSL_StateMachine(TickingStateMachine):
         warning:            
             TODO: name of output topic needs to be changed.
         """
-        super().__init__(name,outcomes=[SUCCEED, ABORT,TIMEOUT],transitioncb=transitioncb,statecb=statecb)
+        super().__init__(name,outcomes=[SUCCEED, ABORT,TIMEOUT]) # removed parameters: ,transitioncb=transitioncb,statecb=statecb)
         msg = Message(name="display_name", msg=f"cROSpi task {name}", logCategory="crospi")
         self.add_state(msg,transitions={SUCCEED: "DEACTIVATE_ETASL"})
         self.set_start_state(msg)

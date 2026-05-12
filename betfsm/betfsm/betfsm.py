@@ -1529,40 +1529,41 @@ class TimedRepeat(GeneratorWithState):
 #         visitor.post(self)
 
 
-def default_transitioncb(statemachine,blackboard,source,outcome):
-    """
-    Callback for use in cbStateMachine
+# def default_transitioncb(statemachine,blackboard,source,outcome):
+#     """
+#     Callback for use in cbStateMachine
 
-    Parameters:
-        statemachine: 
-            statemachine in which this callback is called
-        blackboard: 
-            the blackboard wich was used to execute this statemachine
-        source: 
-            the source state of the transition
-        outcome: 
-            the name of the transition
+#     Parameters:
+#         statemachine: 
+#             statemachine in which this callback is called
+#         blackboard: 
+#             the blackboard wich was used to execute this statemachine
+#         source: 
+#             the source state of the transition
+#         outcome: 
+#             the name of the transition
 
-    Returns:
-        outcome or an override of the outcome
-    """
-    return outcome
+#     Returns:
+#         outcome or an override of the outcome
+#     """
+#     return outcome
 
-def default_statecb(statemachine,blackboard,state):
-    """
-    Default callback used in TickingStateMachine.
+# def default_statecb(statemachine,blackboard,state):
+#     """
+#     Default callback used in TickingStateMachine.
 
-    Parameters:
-        statemachine:
-            statemachine in which this callback is called
-        blackboard:
-            the blackboard wich was used to execute this statemachine
-        state:
-            state that will be entered
-    """
-    pass
+#     Parameters:
+#         statemachine:
+#             statemachine in which this callback is called
+#         blackboard:
+#             the blackboard wich was used to execute this statemachine
+#         state:
+#             state that will be entered
+#     """
+#     pass
 
 
+# may 2026: removed transition_cb and statecb:
 class TickingStateMachine(TickingState):
     """
     A StateMachine that calls a callback function before entering a state and/or at each transition.
@@ -1577,7 +1578,7 @@ class TickingStateMachine(TickingState):
        handle TickingStates
         
     """    
-    def __init__(self, name:str, outcomes: List[str], transitioncb=default_transitioncb, statecb=default_statecb) -> None:
+    def __init__(self, name:str, outcomes: List[str]) -> None: #, transitioncb=default_transitioncb, statecb=default_statecb) -> None:
         """
         TickintStatemachine is a statemachine that can maintain TickingStates.
 
@@ -1600,8 +1601,8 @@ class TickingStateMachine(TickingState):
         self.states = {}
         self.start_state = None
         self.current_state = None
-        self.statecb = statecb
-        self.transitioncb = transitioncb
+        # self.statecb = statecb
+        # self.transitioncb = transitioncb
         
     def add_state(
         self,
@@ -1691,9 +1692,9 @@ class TickingStateMachine(TickingState):
         while True:
             state = self.states[self.current_state]
             name = self.current_state
-            self.statecb(self,blackboard,name)
+            # self.statecb(self,blackboard,name)   # EA: removed may 2026
             outcome = state["state"](blackboard)         
-            outcome = self.transitioncb(self,blackboard,self.current_state, outcome)
+            # outcome = self.transitioncb(self,blackboard,self.current_state, outcome)  # EA: removed May 2026
             # translate outcome using transitions
             if outcome in state["transitions"]:              
                 outcome = state["transitions"][outcome]
