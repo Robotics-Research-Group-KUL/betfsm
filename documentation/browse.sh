@@ -22,4 +22,5 @@ else
     echo "reusing existing virtual environment"
 fi
 
-$BASE/venv/bin/mkdocs serve -a 0.0.0.0:8001 -w "$BASE/../betfsm" -w "$BASE/docs"  -o
+$BASE/venv/bin/mkdocs serve  --livereload -a 0.0.0.0:8001 -w "$BASE/../betfsm" -w "$BASE/../betfsm_ros" -w "$BASE/../betfsm_crospi" -w "$BASE/docs"  -o
+

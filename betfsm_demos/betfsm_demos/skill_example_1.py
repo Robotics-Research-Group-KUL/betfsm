@@ -92,9 +92,6 @@ def main(args=None):
     get_logger().info("Creating state machine: ")
     sm = MyStateMachine()
 
-    # This is now working and recommended, accepts command-line parameters (see --help)
-    # has many more optional arguments, see API documentation
-    # checks whether timing exceeds sample period.
     runner = ROSRunner(my_node,sm,blackboard, frequency=100.0, publish_frequency=5.0, debug=False, display_active=False)
 
     try:
@@ -104,11 +101,6 @@ def main(args=None):
         return   
     my_node.destroy_node()
     rclpy.shutdown()
-    print("shutdown")
-
-    # alternatively you can do rclpy.spin(my_node) instead of run()
-    # ("run" used for uniformity with/without ros)
-       
     print("shutdown")
 
 if __name__ == "__main__":

@@ -9,6 +9,10 @@
   </div>
 </div>
 
+
+
+
+
 <p/>
 
 BeTFSM is a library for "ticking" statemachines and behavior trees. In this
@@ -25,10 +29,15 @@ Published under the GNU LESSER GENERAL PUBLIC LICENSE Version 3, 29 June 2007.
 contributions of Federico Ulloa Rios and Santiago Iregui Rincon
 
 <p>
-  <a href="https://aiprism.eu/"><img src="../static/Ai-Prism_Logo_Horizontal.png" alt="AI-PRISM Logo" width="250" align="left" style="margin-right:35px;"/></a>
-  This work was funded by the European Union’s Horizon 2020 research and innovation program 
+  <a href="https://aiprism.eu/"><img src="../static/Ai-Prism_Logo_Horizontal.png" alt="AI-PRISM Logo" width="180" align="left" style="margin-right:35px;"/></a>
+  This work was partially funded by the European Union’s Horizon 2020 research and innovation program 
   under <a href="https://aiprism.eu/">grant agreement No. 101058589 AI-Prism</a>
 </p>
 
 
 
+<p>
+<H1>AU<sup>2</sup>WIRE</H1 style="margin-right:35px;"> 
+</p>
+
+This work is partially funded by the [Flanders Make](https://www.flandersmake.be/en) IRVA project AU<sup>2</sup>WIRE

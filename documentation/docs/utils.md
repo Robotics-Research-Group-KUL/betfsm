@@ -29,20 +29,20 @@ This sets the ROS2 logger for all of the above categories.
 
      
 
-::: betfsm.betfsm_ros.expand_package_ref
+::: betfsm_ros.expand_package_ref
     options:
       heading_level: 3
       show_source: false
       show_root_heading: true 
 
-::: betfsm.betfsm_ros.expand_env_ref
+::: betfsm_ros.expand_env_ref
     options:
       heading_level: 3
       show_source: false
       show_root_heading: true       
 
 
-::: betfsm.betfsm_ros.expand_ref
+::: betfsm_ros.expand_ref
     options:
       heading_level: 3
       show_source: false
@@ -60,13 +60,13 @@ This sets the ROS2 logger for all of the above categories.
       show_source: false
       show_root_heading: true  
 
-::: betfsm.betfsm.cleanup_outcomes
+::: betfsm.cleanup_outcomes
     options:
       heading_level: 3
       show_source: false
       show_root_heading: true
 
-::: betfsm.betfsm_ros.dumps_blackboard
+::: betfsm_ros.dumps_blackboard
     options:
       heading_level: 3
       show_source: false

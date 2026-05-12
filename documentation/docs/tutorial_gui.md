@@ -1,70 +1,62 @@
-## Graphical user interface for BeTFSM
+## Executing a BeTFSM Tree
+
+
+This tutorial goes deeper in how we can **execute**, **configure** the execution of a BeTFSM tree, add additional **debug** information and
+**visualize** the execution 
 
 ### Running the BeTFSM web-server user interface
 
 
-BeTFSMRunnerGUI is not only a graphical user interface to monitor a BeTFSM-tree, but is also a way to configure
+Runner or ROSRunner provides a way to execute,  a graphical user interface to monitor a BeTFSM-tree, and a way to configure
 your BeTFSM from the command prompt.
 
-Using the graphical user interface is very easy.  One needs just to replace
-the BeTFSMRunner with [BeTFSMRunnerGUI][betfsm.betfsmrunnergui.BeTFSMRunnerGUI].  A webserver will be started that serves
-the graphical user interface at `localhost:8000`.
+A webserver will be started that serves the graphical user interface at `localhost:8000` (it uses 0.0.0.0, so it
+remains local and does not serve outside your computer by default).
+The console output will provide a link.  When you need to run different BeTFSM executions:
+ 
+  - Check whether you could run on the same execution using a Concurrent node.
+  - Execute it separately and configure the BeTFSM to serve the visualizations
+    on a different web-addres.
 
+Visualization and debugging output happen at the **publish_frequency**, which is different from the **frequency** at which
+the BeTFSM nodes are ticking.
+
+When the BeTFSM execution stops, the front-end page will
+remain active and will be polling at a slow frequency to ensure that it is possible
+to stop the BeTFSM execution, and when you later restart, the page and the BeTFSM will find 
+each other again.
+
+
+
+You can also use the command-line arguments not to execute, but to **generate a .dot** file, in [GraphViz](https://graphviz.org/) format,
+or to **generate a .json** file that can be used for further analysis of the BeTFSM-tree.  Currently the .json format does not contain
+enough information to reconstruct the BeTFSM tree.
+
+For example to visualize the tree using Graphviz, you could do:
+``` bash
+gui_example_simple1 --generate_dot gui_example_simple1.dot
+xdot gui_example_simple1.dot
+```
+
+
+The basic instructions to run your BeTFSM tree are very easy:
 
 ``` py
 sm = build_tree()
-runner = BeTFSMRunnerGUI(sm,bb, frequency=100.0, publish_frequency=5.0, debug=False, display_active=False)
+runner = Runner(sm,bb, frequency=100.0, publish_frequency=5.0, debug=False, display_active=False)
 outcome=runner.run()
 ```
 
+This is a [full description](runner.md) of how to call the Runner in **Python** and of the **command line arguments** to further configure
+during execution time.
 
-A full example can be found in ```betfsm_examples/guiexample_simple1.py```
+
+A full example can be found in ```betfsm/betfsm_examples/guiexample_simple1.py```
+
+```python linenums="0"
+--8<-- "betfsm/betfsm_examples/guiexample_simple1.py"
 ```
-import threading
-import webbrowser
 
-# ---- building the state machine -----
-from betfsm.betfsm import (
-        Sequence, ConcurrentSequence, TimedWait, TimedRepeat, Message, SUCCEED, Generator, Repeat
-)
-from betfsm.logger import get_logger
-from betfsm.betfsmrunnergui import BeTFSMRunnerGUI
-
-# ---------------------------------------
-def build_tree():
-    sm = Sequence("concurrent_sequence_outer", [
-        Message(msg="This demo uses ConcurrentSequence, Sequence, TimedRepeat"),
-        Message(msg="--- concurrent_sequence started ---"),
-        ConcurrentSequence("concurrent_sequence", [
-            Sequence("sequence1", [
-                Message(msg="   --- sequence 1 started ---"),
-                TimedRepeat("timedrepeat1", 5, 5, Message(msg="      sequence 1: 5 times every 5 second")),
-                Message(msg="   --- sequence 1 ended   ---")]),
-            Sequence("sequence2", [
-                Message(msg="   --- sequence 2 started ---"),
-                TimedRepeat("timedrepeat1", 10, 6, Message(msg="      sequence 2: 10 times every 6 second")),
-                Message(msg="   --- sequence 2 ended   ---")]),
-            Sequence("sequence3", [
-                TimedWait("waiting 20 sec", 20.0),
-                Message(msg="I like to interrupt!", logFunc=get_logger().warn)]),
-        ]),
-        Message(msg="--- concurrent_sequence ended   ---")
-    ])
-    return sm
-
-
-# ---------------------------------------
-
-def main():
-    bb = {}
-    sm = build_tree()
-    runner = BeTFSMRunnerGUI(sm,bb, frequency=100.0, publish_frequency=5.0, debug=False, display_active=False)
-    runner.run()
-
-if __name__ == "__main__":
-    main()
-
-```
 
 Other examples are provided in ```guiexample_simple2.py``` and ```guiexample_large.py```.
 
@@ -82,68 +74,47 @@ The Play button and sliding bar are currently not implemented. Their purpose wil
 
 ![GUI](static/gui.png)
 
-### BeTFSMRunnerGUI is more than a GUI
 
-This runner also offers configurability on the command line:
+### Running under ROS2 and cROSpi
 
-```
-Usage: your_betfsm_progr [-h] [--frequency FREQUENCY]
-                         [--publish_frequency PUBLISH_FREQUENCY] [--debug | --no-debug]
-                         [--display_active | --no-display_active]
-                         [--betfsm_log BETFSM_LOG] [--name-filter NAME_FILTER]
-                         [--generate_dot GENERATE_DOT] [--generate_json GENERATE_JSON]
-                         [--serve | --no-serve] [--host HOST] [--port PORT]
-                         [--workers WORKERS]
-                         [--log-level {critical,error,warning,info,debug,trace}]
+!!! note "TODO"
+    This Section and the later ones still needs to be elaborated
 
-BeTFSMRunnerGUI command line options
+Besides using the **ROSRunner** class, there is some ROS2 boiler-plate needed to 
+initialize **rclpy** ROS2 interface, start-up and destroy the ROS2 node, and to shut **rclply** down afterwards.
+**load_task_list** loads a list of task specifications, specified in a configuration file.  The **eTaSL_StateMachine**
+node communicates with cROSpi to execute the task with the given name:
 
-options:
-  -h, --help            show this help message and exit
-
-BeTFSMRunnerGUI Options:
-  --frequency FREQUENCY
-                        frequency at which BeTFSM runs [default:100.0]
-  --publish_frequency PUBLISH_FREQUENCY
-                        publishing frequency for GUI [default:5.0 ]
-  --debug, --no-debug   Log the timing of each tick [default: False]
-  --display_active, --no-display_active
-                        Log the active nodes at rate equal to
-                        publish_frequency[default: False]
-  --betfsm_log BETFSM_LOG
-                        BeTFSM Log specification string, a comma-separated list of
-                        category:level e.g. 'default:INFO, state:FATAL' with levels
-                        DEBUG,INFO,WARNING,ERROR,FATAL. Known categories are default
-                        and state, but there can be user-defined categories [default:
-                        '']
-  --name-filter NAME_FILTER
-                        specifies a comma-separated list of names (can be regular
-                        expressions) to filter out.[default: ''
-  --generate_dot GENERATE_DOT
-                        generate a graphviz .dot file from the state machine and store
-                        in the specified file (and quit the program without running)
-  --generate_json GENERATE_JSON
-                        generate a json file from the state machine and store in the
-                        specified file (and quit the program without running)
-  --serve, --no-serve   Start-up server with graphical user interface [default:True]
-
-Uvicorn Web Server Options:
-  --host HOST           Bind socket to this host [default: 0.0.0.0]
-  --port PORT           Bind socket to this port [default: 8000]
-  --workers WORKERS     Number of worker processes[default: 1]
-  --log-level {critical,error,warning,info,debug,trace}
-                        log-level of the web-server [default: info ]
-
+```python linenums="1"
+--8<-- "betfsm_demos/betfsm_demos/skill_example_2.py:29"
 ```
 
 
-- It allows you to set the parameters of the web-server, e.g. to configure it to run from a docker image. 
-- It also can configure the BeTFSM logging and the web-server logging.
-- It allows you to **generate graphviz dot** files and json files describing the BeTFSM tree. These can
-be visualized using GraphViz ("sudo apt install xdot"    and "xdot filename.dot")
-- It allows to specify names of nodes that are not expanded in the GUI (name-filter)
-- You can turn-off webserver and GUI if you only want the configurability.
+### Handling interruptions
 
-See the constructor of [BeTFSMRunnerGUI][betfsm.betfsmrunnergui.BeTFSMRunnerGUI] on how to set the parameters
-of the BeTFSMRunnerGUI, these parameters can be overridden by the command-line parameters.  
+In a real-life robot execution, one needs to be careful to handle all exceptional situations
+such that the robot system always ends up in a predictable state.
+
+
+
+#### Directly interrupting and cleaning-up
+
+A first solution is to directly interrupting the running state machines
+and *cleaning up* afterwards by calling the appropriate service calls
+to stop the robot.
+
+```python linenums="1"
+--8<-- "betfsm_demos/betfsm_demos/skill_example_3.py:29"
+```
+
+#### Directly interrupting and cleaning-up
+
+A second solution is to register the interruption and only
+react to it at a given state in the state machine.  This would allow e.g.
+a robot to continue until he is in a safe state before stopping.
+
+```python linenums="1"
+--8<-- "betfsm_demos/betfsm_demos/skill_example_3.py:29"
+```
+
 

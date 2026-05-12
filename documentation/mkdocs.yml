@@ -11,53 +11,88 @@ theme:
 
 nav:
   - "Documentation":
-    - "Home": 'index.md'
+    - "Introduction": 
+      - "Start page" : 'index.md'
+      - "Overview" : "overview.md"
+      - "Installation" : "installation.md"
+      - "Technical introduction" : "technical_intro.md"
     - "Tutorials":
+      - "Introduction" : "tutorials.md"
+      - "Defining your own BeTFSM node" : "tutorial_node.md"
       - "My first BeTFSM tree" : "tutorial_sequence1.md"
-      - "BeTFSM GUI" : "tutorial_gui.md"
+      - "Executing a BeTFSM tree" : "tutorial_gui.md"
       - "Defining state machines" : "tutorial_statemachine.md"
       - "Example with common nodes" : "tutorial_common_nodes.md"
+      - "Handling interruption" : "interruption.md"
 #      - "Up & Down": "upanddown.md"
 #      - "Action servers": "actionserver_ex.md" 
-    - "BeTFSM":
-      - "TickingState" : "tickingstate.md"
-      - "TickingStateMachine" : "tickingstatemachine.md"
-      - "Visitor" : "visitor.md"
-      - "Generator" : "generator.md"
-      - "Sequence" : "sequence.md"
-      - "ConcurrentSequence" : "concurrentsequence.md"
-      - "Fallback" : "fallback.md"
-      - "ConcurrentFallback" : "concurrentfallback.md"
-      - "Concurrent" : "concurrent.md"
-      - "WaitFor" : 'waitfor.md'
-      - "WaitForever" : 'waitforever.md'
-      - "TimedWait" : 'timedwait.md'
-      - "TimedRepeat" : "timedrepeat.md"
-      - "While" : 'while.md'
-      - "Repeat" : 'repeat.md'        
-      - "Message" : "message.md"
-      - "LogBlackboard" : 'logblackboard.md'
-      - "Compute" : "compute.md"
-      - "Adapt" : "adapt.md"
-      - "BeTFSMRunner": "betfsmrunner.md"
-      - "BeTFSMRunnerGUI": "betfsmrunnergui.md"
-#    - "BeTFSM ROS2":  
-#      - "ServiceClient" : 'serviceclient.md'
-#      - "LifeCycle" : 'lifecycle.md'
-#      - "TimedRepeat for ROS2" : timedrepeat_ros2.md
-#      - "TimedWait for ROS2" : 'rostimedwait_ros2.md'
-#      - "Timeout" : "timeout.md"
+    - "API" :
+      - "BeTFSM":
+        - "TickingState" : "tickingstate.md"
+        - "TickingStateMachine" : "tickingstatemachine.md"
+        - "Visitor" : "visitor.md"
+        - "Generator" : "generator.md"
+        - "Sequence" : "sequence.md"
+        - "ConcurrentSequence" : "concurrentsequence.md"
+        - "Fallback" : "fallback.md"
+        - "ConcurrentFallback" : "concurrentfallback.md"
+        - "Concurrent" : "concurrent.md"
+        - "WaitFor" : 'waitfor.md'
+        - "WaitForever" : 'waitforever.md'
+        - "TimedWait" : 'timedwait.md'
+        - "TimedRepeat" : "timedrepeat.md"
+        - "While" : 'while.md'
+        - "Repeat" : 'repeat.md'        
+        - "Message" : "message.md"
+        - "LogBlackboard" : 'logblackboard.md'
+        - "Compute" : "compute.md"
+        - "Adapt" : "adapt.md"
+        - "Runner": "runner.md"
+      - "Utilities" : 'utils.md'
+      - "BeTFSM ROS2":  
+        - "ServiceClient" : 'serviceclient.md'
+        - "ActionClient" : 'actionclient_ros.md'
+        - "LifeCycle" : 'lifecycle.md'
+        - "TimedRepeat for ROS2" : timedrepeat_ros.md
+        - "TimedWait for ROS2" : 'timedwait_ros2.md'
+        - "Timeout" : "timeout.md"
 #    - "BeTFSM eTaSL": 'etaslstatemachine.md'
 ##    - "Action server": "actionserver.md"
-    - "Utilities" : 'utils.md'
-    - "About": 'about.md'
+    
+    - "About & Acknowledgements": 'about.md'
 
+
+
+
+     
+extra_css:
+- css/mkdocstrings.css
+- css/extra.css
+
+
+markdown_extensions:
+  - pymdownx.snippets:
+      base_path: ".."
+      check_paths: false
+
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_div_format
+
+  - pymdownx.highlight
+  - pymdownx.details
+  - admonition
+  - mkdocs_graphviz
+  - pymdownx.arithmatex:
+      generic: true
 
 
 plugins:
   - search
-  - codeinclude:
-      title_mode: none
+  #- codeinclude:
+  #    title_mode: none
   - mermaid2
   - mkdocstrings:
       handlers:
@@ -67,23 +102,6 @@ plugins:
             show_source: false
             show_root_heading: true 
             docstring_style: google
-     
-extra_css:
-- css/mkdocstrings.css
-
-markdown_extensions:
-    - mkdocs_graphviz
-    - admonition
-    - pymdownx.details
-    # - pymdownx.highlight:
-    #     anchor_linenums: true
-    #     line_spans: __span
-    #     use_pygments: true
-    # - pymdownx.snippets
-    - pymdownx.details
-    - pymdownx.arithmatex:
-        generic: true
-
 
 
 

@@ -35,7 +35,6 @@ from betfsm import (
 from betfsm_crospi import load_task_list, eTaSL_StateMachine
 from betfsm_ros import BeTFSMNode,ROSRunner
 
-
 class MySequence(Sequence):
     def __init__(self):
         super().__init__("my_sequence", [
@@ -45,29 +44,16 @@ class MySequence(Sequence):
             eTaSL_StateMachine("MovingSpline","MovingSpline") ]
         )
 
-
-
-# main
 def main(args=None):
     rclpy.init(args=args)    
     my_node = BeTFSMNode.get_instance("skill_example")
-
     set_logger("default",my_node.get_logger())
     set_logger("crospi",my_node.get_logger())
-
     get_logger().info("skill_example_2 started")
     blackboard = {}
-
     load_task_list("$[crospi_application_template]/skill_specifications/libraries/skill_lib_example/tasks/skill_example.json",blackboard)
-    
-    get_logger().info("Now using a sequence instead of a state machine to achieve the same thing...")
     sm = MySequence()
-
-    # This is now working and recommended, accepts command-line parameters (call this file with --help argument)
-    # has many more optional arguments, see API documentation
-    # checks whether timing exceeds sample period.
     runner = ROSRunner(my_node,sm,blackboard, frequency=100.0, publish_frequency=5.0, debug=True, display_active=True)
-
     try:
         runner.run()
     except KeyboardInterrupt:
@@ -77,7 +63,5 @@ def main(args=None):
     rclpy.shutdown()
     print("shutdown")
     
-    
-
 if __name__ == "__main__":
     sys.exit(main(sys.argv))

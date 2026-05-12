@@ -93,47 +93,47 @@ class RunnerBase:
         Parameters:
             node: 
                 Ros node to be used to define the timed loop for the runner
-        statemachine:
-            the TickingStateMachine to be run
+            statemachine:
+                the TickingStateMachine to be run
 
-        blackboard:
-            the blackboard to be used
-        frequency:
-            frequency at which the statemachine is ticked (in Hz) (default=100Hz)
-        publish_frequency:
-            frequency at which to publish to the webbrowser (default= 10Hz)
-        debug:
-            If true outputs debug info on console each tick. (default=False)
-        display_active:
-            displays all active nodes on log at publish_frequency (only if changed!)
-        betfsm_log:
-            A list of categories, separated by ':' that will be logged, known categories
-            are default, state, service,... But users and libraries can add their own.
-        logger (not present for ROS):
-            logger to be used 
-        name_filter:
-            comma-separated list of names of nodes that are not descended into in
-            the graphical user interface
-        allow_generate_dot:
-            adds the generate_dot command-line parameter. [default: True]
-        allow_generate_json:
-            adds the generate_json command-line parameter. [default: True]
-        serve:A : {active}
-            starts webserver if True [default: True]
-        host:
-            the host IP of the network interface to bind to.  Default=0.0.0.0. 
-            Typical values are:
-            - 127.0.0.1 for only local acces and high security, for local development or production behind reverse proxy. 
-            - localhost usually 127.0.0.1
-            - 0.0.0.0 for anyone who knows your IP, lower security, for Docker, VM's or public access
-            - 192.168.x.x for only your local network
-        port:
-            bind socket of server to this port, default=8000
-        workers:
-            number of worker processes, default=1
-        log-level:
-            log-level of the web-server (not BeTFSM), default = "info"
-            choices are "critical", "error", "warning", "info", "debug", "trace"
+            blackboard:
+                the blackboard to be used
+            frequency:
+                frequency at which the statemachine is ticked (in Hz) (default=100Hz)
+            publish_frequency:
+                frequency at which to publish to the webbrowser (default= 10Hz)
+            debug:
+                If true outputs debug info on console each tick. (default=False)
+            display_active:
+                displays all active nodes on log at publish_frequency (only if changed!)
+            betfsm_log:
+                A list of categories, separated by ':' that will be logged, known categories
+                are default, state, service,... But users and libraries can add their own.
+            logger (not present for ROS):
+                logger to be used 
+            name_filter:
+                comma-separated list of names of nodes that are not descended into in
+                the graphical user interface
+            allow_generate_dot:
+                adds the generate_dot command-line parameter. [default: True]
+            allow_generate_json:
+                adds the generate_json command-line parameter. [default: True]
+            serve:A : {active}
+                starts webserver if True [default: True]
+            host:
+                the host IP of the network interface to bind to.  Default=0.0.0.0. 
+                Typical values are:
+                - 127.0.0.1 for only local acces and high security, for local development or production behind reverse proxy. 
+                - localhost usually 127.0.0.1
+                - 0.0.0.0 for anyone who knows your IP, lower security, for Docker, VM's or public access
+                - 192.168.x.x for only your local network
+            port:
+                bind socket of server to this port, default=8000
+            workers:
+                number of worker processes, default=1
+            log-level:
+                log-level of the web-server (not BeTFSM), default = "info"
+                choices are "critical", "error", "warning", "info", "debug", "trace"
 
         """
         self.statemachine = statemachine

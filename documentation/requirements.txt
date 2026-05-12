@@ -1,10 +1,10 @@
 ghp-import~=2.1.0
 mkdocs~=1.6.0
 mkdocs-mermaid2-plugin~=1.2.3
-mkdocstrings-python~=2.0.1
-pymdown-extensions~=10.8.1
-PyYAML~=6.0.1
-pyyaml_env_tag~=0.1
+mkdocstrings-python~=2.0.3
+pymdown-extensions~=10.21.2
+PyYAML~=6.0.3
+pyyaml_env_tag~=1.1
 mkdocs-graphviz~=1.5.3
 mkdocs-codeinclude-plugin~=0.2.1
 

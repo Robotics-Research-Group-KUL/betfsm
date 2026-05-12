@@ -101,7 +101,12 @@ This could be advisable when you want to build a generator that generates the st
 ### Putting everything together
 
 
-In the file ```betfsm_examples/example_statemachine.py```, you find everyting put together:
+In the file ```betfsm_examples/example_statemachine.py```, you find everything put together:
+
+
+```python linenums="1"
+--8<-- "betfsm_demos/betfsm_demos/skill_example_3.py:29"
+```
 
 ``` py
 #!/usr/bin/env python3
