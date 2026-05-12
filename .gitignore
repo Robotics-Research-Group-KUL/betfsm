@@ -6,3 +6,4 @@ betfsm/older
 # Python packaging artifacts
 *.egg-info/
 __pycache__
+documentation/site
