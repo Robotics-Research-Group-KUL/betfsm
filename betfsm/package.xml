@@ -8,8 +8,9 @@
   <license>LGPL-3.0-only</license>
 
   <depend>betfsm_interfaces</depend>
-
+<!--
   <buildtool_depend>setuptools</buildtool_depend>
+  -->
   <buildtool_depend>python3-colcon-common-extensions</buildtool_depend>
 
   <!-- Python Dependencies -->
