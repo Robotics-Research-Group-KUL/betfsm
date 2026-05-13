@@ -19,7 +19,7 @@
 
 
 from .betfsm import *
-from .betfsm_ros import *
+from ...betfsm_ros.betfsm_ros.betfsm_ros import *
 # from .betfsm_etasl import *
 
 from betfsm_interfaces.msg import Trace

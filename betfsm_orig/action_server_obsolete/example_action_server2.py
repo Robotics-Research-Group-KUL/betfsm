@@ -30,7 +30,7 @@ import rclpy
 
 
 # import some example state machines:
-from . import sm_up_and_down as examples
+from ...betfsm_demos.betfsm_demos import sm_up_and_down as examples
 
 def run_while_publishing( sm):
     """

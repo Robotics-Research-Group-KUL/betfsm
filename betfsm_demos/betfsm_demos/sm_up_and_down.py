@@ -1,5 +1,10 @@
 # sm_up_and_down.py
 #
+#
+# - BetTFSM trees as a library
+# - different usage patterns to defien
+#
+#
 # A simple demo statemachine that moves up and down.
 #
 # Copyright (C) Erwin Aertbeliën, 2024
@@ -19,17 +24,13 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
+TODO make this a full example of a skill library
+
 from rclpy.duration import Duration
 
-from betfsm.betfsm import *
-from betfsm.betfsm_ros import *
-from betfsm.betfsm_etasl import *
-from betfsm.betfsm_action_server import *
-#from betfsm.graphviz_visitor import *
-
-
-from betfsm.betfsm_action_server import CheckForCanceledAction
-
+from betfsm import *
+from betfsm_ros import *
+from betfsm_crospi import *
 import math
 
 #
@@ -185,19 +186,4 @@ class Up_and_down_with_parameters_checking_for_cancel(Sequence):
                         ]
                 )
         ))       
-
-#static member:    
-my_schema=json.loads("""
-        {
-            "title": "upanddown",
-            "description": "task that moves up and down",
-            "type": "object",
-            "properties" : {
-                "delta_z" : { "type" : "number", "description": "height to move up and down" }
-            },
-            "required" : [ "delta_z"],
-            "additionalProperties" : false
-        }
-    """)
-
 

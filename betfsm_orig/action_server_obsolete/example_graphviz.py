@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python3
 
 # test_ea.py
@@ -22,17 +23,14 @@
 import rclpy
 import sys
 
-from threading import Lock
 import rclpy.time
-from rclpy import Node
+from betfsm.betfsm import *
+from betfsm.betfsm_ros import *
+from betfsm.betfsm_etasl import *
+from betfsm.graphviz_visitor import *
 
-from betfsm.betfsm import TickingState,TICKING,Blackboard
-from betfsm.betfsm_node import BeTFSMNode
-from betfsm.betfsm_etasl import load_task_list
-from betfsm.graphviz_visitor import GraphViz_Visitor
+from ...betfsm_demos.betfsm_demos import sm_up_and_down
 from betfsm.logger import get_logger,set_logger
-import sm_up_and_down
-
 
 
 
@@ -52,7 +50,6 @@ class BeTFSMRunner:
         if outcome!=TICKING:
             self.timer.cancel()
             self.set_outcome(outcome)
-            self.sm.reset()
 
     def set_outcome(self, outcome):
         with self.outcome_lock:
@@ -63,17 +60,84 @@ class BeTFSMRunner:
             outcome = self.outcome
         return outcome
 
+
+
+
+class MyStateMachine(TickingStateMachine):
+    def __init__(self):
+        super().__init__("my_state_machine",[SUCCEED])
+
+        self.add_state(TimedWait("A",Duration(seconds=1.0)), transitions={SUCCEED:"B"})
+
+        self.add_state(
+            Sequence("B", [
+                TimedWait("a",Duration(seconds=1.0)), 
+                TimedWait("b",Duration(seconds=1.0)), 
+                TimedWait("c",Duration(seconds=1.0))
+            ]), 
+            transitions={SUCCEED:"C"}
+        )
+
+        self.add_state(TimedWait("C",Duration(seconds=1.0)), transitions={SUCCEED:"A"})
+
+
+
+class PrintGraphviz(Generator):
+    "To be able to print the graphviz while the state machine is running"
+    def __init__(self, sm):
+        super().__init__("print_graphviz",[SUCCEED])
+        self.sm = sm
+
+    def co_execute(self,bb):
+        # prints a graphviz representation of sm:
+
+        vis = GraphViz_Visitor()
+        self.sm.accept(vis)
+        vis.print()
+
+        #vis = VisitorFullName()
+        #self.sm.accept(vis)
+        yield SUCCEED
+
+
+
+
+def example():
+    return ConcurrentSequence("concurrent",[ 
+        Sequence("task1",[ 
+            TimedWait("waiting",Duration(seconds=6.0)),
+            Message(msg="finished waiting")
+        ]),
+        MyStateMachine()
+    ])
+
+# def add_graphviz_print( sm, period ):
+#     return ConcurrentSequence("",[
+#         TimedRepeat("repeat_every",10000,period,PrintGraphviz(sm)),
+#         sm
+#     ])
+
+def run_for_specified_duration_while_publishing( sm, duration):
+    return ConcurrentFallback("check_duration",[
+        TimedWait("timer",duration),
+        sm,
+        GraphvizPublisher("publisher","/gz",sm,None,skip=25)
+    ])
+
+
+
+
 # main
 def main(args=None):
 
-    print("betfsm")
+    print("BeTFSM")
     rclpy.init(args=args)
 
     my_node = BeTFSMNode.get_instance("test_ea")
 
     set_logger("default",my_node.get_logger())
     #set_logger("service",my_node.get_logger())
-    #set_logger("state",my_node.get_logger())
+    set_logger("state",my_node.get_logger())
 
 
 
@@ -82,17 +146,19 @@ def main(args=None):
     load_task_list("$[betfsm]/tasks/my_tasks.json",blackboard)
     
  
-    sm = sm_up_and_down.Up_and_down_as_a_class()
-
+    sm = run_for_specified_duration_while_publishing( example(), Duration(seconds=300))
+    # sm.reset()
+    # print(sm(blackboard))
     # prints a graphviz representation of sm:
     vis = GraphViz_Visitor()
     sm.accept(vis)
     vis.print()
 
+
     runner = BeTFSMRunner(my_node,sm,blackboard,0.01)
     
     try:
-        while (runner.get_outcome()==TICKING):
+        while (runner.get_outcome()=="TICKING"):
             rclpy.spin_once(my_node)
         rclpy.shutdown()
     except KeyboardInterrupt:
@@ -104,3 +170,4 @@ def main(args=None):
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv))
+

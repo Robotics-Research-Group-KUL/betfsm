@@ -20,7 +20,7 @@
 
 
 from .betfsm import *
-from .betfsm_ros import *
+from ...betfsm_ros.betfsm_ros.betfsm_ros import *
 
 
 from std_msgs.msg import String

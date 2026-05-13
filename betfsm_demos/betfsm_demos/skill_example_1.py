@@ -35,19 +35,6 @@ from betfsm_crospi import load_task_list, eTaSL_StateMachine
 from betfsm_ros import BeTFSMNode,ROSRunner
 
 
-
-# from skill_requirements import ParamValidator as pv
-
-# param = pv.parameters("Task description goes here", [
-#     pv.p_scalar({"name": "maxvel", "description": "Maximum velocity [m/s]", "default": 0.1, "required": True, "maximum": 0.5}),
-#     pv.p_scalar({"name": "maxacc", "description": "Maximum acceleration [m/s^2]", "default": 0.1, "required": True, "maximum": 0.5}),
-#     pv.p_scalar({"name": "eq_r", "description": "Equivalent radius", "default": 0.08, "required": False}),
-#     pv.p_string({"name": "task_frame", "description": "Name of frame used to control the robot in cartesian space", "default": "tcp_frame", "required": False}),
-#     pv.p_array({"name": "delta_pos", "type": "number", "default": [0.0, 0.0, 0.0], "description": "3D array of distances [m] that the robot will move w.r.t. the starting position in the X,Y,Z coordinates", "required": True, "minimum": -1.5, "maximum": 1.5, "minItems": 3, "maxItems": 3}),
-# ])
-
-
-
 class MyStateMachine(TickingStateMachine):
     def __init__(self):
         super().__init__("my_state_machine",[SUCCEED, ABORT,TIMEOUT])
