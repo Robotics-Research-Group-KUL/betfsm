@@ -7,7 +7,6 @@
   <maintainer email="Erwin.Aertbelien@kuleuven.be">Erwin Aertbeliën</maintainer>
   <license>LGPL-3.0-only</license>
 
-  <depend>betfsm_interfaces</depend>
   <depend>betfsm</depend>
   <exec_depend>rclpy</exec_depend>
 

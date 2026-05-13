@@ -7,7 +7,6 @@
   <maintainer email="Erwin.Aertbelien@kuleuven.be">Erwin Aertbeliën</maintainer>
   <license>LGPL-3.0-only</license>
 
-  <depend>betfsm_interfaces</depend>
 <!--
   <buildtool_depend>setuptools</buildtool_depend>
   -->
