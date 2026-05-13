@@ -23,10 +23,28 @@ both high- and low level.
 
 <p/>
 
+
+
+
+
+
+(c) 2024, Erwin Aertbeliën, contributions of Federico Ulloa Rios and Santiago Iregui Rincon
+
 Published under the GNU LESSER GENERAL PUBLIC LICENSE Version 3, 29 June 2007.
 
-(c) 2024, KU Leuven, Department of Mechanical Engineering, ROB-Group: Erwin Aertbeliën, 
-contributions of Federico Ulloa Rios and Santiago Iregui Rincon
+<p float="left">
+<a href="https://www.kuleuven.be/english/kuleuven/">
+    <img src="../static/logo_kuleuven.png" alt="KU Leuven Logo" width="100"/>
+</a>
+
+<a href="https://www.mech.kuleuven.be/en/research/ram">
+    <img src="../static/logo_RAM_B.png" alt="RAM Logo" width="100" />
+</a>
+<a href="https://www.flandersmake.be/en">
+    <img src="../static/FM_LOGO_whitebg.png" alt="RAM Logo" width="200" />
+</a>
+</p>
+ KU Leuven, Department of Mechanical Engineering, ROB-Group. The ROB Group is part of core labs M&A and MPRO of Flanders Make
 
 <p>
   <a href="https://aiprism.eu/"><img src="../static/Ai-Prism_Logo_Horizontal.png" alt="AI-PRISM Logo" width="180" align="left" style="margin-right:35px;"/></a>
@@ -36,7 +54,7 @@ contributions of Federico Ulloa Rios and Santiago Iregui Rincon
 
 
 
-<p>
+<p float="left">
 <H1>AU<sup>2</sup>WIRE</H1 style="margin-right:35px;"> 
 </p>
 
