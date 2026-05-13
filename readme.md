@@ -46,14 +46,17 @@ under the grant agreement No. <a href="https://cordis.europa.eu/project/id/10105
 ## Authors
 <p float="left">
 <a href="https://www.kuleuven.be/english/kuleuven/">
-    <img src="./logo_kuleuven.png" alt="KU Leuven Logo" width="150"/>
+    <img src="./logo_kuleuven.png" alt="KU Leuven Logo" height="65"/>
 </a>
 <a href="https://www.mech.kuleuven.be/en/research/ram">
-    <img src="./logo_RAM.png" alt="RAM Logo" width="110" />
+    <img src="./logo_RAM.png" alt="RAM Logo" height="65" />
+</a>
+<a href="https://www.flandersmake.be/en">
+    <img src="./FM_LOGO_whitebg.png" alt="RAM Logo" height="40" />
 </a>
 </p>
 
-(c) 2024, KU Leuven, Department of Mechanical Engineering, ROB-Group:
+(c) 2024, KU Leuven, Department of Mechanical Engineering, ROB-Group. The ROB Group is part of core labs M&A and MPRO of Flanders Make.
 
 - [Erwin Aertbeliën](https://www.kuleuven.be/wieiswie/en/person/00002405) with contributions of [Santiago Iregui Rincon](https://www.kuleuven.be/wieiswie/en/person/00125886) and [Federico Ulloa Rios](https://www.kuleuven.be/wieiswie/en/person/00141400)
 
