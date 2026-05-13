@@ -24,7 +24,7 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
-TODO make this a full example of a skill library
+# TODO make this a full example of a skill library
 
 from rclpy.duration import Duration
 

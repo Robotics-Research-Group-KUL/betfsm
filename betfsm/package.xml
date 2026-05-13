@@ -7,8 +7,8 @@
   <maintainer email="Erwin.Aertbelien@kuleuven.be">Erwin Aertbeliën</maintainer>
   <license>LGPL-3.0-only</license>
 
-  <!-- <buildtool_depend>setuptools</buildtool_depend> -->
   <buildtool_depend>python3-colcon-common-extensions</buildtool_depend>
+  <buildtool_depend>python3-setuptools</buildtool_depend>
 
   <!-- Python Dependencies -->
   <exec_depend>python3-colorama</exec_depend>

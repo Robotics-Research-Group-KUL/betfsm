@@ -8,6 +8,7 @@
   <license>LGPL-3.0-only</license>
 
   <depend>betfsm</depend>
+  <buildtool_depend>python3-setuptools</buildtool_depend>
   <exec_depend>rclpy</exec_depend>
 
   <test_depend>ament_copyright</test_depend>
