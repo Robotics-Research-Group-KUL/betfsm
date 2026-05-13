@@ -7,8 +7,7 @@
   <maintainer email="Erwin.Aertbelien@kuleuven.be">Erwin Aertbeliën</maintainer>
   <license>LGPL-3.0-only</license>
 
-  <url type="website">https://betfsm-90d316.pages.gitlab.kuleuven.be/</url>
-  <url type="repository">https://github.com/Robotics-Research-Group-KUL/betfsm</url>
+  <depend>betfsm_interfaces</depend>
 
   <buildtool_depend>setuptools</buildtool_depend>
   <buildtool_depend>python3-colcon-common-extensions</buildtool_depend>
