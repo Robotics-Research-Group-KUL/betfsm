@@ -102,7 +102,7 @@ class SetTaskParameters(ServiceClient):
             task_name:
                 name that will be used to find back the task with specifies the robot specification file.
             srv_name:
-                name of the etasl node, by default `/etasl_node`
+                name of the etasl node, by default `/crospi_node`
             cb:
                 callback that sets the parameters, with signature `def param_setters(blackboard) ->param`
                 where param is a Dict with the parameters of the task.
@@ -231,7 +231,7 @@ class ReadTaskSpecification(ServiceClient):
         # lookup task.
         task = etasl_params.get_task(blackboard,self.task_name)
         # extract file_path, and expand references    
-        # # we do expand refs, etasl_node does this already in his own ROS2 workspace    
+        # # we do expand refs, crospi_node does this already in his own ROS2 workspace    
         request.file_path = task["task_specification"]["file_path"]
         get_logger("crospi").info(f"task specification file {request.file_path}")
         return request
@@ -402,7 +402,7 @@ class eTaSL_StateMachine(TickingStateMachine):
                  task_name: str,
                  srv_name: str = "/crospi_node",
                  output_topic: str = "/my_topic",
-                 event_topic: str = "/etasl/events",
+                 event_topic: str = "crospi_node/events",
                  #display_in_viewer: bool= False, 
                  cb:Callable=default_parameter_setter,
                  timeout:Duration = Duration(seconds=1.0),
