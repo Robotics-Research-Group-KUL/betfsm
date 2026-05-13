@@ -49,7 +49,7 @@ under the grant agreement No. <a href="https://cordis.europa.eu/project/id/10105
     <img src="./logo_kuleuven.png" alt="KU Leuven Logo" height="65"/>
 </a>
 <a href="https://www.mech.kuleuven.be/en/research/ram">
-    <img src="./logo_RAM.png" alt="RAM Logo" height="65" />
+    <img src="./logo_RAM.png?v2" alt="RAM Logo" height="65" />
 </a>
 <a href="https://www.flandersmake.be/en">
     <img src="./FM_LOGO_whitebg.png" alt="RAM Logo" height="40" />
