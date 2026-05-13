@@ -22,8 +22,7 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
-        ('share/' + package_name + "/tasks", ['./tasks/my_tasks.json']),
-        ('share/' + package_name + "/scripts", ['./scripts/send_up_and_down.sh']),
+        ('share/' + package_name + "/tasks", ['./tasks/my_tasks.json'])
         ],
     install_requires=['setuptools'],
     zip_safe=True,
