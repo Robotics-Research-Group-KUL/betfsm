@@ -49,6 +49,9 @@ nav:
         - "Compute" : "compute.md"
         - "Adapt" : "adapt.md"
         - "Runner": "runner.md"
+        - "CheckCancel": "checkcancel.md"
+        - "Ctrl C Handler" : "ctrl_c_handler.md"
+        - "AlwaysOutcome" : "alwaysoutcome.md"
       - "Utilities" : 'utils.md'
       - "BeTFSM ROS2":  
         - "ServiceClient" : 'serviceclient.md'

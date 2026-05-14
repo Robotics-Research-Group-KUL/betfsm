@@ -1,5 +1,5 @@
 
-::: betfsm.betfsm.Generator
+::: betfsm.Generator
     options:
       show_source: false
       show_root_heading: true 

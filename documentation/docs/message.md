@@ -1,5 +1,5 @@
 
-::: betfsm.betfsm.Message
+::: betfsm.Message
     options:
       show_source: false
       show_root_heading: true 

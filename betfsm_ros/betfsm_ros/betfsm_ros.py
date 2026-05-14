@@ -383,7 +383,7 @@ class ActionClientBTFSM(Generator):
                  node:Node = None) -> None:
         """
         Creates a TickingState that calls an action and generates an outcome when the action returns back.
-        While waiting, it gets the response.
+        While waiting, it gets the response of the action to the blackboard and returns TICKING.
 
         Parameters:
             name:

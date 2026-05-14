@@ -32,15 +32,20 @@ class Ctrl_C_Handler:
         Configures the system SIGINT (Ctrl+C) handler to interact with a blackboard, where
         a variable will set to True if Ctrl-c is pressed
 
-        Args:
-            blackboard (dict): The nested dictionary structure acting as the blackboard.
-            pth (str): The filesystem-style path (e.g., "/sys/stop_requested") 
-                where the interrupt status is stored. If None, resets to default handler.
+        Arguments:
+            blackboard (dict): 
+                The nested dictionary structure acting as the blackboard.
+            pth (str): 
+                The filesystem-style path (e.g., "/sys/stop_requested")  where the interrupt status 
+                is stored. If None, resets to default handler.
             repeated (int, None): number of times to repeat ctrl-c before KeyboardInterrupt is raised
 
         Example:
-            # To start monitoring for Ctrl+C
+            To start monitoring for Ctrl+C.  If ctrl-c is pressed, at the given path in the blackboard,
+            a `True` value will be written.
+            ```
             Ctrl_C_Handler(blackboard,"/cancelation/ctrl_c",repeated=3) 
+            ```
         """                
         self.blackboard = blackboard
         self.pth        = pth
@@ -64,7 +69,11 @@ class Ctrl_C_Handler:
 
 
 class CheckCancel(GeneratorWithList):
-    
+    """
+    State that contiuously evaluates a condition and if this condition is False it triggers the nominal state.
+    Once the condition is True, the state switches to an abnormal state and will trigger
+    the cleanup state (and will never go back to the normal state)
+    """    
     def __init__(self, name:str,  cb:Callable, nominal_sm:TickingState=None, cleanup_sm:TickingState=None) -> None:
         """
         Args:
@@ -75,21 +84,27 @@ class CheckCancel(GeneratorWithList):
             cleanup_sm (TickingState): cleanup state (running after cancelation to cleanup). if None,
                                       a state is used  that always returns CANCEL
 
-        Note: 
-            syntax lambda function in python :     f = lambda x: x==0
-        
-        Usage patterns:
-            1) to check a whole tree continuously for cancelation, can be for the whole statemachine or a
+        Remarks: 
+          - syntax lambda function in python :     `f = lambda bb: get_path_value(bb,"/mypath/...")`, to examine
+            the blackboard `get_path_value` can be used, but you can write other functions to check for a cancel
+            condition
+
+          - Can be used to check for a ctrl-c condition, but is not limited to that, can check all kinds
+            of interrupt conditions such as events coming from a gui, or button,etc..
+            
+          - to check a whole tree continuously for cancelation, can be for the whole statemachine or a
                subtree of the state machine
 
+                ```
                 blackboard_ctrl_c_handler(blackboard, "/cancelation/ctrl_c")
                 sm_overall = CheckCancel("cancelation_check",                     
                     lambda bb: get_path_value(bb,"/cancelation/ctrl_c"), 
                     sm,
                     cleanup_sm)
+                ```
 
-            2) with no statemachines specified it can be used a node in a state machine/behavior node 
-               that returns CANCEL when there is a cancelation request and SUCCEED otherwise
+          - with no statemachines specified it can be used a node in a state machine/behavior node 
+               that returns `CANCEL` when there is a cancelation request and `SUCCEED` otherwise
 
         """
         super().__init__(name,[])
@@ -104,13 +119,16 @@ class CheckCancel(GeneratorWithList):
             cleanup_sm = AlwaysOutcome("cleanup",CANCEL)
         self.add_state(cleanup_sm)
 
-
+    def reset(self):
+        self.nominal = True
+        return super().reset()
+    
     def co_execute(self,blackboard):
         while True:
             if self.nominal:
                 if self.cb(blackboard):
                     self.nominal=False
-                    outcome = self.states[0]["state"].reset()
+                    self.states[0]["state"].reset()
                 else:
                     outcome = self.states[0]["state"](blackboard)
                     yield outcome
@@ -118,20 +136,3 @@ class CheckCancel(GeneratorWithList):
                 outcome = self.states[1]["state"](blackboard)
                 yield outcome
             
-
-    # def co_execute(self,blackboard): 
-    #     if self.maxcount!=-1:       
-    #         for c in range(self.maxcount):
-    #             outcome = self.state(blackboard)
-    #             while outcome==TICKING:
-    #                 yield TICKING
-    #                 outcome = self.state(blackboard)
-    #             if outcome!=SUCCEED:
-    #                 yield outcome
-    #         yield SUCCEED
-    #     else:
-    #         # forever:
-    #         while True:
-    #             outcome = self.state(blackboard)
-    #             if outcome!=SUCCEED:
-    #                 yield outcome
