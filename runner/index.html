@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Erwin Aertbelien" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Runner - BeTFSM documentation</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../assets/_mkdocstrings.css" rel="stylesheet" />
+        <link href="../css/mkdocstrings.css" rel="stylesheet" />
+        <link href="../css/extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Runner";
+        var mkdocs_page_input_path = "runner.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> BeTFSM documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Documentation</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" >Introduction</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="..">Start page</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../overview/">Overview</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../installation/">Installation</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../technical_intro/">Technical introduction</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Tutorials</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../tutorials/">Introduction</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../tutorial_node/">Defining your own BeTFSM node</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../tutorial_sequence1/">My first BeTFSM tree</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../tutorial_gui/">Executing a BeTFSM tree</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../tutorial_statemachine/">Defining state machines</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../tutorial_common_nodes/">Example with common nodes</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../interruption/">Handling interruption</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" >API</a>
+    <ul class="current">
+                <li class="toctree-l2"><a class="reference internal" href="../api_overview/">Overview of the API</a>
+                </li>
+                <li class="toctree-l2 current"><a class="reference internal current" >BeTFSM</a>
+    <ul class="current">
+                <li class="toctree-l3"><a class="reference internal" href="../tickingstate/">TickingState</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../tickingstatemachine/">TickingStateMachine</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../visitor/">Visitor</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../generator/">Generator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../sequence/">Sequence</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../concurrentsequence/">ConcurrentSequence</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../fallback/">Fallback</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../concurrentfallback/">ConcurrentFallback</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../concurrent/">Concurrent</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../waitfor/">WaitFor</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../waitforever/">WaitForever</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../timedwait/">TimedWait</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../timedrepeat/">TimedRepeat</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../while/">While</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../repeat/">Repeat</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../message/">Message</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../logblackboard/">LogBlackboard</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../compute/">Compute</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../adapt/">Adapt</a>
+                </li>
+                <li class="toctree-l3 current"><a class="reference internal current" href="#">Runner</a>
+    <ul class="current">
+    </ul>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../utils/">Utilities</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" >BeTFSM ROS2</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../serviceclient/">ServiceClient</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../actionclient_ros/">ActionClient</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../lifecycle/">LifeCycle</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../timedrepeat_ros/">TimedRepeat for ROS2</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../timedwait_ros2/">TimedWait for ROS2</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../timeout/">Timeout</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" >BeTFSM cROSpi</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../load_task_list/">load_task_list</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../settaskparameters/">SetTaskParameters</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../readrobotspecification/">ReadRobotSpecification</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../readtaskspecification/">ReadTaskSpecification</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../etasloutput/">eTaSLOutput</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../etaslevent/">eTaSLEvent</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../etasl_statemachine/">eTaSL_StateMachine</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../about/">About & Acknowledgements</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">BeTFSM documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Documentation</li>
+          <li class="breadcrumb-item">API</li>
+          <li class="breadcrumb-item">BeTFSM</li>
+      <li class="breadcrumb-item active">Runner</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/Robotics-Research-Group-KUL/betfsm/edit/main/documentation/docs/runner.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h3 id="running-betfsm">Running BeTFSM</h3>
+<p>Executing a state machine is done using a <em>Runner</em>.  This Runner iteratively executes
+the state machine at a fixed frequency and returns when the state machine gives an
+outcome not equal to TICKING.</p>
+<p>Most of the parameters are defined by <strong>RunnerBase</strong>.  The actual runners inherit from this
+base class and implement the environment related aspects such as timing, scheduling etc. There
+are currently two runners <strong>Runner</strong> only depends on a pure Python environment, and
+<strong>ROSRunner</strong> depends on a ROS2 environment and allow to use BeTFSM to implement a proper ROS2 node.</p>
+<p>Besides their constructor arguments, all the runners will interpret command line arguments that allow all users to further configure
+the execution.  Using the <strong>--help</strong> command line argument you can get a full list:</p>
+<div class="highlight"><pre><span></span><code><span class="n">usage</span><span class="p">:</span> <span class="n">example_runner</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">frequency</span> <span class="n">FREQUENCY</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">publish_frequency</span> <span class="n">PUBLISH_FREQUENCY</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">debug</span> <span class="o">|</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">debug</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">display_active</span> <span class="o">|</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">display_active</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">betfsm_log</span> <span class="n">BETFSM_LOG</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">name</span><span class="o">-</span><span class="nb">filter</span> <span class="n">NAME_FILTER</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">generate_dot</span> <span class="n">GENERATE_DOT</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">generate_json</span> <span class="n">GENERATE_JSON</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">serve</span> <span class="o">|</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">serve</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span> <span class="n">HOST</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span> <span class="n">PORT</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">workers</span> <span class="n">WORKERS</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">level</span> <span class="p">{</span><span class="n">critical</span><span class="p">,</span><span class="n">error</span><span class="p">,</span><span class="n">warning</span><span class="p">,</span><span class="n">info</span><span class="p">,</span><span class="n">debug</span><span class="p">,</span><span class="n">trace</span><span class="p">}]</span>
+
+<span class="n">BeTFSMRunnerGUI</span> <span class="n">command</span> <span class="n">line</span> <span class="n">options</span>
+
+<span class="n">options</span><span class="p">:</span>
+  <span class="o">-</span><span class="n">h</span><span class="p">,</span> <span class="o">--</span><span class="n">help</span>            <span class="n">show</span> <span class="n">this</span> <span class="n">help</span> <span class="n">message</span> <span class="ow">and</span> <span class="n">exit</span>
+
+<span class="n">BeTFSMRunnerGUI</span> <span class="n">Options</span><span class="p">:</span>
+  <span class="o">--</span><span class="n">frequency</span> <span class="n">FREQUENCY</span>
+                        <span class="n">frequency</span> <span class="n">at</span> <span class="n">which</span> <span class="n">BeTFSM</span> <span class="n">runs</span> <span class="p">[</span><span class="n">default</span><span class="p">:</span><span class="mf">100.0</span><span class="p">]</span>
+  <span class="o">--</span><span class="n">publish_frequency</span> <span class="n">PUBLISH_FREQUENCY</span>
+                        <span class="n">publishing</span> <span class="n">frequency</span> <span class="k">for</span> <span class="n">GUI</span> <span class="p">[</span><span class="n">default</span><span class="p">:</span><span class="mi">5</span> <span class="p">]</span>
+  <span class="o">--</span><span class="n">debug</span><span class="p">,</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">debug</span>   <span class="n">Log</span> <span class="n">statistics</span> <span class="n">of</span> <span class="n">the</span> <span class="n">timing</span> <span class="n">of</span> <span class="n">each</span> <span class="n">tick</span> <span class="n">at</span>
+                        <span class="n">publish_frequency</span> <span class="p">[</span><span class="n">default</span><span class="p">:</span> <span class="kc">False</span><span class="p">]</span> <span class="p">(</span><span class="n">default</span><span class="p">:</span> <span class="kc">False</span><span class="p">)</span>
+  <span class="o">--</span><span class="n">display_active</span><span class="p">,</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">display_active</span>
+                        <span class="n">Log</span> <span class="n">the</span> <span class="n">active</span> <span class="n">nodes</span> <span class="n">at</span> <span class="n">rate</span> <span class="n">equal</span> <span class="n">to</span>
+                        <span class="n">publish_frequency</span><span class="p">,</span> <span class="n">only</span> <span class="n">logs</span> <span class="n">changes</span> <span class="n">to</span>
+                        <span class="n">activity</span><span class="p">[</span><span class="n">default</span><span class="p">:</span> <span class="kc">False</span><span class="p">]</span> <span class="p">(</span><span class="n">default</span><span class="p">:</span> <span class="kc">False</span><span class="p">)</span>
+  <span class="o">--</span><span class="n">betfsm_log</span> <span class="n">BETFSM_LOG</span>
+                        <span class="n">BeTFSM</span> <span class="n">Log</span> <span class="n">specification</span> <span class="n">string</span><span class="p">,</span> <span class="n">i</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">a</span> <span class="nb">list</span> <span class="n">of</span>
+                        <span class="n">categories</span> <span class="n">separated</span> <span class="k">with</span> <span class="s1">&#39;:&#39;</span><span class="o">.</span> <span class="n">Known</span> <span class="n">categories</span> <span class="n">are</span>
+                        <span class="p">{</span><span class="s1">&#39;state&#39;</span><span class="p">,</span> <span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="s1">&#39;service&#39;</span><span class="p">,</span> <span class="s1">&#39;unknown&#39;</span><span class="p">}</span> <span class="n">but</span> <span class="n">there</span>
+                        <span class="n">can</span> <span class="n">be</span> <span class="n">user</span><span class="o">-</span><span class="n">defined</span> <span class="n">categories</span> <span class="p">[</span><span class="n">default</span><span class="p">:</span> <span class="s1">&#39;None&#39;</span><span class="p">]</span>
+  <span class="o">--</span><span class="n">name</span><span class="o">-</span><span class="nb">filter</span> <span class="n">NAME_FILTER</span>
+                        <span class="n">specifies</span> <span class="n">a</span> <span class="n">comma</span><span class="o">-</span><span class="n">separated</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">naes</span> <span class="p">(</span><span class="n">can</span> <span class="n">be</span>
+                        <span class="n">regular</span> <span class="n">expressions</span><span class="p">)</span> <span class="n">to</span> <span class="nb">filter</span> <span class="n">out</span><span class="o">.</span><span class="p">[</span><span class="n">default</span><span class="p">:</span> <span class="s1">&#39;&#39;</span>
+  <span class="o">--</span><span class="n">generate_dot</span> <span class="n">GENERATE_DOT</span>
+                        <span class="n">generate</span> <span class="n">a</span> <span class="n">graphviz</span> <span class="o">.</span><span class="n">dot</span> <span class="n">file</span> <span class="kn">from</span><span class="w"> </span><span class="nn">the</span> <span class="n">state</span> <span class="n">machine</span>
+                        <span class="ow">and</span> <span class="n">store</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">specified</span> <span class="n">file</span> <span class="p">(</span><span class="ow">and</span> <span class="n">quit</span> <span class="n">the</span> <span class="n">program</span>
+                        <span class="n">without</span> <span class="n">running</span><span class="p">)</span>
+  <span class="o">--</span><span class="n">generate_json</span> <span class="n">GENERATE_JSON</span>
+                        <span class="n">generate</span> <span class="n">a</span> <span class="n">json</span> <span class="n">file</span> <span class="kn">from</span><span class="w"> </span><span class="nn">the</span> <span class="n">state</span> <span class="n">machine</span> <span class="ow">and</span> <span class="n">store</span>
+                        <span class="ow">in</span> <span class="n">the</span> <span class="n">specified</span> <span class="n">file</span> <span class="p">(</span><span class="ow">and</span> <span class="n">quit</span> <span class="n">the</span> <span class="n">program</span> <span class="n">without</span>
+                        <span class="n">running</span><span class="p">)</span>
+  <span class="o">--</span><span class="n">serve</span><span class="p">,</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">serve</span>   <span class="n">Start</span><span class="o">-</span><span class="n">up</span> <span class="n">server</span> <span class="k">with</span> <span class="n">graphical</span> <span class="n">user</span> <span class="n">interface</span>
+                        <span class="p">[</span><span class="n">default</span><span class="p">:</span><span class="kc">True</span><span class="p">]</span> <span class="p">(</span><span class="n">default</span><span class="p">:</span> <span class="kc">True</span><span class="p">)</span>
+
+<span class="n">Uvicorn</span> <span class="n">Web</span> <span class="n">Server</span> <span class="n">Options</span><span class="p">:</span>
+  <span class="o">--</span><span class="n">host</span> <span class="n">HOST</span>           <span class="n">Bind</span> <span class="n">socket</span> <span class="n">to</span> <span class="n">this</span> <span class="n">host</span> <span class="p">[</span><span class="n">default</span><span class="p">:</span> <span class="mf">0.0.0.0</span><span class="p">]</span>
+  <span class="o">--</span><span class="n">port</span> <span class="n">PORT</span>           <span class="n">Bind</span> <span class="n">socket</span> <span class="n">to</span> <span class="n">this</span> <span class="n">port</span> <span class="p">[</span><span class="n">default</span><span class="p">:</span> <span class="mi">8000</span><span class="p">]</span>
+  <span class="o">--</span><span class="n">workers</span> <span class="n">WORKERS</span>     <span class="n">Number</span> <span class="n">of</span> <span class="n">worker</span> <span class="n">processes</span><span class="p">[</span><span class="n">default</span><span class="p">:</span> <span class="mi">1</span><span class="p">]</span>
+  <span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">level</span> <span class="p">{</span><span class="n">critical</span><span class="p">,</span><span class="n">error</span><span class="p">,</span><span class="n">warning</span><span class="p">,</span><span class="n">info</span><span class="p">,</span><span class="n">debug</span><span class="p">,</span><span class="n">trace</span><span class="p">}</span>
+                        <span class="n">log</span><span class="o">-</span><span class="n">level</span> <span class="n">of</span> <span class="n">the</span> <span class="n">web</span><span class="o">-</span><span class="n">server</span> <span class="p">[</span><span class="n">default</span><span class="p">:</span> <span class="n">info</span> <span class="p">]</span>
+
+<span class="n">You</span> <span class="n">can</span> <span class="n">still</span> <span class="k">pass</span> <span class="n">ROS2</span> <span class="n">arguments</span> <span class="n">according</span> <span class="n">to</span> <span class="n">ROS2</span> <span class="n">conventions</span><span class="p">:</span> <span class="n">e</span><span class="o">.</span><span class="n">g</span><span class="o">.</span> <span class="n">adding</span> <span class="p">:</span>
+<span class="s2">&quot;--ros-args --log-level debug&quot;</span> <span class="n">to</span> <span class="n">your</span> <span class="n">arguments</span>
+</code></pre></div>
+<p>You can also use the command-line arguments not to execute, but to <strong>generate a .dot</strong> file, in <a href="https://graphviz.org/">GraphViz</a> format,
+or to <strong>generate a .json</strong> file that can be used for further analysis of the BeTFSM-tree.  Currently the .json format does not contain
+enough information to reconstruct the BeTFSM tree.</p>
+<h3 id="runnerbase">RunnerBase</h3>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="betfsm.RunnerBase" class="doc doc-heading">
+            <code>betfsm.RunnerBase</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="betfsm.RunnerBase.__init__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">statemachine</span><span class="p">,</span> <span class="n">blackboard</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">publish_frequency</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">display_active</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">betfsm_log</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name_filter</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">allow_generate_dot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">allow_generate_json</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">serve</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">8000</span><span class="p">,</span> <span class="n">workers</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">log_level</span><span class="o">=</span><span class="s1">&#39;info&#39;</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Initializes the BeTFSMRunner.  This BeTFSMRunner has no other dependencies and
+runs in the main thread.  The parameters frequency, publish_frequency, debug, display_active,
+and serve can be overridden by command-line parameters.  Use "--help" to show all command-line
+parameters.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>statemachine</code></b>
+                  (<code><a class="autorefs autorefs-internal" title="betfsm.betfsm.TickingState" href="../tickingstate/#betfsm.betfsm.TickingState">TickingState</a></code>)
+              –
+              <div class="doc-md-description">
+                <p>the TickingStateMachine to be run</p>
+              </div>
+            </li>
+            <li>
+              <b><code>blackboard</code></b>
+                  (<code><span title="betfsm.Blackboard">Blackboard</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>the blackboard to be used</p>
+              </div>
+            </li>
+            <li>
+              <b><code>frequency</code></b>
+                  (<code><span title="float">float</span></code>, default:
+                      <code>100.0</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>frequency at which the statemachine is ticked, in Hz [default=100Hz]</p>
+              </div>
+            </li>
+            <li>
+              <b><code>publish_frequency</code></b>
+                  (<code><span title="float">float</span></code>, default:
+                      <code>10</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>frequency at which to publish to the webbrowser [default= 10Hz]</p>
+              </div>
+            </li>
+            <li>
+              <b><code>debug</code></b>
+                  (<code><span title="bool">bool</span></code>, default:
+                      <code>False</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>If true outputs debug info on console each tick. [default=False]</p>
+              </div>
+            </li>
+            <li>
+              <b><code>display_active</code></b>
+                  (<code><span title="bool">bool</span></code>, default:
+                      <code>False</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>displays all active nodes on log at publish_frequency. Only if activity changed!</p>
+              </div>
+            </li>
+            <li>
+              <b><code>betfsm_log</code></b>
+                  (<code><span title="str">str</span></code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>A list of categories, separated by ':' that will be logged, known categories
+are default, state, service,... But users and libraries can add their own.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>name_filter</code></b>
+                  (<code><span title="str">str</span></code>, default:
+                      <code>&#39;&#39;</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>comma-separated list of names of nodes that are not descended into in
+the graphical user interface</p>
+              </div>
+            </li>
+            <li>
+              <b><code>allow_generate_dot</code></b>
+                  (<code><span title="bool">bool</span></code>, default:
+                      <code>True</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>adds the generate_dot command-line parameter. [default: True]</p>
+              </div>
+            </li>
+            <li>
+              <b><code>allow_generate_json</code></b>
+                  (<code><span title="bool">bool</span></code>, default:
+                      <code>True</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>adds the generate_json command-line parameter. [default: True]</p>
+              </div>
+            </li>
+            <li>
+              <b><code>serve</code></b>
+                  (<code><span title="bool">bool</span></code>, default:
+                      <code>True</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>A : {active}
+starts webserver if True [default: True]</p>
+              </div>
+            </li>
+            <li>
+              <b><code>host</code></b>
+                  (<code><span title="str">str</span></code>, default:
+                      <code>&#39;0.0.0.0&#39;</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>the host IP of the network interface to bind to.  Default=0.0.0.0. 
+Typical values are:
+- 127.0.0.1 for only local acces and high security, for local development or production behind reverse proxy. 
+- localhost usually 127.0.0.1
+- 0.0.0.0 for anyone who knows your IP, lower security, for Docker, VM's or public access
+- 192.168.x.x for only your local network</p>
+              </div>
+            </li>
+            <li>
+              <b><code>port</code></b>
+                  (<code><span title="int">int</span></code>, default:
+                      <code>8000</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>bind socket of server to this port, default=8000</p>
+              </div>
+            </li>
+            <li>
+              <b><code>workers</code></b>
+                  (<code><span title="int">int</span></code>, default:
+                      <code>1</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>number of worker processes, default=1</p>
+              </div>
+            </li>
+            <li>
+              <b><code>log_level</code></b>
+                  (<code><span title="str">str</span></code>, default:
+                      <code>&#39;info&#39;</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>log-level of the web-server (not BeTFSM), default = "info"
+choices are "critical", "error", "warning", "info", "debug", "trace"</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="betfsm.RunnerBase.parse_arguments" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">parse_arguments</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">group_app</span><span class="p">,</span> <span class="n">group_uvr</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Parses the arguments from the command-line.  This function
+could further add parameters to the parser if necessary.</p>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+
+</div><h3 id="runner">Runner</h3>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="betfsm.Runner" class="doc doc-heading">
+            <code>betfsm.Runner</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="betfsm.RunnerBase (betfsm.runner.RunnerBase)" href="#betfsm.RunnerBase">RunnerBase</a></code></p>
+
+
+
+        <p>Runner for a BeTFSM ticking state machine.
+Initializes the BeTFSMRunner.  This BeTFSMRunner has no other dependencies and
+runs in the main thread.  You typically call this class in the main body of your program.</p>
+<p>This is multi-threaded, only access member variables using the methods designed for this. (i.e. set_outcome, get_outcome)</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="betfsm.Runner.run" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">run</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Runs the statemachine until it returns an outcome different from TICKING</p>
+<p>Refers to absolute time to avoid drifting. Uses monotonic clock to 
+avoid problems with system time changes.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="int">int</span></code>
+              –
+              <div class="doc-md-description">
+                <p>the final outcome of the statemachine</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+
+</div><h3 id="rosrunner">ROSRunner</h3>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="betfsm_ros.ROSRunner" class="doc doc-heading">
+            <code>betfsm_ros.ROSRunner</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="betfsm.RunnerBase" href="#betfsm.RunnerBase">RunnerBase</a></code></p>
+
+
+
+        <p>Runner for a BeTFSM ticking state machine.
+Initializes the BeTFSMRunner.  This BeTFSMRunner has no other dependencies and
+runs in the main thread.  You typically call this class in the main body of your program.</p>
+<p>This is multi-threaded, only access member variables using the methods designed for this. (i.e. set_outcome, get_outcome)</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="betfsm_ros.ROSRunner.run" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">run</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Runs the statemachine until it returns an outcome different from TICKING</p>
+<p>Refers to absolute time to avoid drifting. Uses monotonic clock to 
+avoid problems with system time changes.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="str">str</span></code>
+              –
+              <div class="doc-md-description">
+                <p>the final outcome of the statemachine</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="betfsm_ros.ROSRunner.timer_cb" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">timer_cb</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>called by ROS timer, should not be called by user.</p>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../adapt/" class="btn btn-neutral float-left" title="Adapt"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../utils/" class="btn btn-neutral float-right" title="Utilities">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>LGPL-3.0-only</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Robotics-Research-Group-KUL/betfsm" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../adapt/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../utils/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="https://cdn.jsdelivr.net/gh/rod2ik/cdn@main/mkdocs/javascripts/mkdocs-graphviz.js"></script>
+      <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Erwin Aertbelien" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Defining state machines - BeTFSM documentation</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../assets/_mkdocstrings.css" rel="stylesheet" />
+        <link href="../css/mkdocstrings.css" rel="stylesheet" />
+        <link href="../css/extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Defining state machines";
+        var mkdocs_page_input_path = "tutorial_statemachine.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> BeTFSM documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Documentation</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" >Introduction</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="..">Start page</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../overview/">Overview</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../installation/">Installation</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../technical_intro/">Technical introduction</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" >Tutorials</a>
+    <ul class="current">
+                <li class="toctree-l2"><a class="reference internal" href="../tutorials/">Introduction</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../tutorial_node/">Defining your own BeTFSM node</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../tutorial_sequence1/">My first BeTFSM tree</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../tutorial_gui/">Executing a BeTFSM tree</a>
+                </li>
+                <li class="toctree-l2 current"><a class="reference internal current" href="#">Defining state machines</a>
+    <ul class="current">
+    <li class="toctree-l3"><a class="reference internal" href="#defining-some-betfsm-nodes-to-play-with">Defining some BeTFSM nodes to play with</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#defining-the-state-machine">Defining the state machine</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#putting-everything-together">Putting everything together</a>
+    </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../tutorial_common_nodes/">Example with common nodes</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../interruption/">Handling interruption</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../api_overview/">Overview of the API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" >BeTFSM</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../tickingstate/">TickingState</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../tickingstatemachine/">TickingStateMachine</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../visitor/">Visitor</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../generator/">Generator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../sequence/">Sequence</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../concurrentsequence/">ConcurrentSequence</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../fallback/">Fallback</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../concurrentfallback/">ConcurrentFallback</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../concurrent/">Concurrent</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../waitfor/">WaitFor</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../waitforever/">WaitForever</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../timedwait/">TimedWait</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../timedrepeat/">TimedRepeat</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../while/">While</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../repeat/">Repeat</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../message/">Message</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../logblackboard/">LogBlackboard</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../compute/">Compute</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../adapt/">Adapt</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../runner/">Runner</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../utils/">Utilities</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" >BeTFSM ROS2</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../serviceclient/">ServiceClient</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../actionclient_ros/">ActionClient</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../lifecycle/">LifeCycle</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../timedrepeat_ros/">TimedRepeat for ROS2</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../timedwait_ros2/">TimedWait for ROS2</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../timeout/">Timeout</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" >BeTFSM cROSpi</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../load_task_list/">load_task_list</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../settaskparameters/">SetTaskParameters</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../readrobotspecification/">ReadRobotSpecification</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../readtaskspecification/">ReadTaskSpecification</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../etasloutput/">eTaSLOutput</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../etaslevent/">eTaSLEvent</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../etasl_statemachine/">eTaSL_StateMachine</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../about/">About & Acknowledgements</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">BeTFSM documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Documentation</li>
+          <li class="breadcrumb-item">Tutorials</li>
+      <li class="breadcrumb-item active">Defining state machines</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/Robotics-Research-Group-KUL/betfsm/edit/main/documentation/docs/tutorial_statemachine.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h2 id="specifying-state-machines">Specifying state machines</h2>
+<p>BeTFSM is an hybrid framework that uses both primitives from behavior trees as wel as finite state machine specifications.
+This tutorial explains how to specify a state machine.</p>
+<h3 id="defining-some-betfsm-nodes-to-play-with">Defining some BeTFSM nodes to play with</h3>
+<p>We first define some nodes to do something non-trivial.  A CountDown node that at each tick
+counts down until 0 is reached:
+<div class="highlight"><pre><span></span><code><span class="c1"># A user defined TickingState:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CountDown</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A simple generator state that counts down from a given number.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">count</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="p">[</span><span class="n">SUCCEED</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">count</span> <span class="o">=</span> <span class="n">count</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">co_execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">blackboard</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">count</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">yield</span> <span class="n">TICKING</span>
+        <span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: Finished counting down!&quot;</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">SUCCEED</span>
+</code></pre></div></p>
+<p>And a node that randomly fails sometimes, such that we can demonstrate non-trivial transitions
+in the state-machine:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># A user defined TickingState:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FailSometimes</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Fails randomly with probability 1/n.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="p">[</span><span class="n">CANCEL</span><span class="p">,</span><span class="n">SUCCEED</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="n">n</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">co_execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">blackboard</span><span class="p">):</span>
+        <span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: I will failing randomly 1 out of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="si">}</span><span class="s2"> times &quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">randrange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+            <span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: CANCEL &quot;</span><span class="p">)</span>
+            <span class="k">yield</span> <span class="n">CANCEL</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: SUCCEED &quot;</span><span class="p">)</span>
+            <span class="k">yield</span> <span class="n">SUCCEED</span>
+</code></pre></div>
+<h3 id="defining-the-state-machine">Defining the state machine</h3>
+<p>We typically define a statemachine by defining a class that inherits from <a class="autorefs autorefs-internal" title="betfsm.betfsm.TickingStateMachine" href="../tickingstatemachine/#betfsm.betfsm.TickingStateMachine">TickingStateMachine</a>.<br />
+This makes the state machine easily reusable in other parts of your overall BeTFSM tree.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>BeTFSM is built to encourage users to develop an hierarchy of BeTFSM nodes.  Users could be tempted to define their whole application logic in one big state machine.  To increase reuseability, users are advised to split up into smaller statemachines and achieve the rest of the functionality by composing these smaller statemachines. </p>
+</div>
+<p>The overall procedure is:</p>
+<ul>
+<li>
+<p>create your the substates of the statemachine. These can be single nodes 
+   (as defined above) or can be behavior tree primitives such as Sequence or 
+   Fallback, or can be another state machines.</p>
+</li>
+<li>
+<p>add the states to the state machine using the <code>add_state</code> method. This method takes two parameters, the state and a table of transitions.</p>
+</li>
+<li>
+<p>the table of transitions is specified using a Python dictionary that maps each outcome
+   to a state object or a string representing either the name of a state object or 
+   a string representing an outcome of the overall state machine.  These outcomes need
+   to be specified in the constructor of TickingStateMachine.  In that case 
+   the statemachine will exit with that given outcome.</p>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MyStateMachine</span><span class="p">(</span><span class="n">TickingStateMachine</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">name</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,[</span><span class="n">SUCCEED</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">home</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s2">&quot;I am in the home state&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">counter</span> <span class="o">=</span> <span class="n">CountDown</span><span class="p">(</span><span class="s2">&quot;counter&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">waiting</span> <span class="o">=</span> <span class="n">TimedWait</span><span class="p">(</span><span class="s2">&quot;waiting 1 second&quot;</span><span class="p">,</span><span class="mf">1.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">failingstate</span> <span class="o">=</span> <span class="n">FailSometimes</span><span class="p">(</span><span class="s2">&quot;checkFailure&quot;</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">final</span>   <span class="o">=</span> <span class="n">Message</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s2">&quot;I am in the end state&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">home</span><span class="p">,</span><span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="n">SUCCEED</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">counter</span><span class="p">})</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">counter</span><span class="p">,</span><span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="n">SUCCEED</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">waiting</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">waiting</span><span class="p">,</span><span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="n">SUCCEED</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">failingstate</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">failingstate</span><span class="p">,</span><span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="n">SUCCEED</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">counter</span><span class="p">,</span><span class="n">CANCEL</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">final</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">final</span><span class="p">,</span><span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="n">SUCCEED</span><span class="p">:</span><span class="n">SUCCEED</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_start_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">home</span><span class="p">)</span>
+</code></pre></div>
+<p>Another approach to specify a state machine is to use a plain <a class="autorefs autorefs-internal" title="betfsm.betfsm.TickingStateMachine" href="../tickingstatemachine/#betfsm.betfsm.TickingStateMachine">TickingStateMachine</a> object and add the states and transitions externally.<br />
+This could be advisable when you want to build a generator that generates the state machine (or complete BeTFSM tree) from a domain specific file.</p>
+<h3 id="putting-everything-together">Putting everything together</h3>
+<p>In the file <code>betfsm_examples/example_statemachine.py</code>, you find everything put together:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">rclpy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">betfsm</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Sequence</span><span class="p">,</span>  <span class="n">Message</span><span class="p">,</span> <span class="n">SUCCEED</span><span class="p">,</span> <span class="n">TICKING</span><span class="p">,</span> <span class="n">CANCEL</span><span class="p">,</span> <span class="n">ABORT</span><span class="p">,</span><span class="n">TIMEOUT</span><span class="p">,</span><span class="n">TickingStateMachine</span><span class="p">,</span><span class="n">get_logger</span><span class="p">,</span><span class="n">set_logger</span><span class="p">,</span>
+    <span class="n">Ctrl_C_Handler</span><span class="p">,</span><span class="n">CheckCancel</span><span class="p">,</span> <span class="n">get_path_value</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">betfsm_crospi</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_task_list</span><span class="p">,</span> <span class="n">eTaSL_StateMachine</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">betfsm_ros</span><span class="w"> </span><span class="kn">import</span> <span class="n">BeTFSMNode</span><span class="p">,</span><span class="n">ROSRunner</span><span class="p">,</span><span class="n">Node</span><span class="p">,</span><span class="n">Duration</span><span class="p">,</span><span class="n">LifeCycle</span><span class="p">,</span><span class="n">Transition</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MySequence</span><span class="p">(</span><span class="n">Sequence</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;my_sequence&quot;</span><span class="p">,</span> <span class="p">[</span>
+            <span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">,</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">),</span>
+            <span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;MovingDown&quot;</span><span class="p">,</span><span class="s2">&quot;MovingDown&quot;</span><span class="p">),</span>
+            <span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">,</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">),</span>
+            <span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;MovingSpline&quot;</span><span class="p">,</span><span class="s2">&quot;MovingSpline&quot;</span><span class="p">)</span> <span class="p">]</span>
+        <span class="p">)</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MyCleanup</span><span class="p">(</span><span class="n">TickingStateMachine</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Cleaning up eTaSL i.e. stop any motion and put the crospi node in a cleaned up state</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">srv_name</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="s2">&quot;/crospi_node&quot;</span><span class="p">,</span><span class="n">timeout</span><span class="p">:</span><span class="n">Duration</span> <span class="o">=</span> <span class="n">Duration</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mf">0.1</span><span class="p">),</span> <span class="n">node</span> <span class="p">:</span> <span class="n">Node</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># execute in sequence but don&#39;t care about ABORT, only way to fail is TIMEOUT</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;Cleanup&quot;</span><span class="p">,[</span><span class="n">CANCEL</span><span class="p">,</span><span class="n">SUCCEED</span><span class="p">])</span>
+
+        <span class="n">msg</span>        <span class="o">=</span>  <span class="n">Message</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s2">&quot;State machine to cleanup is now running&quot;</span><span class="p">)</span>
+        <span class="n">deactivate</span> <span class="o">=</span>  <span class="n">LifeCycle</span><span class="p">(</span><span class="s2">&quot;DEACTIVATE_ETASL&quot;</span><span class="p">,</span><span class="n">srv_name</span><span class="p">,</span><span class="n">Transition</span><span class="o">.</span><span class="n">DEACTIVATE</span><span class="p">,</span><span class="n">timeout</span><span class="p">,</span><span class="n">node</span><span class="p">)</span>
+        <span class="n">cleanup</span>    <span class="o">=</span>  <span class="n">LifeCycle</span><span class="p">(</span><span class="s2">&quot;CLEANUP_ETASL&quot;</span><span class="p">,</span><span class="n">srv_name</span><span class="p">,</span><span class="n">Transition</span><span class="o">.</span><span class="n">CLEANUP</span><span class="p">,</span><span class="n">timeout</span><span class="p">,</span><span class="n">node</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">transitions</span><span class="o">=</span><span class="p">{</span>
+            <span class="n">SUCCEED</span><span class="p">:</span><span class="n">deactivate</span>
+        <span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">deactivate</span><span class="p">,</span> <span class="n">transitions</span><span class="o">=</span><span class="p">{</span>
+            <span class="n">SUCCEED</span><span class="p">:</span> <span class="n">cleanup</span><span class="p">,</span>
+            <span class="n">ABORT</span><span class="p">:</span>   <span class="n">cleanup</span><span class="p">,</span>
+            <span class="n">TIMEOUT</span><span class="p">:</span> <span class="n">cleanup</span>
+        <span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">cleanup</span><span class="p">,</span> <span class="n">transitions</span><span class="o">=</span><span class="p">{</span>
+            <span class="n">SUCCEED</span><span class="p">:</span>     <span class="n">CANCEL</span><span class="p">,</span>
+            <span class="n">TIMEOUT</span><span class="p">:</span>     <span class="n">CANCEL</span><span class="p">,</span>
+            <span class="n">ABORT</span><span class="p">:</span>       <span class="n">CANCEL</span>
+        <span class="p">})</span>
+
+
+<span class="c1"># main</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">rclpy</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">)</span>    
+    <span class="n">my_node</span> <span class="o">=</span> <span class="n">BeTFSMNode</span><span class="o">.</span><span class="n">get_instance</span><span class="p">(</span><span class="s2">&quot;skill_example&quot;</span><span class="p">)</span>
+
+    <span class="n">set_logger</span><span class="p">(</span><span class="s2">&quot;default&quot;</span><span class="p">,</span><span class="n">my_node</span><span class="o">.</span><span class="n">get_logger</span><span class="p">())</span>
+    <span class="n">set_logger</span><span class="p">(</span><span class="s2">&quot;crospi&quot;</span><span class="p">,</span><span class="n">my_node</span><span class="o">.</span><span class="n">get_logger</span><span class="p">())</span>
+
+    <span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;skill_example_3 started&quot;</span><span class="p">)</span>
+    <span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;This example cleans up after a ctrl-c using a cleanup state machine&quot;</span><span class="p">)</span>
+
+    <span class="n">blackboard</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">load_task_list</span><span class="p">(</span><span class="s2">&quot;$[crospi_application_template]/skill_specifications/libraries/skill_lib_example/tasks/skill_example.json&quot;</span><span class="p">,</span><span class="n">blackboard</span><span class="p">)</span>
+
+
+    <span class="n">Ctrl_C_Handler</span><span class="p">(</span><span class="n">blackboard</span><span class="p">,</span><span class="s2">&quot;/cancelation/ctrl_c&quot;</span><span class="p">,</span><span class="n">repeated</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>    
+    <span class="n">nominal_sm</span> <span class="o">=</span> <span class="n">MySequence</span><span class="p">()</span>
+    <span class="n">cleanup_sm</span> <span class="o">=</span> <span class="n">MyCleanup</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="n">my_node</span><span class="p">)</span>
+    <span class="n">sm</span> <span class="o">=</span> <span class="n">CheckCancel</span><span class="p">(</span><span class="s2">&quot;check_cancelation&quot;</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">bb</span><span class="p">:</span> <span class="n">get_path_value</span><span class="p">(</span><span class="n">bb</span><span class="p">,</span><span class="s2">&quot;/cancelation/ctrl_c&quot;</span><span class="p">),</span> <span class="n">nominal_sm</span><span class="p">,</span> <span class="n">cleanup_sm</span><span class="p">)</span>
+
+    <span class="c1"># This is now working and recommended, accepts command-line parameters (see --help)</span>
+    <span class="c1"># has many more optional arguments, see API documentation</span>
+    <span class="c1"># checks whether timing exceeds sample period.</span>
+    <span class="n">runner</span> <span class="o">=</span> <span class="n">ROSRunner</span><span class="p">(</span><span class="n">my_node</span><span class="p">,</span><span class="n">sm</span><span class="p">,</span><span class="n">blackboard</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">publish_frequency</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">display_active</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">runner</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+        <span class="n">my_node</span><span class="o">.</span><span class="n">destroy_node</span><span class="p">()</span>
+        <span class="k">return</span>   
+    <span class="n">my_node</span><span class="o">.</span><span class="n">destroy_node</span><span class="p">()</span>
+    <span class="n">rclpy</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;shutdown&quot;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">main</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">))</span>
+</code></pre></div></td></tr></table></div>
+<div class="highlight"><pre><span></span><code><span class="ch">#!/usr/bin/env python3</span>
+
+<span class="c1">#</span>
+<span class="c1"># Example of a state machine</span>
+<span class="c1">#</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">betfsm.betfsm</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">BeTFSMRunner</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span>  <span class="n">TickingStateMachine</span><span class="p">,</span>
+    <span class="n">TimedWait</span><span class="p">,</span> <span class="n">Message</span><span class="p">,</span> <span class="n">TimedRepeat</span><span class="p">,</span>
+    <span class="n">SUCCEED</span><span class="p">,</span> <span class="n">TICKING</span><span class="p">,</span> <span class="n">CANCEL</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">Blackboard</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">betfsm.graphviz_visitor</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_graphviz_dotfile</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">betfsm.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_logger</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+
+<span class="c1"># A user defined TickingState:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CountDown</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A simple generator state that counts down from a given number.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">count</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="p">[</span><span class="n">SUCCEED</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">count</span> <span class="o">=</span> <span class="n">count</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">co_execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">blackboard</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">count</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">yield</span> <span class="n">TICKING</span>
+        <span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: Finished counting down!&quot;</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">SUCCEED</span>
+
+<span class="c1"># A user defined TickingState:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FailSometimes</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Fails randomly with probability 1/n.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="p">[</span><span class="n">CANCEL</span><span class="p">,</span><span class="n">SUCCEED</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="n">n</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">co_execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">blackboard</span><span class="p">):</span>
+        <span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: I will failing randomly 1 out of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="si">}</span><span class="s2"> times &quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">randrange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+            <span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: CANCEL &quot;</span><span class="p">)</span>
+            <span class="k">yield</span> <span class="n">CANCEL</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: SUCCEED &quot;</span><span class="p">)</span>
+            <span class="k">yield</span> <span class="n">SUCCEED</span>
+
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MyStateMachine</span><span class="p">(</span><span class="n">TickingStateMachine</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">name</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,[</span><span class="n">SUCCEED</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">home</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s2">&quot;I am in the home state&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">counter</span> <span class="o">=</span> <span class="n">CountDown</span><span class="p">(</span><span class="s2">&quot;counter&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">waiting</span> <span class="o">=</span> <span class="n">TimedWait</span><span class="p">(</span><span class="s2">&quot;waiting 1 second&quot;</span><span class="p">,</span><span class="mf">1.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">failingstate</span> <span class="o">=</span> <span class="n">FailSometimes</span><span class="p">(</span><span class="s2">&quot;checkFailure&quot;</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">final</span>   <span class="o">=</span> <span class="n">Message</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s2">&quot;I am in the end state&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">home</span><span class="p">,</span><span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="n">SUCCEED</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">counter</span><span class="p">})</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">counter</span><span class="p">,</span><span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="n">SUCCEED</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">waiting</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">waiting</span><span class="p">,</span><span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="n">SUCCEED</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">failingstate</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">failingstate</span><span class="p">,</span><span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="n">SUCCEED</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">counter</span><span class="p">,</span><span class="n">CANCEL</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">final</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">final</span><span class="p">,</span><span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="n">SUCCEED</span><span class="p">:</span><span class="n">SUCCEED</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_start_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">home</span><span class="p">)</span>
+
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="c1"># Create a blackboard</span>
+    <span class="n">bb</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># 1. Example Sequence</span>
+    <span class="c1"># This will execute its children one after another.</span>
+
+    <span class="n">sm</span> <span class="o">=</span> <span class="n">MyStateMachine</span><span class="p">(</span><span class="s2">&quot;my_state_machine&quot;</span><span class="p">)</span>
+
+    <span class="c1"># 2. visualize in a dot file</span>
+    <span class="n">to_graphviz_dotfile</span><span class="p">(</span><span class="s2">&quot;example_statemachine.dot&quot;</span><span class="p">,</span> <span class="n">sm</span><span class="p">)</span>
+
+    <span class="c1"># 3. Run it using BeTFSMRunner at 100 Hz</span>
+    <span class="n">runner</span> <span class="o">=</span> <span class="n">BeTFSMRunner</span><span class="p">(</span><span class="n">sm</span><span class="p">,</span> <span class="n">bb</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="mf">100.0</span><span class="p">)</span> <span class="c1"># Hz</span>
+    <span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Running State Machine...&quot;</span><span class="p">)</span>
+    <span class="n">outcome</span> <span class="o">=</span> <span class="n">runner</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+    <span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;State Machine Finished with outcome: </span><span class="si">{</span><span class="n">outcome</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</code></pre></div>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../tutorial_gui/" class="btn btn-neutral float-left" title="Executing a BeTFSM tree"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../tutorial_common_nodes/" class="btn btn-neutral float-right" title="Example with common nodes">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>LGPL-3.0-only</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Robotics-Research-Group-KUL/betfsm" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../tutorial_gui/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../tutorial_common_nodes/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="https://cdn.jsdelivr.net/gh/rod2ik/cdn@main/mkdocs/javascripts/mkdocs-graphviz.js"></script>
+      <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

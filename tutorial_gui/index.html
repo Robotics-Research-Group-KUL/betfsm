@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Erwin Aertbelien" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Executing a BeTFSM tree - BeTFSM documentation</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../assets/_mkdocstrings.css" rel="stylesheet" />
+        <link href="../css/mkdocstrings.css" rel="stylesheet" />
+        <link href="../css/extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Executing a BeTFSM tree";
+        var mkdocs_page_input_path = "tutorial_gui.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> BeTFSM documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Documentation</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" >Introduction</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="..">Start page</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../overview/">Overview</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../installation/">Installation</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../technical_intro/">Technical introduction</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" >Tutorials</a>
+    <ul class="current">
+                <li class="toctree-l2"><a class="reference internal" href="../tutorials/">Introduction</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../tutorial_node/">Defining your own BeTFSM node</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../tutorial_sequence1/">My first BeTFSM tree</a>
+                </li>
+                <li class="toctree-l2 current"><a class="reference internal current" href="#">Executing a BeTFSM tree</a>
+    <ul class="current">
+    <li class="toctree-l3"><a class="reference internal" href="#running-the-betfsm-web-server-user-interface">Running the BeTFSM web-server user interface</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#using-the-gui">Using the GUI</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#running-under-ros2-and-crospi">Running under ROS2 and cROSpi</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#handling-interruptions">Handling interruptions</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#directly-interrupting-and-cleaning-up">Directly interrupting and cleaning-up</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#directly-interrupting-and-cleaning-up_1">Directly interrupting and cleaning-up</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../tutorial_statemachine/">Defining state machines</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../tutorial_common_nodes/">Example with common nodes</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../interruption/">Handling interruption</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../api_overview/">Overview of the API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" >BeTFSM</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../tickingstate/">TickingState</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../tickingstatemachine/">TickingStateMachine</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../visitor/">Visitor</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../generator/">Generator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../sequence/">Sequence</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../concurrentsequence/">ConcurrentSequence</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../fallback/">Fallback</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../concurrentfallback/">ConcurrentFallback</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../concurrent/">Concurrent</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../waitfor/">WaitFor</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../waitforever/">WaitForever</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../timedwait/">TimedWait</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../timedrepeat/">TimedRepeat</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../while/">While</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../repeat/">Repeat</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../message/">Message</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../logblackboard/">LogBlackboard</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../compute/">Compute</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../adapt/">Adapt</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../runner/">Runner</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../utils/">Utilities</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" >BeTFSM ROS2</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../serviceclient/">ServiceClient</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../actionclient_ros/">ActionClient</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../lifecycle/">LifeCycle</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../timedrepeat_ros/">TimedRepeat for ROS2</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../timedwait_ros2/">TimedWait for ROS2</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../timeout/">Timeout</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" >BeTFSM cROSpi</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../load_task_list/">load_task_list</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../settaskparameters/">SetTaskParameters</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../readrobotspecification/">ReadRobotSpecification</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../readtaskspecification/">ReadTaskSpecification</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../etasloutput/">eTaSLOutput</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../etaslevent/">eTaSLEvent</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../etasl_statemachine/">eTaSL_StateMachine</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../about/">About & Acknowledgements</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">BeTFSM documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Documentation</li>
+          <li class="breadcrumb-item">Tutorials</li>
+      <li class="breadcrumb-item active">Executing a BeTFSM tree</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/Robotics-Research-Group-KUL/betfsm/edit/main/documentation/docs/tutorial_gui.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h2 id="executing-a-betfsm-tree">Executing a BeTFSM Tree</h2>
+<p>This tutorial goes deeper in how we can <strong>execute</strong>, <strong>configure</strong> the execution of a BeTFSM tree, add additional <strong>debug</strong> information and
+<strong>visualize</strong> the execution </p>
+<h3 id="running-the-betfsm-web-server-user-interface">Running the BeTFSM web-server user interface</h3>
+<p>Runner or ROSRunner provides a way to execute,  a graphical user interface to monitor a BeTFSM-tree, and a way to configure
+your BeTFSM from the command prompt.</p>
+<p>A webserver will be started that serves the graphical user interface at <code>localhost:8000</code> (it uses 0.0.0.0, so it
+remains local and does not serve outside your computer by default).
+The console output will provide a link.  When you need to run different BeTFSM executions:</p>
+<ul>
+<li>Check whether you could run on the same execution using a Concurrent node.</li>
+<li>Execute it separately and configure the BeTFSM to serve the visualizations
+    on a different web-addres.</li>
+</ul>
+<p>Visualization and debugging output happen at the <strong>publish_frequency</strong>, which is different from the <strong>frequency</strong> at which
+the BeTFSM nodes are ticking.</p>
+<p>When the BeTFSM execution stops, the front-end page will
+remain active and will be polling at a slow frequency to ensure that it is possible
+to stop the BeTFSM execution, and when you later restart, the page and the BeTFSM will find 
+each other again.</p>
+<p>You can also use the command-line arguments not to execute, but to <strong>generate a .dot</strong> file, in <a href="https://graphviz.org/">GraphViz</a> format,
+or to <strong>generate a .json</strong> file that can be used for further analysis of the BeTFSM-tree.  Currently the .json format does not contain
+enough information to reconstruct the BeTFSM tree.</p>
+<p>For example to visualize the tree using Graphviz, you could do:
+<div class="highlight"><pre><span></span><code>gui_example_simple1<span class="w"> </span>--generate_dot<span class="w"> </span>gui_example_simple1.dot
+xdot<span class="w"> </span>gui_example_simple1.dot
+</code></pre></div></p>
+<p>The basic instructions to run your BeTFSM tree are very easy:</p>
+<div class="highlight"><pre><span></span><code><span class="n">sm</span> <span class="o">=</span> <span class="n">build_tree</span><span class="p">()</span>
+<span class="n">runner</span> <span class="o">=</span> <span class="n">Runner</span><span class="p">(</span><span class="n">sm</span><span class="p">,</span><span class="n">bb</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">publish_frequency</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">display_active</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">outcome</span><span class="o">=</span><span class="n">runner</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</code></pre></div>
+<p>This is a <a href="../runner/">full description</a> of how to call the Runner in <strong>Python</strong> and of the <strong>command line arguments</strong> to further configure
+during execution time.</p>
+<p>A full example can be found in <code>betfsm/betfsm_examples/guiexample_simple1.py</code></p>
+<div class="highlight"><pre><span></span><code><span class="ch">#!/usr/bin/env python3</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">webbrowser</span>
+
+<span class="c1"># ---- building the state machine -----</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">betfsm</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+        <span class="n">Sequence</span><span class="p">,</span> <span class="n">ConcurrentSequence</span><span class="p">,</span> <span class="n">TimedWait</span><span class="p">,</span> <span class="n">TimedRepeat</span><span class="p">,</span> <span class="n">Message</span><span class="p">,</span> <span class="n">SUCCEED</span><span class="p">,</span> <span class="n">get_logger</span><span class="p">,</span><span class="n">Runner</span>
+<span class="p">)</span>
+
+<span class="c1"># ---------------------------------------</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">build_tree</span><span class="p">():</span>
+    <span class="n">sm</span> <span class="o">=</span> <span class="n">Sequence</span><span class="p">(</span><span class="s2">&quot;concurrent_sequence_outer&quot;</span><span class="p">,</span> <span class="p">[</span>
+        <span class="n">Message</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s2">&quot;This demo uses ConcurrentSequence, Sequence, TimedRepeat&quot;</span><span class="p">),</span>
+        <span class="n">Message</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s2">&quot;--- concurrent_sequence started ---&quot;</span><span class="p">),</span>
+        <span class="n">ConcurrentSequence</span><span class="p">(</span><span class="s2">&quot;concurrent_sequence&quot;</span><span class="p">,</span> <span class="p">[</span>
+            <span class="n">Sequence</span><span class="p">(</span><span class="s2">&quot;sequence1&quot;</span><span class="p">,</span> <span class="p">[</span>
+                <span class="n">Message</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s2">&quot;   --- sequence 1 started ---&quot;</span><span class="p">),</span>
+                <span class="n">TimedRepeat</span><span class="p">(</span><span class="s2">&quot;timedrepeat1&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">Message</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s2">&quot;      sequence 1: 5 times every 5 second&quot;</span><span class="p">)),</span>
+                <span class="n">Message</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s2">&quot;   --- sequence 1 ended   ---&quot;</span><span class="p">)]),</span>
+            <span class="n">Sequence</span><span class="p">(</span><span class="s2">&quot;sequence2&quot;</span><span class="p">,</span> <span class="p">[</span>
+                <span class="n">Message</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s2">&quot;   --- sequence 2 started ---&quot;</span><span class="p">),</span>
+                <span class="n">TimedRepeat</span><span class="p">(</span><span class="s2">&quot;timedrepeat1&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="n">Message</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s2">&quot;      sequence 2: 10 times every 6 second&quot;</span><span class="p">)),</span>
+                <span class="n">Message</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s2">&quot;   --- sequence 2 ended   ---&quot;</span><span class="p">)]),</span>
+            <span class="n">Sequence</span><span class="p">(</span><span class="s2">&quot;sequence3&quot;</span><span class="p">,</span> <span class="p">[</span>
+                <span class="n">TimedWait</span><span class="p">(</span><span class="s2">&quot;waiting 20 sec&quot;</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">),</span>
+                <span class="n">Message</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s2">&quot;I like to interrupt!&quot;</span><span class="p">)]),</span>
+        <span class="p">]),</span>
+        <span class="n">Message</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s2">&quot;--- concurrent_sequence ended   ---&quot;</span><span class="p">)</span>
+    <span class="p">])</span>
+    <span class="k">return</span> <span class="n">sm</span>
+
+
+<span class="c1"># ---------------------------------------</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="n">bb</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">sm</span> <span class="o">=</span> <span class="n">build_tree</span><span class="p">()</span>
+    <span class="n">runner</span> <span class="o">=</span> <span class="n">Runner</span><span class="p">(</span><span class="n">sm</span><span class="p">,</span><span class="n">bb</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">publish_frequency</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">display_active</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">runner</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</code></pre></div>
+<p>Other examples are provided in <code>guiexample_simple2.py</code> and <code>guiexample_large.py</code>.</p>
+<h3 id="using-the-gui">Using the GUI</h3>
+<p>Go with a webbrowser to <code>localhost:8000</code> after you have started the BeTFSM server.  Once you loaded the page, you can start/stop the server and the page will automatically reload if the server becomes available again (checking every 5 seconds).</p>
+<p>The GUI displays a tree representing the BeTFSM tree. The orange nodes are currently active.</p>
+<p>In the GUI nodes can be expanded or collapsed by pressing the "-" or "+" ons the right side of each node.  You can also expand all nodes or collapse all nodes.</p>
+<p>Very handy is the AutoExpand option, this will collapse the tree but expand all nodes that are needed to visualize all <strong>active</strong> nodes.</p>
+<p>The Play button and sliding bar are currently not implemented. Their purpose will be to go back and forward in time using a history of the execution.</p>
+<p><img alt="GUI" src="../static/gui.png" /></p>
+<h3 id="running-under-ros2-and-crospi">Running under ROS2 and cROSpi</h3>
+<div class="admonition note">
+<p class="admonition-title">TODO</p>
+<p>This Section and the later ones still needs to be elaborated</p>
+</div>
+<p>Besides using the <strong>ROSRunner</strong> class, there is some ROS2 boiler-plate needed to 
+initialize <strong>rclpy</strong> ROS2 interface, start-up and destroy the ROS2 node, and to shut <strong>rclply</strong> down afterwards.
+<strong>load_task_list</strong> loads a list of task specifications, specified in a configuration file.  The <strong>eTaSL_StateMachine</strong>
+node communicates with cROSpi to execute the task with the given name:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">rclpy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">betfsm</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Sequence</span><span class="p">,</span>  <span class="n">Message</span><span class="p">,</span> <span class="n">SUCCEED</span><span class="p">,</span> <span class="n">TICKING</span><span class="p">,</span> <span class="n">CANCEL</span><span class="p">,</span> <span class="n">ABORT</span><span class="p">,</span> <span class="n">get_logger</span><span class="p">,</span><span class="n">set_logger</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">betfsm_crospi</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_task_list</span><span class="p">,</span> <span class="n">eTaSL_StateMachine</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">betfsm_ros</span><span class="w"> </span><span class="kn">import</span> <span class="n">BeTFSMNode</span><span class="p">,</span><span class="n">ROSRunner</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MySequence</span><span class="p">(</span><span class="n">Sequence</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;my_sequence&quot;</span><span class="p">,</span> <span class="p">[</span>
+            <span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">,</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">),</span>
+            <span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;MovingDown&quot;</span><span class="p">,</span><span class="s2">&quot;MovingDown&quot;</span><span class="p">),</span>
+            <span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">,</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">),</span>
+            <span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;MovingSpline&quot;</span><span class="p">,</span><span class="s2">&quot;MovingSpline&quot;</span><span class="p">)</span> <span class="p">]</span>
+        <span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">rclpy</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">)</span>    
+    <span class="n">my_node</span> <span class="o">=</span> <span class="n">BeTFSMNode</span><span class="o">.</span><span class="n">get_instance</span><span class="p">(</span><span class="s2">&quot;skill_example&quot;</span><span class="p">)</span>
+    <span class="n">set_logger</span><span class="p">(</span><span class="s2">&quot;default&quot;</span><span class="p">,</span><span class="n">my_node</span><span class="o">.</span><span class="n">get_logger</span><span class="p">())</span>
+    <span class="n">set_logger</span><span class="p">(</span><span class="s2">&quot;crospi&quot;</span><span class="p">,</span><span class="n">my_node</span><span class="o">.</span><span class="n">get_logger</span><span class="p">())</span>
+    <span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;skill_example_2 started&quot;</span><span class="p">)</span>
+    <span class="n">blackboard</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">load_task_list</span><span class="p">(</span><span class="s2">&quot;$[crospi_application_template]/skill_specifications/libraries/skill_lib_example/tasks/skill_example.json&quot;</span><span class="p">,</span><span class="n">blackboard</span><span class="p">)</span>
+    <span class="n">sm</span> <span class="o">=</span> <span class="n">MySequence</span><span class="p">()</span>
+    <span class="n">runner</span> <span class="o">=</span> <span class="n">ROSRunner</span><span class="p">(</span><span class="n">my_node</span><span class="p">,</span><span class="n">sm</span><span class="p">,</span><span class="n">blackboard</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">publish_frequency</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">display_active</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">runner</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+        <span class="n">my_node</span><span class="o">.</span><span class="n">destroy_node</span><span class="p">()</span>
+        <span class="k">return</span>   
+    <span class="n">my_node</span><span class="o">.</span><span class="n">destroy_node</span><span class="p">()</span>
+    <span class="n">rclpy</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;shutdown&quot;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">main</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">))</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="handling-interruptions">Handling interruptions</h3>
+<p>In a real-life robot execution, one needs to be careful to handle all exceptional situations
+such that the robot system always ends up in a predictable state.</p>
+<h4 id="directly-interrupting-and-cleaning-up">Directly interrupting and cleaning-up</h4>
+<p>A first solution is to directly interrupting the running state machines
+and <em>cleaning up</em> afterwards by calling the appropriate service calls
+to stop the robot.</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">rclpy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">betfsm</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Sequence</span><span class="p">,</span>  <span class="n">Message</span><span class="p">,</span> <span class="n">SUCCEED</span><span class="p">,</span> <span class="n">TICKING</span><span class="p">,</span> <span class="n">CANCEL</span><span class="p">,</span> <span class="n">ABORT</span><span class="p">,</span><span class="n">TIMEOUT</span><span class="p">,</span><span class="n">TickingStateMachine</span><span class="p">,</span><span class="n">get_logger</span><span class="p">,</span><span class="n">set_logger</span><span class="p">,</span>
+    <span class="n">Ctrl_C_Handler</span><span class="p">,</span><span class="n">CheckCancel</span><span class="p">,</span> <span class="n">get_path_value</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">betfsm_crospi</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_task_list</span><span class="p">,</span> <span class="n">eTaSL_StateMachine</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">betfsm_ros</span><span class="w"> </span><span class="kn">import</span> <span class="n">BeTFSMNode</span><span class="p">,</span><span class="n">ROSRunner</span><span class="p">,</span><span class="n">Node</span><span class="p">,</span><span class="n">Duration</span><span class="p">,</span><span class="n">LifeCycle</span><span class="p">,</span><span class="n">Transition</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MySequence</span><span class="p">(</span><span class="n">Sequence</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;my_sequence&quot;</span><span class="p">,</span> <span class="p">[</span>
+            <span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">,</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">),</span>
+            <span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;MovingDown&quot;</span><span class="p">,</span><span class="s2">&quot;MovingDown&quot;</span><span class="p">),</span>
+            <span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">,</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">),</span>
+            <span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;MovingSpline&quot;</span><span class="p">,</span><span class="s2">&quot;MovingSpline&quot;</span><span class="p">)</span> <span class="p">]</span>
+        <span class="p">)</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MyCleanup</span><span class="p">(</span><span class="n">TickingStateMachine</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Cleaning up eTaSL i.e. stop any motion and put the crospi node in a cleaned up state</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">srv_name</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="s2">&quot;/crospi_node&quot;</span><span class="p">,</span><span class="n">timeout</span><span class="p">:</span><span class="n">Duration</span> <span class="o">=</span> <span class="n">Duration</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mf">0.1</span><span class="p">),</span> <span class="n">node</span> <span class="p">:</span> <span class="n">Node</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># execute in sequence but don&#39;t care about ABORT, only way to fail is TIMEOUT</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;Cleanup&quot;</span><span class="p">,[</span><span class="n">CANCEL</span><span class="p">,</span><span class="n">SUCCEED</span><span class="p">])</span>
+
+        <span class="n">msg</span>        <span class="o">=</span>  <span class="n">Message</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s2">&quot;State machine to cleanup is now running&quot;</span><span class="p">)</span>
+        <span class="n">deactivate</span> <span class="o">=</span>  <span class="n">LifeCycle</span><span class="p">(</span><span class="s2">&quot;DEACTIVATE_ETASL&quot;</span><span class="p">,</span><span class="n">srv_name</span><span class="p">,</span><span class="n">Transition</span><span class="o">.</span><span class="n">DEACTIVATE</span><span class="p">,</span><span class="n">timeout</span><span class="p">,</span><span class="n">node</span><span class="p">)</span>
+        <span class="n">cleanup</span>    <span class="o">=</span>  <span class="n">LifeCycle</span><span class="p">(</span><span class="s2">&quot;CLEANUP_ETASL&quot;</span><span class="p">,</span><span class="n">srv_name</span><span class="p">,</span><span class="n">Transition</span><span class="o">.</span><span class="n">CLEANUP</span><span class="p">,</span><span class="n">timeout</span><span class="p">,</span><span class="n">node</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">transitions</span><span class="o">=</span><span class="p">{</span>
+            <span class="n">SUCCEED</span><span class="p">:</span><span class="n">deactivate</span>
+        <span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">deactivate</span><span class="p">,</span> <span class="n">transitions</span><span class="o">=</span><span class="p">{</span>
+            <span class="n">SUCCEED</span><span class="p">:</span> <span class="n">cleanup</span><span class="p">,</span>
+            <span class="n">ABORT</span><span class="p">:</span>   <span class="n">cleanup</span><span class="p">,</span>
+            <span class="n">TIMEOUT</span><span class="p">:</span> <span class="n">cleanup</span>
+        <span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">cleanup</span><span class="p">,</span> <span class="n">transitions</span><span class="o">=</span><span class="p">{</span>
+            <span class="n">SUCCEED</span><span class="p">:</span>     <span class="n">CANCEL</span><span class="p">,</span>
+            <span class="n">TIMEOUT</span><span class="p">:</span>     <span class="n">CANCEL</span><span class="p">,</span>
+            <span class="n">ABORT</span><span class="p">:</span>       <span class="n">CANCEL</span>
+        <span class="p">})</span>
+
+
+<span class="c1"># main</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">rclpy</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">)</span>    
+    <span class="n">my_node</span> <span class="o">=</span> <span class="n">BeTFSMNode</span><span class="o">.</span><span class="n">get_instance</span><span class="p">(</span><span class="s2">&quot;skill_example&quot;</span><span class="p">)</span>
+
+    <span class="n">set_logger</span><span class="p">(</span><span class="s2">&quot;default&quot;</span><span class="p">,</span><span class="n">my_node</span><span class="o">.</span><span class="n">get_logger</span><span class="p">())</span>
+    <span class="n">set_logger</span><span class="p">(</span><span class="s2">&quot;crospi&quot;</span><span class="p">,</span><span class="n">my_node</span><span class="o">.</span><span class="n">get_logger</span><span class="p">())</span>
+
+    <span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;skill_example_3 started&quot;</span><span class="p">)</span>
+    <span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;This example cleans up after a ctrl-c using a cleanup state machine&quot;</span><span class="p">)</span>
+
+    <span class="n">blackboard</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">load_task_list</span><span class="p">(</span><span class="s2">&quot;$[crospi_application_template]/skill_specifications/libraries/skill_lib_example/tasks/skill_example.json&quot;</span><span class="p">,</span><span class="n">blackboard</span><span class="p">)</span>
+
+
+    <span class="n">Ctrl_C_Handler</span><span class="p">(</span><span class="n">blackboard</span><span class="p">,</span><span class="s2">&quot;/cancelation/ctrl_c&quot;</span><span class="p">,</span><span class="n">repeated</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>    
+    <span class="n">nominal_sm</span> <span class="o">=</span> <span class="n">MySequence</span><span class="p">()</span>
+    <span class="n">cleanup_sm</span> <span class="o">=</span> <span class="n">MyCleanup</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="n">my_node</span><span class="p">)</span>
+    <span class="n">sm</span> <span class="o">=</span> <span class="n">CheckCancel</span><span class="p">(</span><span class="s2">&quot;check_cancelation&quot;</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">bb</span><span class="p">:</span> <span class="n">get_path_value</span><span class="p">(</span><span class="n">bb</span><span class="p">,</span><span class="s2">&quot;/cancelation/ctrl_c&quot;</span><span class="p">),</span> <span class="n">nominal_sm</span><span class="p">,</span> <span class="n">cleanup_sm</span><span class="p">)</span>
+
+    <span class="c1"># This is now working and recommended, accepts command-line parameters (see --help)</span>
+    <span class="c1"># has many more optional arguments, see API documentation</span>
+    <span class="c1"># checks whether timing exceeds sample period.</span>
+    <span class="n">runner</span> <span class="o">=</span> <span class="n">ROSRunner</span><span class="p">(</span><span class="n">my_node</span><span class="p">,</span><span class="n">sm</span><span class="p">,</span><span class="n">blackboard</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">publish_frequency</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">display_active</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">runner</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+        <span class="n">my_node</span><span class="o">.</span><span class="n">destroy_node</span><span class="p">()</span>
+        <span class="k">return</span>   
+    <span class="n">my_node</span><span class="o">.</span><span class="n">destroy_node</span><span class="p">()</span>
+    <span class="n">rclpy</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;shutdown&quot;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">main</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">))</span>
+</code></pre></div></td></tr></table></div>
+<h4 id="directly-interrupting-and-cleaning-up_1">Directly interrupting and cleaning-up</h4>
+<p>A second solution is to register the interruption and only
+react to it at a given state in the state machine.  This would allow e.g.
+a robot to continue until he is in a safe state before stopping.</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">rclpy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">betfsm</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Sequence</span><span class="p">,</span>  <span class="n">Message</span><span class="p">,</span> <span class="n">SUCCEED</span><span class="p">,</span> <span class="n">TICKING</span><span class="p">,</span> <span class="n">CANCEL</span><span class="p">,</span> <span class="n">ABORT</span><span class="p">,</span><span class="n">TIMEOUT</span><span class="p">,</span><span class="n">TickingStateMachine</span><span class="p">,</span><span class="n">get_logger</span><span class="p">,</span><span class="n">set_logger</span><span class="p">,</span>
+    <span class="n">Ctrl_C_Handler</span><span class="p">,</span><span class="n">CheckCancel</span><span class="p">,</span> <span class="n">get_path_value</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">betfsm_crospi</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_task_list</span><span class="p">,</span> <span class="n">eTaSL_StateMachine</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">betfsm_ros</span><span class="w"> </span><span class="kn">import</span> <span class="n">BeTFSMNode</span><span class="p">,</span><span class="n">ROSRunner</span><span class="p">,</span><span class="n">Node</span><span class="p">,</span><span class="n">Duration</span><span class="p">,</span><span class="n">LifeCycle</span><span class="p">,</span><span class="n">Transition</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MySequence</span><span class="p">(</span><span class="n">Sequence</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;my_sequence&quot;</span><span class="p">,</span> <span class="p">[</span>
+            <span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">,</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">),</span>
+            <span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;MovingDown&quot;</span><span class="p">,</span><span class="s2">&quot;MovingDown&quot;</span><span class="p">),</span>
+            <span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">,</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">),</span>
+            <span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;MovingSpline&quot;</span><span class="p">,</span><span class="s2">&quot;MovingSpline&quot;</span><span class="p">)</span> <span class="p">]</span>
+        <span class="p">)</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MyCleanup</span><span class="p">(</span><span class="n">TickingStateMachine</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Cleaning up eTaSL i.e. stop any motion and put the crospi node in a cleaned up state</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">srv_name</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="s2">&quot;/crospi_node&quot;</span><span class="p">,</span><span class="n">timeout</span><span class="p">:</span><span class="n">Duration</span> <span class="o">=</span> <span class="n">Duration</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mf">0.1</span><span class="p">),</span> <span class="n">node</span> <span class="p">:</span> <span class="n">Node</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># execute in sequence but don&#39;t care about ABORT, only way to fail is TIMEOUT</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;Cleanup&quot;</span><span class="p">,[</span><span class="n">CANCEL</span><span class="p">,</span><span class="n">SUCCEED</span><span class="p">])</span>
+
+        <span class="n">msg</span>        <span class="o">=</span>  <span class="n">Message</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s2">&quot;State machine to cleanup is now running&quot;</span><span class="p">)</span>
+        <span class="n">deactivate</span> <span class="o">=</span>  <span class="n">LifeCycle</span><span class="p">(</span><span class="s2">&quot;DEACTIVATE_ETASL&quot;</span><span class="p">,</span><span class="n">srv_name</span><span class="p">,</span><span class="n">Transition</span><span class="o">.</span><span class="n">DEACTIVATE</span><span class="p">,</span><span class="n">timeout</span><span class="p">,</span><span class="n">node</span><span class="p">)</span>
+        <span class="n">cleanup</span>    <span class="o">=</span>  <span class="n">LifeCycle</span><span class="p">(</span><span class="s2">&quot;CLEANUP_ETASL&quot;</span><span class="p">,</span><span class="n">srv_name</span><span class="p">,</span><span class="n">Transition</span><span class="o">.</span><span class="n">CLEANUP</span><span class="p">,</span><span class="n">timeout</span><span class="p">,</span><span class="n">node</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">transitions</span><span class="o">=</span><span class="p">{</span>
+            <span class="n">SUCCEED</span><span class="p">:</span><span class="n">deactivate</span>
+        <span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">deactivate</span><span class="p">,</span> <span class="n">transitions</span><span class="o">=</span><span class="p">{</span>
+            <span class="n">SUCCEED</span><span class="p">:</span> <span class="n">cleanup</span><span class="p">,</span>
+            <span class="n">ABORT</span><span class="p">:</span>   <span class="n">cleanup</span><span class="p">,</span>
+            <span class="n">TIMEOUT</span><span class="p">:</span> <span class="n">cleanup</span>
+        <span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">cleanup</span><span class="p">,</span> <span class="n">transitions</span><span class="o">=</span><span class="p">{</span>
+            <span class="n">SUCCEED</span><span class="p">:</span>     <span class="n">CANCEL</span><span class="p">,</span>
+            <span class="n">TIMEOUT</span><span class="p">:</span>     <span class="n">CANCEL</span><span class="p">,</span>
+            <span class="n">ABORT</span><span class="p">:</span>       <span class="n">CANCEL</span>
+        <span class="p">})</span>
+
+
+<span class="c1"># main</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">rclpy</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">)</span>    
+    <span class="n">my_node</span> <span class="o">=</span> <span class="n">BeTFSMNode</span><span class="o">.</span><span class="n">get_instance</span><span class="p">(</span><span class="s2">&quot;skill_example&quot;</span><span class="p">)</span>
+
+    <span class="n">set_logger</span><span class="p">(</span><span class="s2">&quot;default&quot;</span><span class="p">,</span><span class="n">my_node</span><span class="o">.</span><span class="n">get_logger</span><span class="p">())</span>
+    <span class="n">set_logger</span><span class="p">(</span><span class="s2">&quot;crospi&quot;</span><span class="p">,</span><span class="n">my_node</span><span class="o">.</span><span class="n">get_logger</span><span class="p">())</span>
+
+    <span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;skill_example_3 started&quot;</span><span class="p">)</span>
+    <span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;This example cleans up after a ctrl-c using a cleanup state machine&quot;</span><span class="p">)</span>
+
+    <span class="n">blackboard</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">load_task_list</span><span class="p">(</span><span class="s2">&quot;$[crospi_application_template]/skill_specifications/libraries/skill_lib_example/tasks/skill_example.json&quot;</span><span class="p">,</span><span class="n">blackboard</span><span class="p">)</span>
+
+
+    <span class="n">Ctrl_C_Handler</span><span class="p">(</span><span class="n">blackboard</span><span class="p">,</span><span class="s2">&quot;/cancelation/ctrl_c&quot;</span><span class="p">,</span><span class="n">repeated</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>    
+    <span class="n">nominal_sm</span> <span class="o">=</span> <span class="n">MySequence</span><span class="p">()</span>
+    <span class="n">cleanup_sm</span> <span class="o">=</span> <span class="n">MyCleanup</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="n">my_node</span><span class="p">)</span>
+    <span class="n">sm</span> <span class="o">=</span> <span class="n">CheckCancel</span><span class="p">(</span><span class="s2">&quot;check_cancelation&quot;</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">bb</span><span class="p">:</span> <span class="n">get_path_value</span><span class="p">(</span><span class="n">bb</span><span class="p">,</span><span class="s2">&quot;/cancelation/ctrl_c&quot;</span><span class="p">),</span> <span class="n">nominal_sm</span><span class="p">,</span> <span class="n">cleanup_sm</span><span class="p">)</span>
+
+    <span class="c1"># This is now working and recommended, accepts command-line parameters (see --help)</span>
+    <span class="c1"># has many more optional arguments, see API documentation</span>
+    <span class="c1"># checks whether timing exceeds sample period.</span>
+    <span class="n">runner</span> <span class="o">=</span> <span class="n">ROSRunner</span><span class="p">(</span><span class="n">my_node</span><span class="p">,</span><span class="n">sm</span><span class="p">,</span><span class="n">blackboard</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">publish_frequency</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">display_active</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">runner</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+        <span class="n">my_node</span><span class="o">.</span><span class="n">destroy_node</span><span class="p">()</span>
+        <span class="k">return</span>   
+    <span class="n">my_node</span><span class="o">.</span><span class="n">destroy_node</span><span class="p">()</span>
+    <span class="n">rclpy</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;shutdown&quot;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">main</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">))</span>
+</code></pre></div></td></tr></table></div>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../tutorial_sequence1/" class="btn btn-neutral float-left" title="My first BeTFSM tree"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../tutorial_statemachine/" class="btn btn-neutral float-right" title="Defining state machines">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>LGPL-3.0-only</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Robotics-Research-Group-KUL/betfsm" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../tutorial_sequence1/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../tutorial_statemachine/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="https://cdn.jsdelivr.net/gh/rod2ik/cdn@main/mkdocs/javascripts/mkdocs-graphviz.js"></script>
+      <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

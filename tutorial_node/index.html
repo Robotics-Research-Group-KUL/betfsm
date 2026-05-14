@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Erwin Aertbelien" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Defining your own BeTFSM node - BeTFSM documentation</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../assets/_mkdocstrings.css" rel="stylesheet" />
+        <link href="../css/mkdocstrings.css" rel="stylesheet" />
+        <link href="../css/extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Defining your own BeTFSM node";
+        var mkdocs_page_input_path = "tutorial_node.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> BeTFSM documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Documentation</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" >Introduction</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="..">Start page</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../overview/">Overview</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../installation/">Installation</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../technical_intro/">Technical introduction</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" >Tutorials</a>
+    <ul class="current">
+                <li class="toctree-l2"><a class="reference internal" href="../tutorials/">Introduction</a>
+                </li>
+                <li class="toctree-l2 current"><a class="reference internal current" href="#">Defining your own BeTFSM node</a>
+    <ul class="current">
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../tutorial_sequence1/">My first BeTFSM tree</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../tutorial_gui/">Executing a BeTFSM tree</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../tutorial_statemachine/">Defining state machines</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../tutorial_common_nodes/">Example with common nodes</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../interruption/">Handling interruption</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../api_overview/">Overview of the API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" >BeTFSM</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../tickingstate/">TickingState</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../tickingstatemachine/">TickingStateMachine</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../visitor/">Visitor</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../generator/">Generator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../sequence/">Sequence</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../concurrentsequence/">ConcurrentSequence</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../fallback/">Fallback</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../concurrentfallback/">ConcurrentFallback</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../concurrent/">Concurrent</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../waitfor/">WaitFor</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../waitforever/">WaitForever</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../timedwait/">TimedWait</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../timedrepeat/">TimedRepeat</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../while/">While</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../repeat/">Repeat</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../message/">Message</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../logblackboard/">LogBlackboard</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../compute/">Compute</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../adapt/">Adapt</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../runner/">Runner</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../utils/">Utilities</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" >BeTFSM ROS2</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../serviceclient/">ServiceClient</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../actionclient_ros/">ActionClient</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../lifecycle/">LifeCycle</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../timedrepeat_ros/">TimedRepeat for ROS2</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../timedwait_ros2/">TimedWait for ROS2</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../timeout/">Timeout</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" >BeTFSM cROSpi</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../load_task_list/">load_task_list</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../settaskparameters/">SetTaskParameters</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../readrobotspecification/">ReadRobotSpecification</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../readtaskspecification/">ReadTaskSpecification</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../etasloutput/">eTaSLOutput</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../etaslevent/">eTaSLEvent</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../etasl_statemachine/">eTaSL_StateMachine</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../about/">About & Acknowledgements</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">BeTFSM documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Documentation</li>
+          <li class="breadcrumb-item">Tutorials</li>
+      <li class="breadcrumb-item active">Defining your own BeTFSM node</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/Robotics-Research-Group-KUL/betfsm/edit/main/documentation/docs/tutorial_node.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h2 id="defining-your-own-betfsm-node">Defining your own BeTFSM node</h2>
+<p><strong>BeTFSM</strong> is about orchestrating and coordinating different subtasks in a scalable way. Of course the subtasks first have
+to be defined before they can be coordinated. These subtasks are represented by nodes in the BeTFSM tree.  You can define
+these yourselves or you can use pre-defined nodes. Here we discuss how to define your own node to connect BeTFSM to your
+functionality.  One of the advantages of BeTFSM is that these nodes can be very easily defined.</p>
+<p>As a simple example we create our own BeTFSM node that implements a countdown:
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">CountDown</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A simple generator state that counts down from a given number.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">count</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="p">[</span><span class="n">SUCCEED</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">count</span> <span class="o">=</span> <span class="n">count</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">co_execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">blackboard</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">count</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">yield</span> <span class="n">TICKING</span>
+        <span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: Finished counting down!&quot;</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">SUCCEED</span>
+</code></pre></div></p>
+<p>A BeTFSM node is a python class that inherits from <a class="autorefs autorefs-internal" title="betfsm.betfsm.TickingState" href="../tickingstate/#betfsm.betfsm.TickingState">TickingState</a>.  However, to simplify implementation, we mostly inherit from the subclass <a class="autorefs autorefs-internal" title="betfsm.betfsm.Generator" href="../generator/#betfsm.betfsm.Generator">Generator</a>.  This sub-class uses <a href="https://www.geeksforgeeks.org/generators-in-python/">Python generators</a> to simplify implementation. </p>
+<p>To facilitate definitions of BeTFSM nodes, BeTFSM uses synchronous execution for cooperative multi-tasking, this avoids to deal with thread management, mutexes, etc.<br />
+The whole tree executes at <strong>a fixed sample rate</strong> and at each sample interval ('tick'), a node either returns TICKING (indicating that the node is not yet finished and wants to be called back the next tick) or another outcome (such as SUCCEED).  All outcomes are strings.  If really necessary, a BeTFSM node can still spawn and <em>manage</em> its own thread(s), but this is internal to the node and should not concern the framework.</p>
+<p>When you inherit from <a class="autorefs autorefs-internal" title="betfsm.betfsm.Generator" href="../generator/#betfsm.betfsm.Generator">Generator</a>, 
+the main implementation of functionality is in the method <code>co_execute</code> (the 'co' refers to co-routine), you can use python's yield to return control back to the system and pass the outcome of the state, the next tick control will resume at the same location in <code>co_execute</code> (or go to the next state when the outcome is different from SUCCEED).</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>A TickingState should return within a time period that is significantly smaller than the sample rate. Please take into account that multiple nodes can be executed simultaneously (i.e. within the same tick)</p>
+</div>
+<p>Each BeTFSM node needs to have a <strong>name</strong>, this name identifies the node and should be different for all instances of the node.
+Typically the name is either passed to the constructor or is auto-generated, e.g. with some sequence number.  To guard against programmatic errors or misspelling of outcomes, a BeTFSM node also <strong>declares it possible outcomes</strong> and checks these. There is no need to declare the outcome TICKING.</p>
+<p>The <code>co_execute`` method also gets passed a</code>blackboard``` parameter.  This is a (hierarchical) python dictionary that nodes can use to exchange information.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../tutorials/" class="btn btn-neutral float-left" title="Introduction"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../tutorial_sequence1/" class="btn btn-neutral float-right" title="My first BeTFSM tree">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>LGPL-3.0-only</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Robotics-Research-Group-KUL/betfsm" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../tutorials/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../tutorial_sequence1/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="https://cdn.jsdelivr.net/gh/rod2ik/cdn@main/mkdocs/javascripts/mkdocs-graphviz.js"></script>
+      <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

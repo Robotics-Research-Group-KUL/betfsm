@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Erwin Aertbelien" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Example with common nodes - BeTFSM documentation</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../assets/_mkdocstrings.css" rel="stylesheet" />
+        <link href="../css/mkdocstrings.css" rel="stylesheet" />
+        <link href="../css/extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Example with common nodes";
+        var mkdocs_page_input_path = "tutorial_common_nodes.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> BeTFSM documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Documentation</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" >Introduction</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="..">Start page</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../overview/">Overview</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../installation/">Installation</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../technical_intro/">Technical introduction</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" >Tutorials</a>
+    <ul class="current">
+                <li class="toctree-l2"><a class="reference internal" href="../tutorials/">Introduction</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../tutorial_node/">Defining your own BeTFSM node</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../tutorial_sequence1/">My first BeTFSM tree</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../tutorial_gui/">Executing a BeTFSM tree</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../tutorial_statemachine/">Defining state machines</a>
+                </li>
+                <li class="toctree-l2 current"><a class="reference internal current" href="#">Example with common nodes</a>
+    <ul class="current">
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../interruption/">Handling interruption</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../api_overview/">Overview of the API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" >BeTFSM</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../tickingstate/">TickingState</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../tickingstatemachine/">TickingStateMachine</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../visitor/">Visitor</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../generator/">Generator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../sequence/">Sequence</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../concurrentsequence/">ConcurrentSequence</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../fallback/">Fallback</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../concurrentfallback/">ConcurrentFallback</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../concurrent/">Concurrent</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../waitfor/">WaitFor</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../waitforever/">WaitForever</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../timedwait/">TimedWait</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../timedrepeat/">TimedRepeat</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../while/">While</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../repeat/">Repeat</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../message/">Message</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../logblackboard/">LogBlackboard</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../compute/">Compute</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../adapt/">Adapt</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../runner/">Runner</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../utils/">Utilities</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" >BeTFSM ROS2</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../serviceclient/">ServiceClient</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../actionclient_ros/">ActionClient</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../lifecycle/">LifeCycle</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../timedrepeat_ros/">TimedRepeat for ROS2</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../timedwait_ros2/">TimedWait for ROS2</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../timeout/">Timeout</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" >BeTFSM cROSpi</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../load_task_list/">load_task_list</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../settaskparameters/">SetTaskParameters</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../readrobotspecification/">ReadRobotSpecification</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../readtaskspecification/">ReadTaskSpecification</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../etasloutput/">eTaSLOutput</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../etaslevent/">eTaSLEvent</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../etasl_statemachine/">eTaSL_StateMachine</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../about/">About & Acknowledgements</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">BeTFSM documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Documentation</li>
+          <li class="breadcrumb-item">Tutorials</li>
+      <li class="breadcrumb-item active">Example with common nodes</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/Robotics-Research-Group-KUL/betfsm/edit/main/documentation/docs/tutorial_common_nodes.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h2 id="an-example-with-common-betfsm-nodes">An example with common BeTFSM nodes</h2>
+<p>This example is an example of everything together. It contains many of the common
+BeTFSM nodes and demonstrates how to use them.  This example is not explained
+in detail, but for further information, you can always look up the details in this documentation. </p>
+<p>It defines a few BeTFSM nodes such as <code>CountDown</code>, <code>CountDownWithDelay</code> and <code>CancelingState</code>.  Theses nodes are then composed using behaviour-tree nodes such as <a class="autorefs autorefs-internal" title="betfsm.betfsm.Sequence" href="../sequence/#betfsm.betfsm.Sequence">Sequence</a>, <a class="autorefs autorefs-internal" title="betfsm.betfsm.ConcurrentSequence" href="../concurrentsequence/#betfsm.betfsm.ConcurrentSequence">ConcurrentSequence</a>, <a class="autorefs autorefs-internal" title="betfsm.betfsm.Concurrent" href="../concurrent/#betfsm.betfsm.Concurrent">Concurrent</a>, <a class="autorefs autorefs-internal" title="betfsm.betfsm.TimedRepeat" href="../timedrepeat/#betfsm.betfsm.TimedRepeat">TimedRepeat</a> and <a class="autorefs autorefs-internal" title="betfsm.betfsm.Fallback" href="../fallback/#betfsm.betfsm.Fallback">Fallback</a>.</p>
+<p>This example also uses the GUI to visualize what is happening, and (in the comments) also
+shows you how to debug by logging all entries/exits of BeTFSM nodes and displaying the active nodes.</p>
+<p>This example can be found in the <code>betfsm_examples/example_common_nodes.py</code> file,
+and is repeated below for your convenience:</p>
+<div class="highlight"><pre><span></span><code><span class="ch">#!/usr/bin/env python3</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">betfsm.betfsm</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">TickingStateMachine</span><span class="p">,</span> <span class="n">BeTFSMRunner</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">ConcurrentSequence</span><span class="p">,</span> 
+    <span class="n">Message</span><span class="p">,</span> <span class="n">SUCCEED</span><span class="p">,</span> <span class="n">TICKING</span><span class="p">,</span> <span class="n">CANCEL</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">Blackboard</span><span class="p">,</span>
+    <span class="n">Repeat</span><span class="p">,</span> <span class="n">Fallback</span><span class="p">,</span> <span class="n">TimedWait</span><span class="p">,</span> <span class="n">Concurrent</span><span class="p">,</span> <span class="n">TimedRepeat</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">betfsm.graphviz_visitor</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_graphviz_dotfile</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">betfsm.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_logger</span><span class="p">,</span> <span class="n">LogPrinter</span><span class="p">,</span> <span class="n">set_logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">betfsm.betfsmrunnergui</span><span class="w"> </span><span class="kn">import</span> <span class="n">BeTFSMRunnerGUI</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">CountDown</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A simple generator state that counts down from a given number.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">count</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="p">[</span><span class="n">SUCCEED</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">count</span> <span class="o">=</span> <span class="n">count</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">co_execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">blackboard</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">count</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">yield</span> <span class="n">TICKING</span>
+        <span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: Finished counting down!&quot;</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">SUCCEED</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">CancelingState</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A state that returns CANCEL after one tick.</span>
+<span class="sd">    Used to demonstrate Fallback.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span><span class="n">count</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="p">[</span><span class="n">CANCEL</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">count</span> <span class="o">=</span> <span class="n">count</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">co_execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">blackboard</span><span class="p">):</span>
+        <span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: I am going to cancel after </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">count</span><span class="si">}</span><span class="s2"> ticks...&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">count</span><span class="p">):</span> 
+            <span class="k">yield</span> <span class="n">TICKING</span>
+        <span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: Canceling now!&quot;</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">CANCEL</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">An example of a reusable adaptation:</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CountDownWithDelay</span><span class="p">(</span><span class="n">TimedRepeat</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="n">count</span><span class="p">,</span> <span class="n">delay</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> counting down&quot;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="n">delay</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+
+    <span class="c1"># if you like to log all entry, doo and exit&#39;s of all the tickingstates:</span>
+    <span class="c1"># set_logger(&quot;state&quot;, LogPrinter())</span>
+
+    <span class="c1"># Create a blackboard</span>
+    <span class="n">bb</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># 1. Example Sequence</span>
+    <span class="c1"># This will execute its children one after another.</span>
+    <span class="n">seq</span> <span class="o">=</span> <span class="n">Sequence</span><span class="p">(</span><span class="s2">&quot;sequence_phase&quot;</span><span class="p">,</span> <span class="p">[</span>
+        <span class="n">Message</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s2">&quot;--- Starting Sequence Phase ---&quot;</span><span class="p">),</span>
+        <span class="n">CountDownWithDelay</span><span class="p">(</span><span class="s2">&quot;seq_counter_1&quot;</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+        <span class="n">Message</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s2">&quot;--- Sequence Phase Finished ---&quot;</span><span class="p">)</span>
+    <span class="p">])</span>
+
+    <span class="c1"># 2. Example ConcurrentSequence </span>
+    <span class="c1"># This will execute its children concurrently. </span>
+    <span class="c1"># It succeeds when ALL children succeed.</span>
+    <span class="n">conc_seq</span> <span class="o">=</span> <span class="n">ConcurrentSequence</span><span class="p">(</span><span class="s2">&quot;concurrentseq_phase&quot;</span><span class="p">,</span> <span class="p">[</span>
+        <span class="n">Message</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s2">&quot;--- Starting ConcurrentSequence Phase ---&quot;</span><span class="p">),</span>
+        <span class="n">CountDownWithDelay</span><span class="p">(</span><span class="s2">&quot;Concurrent_Counter_1&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">),</span>
+        <span class="n">CountDownWithDelay</span><span class="p">(</span><span class="s2">&quot;Concurrent_Counter_2&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">),</span>
+    <span class="p">])</span>
+
+    <span class="c1"># 3. Example Concurrent</span>
+    <span class="c1"># This will execute its children concurrently. </span>
+    <span class="c1"># It succeeds when one of the children succeeds.</span>
+    <span class="n">conc</span> <span class="o">=</span> <span class="n">Concurrent</span><span class="p">(</span><span class="s2">&quot;concurrent_phase&quot;</span><span class="p">,</span> <span class="p">[</span>
+        <span class="n">CountDownWithDelay</span><span class="p">(</span><span class="s2">&quot;Concurrent_Counter_3&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">),</span>
+        <span class="n">CountDownWithDelay</span><span class="p">(</span><span class="s2">&quot;Concurrent_Counter_4&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">),</span>
+    <span class="p">])</span>
+
+
+
+
+
+    <span class="c1"># 4. Example Repeat</span>
+    <span class="c1"># Repeats the underlying state N times.</span>
+    <span class="n">rep</span> <span class="o">=</span> <span class="n">Repeat</span><span class="p">(</span><span class="s2">&quot;repeat_phase&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">(</span><span class="s2">&quot;repseq&quot;</span><span class="p">,[</span><span class="n">Message</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s2">&quot;--- Repeating Message (3 times) ---&quot;</span><span class="p">),</span> <span class="n">TimedWait</span><span class="p">(</span><span class="s2">&quot;delay&quot;</span><span class="p">,</span><span class="mf">1.0</span><span class="p">)]))</span>
+
+    <span class="c1"># 5. Example Fallback : execute until one in the list succeeds.</span>
+    <span class="c1"># Tries children in order. If one returns CANCEL, it tries the next.</span>
+    <span class="c1"># If one returns anything else (e.g. SUCCEED), it returns that and stops.</span>
+    <span class="n">fallback</span> <span class="o">=</span> <span class="n">Fallback</span><span class="p">(</span><span class="s2">&quot;fallback_phase&quot;</span><span class="p">,</span> <span class="p">[</span>
+        <span class="n">CancelingState</span><span class="p">(</span><span class="s2">&quot;Cancel_State_1&quot;</span><span class="p">,</span><span class="mi">30</span><span class="p">),</span>
+        <span class="n">CancelingState</span><span class="p">(</span><span class="s2">&quot;Cancel_State_2&quot;</span><span class="p">,</span><span class="mi">20</span><span class="p">),</span>
+        <span class="n">Message</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Fallback recovered! (This message runs because previous states CANCELED) Since it returns SUCCEED, the whole fallback return SUCCEED.&quot;</span><span class="p">)</span>
+    <span class="p">])</span>
+
+    <span class="c1"># 6. State Machine Definition</span>
+    <span class="c1"># Define the possible outcomes of the SM.</span>
+    <span class="c1">#sm = TickingStateMachine(&quot;root_sm&quot;, [SUCCEED])</span>
+
+    <span class="c1"># Add the states to the State Machine and link them</span>
+    <span class="c1">#sm.add_state(seq, transitions={SUCCEED: conc_seq}) # you can refer to a state by its instance</span>
+    <span class="c1">#sm.add_state(conc_seq, transitions={SUCCEED: conc})</span>
+    <span class="c1">#sm.add_state(conc, transitions={SUCCEED: rep})</span>
+    <span class="c1">#sm.add_state(rep, transitions={SUCCEED: &quot;fallback_phase&quot;}) # you can also refer to a state by its name</span>
+    <span class="c1">#sm.add_state(fallback, transitions={SUCCEED: SUCCEED}) # If fallback succeeds (returns SUCCEED), SM finishes. </span>
+                                                           <span class="c1"># if the value in the transitions map is an outcome, it indicates that the statemachine exits. </span>
+    <span class="c1"># Set the initial state</span>
+    <span class="c1">#sm.set_start_state(&quot;sequence_phase&quot;)</span>
+
+    <span class="n">sm</span> <span class="o">=</span> <span class="n">Sequence</span><span class="p">(</span><span class="s2">&quot;application&quot;</span><span class="p">,[</span><span class="n">seq</span><span class="p">,</span> <span class="n">conc_seq</span><span class="p">,</span> <span class="n">conc</span><span class="p">,</span> <span class="n">rep</span><span class="p">,</span> <span class="n">fallback</span><span class="p">])</span>
+
+    <span class="n">to_graphviz_dotfile</span><span class="p">(</span><span class="s2">&quot;example_runner_gui.dot&quot;</span><span class="p">,</span> <span class="n">sm</span><span class="p">)</span>
+
+    <span class="c1"># 7. Run it using BeTFSMRunner at 100 Hz</span>
+    <span class="c1"># display_active == True if you&#39;d like to log all active states</span>
+    <span class="n">runner</span> <span class="o">=</span> <span class="n">BeTFSMRunnerGUI</span><span class="p">(</span><span class="n">sm</span><span class="p">,</span> <span class="n">bb</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span><span class="n">publish_frequency</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span><span class="n">display_active</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="c1"># Hz</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Running State Machine...&quot;</span><span class="p">)</span>
+    <span class="n">outcome</span> <span class="o">=</span> <span class="n">runner</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;State Machine Finished with outcome: </span><span class="si">{</span><span class="n">outcome</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</code></pre></div>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../tutorial_statemachine/" class="btn btn-neutral float-left" title="Defining state machines"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../interruption/" class="btn btn-neutral float-right" title="Handling interruption">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>LGPL-3.0-only</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Robotics-Research-Group-KUL/betfsm" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../tutorial_statemachine/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../interruption/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="https://cdn.jsdelivr.net/gh/rod2ik/cdn@main/mkdocs/javascripts/mkdocs-graphviz.js"></script>
+      <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
