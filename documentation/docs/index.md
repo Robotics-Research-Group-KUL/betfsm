@@ -30,9 +30,9 @@ In this documentation, you will find the following:
 
   - Quick [**overview**](overview.md) of behavior trees and state machines
   - [**Installation**](installation.md) instructions using *pip* (python-only) and *ROS2* (with ros and crospi integration)
-  - A set of **tutorials** using BeTFSM
+  - A set of [**tutorials**](tutorials.md) on  using BeTFSM
   - A [**technical introduction**](technical_intro.md) to BeTFSM
-  - **API** documentation
+  - [**API**](api_overview.md) documentation
 
 ## Copyright
 <p/>
