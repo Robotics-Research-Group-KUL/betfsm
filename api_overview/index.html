@@ -79,6 +79,28 @@
                 <li class="toctree-l2 current"><a class="reference internal current" href="#">Overview of the API</a>
     <ul class="current">
     <li class="toctree-l3"><a class="reference internal" href="#betfsm">BeTFSM</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#fundamental-classes">Fundamental classes:</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#orchestration">Orchestration:</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#concurrency">Concurrency:</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#timing">Timing:</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#utility">Utility:</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#betfsm-ros">BeTFSM ROS</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#timing-related">Timing related</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#services-and-actions">Services and actions</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#betfsm-crospi">BeTFSM cROSpi</a>
     </li>
     </ul>
                 </li>
@@ -123,6 +145,12 @@
                 <li class="toctree-l3"><a class="reference internal" href="../adapt/">Adapt</a>
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../runner/">Runner</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../checkcancel/">CheckCancel</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_handler/">Ctrl C Handler</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../alwaysoutcome/">AlwaysOutcome</a>
                 </li>
     </ul>
                 </li>
@@ -193,17 +221,19 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h2 id="overview-of-the-api">Overview of the API</h2>
+                <h1 id="overview-of-the-api">Overview of the API</h1>
 <p>The API is split up in three parts:</p>
 <ul>
 <li><strong>BeTFSM</strong>: pure Python, main framework for Behavior-tree based, ticking, finite state machines.</li>
 <li><strong>BeTFSM ROS2</strong>": ROS2 related part</li>
 <li><strong>BeTFSM cROSpi</strong>: cROSpi related part</li>
 </ul>
-<h3 id="betfsm">BeTFSM</h3>
-<ul>
-<li>Fundamental classes:</li>
-</ul>
+<div class="admonition todo">
+<p class="admonition-title">Todo</p>
+<p>finish these tables</p>
+</div>
+<h2 id="betfsm">BeTFSM</h2>
+<h3 id="fundamental-classes">Fundamental classes:</h3>
 <table>
 <thead>
 <tr>
@@ -213,30 +243,28 @@
 </thead>
 <tbody>
 <tr>
-<td>TickingState</td>
+<td><a class="autorefs autorefs-internal" title="betfsm.TickingState" href="../tickingstate/#betfsm.TickingState">TickingState</a></td>
 <td>Fundamental base-class that contains the main logic where all the<br> other states are based on</td>
 </tr>
 <tr>
-<td>Generator</td>
+<td><a class="autorefs autorefs-internal" title="betfsm.Generator" href="../generator/#betfsm.Generator">Generator</a></td>
 <td>Auxiliary class using Python generator, i.e. yield, to facilitate definition<br> of nodes.  To be used as a base class</td>
 </tr>
 <tr>
-<td>GeneratorWithState</td>
+<td><a class="autorefs autorefs-internal" title="betfsm.GeneratorWithState" href="../generator/#betfsm.GeneratorWithState">GeneratorWithState</a></td>
 <td>Auxiliary class inherited from Generator that also manages a state</td>
 </tr>
 <tr>
-<td>GeneratorWithList</td>
+<td><a class="autorefs autorefs-internal" title="betfsm.GeneratorWithList" href="../generator/#betfsm.GeneratorWithList">GeneratorWithList</a></td>
 <td>Auxiliary class inherited from Generator that also manages a list of states</td>
 </tr>
 <tr>
-<td>TickingStateMachine</td>
+<td><a class="autorefs autorefs-internal" title="betfsm.TickingStateMachine" href="../tickingstatemachine/#betfsm.TickingStateMachine">TickingStateMachine</a></td>
 <td>Auxiliary class to implement state machines, just have to define the states<br> and the transitions</td>
 </tr>
 </tbody>
 </table>
-<ul>
-<li>Orchestration:</li>
-</ul>
+<h3 id="orchestration">Orchestration:</h3>
 <table>
 <thead>
 <tr>
@@ -246,30 +274,36 @@
 </thead>
 <tbody>
 <tr>
-<td><a class="autorefs autorefs-internal" title="betfsm.betfsm.Sequence" href="../sequence/#betfsm.betfsm.Sequence">Sequence</a></td>
+<td><a class="autorefs autorefs-internal" title="betfsm.Sequence" href="../sequence/#betfsm.Sequence">Sequence</a></td>
 <td>Executes sequentially its children as long as they return SUCCEED<br> or TICKING, any other outcome returns directly with that outcome</td>
 </tr>
 <tr>
-<td>[Fallback][bestfsm.Fallback]</td>
-<td>Executes sequentially its children as long as they return CANCEL<br> or TICKING, any other outcome returns directly with that outcome (including SUCCEED)</td>
+<td><a class="autorefs autorefs-internal" title="betfsm.Fallback" href="../fallback/#betfsm.Fallback">Fallback</a></td>
+<td>Executes sequentially its children as long as they return CANCEL<br> or TICKING, any other outcome returns directly with that outcome<br> (including SUCCEED)</td>
 </tr>
 <tr>
 <td><a class="autorefs autorefs-internal" title="betfsm.betfsm.Adapt" href="../adapt/#betfsm.betfsm.Adapt">Adapt</a></td>
 <td>Adapts the outcome of a single child using a transition table</td>
 </tr>
 <tr>
-<td>While</td>
+<td><a class="autorefs autorefs-internal" title="betfsm.betfsm.While" href="../while/#betfsm.betfsm.While">While</a></td>
 <td></td>
 </tr>
 <tr>
-<td>Repeat</td>
+<td><a class="autorefs autorefs-internal" title="betfsm.Repeat" href="../repeat/#betfsm.Repeat">Repeat</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a class="autorefs autorefs-internal" title="betfsm.CheckCancel" href="../checkcancel/#betfsm.CheckCancel">CheckCancel</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a class="autorefs autorefs-internal" title="betfsm.Ctrl_C_Handler" href="../ctrl_c_handler/#betfsm.Ctrl_C_Handler">Ctrl_C_Handler</a></td>
 <td></td>
 </tr>
 </tbody>
 </table>
-<ul>
-<li>Concurrency:</li>
-</ul>
+<h3 id="concurrency">Concurrency:</h3>
 <table>
 <thead>
 <tr>
@@ -292,9 +326,7 @@
 </tr>
 </tbody>
 </table>
-<ul>
-<li>Utility:</li>
-</ul>
+<h3 id="timing">Timing:</h3>
 <table>
 <thead>
 <tr>
@@ -304,15 +336,140 @@
 </thead>
 <tbody>
 <tr>
+<td><a class="autorefs autorefs-internal" title="betfsm.betfsm.WaitFor" href="../waitfor/#betfsm.betfsm.WaitFor">WaitFor</a></td>
 <td></td>
+</tr>
+<tr>
+<td><a class="autorefs autorefs-internal" title="betfsm.betfsm.WaitForever" href="../waitforever/#betfsm.betfsm.WaitForever">WaitForever</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a class="autorefs autorefs-internal" title="betfsm.betfsm.TimedWait" href="../timedwait/#betfsm.betfsm.TimedWait">TimedWait</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a class="autorefs autorefs-internal" title="betfsm.TimedRepeat" href="../timedrepeat/#betfsm.TimedRepeat">TimedRepeat</a></td>
 <td></td>
 </tr>
 </tbody>
 </table>
-<div class="admonition todo">
-<p class="admonition-title">Todo</p>
-<p>finish these tables</p>
-</div>
+<h3 id="utility">Utility:</h3>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a class="autorefs autorefs-internal" title="betfsm.Message" href="../message/#betfsm.Message">Message</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a class="autorefs autorefs-internal" title="betfsm.betfsm.LogBlackboard" href="../logblackboard/#betfsm.betfsm.LogBlackboard">LogBlackboard</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a class="autorefs autorefs-internal" title="betfsm.betfsm.Adapt" href="../adapt/#betfsm.betfsm.Adapt">Adapt</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a class="autorefs autorefs-internal" title="betfsm.betfsm.Compute" href="../compute/#betfsm.betfsm.Compute">Compute</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a class="autorefs autorefs-internal" title="betfsm.AlwaysOutcome" href="../alwaysoutcome/#betfsm.AlwaysOutcome">AlwaysOutcome</a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="betfsm-ros">BeTFSM ROS</h2>
+<h3 id="timing-related">Timing related</h3>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TimedRepeat for ROS2</td>
+<td></td>
+</tr>
+<tr>
+<td>TimedWait for ROS2</td>
+<td></td>
+</tr>
+<tr>
+<td>Timeout</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="services-and-actions">Services and actions</h3>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ServiceClient</td>
+<td>Creates a TickingState that calls a ROS2 service and generates an outcome when the service <br>returns back. While waiting, it continues to tick</td>
+</tr>
+<tr>
+<td>ActionClient</td>
+<td>Creates a TickingState that calls an action and generates an outcome when the action returns <br>back.  While waiting, it gets the response of the action to the blackboard  and returns TICKING.</td>
+</tr>
+<tr>
+<td>LifeCycle</td>
+<td>Manages the life cycle of another node</td>
+</tr>
+</tbody>
+</table>
+<h2 id="betfsm-crospi">BeTFSM cROSpi</h2>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>load_task_list</td>
+<td></td>
+</tr>
+<tr>
+<td>setTaskParameters</td>
+<td></td>
+</tr>
+<tr>
+<td>ReadRobotSpecification</td>
+<td></td>
+</tr>
+<tr>
+<td>ReadTaskSpecification</td>
+<td></td>
+</tr>
+<tr>
+<td>eTaSLOutput</td>
+<td></td>
+</tr>
+<tr>
+<td>eTaSLEvent</td>
+<td></td>
+</tr>
+<tr>
+<td>eTaSL_StateMachine</td>
+<td></td>
+</tr>
+</tbody>
+</table>
               
             </div>
           </div><footer>

@@ -78,19 +78,19 @@
 <ul class="current">
 <li class="toctree-l3 current"><a class="reference internal current" href="#">TickingState</a>
 <ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="#betfsm.betfsm.TickingState.__init__">__init__</a>
+<li class="toctree-l4"><a class="reference internal" href="#betfsm.TickingState.__init__">__init__</a>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="#betfsm.betfsm.TickingState.accept">accept</a>
+<li class="toctree-l4"><a class="reference internal" href="#betfsm.TickingState.accept">accept</a>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="#betfsm.betfsm.TickingState.doo">doo</a>
+<li class="toctree-l4"><a class="reference internal" href="#betfsm.TickingState.doo">doo</a>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="#betfsm.betfsm.TickingState.entry">entry</a>
+<li class="toctree-l4"><a class="reference internal" href="#betfsm.TickingState.entry">entry</a>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="#betfsm.betfsm.TickingState.exit">exit</a>
+<li class="toctree-l4"><a class="reference internal" href="#betfsm.TickingState.exit">exit</a>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="#betfsm.betfsm.TickingState.get_global_log">get_global_log</a>
+<li class="toctree-l4"><a class="reference internal" href="#betfsm.TickingState.get_global_log">get_global_log</a>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="#betfsm.betfsm.TickingState.reset">reset</a>
+<li class="toctree-l4"><a class="reference internal" href="#betfsm.TickingState.reset">reset</a>
 </li>
 </ul>
 </li>
@@ -131,6 +131,12 @@
 <li class="toctree-l3"><a class="reference internal" href="../adapt/">Adapt</a>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../runner/">Runner</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../checkcancel/">CheckCancel</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../ctrl_c_handler/">Ctrl C Handler</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../alwaysoutcome/">AlwaysOutcome</a>
 </li>
 </ul>
 </li>
@@ -200,8 +206,8 @@
 <div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
 <div class="section" itemprop="articleBody">
 <div class="doc doc-object doc-class">
-<h2 class="doc doc-heading" id="betfsm.betfsm.TickingState">
-<code>betfsm.betfsm.TickingState</code>
+<h2 class="doc doc-heading" id="betfsm.TickingState">
+<code>betfsm.TickingState</code>
 </h2>
 <div class="doc doc-contents first">
 <p>Implements a 'ticking' state, i.e. a state that takes a longer time, but cooperatively yields
@@ -251,7 +257,7 @@ if not, the user needs to call reset() before using the state again.</p>
 </details>
 <div class="doc doc-children">
 <div class="doc doc-object doc-function">
-<h3 class="doc doc-heading" id="betfsm.betfsm.TickingState.__init__">
+<h3 class="doc doc-heading" id="betfsm.TickingState.__init__">
 <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">outcomes</span><span class="p">)</span></code>
 </h3>
 <div class="doc doc-contents">
@@ -289,7 +295,7 @@ if not, the user needs to call reset() before using the state again.</p>
 </div>
 </div>
 <div class="doc doc-object doc-function">
-<h3 class="doc doc-heading" id="betfsm.betfsm.TickingState.accept">
+<h3 class="doc doc-heading" id="betfsm.TickingState.accept">
 <code class="highlight language-python"><span class="n">accept</span><span class="p">(</span><span class="n">visitor</span><span class="p">)</span></code>
 </h3>
 <div class="doc doc-contents">
@@ -301,7 +307,7 @@ if not, the user needs to call reset() before using the state again.</p>
 </div>
 </div>
 <div class="doc doc-object doc-function">
-<h3 class="doc doc-heading" id="betfsm.betfsm.TickingState.doo">
+<h3 class="doc doc-heading" id="betfsm.TickingState.doo">
 <code class="highlight language-python"><span class="n">doo</span><span class="p">(</span><span class="n">blackboard</span><span class="p">)</span></code>
 </h3>
 <div class="doc doc-contents">
@@ -365,7 +371,7 @@ If one likes more detailed behavior, doo needs to catch the exception itself.</p
 </div>
 </div>
 <div class="doc doc-object doc-function">
-<h3 class="doc doc-heading" id="betfsm.betfsm.TickingState.entry">
+<h3 class="doc doc-heading" id="betfsm.TickingState.entry">
 <code class="highlight language-python"><span class="n">entry</span><span class="p">(</span><span class="n">blackboard</span><span class="p">)</span></code>
 </h3>
 <div class="doc doc-contents">
@@ -425,7 +431,7 @@ If one likes more detailed behavior, entry needs to catch the exception itself.<
 </div>
 </div>
 <div class="doc doc-object doc-function">
-<h3 class="doc doc-heading" id="betfsm.betfsm.TickingState.exit">
+<h3 class="doc doc-heading" id="betfsm.TickingState.exit">
 <code class="highlight language-python"><span class="n">exit</span><span class="p">()</span></code>
 </h3>
 <div class="doc doc-contents">
@@ -464,7 +470,7 @@ which does not and should not know the blackboard parameter.</p>
 </div>
 </div>
 <div class="doc doc-object doc-function">
-<h3 class="doc doc-heading" id="betfsm.betfsm.TickingState.get_global_log">
+<h3 class="doc doc-heading" id="betfsm.TickingState.get_global_log">
 <code class="highlight language-python"><span class="n">get_global_log</span><span class="p">()</span></code>
 <span class="doc doc-labels">
 <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
@@ -478,7 +484,7 @@ on by assigning an empty dict to global_publish_log</p>
 </div>
 </div>
 <div class="doc doc-object doc-function">
-<h3 class="doc doc-heading" id="betfsm.betfsm.TickingState.reset">
+<h3 class="doc doc-heading" id="betfsm.TickingState.reset">
 <code class="highlight language-python"><span class="n">reset</span><span class="p">()</span></code>
 </h3>
 <div class="doc doc-contents">

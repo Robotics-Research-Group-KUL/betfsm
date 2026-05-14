@@ -120,6 +120,12 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../runner/">Runner</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../checkcancel/">CheckCancel</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_handler/">Ctrl C Handler</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../alwaysoutcome/">AlwaysOutcome</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../utils/">Utilities</a>
@@ -208,7 +214,7 @@
 
     <div class="doc doc-contents first">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="betfsm.betfsm.Generator" href="../generator/#betfsm.betfsm.Generator">Generator</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="betfsm.Generator" href="../generator/#betfsm.Generator">Generator</a></code></p>
 
 
 
@@ -244,7 +250,7 @@
     <div class="doc doc-contents ">
 
         <p>Creates a TickingState that calls an action and generates an outcome when the action returns back.
-While waiting, it gets the response.</p>
+While waiting, it gets the response of the action to the blackboard and returns TICKING.</p>
 
 
 <table class="field-list">

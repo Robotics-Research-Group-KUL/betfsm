@@ -118,6 +118,12 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../runner/">Runner</a>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../checkcancel/">CheckCancel</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../ctrl_c_handler/">Ctrl C Handler</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../alwaysoutcome/">AlwaysOutcome</a>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../utils/">Utilities</a>
@@ -187,7 +193,7 @@
 <h2 id="technical-introduction">Technical introduction</h2>
 <h2 id="introduction">Introduction</h2>
 <p>The basic class from where all behavior tree nodes and state machines are derived is a TickingState.
-Each <a class="autorefs autorefs-internal" href="../tickingstate/#betfsm.betfsm.TickingState" title="betfsm.betfsm.TickingState">TickingState</a> (see <a class="autorefs autorefs-internal" href="../tickingstate/#betfsm.betfsm.TickingState" title="betfsm.betfsm.TickingState">API</a> for detailed definition) is defined by the following methods:</p>
+Each <a class="autorefs autorefs-internal" href="../tickingstate/#betfsm.TickingState" title="betfsm.TickingState">TickingState</a> (see <a class="autorefs autorefs-internal" href="../tickingstate/#betfsm.TickingState" title="betfsm.TickingState">API</a> for detailed definition) is defined by the following methods:</p>
 <ul>
 <li>
 <p><strong>entry(self,blackboard:Blackboard)</strong>:
@@ -286,13 +292,13 @@ This helps interoperability of different nodes in the behavior tree.</p>
 </ul>
 <p>In some cases, more information needs to be given and only the <code>add_state</code> approach is applicable (e.g. TickingStateMachine).</p>
 <h3 id="the-state-machine-state">The state-machine state</h3>
-<p><a class="autorefs autorefs-internal" href="../tickingstatemachine/#betfsm.betfsm.TickingStateMachine" title="betfsm.betfsm.TickingStateMachine">TickingStateMachine</a> implements a basic state machine. You
-can add nodes using <a class="autorefs autorefs-internal" href="../tickingstatemachine/#betfsm.betfsm.TickingStateMachine" title="betfsm.betfsm.TickingStateMachine">add_state</a>.  In this call
+<p><a class="autorefs autorefs-internal" href="../tickingstatemachine/#betfsm.TickingStateMachine" title="betfsm.TickingStateMachine">TickingStateMachine</a> implements a basic state machine. You
+can add nodes using <a class="autorefs autorefs-internal" href="../tickingstatemachine/#betfsm.TickingStateMachine" title="betfsm.TickingStateMachine">add_state</a>.  In this call
 you also specify the transitions between states.  These transitions are specified by mapping an outcome of the state to the name of one of the states in the state machine.  </p>
-<p>The <a class="autorefs autorefs-internal" href="../tickingstatemachine/#betfsm.betfsm.TickingStateMachine" title="betfsm.betfsm.TickingStateMachine">constructor</a> takes a (<strong>instance</strong>) name of the state machine ands its allowable outcomes </p>
+<p>The <a class="autorefs autorefs-internal" href="../tickingstatemachine/#betfsm.TickingStateMachine" title="betfsm.TickingStateMachine">constructor</a> takes a (<strong>instance</strong>) name of the state machine ands its allowable outcomes </p>
 <h3 id="behavior-tree-like-states">Behavior-tree like states</h3>
-<p>The most important behavior-tree like states are <a class="autorefs autorefs-internal" href="../sequence/#betfsm.betfsm.Sequence" title="betfsm.betfsm.Sequence">Sequence</a>,<a class="autorefs autorefs-internal" href="../fallback/#betfsm.betfsm.Fallback" title="betfsm.betfsm.Fallback">Fallback</a>,
-<a class="autorefs autorefs-internal" href="../concurrentsequence/#betfsm.betfsm.ConcurrentSequence" title="betfsm.betfsm.ConcurrentSequence">ConcurrentSequence</a>,<a class="autorefs autorefs-internal" href="../concurrentfallback/#betfsm.betfsm.ConcurrentFallback" title="betfsm.betfsm.ConcurrentFallback">ConcurrentFallback</a>, and <a class="autorefs autorefs-internal" href="../repeat/#betfsm.betfsm.Repeat" title="betfsm.betfsm.Repeat">Repeat</a></p>
+<p>The most important behavior-tree like states are <a class="autorefs autorefs-internal" href="../sequence/#betfsm.Sequence" title="betfsm.Sequence">Sequence</a>,<a class="autorefs autorefs-internal" href="../fallback/#betfsm.Fallback" title="betfsm.Fallback">Fallback</a>,
+<a class="autorefs autorefs-internal" href="../concurrentsequence/#betfsm.betfsm.ConcurrentSequence" title="betfsm.betfsm.ConcurrentSequence">ConcurrentSequence</a>,<a class="autorefs autorefs-internal" href="../concurrentfallback/#betfsm.betfsm.ConcurrentFallback" title="betfsm.betfsm.ConcurrentFallback">ConcurrentFallback</a>, and <a class="autorefs autorefs-internal" href="../repeat/#betfsm.Repeat" title="betfsm.Repeat">Repeat</a></p>
 <p>The main difference is that for a typical behavior-tree implementation the outcomes can only be RUNNING, SUCCESS or FAILURE. Here, there can be more types of outcome.   The mapping to traditional behavior trees is explained below, detailed behavior is documented in the diagrams in the API-documentation.</p>
 <ul>
 <li>
@@ -316,7 +322,7 @@ In other words, success can be differentiated by different outcomes.</p>
 In other words, failure can be differentiated by different outcomes.</p>
 </li>
 </ul>
-<p><a class="autorefs autorefs-internal" href="../concurrentsequence/#betfsm.betfsm.ConcurrentSequence" title="betfsm.betfsm.ConcurrentSequence">ConcurrentSequence</a> and <a class="autorefs autorefs-internal" href="../concurrentfallback/#betfsm.betfsm.ConcurrentFallback" title="betfsm.betfsm.ConcurrentFallback">ConcurrentFallback</a> are basically the same as <a class="autorefs autorefs-internal" href="../sequence/#betfsm.betfsm.Sequence" title="betfsm.betfsm.Sequence">Sequence</a> and <a class="autorefs autorefs-internal" href="../fallback/#betfsm.betfsm.Fallback" title="betfsm.betfsm.Fallback">Fallback</a> but execute concurrently: at each tick they go to their complete list of states and follow the logic of sequence or fallback. e.g. in a ConcurrentSequence the states are executed concurrently, but within one tick, they are executed in the order specified.</p>
+<p><a class="autorefs autorefs-internal" href="../concurrentsequence/#betfsm.betfsm.ConcurrentSequence" title="betfsm.betfsm.ConcurrentSequence">ConcurrentSequence</a> and <a class="autorefs autorefs-internal" href="../concurrentfallback/#betfsm.betfsm.ConcurrentFallback" title="betfsm.betfsm.ConcurrentFallback">ConcurrentFallback</a> are basically the same as <a class="autorefs autorefs-internal" href="../sequence/#betfsm.Sequence" title="betfsm.Sequence">Sequence</a> and <a class="autorefs autorefs-internal" href="../fallback/#betfsm.Fallback" title="betfsm.Fallback">Fallback</a> but execute concurrently: at each tick they go to their complete list of states and follow the logic of sequence or fallback. e.g. in a ConcurrentSequence the states are executed concurrently, but within one tick, they are executed in the order specified.</p>
 <p><a class="autorefs autorefs-internal" href="../concurrent/#betfsm.betfsm.Concurrent" title="betfsm.betfsm.Concurrent">Concurrent</a> executes also its children concurrently (calling them in sequence for each tick). Concurrent stops executing when any child returns any outcome different from TICKING. See <a class="autorefs autorefs-internal" href="../concurrent/#betfsm.betfsm.Concurrent" title="betfsm.betfsm.Concurrent">API</a> for description fo detailed behavior.</p>
 <p>The <strong>Repeat</strong> state has one underlying state and repeats this state for a given number of times.</p>
 <h3 id="related-to-conditions">Related to conditions</h3>
@@ -329,7 +335,7 @@ In other words, failure can be differentiated by different outcomes.</p>
 <h3 id="related-to-output">Related to output</h3>
 <ul>
 <li>
-<p><a class="autorefs autorefs-internal" href="../message/#betfsm.betfsm.Message" title="betfsm.betfsm.Message">Message</a> is a state to quickly return send message to the log.
+<p><a class="autorefs autorefs-internal" href="../message/#betfsm.Message" title="betfsm.Message">Message</a> is a state to quickly return send message to the log.
 Its arguments are either a string or either a callback function.  Since the string is specified at
 construction time, the callback function is handy when you want to return something depending on the actual state while running.  Python's <a href="https://python-reference.readthedocs.io/en/latest/docs/operators/lambda.html">lambda</a> could be useful to specify the callback.</p>
 </li>
@@ -410,7 +416,7 @@ calls the reset method of all its children and calls the reset method of its sup
 </div>
 <h3 id="facilitating-implementation-of-a-tickingstate">Facilitating implementation of a TickingState</h3>
 <p>To facilitate the definition of tickingStates, you can use <a href="https://www.geeksforgeeks.org/generators-in-python/">Python generators</a>, for this 
-the <a class="autorefs autorefs-internal" href="../generator/#betfsm.betfsm.Generator" title="betfsm.betfsm.Generator">Generator</a> class is defined.  Generator is a generic TickingState that implements methods <strong>entry</strong>, <strong>doo</strong> and <strong>exit</strong>.<br/>
+the <a class="autorefs autorefs-internal" href="../generator/#betfsm.Generator" title="betfsm.Generator">Generator</a> class is defined.  Generator is a generic TickingState that implements methods <strong>entry</strong>, <strong>doo</strong> and <strong>exit</strong>.<br/>
 Users can define new TickingStates by defining the method <code>co_execute(self, blackboard:Blackboard)</code>.  This method is a co-routine and can regularly 
 yield control using a <code>yield &lt;outcome&gt;</code> statement. This makes it easy to specify a TickingState.</p>
 <p>For common usecases, further (generic) specializations are provided by:</p>

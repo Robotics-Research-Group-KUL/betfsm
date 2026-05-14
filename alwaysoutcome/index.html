@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Erwin Aertbelien" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Compute - BeTFSM documentation</title>
+    <title>AlwaysOutcome - BeTFSM documentation</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -15,8 +15,8 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Compute";
-        var mkdocs_page_input_path = "compute.md";
+        var mkdocs_page_name = "AlwaysOutcome";
+        var mkdocs_page_input_path = "alwaysoutcome.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -114,11 +114,7 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../logblackboard/">LogBlackboard</a>
                 </li>
-                <li class="toctree-l3 current"><a class="reference internal current" href="#">Compute</a>
-    <ul class="current">
-    <li class="toctree-l4"><a class="reference internal" href="#betfsm.betfsm.Compute.__init__">__init__</a>
-    </li>
-    </ul>
+                <li class="toctree-l3"><a class="reference internal" href="../compute/">Compute</a>
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../adapt/">Adapt</a>
                 </li>
@@ -128,7 +124,11 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_handler/">Ctrl C Handler</a>
                 </li>
-                <li class="toctree-l3"><a class="reference internal" href="../alwaysoutcome/">AlwaysOutcome</a>
+                <li class="toctree-l3 current"><a class="reference internal current" href="#">AlwaysOutcome</a>
+    <ul class="current">
+    <li class="toctree-l4"><a class="reference internal" href="#betfsm.AlwaysOutcome.__init__">__init__</a>
+    </li>
+    </ul>
                 </li>
     </ul>
                 </li>
@@ -190,9 +190,9 @@
           <li class="breadcrumb-item">Documentation</li>
           <li class="breadcrumb-item">API</li>
           <li class="breadcrumb-item">BeTFSM</li>
-      <li class="breadcrumb-item active">Compute</li>
+      <li class="breadcrumb-item active">AlwaysOutcome</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/Robotics-Research-Group-KUL/betfsm/edit/main/documentation/docs/compute.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/Robotics-Research-Group-KUL/betfsm/edit/main/documentation/docs/alwaysoutcome.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -204,8 +204,8 @@
 
 
 
-<h2 id="betfsm.betfsm.Compute" class="doc doc-heading">
-            <code>betfsm.betfsm.Compute</code>
+<h2 id="betfsm.AlwaysOutcome" class="doc doc-heading">
+            <code>betfsm.AlwaysOutcome</code>
 
 
 </h2>
@@ -213,7 +213,7 @@
 
     <div class="doc doc-contents first">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="betfsm.Generator (betfsm.betfsm.Generator)" href="../generator/#betfsm.Generator">Generator</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="betfsm.TickingState (betfsm.betfsm.TickingState)" href="../tickingstate/#betfsm.TickingState">TickingState</a></code></p>
 
 
 
@@ -240,16 +240,15 @@
 <div class="doc doc-object doc-function">
 
 
-<h3 id="betfsm.betfsm.Compute.__init__" class="doc doc-heading">
-            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">cb</span><span class="p">)</span></code>
+<h3 id="betfsm.AlwaysOutcome.__init__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">outcome</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h3>
 
 
     <div class="doc doc-contents ">
 
-        <p>State that performs some computations using a callback function
-and places the results in a predetermined location in the blackboard.</p>
+        <p>Returns a TickingState that always returns the same outcome.</p>
 
 
 <table class="field-list">
@@ -267,25 +266,17 @@ and places the results in a predetermined location in the blackboard.</p>
                   (<code><span title="str">str</span></code>)
               –
               <div class="doc-md-description">
-                <p>name of this node</p>
+                <p>name of the Ticking state</p>
               </div>
             </li>
             <li>
-              <b><code>location</code></b>
-                  (<code><span title="typing.List">List</span>[<span title="str">str</span>]</code>)
+              <b><code>outcome</code></b>
+                  (<code><span title="str">str</span></code>, default:
+                      <code>None</code>
+)
               –
               <div class="doc-md-description">
-                <p>location in the blackboard, given as a list of strings.  Should point to
-a dictionary.</p>
-              </div>
-            </li>
-            <li>
-              <b><code>cb</code></b>
-                  (<code><span title="typing.Callable">Callable</span></code>)
-              –
-              <div class="doc-md-description">
-                <p>callback function with signature <code>def cb(blackboard)-&gt;dict</code>. The dictionary 
-contents will be inserted in the given location</p>
+                <p>outcome that will be returned (typically, but not necessarily: SUCCEED, CANCEL)</p>
               </div>
             </li>
         </ul>
@@ -310,8 +301,8 @@ contents will be inserted in the given location</p>
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../logblackboard/" class="btn btn-neutral float-left" title="LogBlackboard"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../adapt/" class="btn btn-neutral float-right" title="Adapt">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../ctrl_c_handler/" class="btn btn-neutral float-left" title="Ctrl C Handler"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../utils/" class="btn btn-neutral float-right" title="Utilities">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -339,10 +330,10 @@ contents will be inserted in the given location</p>
         </span>
     
     
-      <span><a href="../logblackboard/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../ctrl_c_handler/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../adapt/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../utils/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

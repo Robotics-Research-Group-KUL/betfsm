@@ -122,6 +122,12 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../runner/">Runner</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../checkcancel/">CheckCancel</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_handler/">Ctrl C Handler</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../alwaysoutcome/">AlwaysOutcome</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../utils/">Utilities</a>
@@ -212,10 +218,10 @@ functionality.  One of the advantages of BeTFSM is that these nodes can be very 
         <span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: Finished counting down!&quot;</span><span class="p">)</span>
         <span class="k">yield</span> <span class="n">SUCCEED</span>
 </code></pre></div></p>
-<p>A BeTFSM node is a python class that inherits from <a class="autorefs autorefs-internal" title="betfsm.betfsm.TickingState" href="../tickingstate/#betfsm.betfsm.TickingState">TickingState</a>.  However, to simplify implementation, we mostly inherit from the subclass <a class="autorefs autorefs-internal" title="betfsm.betfsm.Generator" href="../generator/#betfsm.betfsm.Generator">Generator</a>.  This sub-class uses <a href="https://www.geeksforgeeks.org/generators-in-python/">Python generators</a> to simplify implementation. </p>
+<p>A BeTFSM node is a python class that inherits from <a class="autorefs autorefs-internal" title="betfsm.TickingState" href="../tickingstate/#betfsm.TickingState">TickingState</a>.  However, to simplify implementation, we mostly inherit from the subclass <a class="autorefs autorefs-internal" title="betfsm.Generator" href="../generator/#betfsm.Generator">Generator</a>.  This sub-class uses <a href="https://www.geeksforgeeks.org/generators-in-python/">Python generators</a> to simplify implementation. </p>
 <p>To facilitate definitions of BeTFSM nodes, BeTFSM uses synchronous execution for cooperative multi-tasking, this avoids to deal with thread management, mutexes, etc.<br />
 The whole tree executes at <strong>a fixed sample rate</strong> and at each sample interval ('tick'), a node either returns TICKING (indicating that the node is not yet finished and wants to be called back the next tick) or another outcome (such as SUCCEED).  All outcomes are strings.  If really necessary, a BeTFSM node can still spawn and <em>manage</em> its own thread(s), but this is internal to the node and should not concern the framework.</p>
-<p>When you inherit from <a class="autorefs autorefs-internal" title="betfsm.betfsm.Generator" href="../generator/#betfsm.betfsm.Generator">Generator</a>, 
+<p>When you inherit from <a class="autorefs autorefs-internal" title="betfsm.Generator" href="../generator/#betfsm.Generator">Generator</a>, 
 the main implementation of functionality is in the method <code>co_execute</code> (the 'co' refers to co-routine), you can use python's yield to return control back to the system and pass the outcome of the state, the next tick control will resume at the same location in <code>co_execute</code> (or go to the next state when the outcome is different from SUCCEED).</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>

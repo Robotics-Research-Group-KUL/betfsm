@@ -52,6 +52,10 @@
                 </li>
                 <li class="toctree-l2 current"><a class="reference internal current" href="#">Installation</a>
     <ul class="current">
+    <li class="toctree-l3"><a class="reference internal" href="#installation-using-pip">Installation using pip</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#installation-in-ros2">Installation in ROS2</a>
+    </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../technical_intro/">Technical introduction</a>
@@ -122,6 +126,12 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../runner/">Runner</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../checkcancel/">CheckCancel</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_handler/">Ctrl C Handler</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../alwaysoutcome/">AlwaysOutcome</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../utils/">Utilities</a>
@@ -191,7 +201,44 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h2 id="installation">Installation</h2>
+                <h1 id="installation">Installation</h1>
+<h2 id="installation-using-pip">Installation using pip</h2>
+<p>Create an environment (or use once of your already existing python environments). It is not recommended
+installing directly, without pip environment, on the host.</p>
+<div class="highlight"><pre><span></span><code>    python -m venv my_env
+    source my_env/bin/activate
+</code></pre></div>
+<p>When you want to use BeTFSM in a pure python environment, you can install it using pip:</p>
+<div class="highlight"><pre><span></span><code>    pip install &quot;git+https://github.com/Robotics-Research-Group-KUL/betfsm.git#egg=betfsm&amp;subdirectory=betfsm&quot;
+</code></pre></div>
+<p>After this installation, your can run one of the examples (make sure that you have activated your environment):</p>
+<div class="highlight"><pre><span></span><code>    gui_example_large
+</code></pre></div>
+<p>You can look at the available examples in:
+<div class="highlight"><pre><span></span><code>my_env/lib/python3.12/site-packages/betfsm_examples/
+</code></pre></div>
+These examples can be started using the associated scripts in <code>my_env/bin</code> or directly from the above
+directory (in that case, make sure that the environment is activated)</p>
+<p>If you manage your python project using <code>pyproject.toml</code> (with standard setuptools), you can add a dependency on BeTFSM using:
+<div class="highlight"><pre><span></span><code>dependencies = [
+    &quot;betfsm @ git+https://github.com/Robotics-Research-Group-KUL/betfsm.git#subdirectory=betfsm&quot;
+]
+</code></pre></div></p>
+<h2 id="installation-in-ros2">Installation in ROS2</h2>
+<p>You can add BeTFSM to your workspace by cloning the reposity in the <code>src</code> directory of your workspace:</p>
+<div class="highlight"><pre><span></span><code>cd ./src
+git clone https://github.com/Robotics-Research-Group-KUL/betfsm.git
+</code></pre></div>
+<p>You can build using the usual ROS2 approach (for an editable install):
+<div class="highlight"><pre><span></span><code>cd your-workspace
+colcon-build --symlink-install
+</code></pre></div></p>
+<p>The examples are installed and can be run using ROS2:
+<div class="highlight"><pre><span></span><code>ros2 run betfsm gui_example_large
+</code></pre></div>
+The examples can also be run directly from their source directory:
+<div class="highlight"><pre><span></span><code>your-workspace/src/betfsm/betfsm/betfsm_examples
+</code></pre></div></p>
               
             </div>
           </div><footer>

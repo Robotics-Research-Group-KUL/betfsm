@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Erwin Aertbelien" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Compute - BeTFSM documentation</title>
+    <title>CheckCancel - BeTFSM documentation</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -15,8 +15,8 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Compute";
-        var mkdocs_page_input_path = "compute.md";
+        var mkdocs_page_name = "CheckCancel";
+        var mkdocs_page_input_path = "checkcancel.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -114,17 +114,17 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../logblackboard/">LogBlackboard</a>
                 </li>
-                <li class="toctree-l3 current"><a class="reference internal current" href="#">Compute</a>
-    <ul class="current">
-    <li class="toctree-l4"><a class="reference internal" href="#betfsm.betfsm.Compute.__init__">__init__</a>
-    </li>
-    </ul>
+                <li class="toctree-l3"><a class="reference internal" href="../compute/">Compute</a>
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../adapt/">Adapt</a>
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../runner/">Runner</a>
                 </li>
-                <li class="toctree-l3"><a class="reference internal" href="../checkcancel/">CheckCancel</a>
+                <li class="toctree-l3 current"><a class="reference internal current" href="#">CheckCancel</a>
+    <ul class="current">
+    <li class="toctree-l4"><a class="reference internal" href="#betfsm.CheckCancel.__init__">__init__</a>
+    </li>
+    </ul>
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_handler/">Ctrl C Handler</a>
                 </li>
@@ -190,9 +190,9 @@
           <li class="breadcrumb-item">Documentation</li>
           <li class="breadcrumb-item">API</li>
           <li class="breadcrumb-item">BeTFSM</li>
-      <li class="breadcrumb-item active">Compute</li>
+      <li class="breadcrumb-item active">CheckCancel</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/Robotics-Research-Group-KUL/betfsm/edit/main/documentation/docs/compute.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/Robotics-Research-Group-KUL/betfsm/edit/main/documentation/docs/checkcancel.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -204,8 +204,8 @@
 
 
 
-<h2 id="betfsm.betfsm.Compute" class="doc doc-heading">
-            <code>betfsm.betfsm.Compute</code>
+<h2 id="betfsm.CheckCancel" class="doc doc-heading">
+            <code>betfsm.CheckCancel</code>
 
 
 </h2>
@@ -213,9 +213,13 @@
 
     <div class="doc doc-contents first">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="betfsm.Generator (betfsm.betfsm.Generator)" href="../generator/#betfsm.Generator">Generator</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="betfsm.GeneratorWithList" href="../generator/#betfsm.GeneratorWithList">GeneratorWithList</a></code></p>
 
 
+
+        <p>State that contiuously evaluates a condition and if this condition is False it triggers the nominal state.
+Once the condition is True, the state switches to an abnormal state and will trigger
+the cleanup state (and will never go back to the normal state)</p>
 
 
 
@@ -240,16 +244,14 @@
 <div class="doc doc-object doc-function">
 
 
-<h3 id="betfsm.betfsm.Compute.__init__" class="doc doc-heading">
-            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">cb</span><span class="p">)</span></code>
+<h3 id="betfsm.CheckCancel.__init__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">cb</span><span class="p">,</span> <span class="n">nominal_sm</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cleanup_sm</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h3>
 
 
     <div class="doc doc-contents ">
 
-        <p>State that performs some computations using a callback function
-and places the results in a predetermined location in the blackboard.</p>
 
 
 <table class="field-list">
@@ -267,25 +269,37 @@ and places the results in a predetermined location in the blackboard.</p>
                   (<code><span title="str">str</span></code>)
               –
               <div class="doc-md-description">
-                <p>name of this node</p>
-              </div>
-            </li>
-            <li>
-              <b><code>location</code></b>
-                  (<code><span title="typing.List">List</span>[<span title="str">str</span>]</code>)
-              –
-              <div class="doc-md-description">
-                <p>location in the blackboard, given as a list of strings.  Should point to
-a dictionary.</p>
+                <p>name of the BeTFSM node</p>
               </div>
             </li>
             <li>
               <b><code>cb</code></b>
-                  (<code><span title="typing.Callable">Callable</span></code>)
+                  (<code><span title="betfsm.Callable">Callable</span></code>)
               –
               <div class="doc-md-description">
-                <p>callback function with signature <code>def cb(blackboard)-&gt;dict</code>. The dictionary 
-contents will be inserted in the given location</p>
+                <p>callback with signature <code>def cb(blackboard)-&gt;bool</code>, true if cancel is triggered.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>nominal_sm</code></b>
+                  (<code><a class="autorefs autorefs-internal" title="betfsm.TickingState" href="../tickingstate/#betfsm.TickingState">TickingState</a></code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>nominal state (running while checking cancelation), if None, 
+                      a state is used  that always returns SUCCEED</p>
+              </div>
+            </li>
+            <li>
+              <b><code>cleanup_sm</code></b>
+                  (<code><a class="autorefs autorefs-internal" title="betfsm.TickingState" href="../tickingstate/#betfsm.TickingState">TickingState</a></code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>cleanup state (running after cancelation to cleanup). if None,
+                      a state is used  that always returns CANCEL</p>
               </div>
             </li>
         </ul>
@@ -293,6 +307,35 @@ contents will be inserted in the given location</p>
     </tr>
   </tbody>
 </table>
+
+<details class="remarks" open>
+  <summary>Remarks</summary>
+  <ul>
+<li>
+<p>syntax lambda function in python :     <code>f = lambda bb: get_path_value(bb,"/mypath/...")</code>, to examine
+  the blackboard <code>get_path_value</code> can be used, but you can write other functions to check for a cancel
+  condition</p>
+</li>
+<li>
+<p>Can be used to check for a ctrl-c condition, but is not limited to that, can check all kinds
+  of interrupt conditions such as events coming from a gui, or button,etc..</p>
+</li>
+<li>
+<p>to check a whole tree continuously for cancelation, can be for the whole statemachine or a
+     subtree of the state machine</p>
+<div class="highlight"><pre><span></span><code>blackboard_ctrl_c_handler(blackboard, &quot;/cancelation/ctrl_c&quot;)
+sm_overall = CheckCancel(&quot;cancelation_check&quot;,                     
+    lambda bb: get_path_value(bb,&quot;/cancelation/ctrl_c&quot;), 
+    sm,
+    cleanup_sm)
+</code></pre></div>
+</li>
+<li>
+<p>with no statemachines specified it can be used a node in a state machine/behavior node 
+     that returns <code>CANCEL</code> when there is a cancelation request and <code>SUCCEED</code> otherwise</p>
+</li>
+</ul>
+</details>
 
     </div>
 
@@ -310,8 +353,8 @@ contents will be inserted in the given location</p>
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../logblackboard/" class="btn btn-neutral float-left" title="LogBlackboard"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../adapt/" class="btn btn-neutral float-right" title="Adapt">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../runner/" class="btn btn-neutral float-left" title="Runner"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../ctrl_c_handler/" class="btn btn-neutral float-right" title="Ctrl C Handler">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -339,10 +382,10 @@ contents will be inserted in the given location</p>
         </span>
     
     
-      <span><a href="../logblackboard/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../runner/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../adapt/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../ctrl_c_handler/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

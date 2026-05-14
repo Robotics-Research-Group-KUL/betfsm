@@ -86,7 +86,7 @@
 </li>
 <li class="toctree-l3 current"><a class="reference internal current" href="#">Sequence</a>
 <ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="#betfsm.betfsm.Sequence.__init__">__init__</a>
+<li class="toctree-l4"><a class="reference internal" href="#betfsm.Sequence.__init__">__init__</a>
 </li>
 </ul>
 </li>
@@ -119,6 +119,12 @@
 <li class="toctree-l3"><a class="reference internal" href="../adapt/">Adapt</a>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../runner/">Runner</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../checkcancel/">CheckCancel</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../ctrl_c_handler/">Ctrl C Handler</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../alwaysoutcome/">AlwaysOutcome</a>
 </li>
 </ul>
 </li>
@@ -188,8 +194,8 @@
 <div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
 <div class="section" itemprop="articleBody">
 <div class="doc doc-object doc-class">
-<h2 class="doc doc-heading" id="betfsm.betfsm.Sequence">
-<code>betfsm.betfsm.Sequence</code>
+<h2 class="doc doc-heading" id="betfsm.Sequence">
+<code>betfsm.Sequence</code>
 </h2>
 <div class="doc doc-contents first">
 <p class="doc doc-class-bases">
@@ -234,7 +240,7 @@ next node in the list is started (without any intermediate tick!).</p>
         class TIMEOUT abortClass</div>
 <div class="doc doc-children">
 <div class="doc doc-object doc-function">
-<h3 class="doc doc-heading" id="betfsm.betfsm.Sequence.__init__">
+<h3 class="doc doc-heading" id="betfsm.Sequence.__init__">
 <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">children</span><span class="o">=</span><span class="p">[])</span></code>
 </h3>
 <div class="doc doc-contents">
@@ -258,7 +264,7 @@ next node in the list is started (without any intermediate tick!).</p>
 </li>
 <li>
 <b><code>children</code></b>
-                  (<code><span title="typing.List">List</span>[<a class="autorefs autorefs-internal" href="../tickingstate/#betfsm.betfsm.TickingState" title="betfsm.betfsm.TickingState">TickingState</a>]</code>, default:
+                  (<code><span title="typing.List">List</span>[<a class="autorefs autorefs-internal" href="../tickingstate/#betfsm.TickingState" title="betfsm.TickingState (betfsm.betfsm.TickingState)">TickingState</a>]</code>, default:
                       <code>[]</code>
 )
               –

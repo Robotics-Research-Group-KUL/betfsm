@@ -84,15 +84,15 @@
                 </li>
                 <li class="toctree-l3 current"><a class="reference internal current" href="#">TickingStateMachine</a>
     <ul class="current">
-    <li class="toctree-l4"><a class="reference internal" href="#betfsm.betfsm.TickingStateMachine.__init__">__init__</a>
+    <li class="toctree-l4"><a class="reference internal" href="#betfsm.TickingStateMachine.__init__">__init__</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#betfsm.betfsm.TickingStateMachine.accept">accept</a>
+    <li class="toctree-l4"><a class="reference internal" href="#betfsm.TickingStateMachine.accept">accept</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#betfsm.betfsm.TickingStateMachine.add_state">add_state</a>
+    <li class="toctree-l4"><a class="reference internal" href="#betfsm.TickingStateMachine.add_state">add_state</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#betfsm.betfsm.TickingStateMachine.reset">reset</a>
+    <li class="toctree-l4"><a class="reference internal" href="#betfsm.TickingStateMachine.reset">reset</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#betfsm.betfsm.TickingStateMachine.set_start_state">set_start_state</a>
+    <li class="toctree-l4"><a class="reference internal" href="#betfsm.TickingStateMachine.set_start_state">set_start_state</a>
     </li>
     </ul>
                 </li>
@@ -131,6 +131,12 @@
                 <li class="toctree-l3"><a class="reference internal" href="../adapt/">Adapt</a>
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../runner/">Runner</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../checkcancel/">CheckCancel</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_handler/">Ctrl C Handler</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../alwaysoutcome/">AlwaysOutcome</a>
                 </li>
     </ul>
                 </li>
@@ -206,8 +212,8 @@
 
 
 
-<h2 id="betfsm.betfsm.TickingStateMachine" class="doc doc-heading">
-            <code>betfsm.betfsm.TickingStateMachine</code>
+<h2 id="betfsm.TickingStateMachine" class="doc doc-heading">
+            <code>betfsm.TickingStateMachine</code>
 
 
 </h2>
@@ -215,7 +221,7 @@
 
     <div class="doc doc-contents first">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="betfsm.betfsm.TickingState" href="../tickingstate/#betfsm.betfsm.TickingState">TickingState</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="betfsm.TickingState (betfsm.betfsm.TickingState)" href="../tickingstate/#betfsm.TickingState">TickingState</a></code></p>
 
 
 
@@ -252,7 +258,7 @@
 <div class="doc doc-object doc-function">
 
 
-<h3 id="betfsm.betfsm.TickingStateMachine.__init__" class="doc doc-heading">
+<h3 id="betfsm.TickingStateMachine.__init__" class="doc doc-heading">
             <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">outcomes</span><span class="p">)</span></code>
 
 </h3>
@@ -303,7 +309,7 @@ will be an outcome of the state machine and should be contained in outcomes (oth
 <div class="doc doc-object doc-function">
 
 
-<h3 id="betfsm.betfsm.TickingStateMachine.accept" class="doc doc-heading">
+<h3 id="betfsm.TickingStateMachine.accept" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">accept</span><span class="p">(</span><span class="n">visitor</span><span class="p">)</span></code>
 
 </h3>
@@ -321,7 +327,7 @@ will be an outcome of the state machine and should be contained in outcomes (oth
 <div class="doc doc-object doc-function">
 
 
-<h3 id="betfsm.betfsm.TickingStateMachine.add_state" class="doc doc-heading">
+<h3 id="betfsm.TickingStateMachine.add_state" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">add_state</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">transitions</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h3>
@@ -346,7 +352,7 @@ using the method <code>set_start_state</code>.</p>
         <ul class="first simple">
             <li>
               <b><code>state</code></b>
-                  (<code><a class="autorefs autorefs-internal" title="betfsm.betfsm.TickingState" href="../tickingstate/#betfsm.betfsm.TickingState">TickingState</a></code>)
+                  (<code><a class="autorefs autorefs-internal" title="betfsm.TickingState (betfsm.betfsm.TickingState)" href="../tickingstate/#betfsm.TickingState">TickingState</a></code>)
               –
               <div class="doc-md-description">
                 <p>state to be added, it will be added under its name (i.e. state.name, as defined in TickingState)</p>
@@ -354,7 +360,7 @@ using the method <code>set_start_state</code>.</p>
             </li>
             <li>
               <b><code>transitions</code></b>
-                  (<code><span title="typing.Dict">Dict</span>[<span title="str">str</span>, <span title="str">str</span> | <a class="autorefs autorefs-internal" title="betfsm.betfsm.TickingState" href="../tickingstate/#betfsm.betfsm.TickingState">TickingState</a>]</code>, default:
+                  (<code><span title="typing.Dict">Dict</span>[<span title="str">str</span>, <span title="str">str</span> | <a class="autorefs autorefs-internal" title="betfsm.TickingState (betfsm.betfsm.TickingState)" href="../tickingstate/#betfsm.TickingState">TickingState</a>]</code>, default:
                       <code>None</code>
 )
               –
@@ -377,7 +383,7 @@ As a shortcut/alternative, this can also be a dictionary that maps outcomes to T
 <div class="doc doc-object doc-function">
 
 
-<h3 id="betfsm.betfsm.TickingStateMachine.reset" class="doc doc-heading">
+<h3 id="betfsm.TickingStateMachine.reset" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">reset</span><span class="p">()</span></code>
 
 </h3>
@@ -396,7 +402,7 @@ from the starting state.  Calls reset on all the states it contains.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="betfsm.betfsm.TickingStateMachine.set_start_state" class="doc doc-heading">
+<h3 id="betfsm.TickingStateMachine.set_start_state" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">set_start_state</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></code>
 
 </h3>
@@ -419,7 +425,7 @@ from the starting state.  Calls reset on all the states it contains.</p>
         <ul class="first simple">
             <li>
               <b><code>name</code></b>
-                  (<code><span title="str">str</span> | <a class="autorefs autorefs-internal" title="betfsm.betfsm.TickingState" href="../tickingstate/#betfsm.betfsm.TickingState">TickingState</a></code>)
+                  (<code><span title="str">str</span> | <a class="autorefs autorefs-internal" title="betfsm.TickingState (betfsm.betfsm.TickingState)" href="../tickingstate/#betfsm.TickingState">TickingState</a></code>)
               –
               <div class="doc-md-description">
                 <p>set the state by which the state machine starts.  By default the first state 

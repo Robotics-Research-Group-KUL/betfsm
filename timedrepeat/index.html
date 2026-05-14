@@ -102,7 +102,7 @@
 </li>
 <li class="toctree-l3 current"><a class="reference internal current" href="#">TimedRepeat</a>
 <ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="#betfsm.betfsm.TimedRepeat.__init__">__init__</a>
+<li class="toctree-l4"><a class="reference internal" href="#betfsm.TimedRepeat.__init__">__init__</a>
 </li>
 </ul>
 </li>
@@ -119,6 +119,12 @@
 <li class="toctree-l3"><a class="reference internal" href="../adapt/">Adapt</a>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../runner/">Runner</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../checkcancel/">CheckCancel</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../ctrl_c_handler/">Ctrl C Handler</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../alwaysoutcome/">AlwaysOutcome</a>
 </li>
 </ul>
 </li>
@@ -188,8 +194,8 @@
 <div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
 <div class="section" itemprop="articleBody">
 <div class="doc doc-object doc-class">
-<h2 class="doc doc-heading" id="betfsm.betfsm.TimedRepeat">
-<code>betfsm.betfsm.TimedRepeat</code>
+<h2 class="doc doc-heading" id="betfsm.TimedRepeat">
+<code>betfsm.TimedRepeat</code>
 </h2>
 <div class="doc doc-contents first">
 <p class="doc doc-class-bases">
@@ -224,7 +230,7 @@
         class ABORT abortClass</div>
 <div class="doc doc-children">
 <div class="doc doc-object doc-function">
-<h3 class="doc doc-heading" id="betfsm.betfsm.TimedRepeat.__init__">
+<h3 class="doc doc-heading" id="betfsm.TimedRepeat.__init__">
 <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">maxcount</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span></code>
 </h3>
 <div class="doc doc-contents">
@@ -268,7 +274,7 @@ such outcome  is returned by the underlying state.</p>
 </li>
 <li>
 <b><code>state</code></b>
-                  (<code><a class="autorefs autorefs-internal" href="../tickingstate/#betfsm.betfsm.TickingState" title="betfsm.betfsm.TickingState">TickingState</a></code>)
+                  (<code><a class="autorefs autorefs-internal" href="../tickingstate/#betfsm.TickingState" title="betfsm.TickingState (betfsm.betfsm.TickingState)">TickingState</a></code>)
               –
               <div class="doc-md-description">
 <p>underlying state</p>
