@@ -26,6 +26,7 @@ import traceback
 
 import time
 import uuid
+import json
 from .logger import get_logger,add_logger_category,get_logger_categories
 
 add_logger_category("state")
@@ -1209,7 +1210,7 @@ class Message(Generator):
             Message._name_counter +=1
             name = f"message_{Message._name_counter}"
         super().__init__(name,[SUCCEED,])
-        if msg is None: raise ValueError("Message : you should specify a message (did you only specify a name?)\nTip:  Message(msg='my message text') or Message('message_name','message text')  ") 
+        if msg is None and cb is None: raise ValueError("Message : you should specify a message (did you only specify a name?)\nTip:  Message(msg='my message text') or Message('message_name','message text')  ") 
         self.msg = msg
         self.cb  = cb
         self.logcat = logCategory
@@ -1219,56 +1220,63 @@ class Message(Generator):
     def co_execute(self,blackboard: Blackboard):
         #log = my_node.get_logger()
         #log.info(f'Entering MyMessage : {self.msg}')
-        if self.msg is not None:
-            get_logger(self.logcat).info( self.msg )
         if self.cb is not None:
             get_logger(self.logcat).info( self.cb(blackboard) )
+        elif self.msg is not None:
+            get_logger(self.logcat).info( self.msg )
         yield SUCCEED
 
 
-def dumps_blackboard(blackboard:Blackboard,indent:int=0):
+def dumps_blackboard(blackboard, indent_spaces: int = 4) -> str:
     """
-    returns a string-dump of a (piece of the ) blackboard
+    Recursively constructs a  formatted, indented string 
+    representing a hierarchical Python data structure.
+    """
+    return json.dumps(blackboard,indent=indent_spaces,skipkeys=True,check_circular=True,default=lambda ob: ob.__repr__())
+
+# def dumps_blackboard(blackboard:Blackboard,indent:int=0):
+#     """
+#     returns a string-dump of a (piece of the ) blackboard
     
-    Parameters:
-        blackboard:
-            Blackboard to be dumped
-        indent:
-            determines the indentation for printing.
-    """
-    s = ""
-    indent += 4
-    space = f'{" ":{indent}}'
-    if isinstance(blackboard,bool):
-        s = f'{blackboard}\n'
-    elif isinstance(blackboard,int):
-        s = f'{blackboard}\n'
-    elif isinstance(blackboard,float):
-        s = f'{blackboard}\n'    
-    elif isinstance(blackboard,dict):
-        s = s + "\n"
-        for k,v in blackboard.items():
-            s+= space + k + " : " + dumps_blackboard(v,indent)
-    elif isinstance(blackboard, list):
-        listofnumbers=True
-        first = True
-        for item in blackboard:
-            if isinstance(item,int) or isinstance(item,float):
-                listofnumbers=True
-                break
-            if first:
-                s = s + "\n"
-                first=False
-            s+= space + dumps_blackboard(item,indent)
-        if listofnumbers:
-            s = f'{blackboard}\n'                 
-    elif isinstance(blackboard,str):
-        s = f'"{blackboard}"\n'       
-    elif isinstance(blackboard,list):
-        s = f'{blackboard}\n'             
-    else:
-        s = f'{type(blackboard)}'
-    return s
+#     Parameters:
+#         blackboard:
+#             Blackboard to be dumped
+#         indent:
+#             determines the indentation for printing.
+#     """
+#     s = ""
+#     indent += 4
+#     space = f'{" ":{indent}}'
+#     if isinstance(blackboard,bool):
+#         s = f'{blackboard}\n'
+#     elif isinstance(blackboard,int):
+#         s = f'{blackboard}\n'
+#     elif isinstance(blackboard,float):
+#         s = f'{blackboard}\n'    
+#     elif isinstance(blackboard,dict):
+#         s = s + "\n"
+#         for k,v in blackboard.items():
+#             s+= space + k + " : " + dumps_blackboard(v,indent)
+#     elif isinstance(blackboard, list):
+#         listofnumbers=True
+#         first = True
+#         for item in blackboard:
+#             if isinstance(item,int) or isinstance(item,float):
+#                 listofnumbers=True
+#                 break
+#             if first:
+#                 s = s + "\n"
+#                 first=False
+#             s+= space + dumps_blackboard(item,indent)
+#         if listofnumbers:
+#             s = f'{blackboard}\n'                 
+#     elif isinstance(blackboard,str):
+#         s = f'"{blackboard}"\n'       
+#     elif isinstance(blackboard,list):
+#         s = f'{blackboard}\n'             
+#     else:
+#         s = f'{type(blackboard)}'
+#     return s
 
 
 class LogBlackboard(Generator):
@@ -1368,7 +1376,7 @@ class AlwaysOutcome(TickingState):
         """
         if outcome is None:
             outcome = name
-            name = "always_outcome"
+            name = None
         assert(outcome != TICKING)    
         super().__init__(name,[outcome,])        
         self.outcome = outcome
