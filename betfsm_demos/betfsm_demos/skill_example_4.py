@@ -36,7 +36,7 @@ from betfsm import (
     Sequence,  Repeat, Message, AlwaysOutcome,
     SUCCEED, TICKING, CANCEL, ABORT,TIMEOUT,
     get_logger,set_logger,
-    Ctrl_C_Handler,CheckCancel, get_path_value
+    Ctrl_C_Handler,CheckCancel, get_path_value,LogBlackboard    
 )
 from betfsm_crospi import load_task_list, eTaSL_StateMachine
 from betfsm_ros import BeTFSMNode, RunnerBase,ROSRunner
@@ -48,6 +48,7 @@ class MyTree(Repeat):
             Message(None,msg="start of a new loop"),
             CheckCancel("check_cancelation", lambda bb: get_path_value(bb,"/cancelation/ctrl_c"), AlwaysOutcome(SUCCEED), AlwaysOutcome(CANCEL)),
             eTaSL_StateMachine("MovingHome","MovingHome"),
+            LogBlackboard("logblackboard",[]),
             eTaSL_StateMachine("MovingDown","MovingDown"),
             eTaSL_StateMachine("MovingUp","MovingUp"),
             eTaSL_StateMachine("MovingSpline","MovingSpline")
