@@ -230,7 +230,8 @@ class RunnerBase:
                 active=active+")"
                 get_logger().info(f"ACTIVE : {active}")
                 self.previous_active = TickingState.global_publish_log.copy()
-                TickingState.global_publish_log.clear()               
+        if TickingState.global_publish_log is not None:
+            TickingState.global_publish_log.clear()               
         if self.debug:
             print("debug")
             get_logger().info(f"Timer deviation statistics : {self.stats}")
