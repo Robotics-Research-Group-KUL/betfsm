@@ -1332,7 +1332,7 @@ class Compute(Generator):
 
 
 class Adapt(GeneratorWithState):
-    def __init__(self,name:str, state:TickingState, transitions:Dict[str,str]=[])->None:
+    def __init__(self,name:str, state:TickingState, outcomeMap:Dict[str,str]=[])->None:
         """
         Adapts the outcome of a state using a transition table
 
@@ -1341,21 +1341,20 @@ class Adapt(GeneratorWithState):
                 instance name
             state:
                 state to be adapted
-            transitions:
+            outcomeMap:
                 a dictionary that maps outcomes of state to their new values.  If the outcome
                 is not present in the dictionary, it is returned unchanged.
         """        
         super().__init__(name,[],state)
-        self.outcomes = [ e for e in state.get_outcomes() if e not in transitions ] + [ v for e,v in transitions.items()]
-        self.transitions = transitions
+        self.outcomes = [ e for e in state.get_outcomes() if e not in outcomeMap ] + [ v for e,v in outcomeMap.items()]
+        self.outcomeMap = outcomeMap
         
     def co_execute(self,blackboard:Blackboard):
         while True:
             out = self.state(blackboard)
-            new_out = self.transitions.get(out)
-            if new_out is None:
-                new_out = out
+            out = self.outcomeMap.get(out,out)
             yield out
+
 class AlwaysOutcome(TickingState):
     def __init__(self,name:str,outcome:str=None) -> None:
         """
