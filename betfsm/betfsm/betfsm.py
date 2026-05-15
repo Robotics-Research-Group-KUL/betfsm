@@ -216,30 +216,47 @@ class TickingState:
 
     """
 
-    _global_log = {}
+     # registry of uid -> node map of all existing nodes that have been
+     # executed once
+    _global_registry = {}
 
 
     @classmethod
-    def get_global_log(cls):
+    def get_global_registry(cls):
         """
             A log where nodes are only added, a single publisher can periodically 
             erase all nodes from this log.  This allows to capture all notes that 
             where active during a period. This is only done when it is turned
             on by assigning an empty dict to global_publish_log
         """        
-        return cls._global_log
+        return cls._global_registry
 
+    # all the nodes that are painted active
+    # something external clears this, BeTFSM trees only add to this, also uid -> node map
     global_publish_log = None 
 
 
+    _name_sequences={}
 
-
+    def expand_name(self,name):
+        if name is None:
+            shortname = self.__class__.__name__
+            fqn       = f"{self.__class__.__module__}.{self.__class__.__name__}"
+            if fqn not in self._name_sequences:
+                seqnr = 1
+            else: 
+                seqnr = self._name_sequences[fqn]+1
+            name = f"{shortname}_{seqnr}"
+            #name = f"{shortname}"
+            self._name_sequences[fqn] = seqnr
+        return name
 
     def __init__(self,name:str, outcomes: List[str]):
         """
         parameters:
             name:
                 name of the TickingState.  This is meant to be an instance-name, not a class-name.
+                if equal to None, one will be generated from class name and sequence number.
             outcomes:
                 all possible outcomes of the state, TICKING and ABORT will be added.
         """
@@ -249,12 +266,12 @@ class TickingState:
         for outc in self.outcomes:
             if outc==CONTINUE:
                 raise ValueError(f"{name} state:  outcome {CONTINUE} is reserved for internal use!")
-        self.name = name
+        self.name = self.expand_name(name)
         self.parent = None
         self.uid = str(uuid.uuid4())
         self.status = TickingState_Status.ENTRY
         self.outcome = "" # will contain the last used outcome
-
+        TickingState._global_registry[self.uid] = self
 
     def __call__(self, blackboard: Blackboard) -> str:
         if blackboard is None:
@@ -271,12 +288,11 @@ class TickingState:
     def reset(self)->None:
         """
         External reset of the TickingState to its initial condition.
+        Subclasses should also reset all the children of themselves
         exit() is called when appropriate
         """
         if self.status == TickingState_Status.DOO:
             self.exit()
-            if self.uid in TickingState._global_log:
-                del TickingState._global_log[self.uid]
             get_logger("state").info(f"Exit {self.name} with no outcome")
         self.status = TickingState_Status.ENTRY
 
@@ -285,8 +301,7 @@ class TickingState:
         if self.status == TickingState_Status.ENTRY: 
             get_logger("state").info(f"Entering {self.name}")
             try:
-                self.outcome = self.entry(blackboard)
-                TickingState._global_log[self.uid] = self
+                self.outcome = self.entry(blackboard)             
                 if TickingState.global_publish_log is not None:
                     TickingState.global_publish_log[self.uid] = self
             except Exception as e:
@@ -316,10 +331,8 @@ class TickingState:
 
         if self.status == TickingState_Status.EXIT:
             self.outcome = self.exit()
-            if self.uid in TickingState._global_log: 
-                del TickingState._global_log[self.uid]
-            # do not remove anything from global_publish_log
-            self.status = TickingState_Status.ENTRY
+            # EA May 2026: self.status = TickingState_Status.ENTRY
+            self.reset()   # EA May 2026, does not call exit since status==EXIT
             get_logger("state").info(f"Exit {self.name} with {self.outcome}")
             return self.outcome
         get_logger("state").info(f"Exit {self.name} with {self.outcome}")

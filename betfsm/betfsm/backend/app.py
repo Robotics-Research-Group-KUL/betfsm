@@ -146,7 +146,7 @@ async def ws_stream(ws: WebSocket):
             try:
                 await asyncio.sleep(1)
                 # Send current active states periodically to keep connection alive
-                active_ids = list(TickingState.get_global_log().keys())
+                active_ids = list(TickingState.global_publish_log.keys())
                 msg = {"type": "tick", "tick": int(time.time()*1000), "active": active_ids}
                 await ws.send_text(json.dumps(msg))
             except (RuntimeError, WebSocketDisconnect):

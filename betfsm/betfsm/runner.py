@@ -223,18 +223,14 @@ class RunnerBase:
         if self.serve:
             publish_tick() # publishes all states that where active between calls to publish_tick
         if self.display_active:
-            gl=TickingState.get_global_log()
-            if gl != self.previous_active:
+            if TickingState.global_publish_log != self.previous_active:
                 active = "("
-                for k,v in TickingState.get_global_log().items():
+                for k,v in TickingState.global_publish_log.items():
                     active = active + v.name + " "
                 active=active+")"
                 get_logger().info(f"ACTIVE : {active}")
-                self.previous_active = gl.copy()
-        else:
-            active=""                
-        if TickingState.global_publish_log is not None:
-            TickingState.global_publish_log.clear()
+                self.previous_active = TickingState.global_publish_log.copy()
+                TickingState.global_publish_log.clear()               
         if self.debug:
             print("debug")
             get_logger().info(f"Timer deviation statistics : {self.stats}")
