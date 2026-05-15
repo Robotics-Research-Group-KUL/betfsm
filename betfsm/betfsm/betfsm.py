@@ -57,12 +57,12 @@ def cleanup_outcomes(outcomes:List[str])->List[str]:
 # just to allow a more systematic definition of states
 #
 
-SUCCEED  = "succeeded"    # everything is fine, continue as normal
-ABORT    = "aborted"      # involuntary stop, e.g. due to exception raised, communication failure,...
-CANCEL   = "canceled"     # voluntary stop, deliberatly provoked, e.g. reacting to cancel request of an action
-TIMEOUT  = "timeout"      # some operation times out.
-TICKING  = "ticking"      # only use this to yield and expecting to be called back the next tick
-CONTINUE = "continue"     # only used in the entry() method of TickingState, to signal tht you want to directly continue with Doo().
+SUCCEED  = "SUCCEED"    # everything is fine, continue as normal
+ABORT    = "ABORT"      # involuntary stop, e.g. due to exception raised, communication failure,...
+CANCEL   = "CANCEL"     # voluntary stop, deliberatly provoked, e.g. reacting to cancel request of an action
+TIMEOUT  = "TIMEOUT"      # some operation times out.
+TICKING  = "TICKING"      # only use this to yield and expecting to be called back the next tick
+CONTINUE = "CONTINUE"     # only used in the entry() method of TickingState, to signal tht you want to directly continue with Doo().
                           # don't use it anywhere else
 
 
