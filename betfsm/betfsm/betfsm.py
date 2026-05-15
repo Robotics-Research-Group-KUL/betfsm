@@ -771,8 +771,12 @@ class Concurrent(GeneratorWithList):
 class Fallback(GeneratorWithList):
     """    
     Implements a behaviortree-like Fallback node:
-      - success any other outcome,
-      - failure is CANCEL outcome
+      - executes a child and if it is a failure, continues with the next child. Otherwise 
+        it returns the outcome of the child that did not fail.  If all children fail
+        it returns CANCEL.
+      - **definition of failure can be overridden using callback** but by default
+        is corresponds to a CANCEL outcome. The failure callback
+        can not only depend on the outcome but also on some information in the blackboard
 
     There is a method `add_state` to add underlying nodes to the Fallback node, these are executed
     in order.  
@@ -793,7 +797,7 @@ class Fallback(GeneratorWithList):
             [*] --> Loop
             Loop --> state_1 : current_state==1
             Loop --> state_2 : current_state==2
-            Loop --> CANCEL : last state succeeded
+            Loop --> CANCEL : last state failed
             state_1 --> Loop : CANCEL
             state_2 --> Loop : CANCEL
 
@@ -812,7 +816,10 @@ class Fallback(GeneratorWithList):
             class CANCEL abortClass
     ```    
     """
-    def __init__(self, name:str, children: List[TickingState]=[]) -> None:
+    def __init__(self, name:str, 
+                 children: List[TickingState]=[],
+                 failure:Callable[[Dict,str], bool] = lambda bb,outc: outc==CANCEL
+                ) -> None:
         """
         parameters:
             name: 
@@ -820,23 +827,29 @@ class Fallback(GeneratorWithList):
             children:
                 a list of states 
                 you can use add_state(...) to add children.
+            failure:
+                This callback defines what a failure is, can use blackboard or
+                outcome. A callback with signature: `def failure(bb:Blackboard,outcome:str)->bool`   
+
+        warning:
+            The failure callback should also take into account TICKING outcomes.      
         """
         super().__init__(name,[], children)
-        self.active_state = []
+        self.failure = failure
         
-
     def co_execute(self,blackboard):
         for s in self.states:             
-            self.active_state = [s["name"]]
-            outcome = s["state"](blackboard)
+            outcome=TICKING
             while outcome==TICKING:
-                yield TICKING
                 outcome = s["state"](blackboard)
-            if outcome!=CANCEL:
-                yield outcome                            
+                if self.failure(blackboard,outcome):
+                    get_logger("state").info(f"{self.name} : failure : outcome = {outcome}")
+                    outcome=CANCEL  # force end of while loop and go to next child
+                else:
+                    if outcome!=TICKING:
+                        self.reset()    # we are done and will not be comming back.                 
+                    yield outcome    # none failure outcome or TICKING
         yield CANCEL
-        
-
 
 class ConcurrentFallback(GeneratorWithList):
     """
