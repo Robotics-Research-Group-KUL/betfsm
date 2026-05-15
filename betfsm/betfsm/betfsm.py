@@ -851,7 +851,7 @@ class ConcurrentFallback(GeneratorWithList):
     the list of underlying active states and:
 
       - If an underlying state returns CANCEL, it becomes inactive. If all states have become inactive,
-       the Sequence returns CANCEL (a "success")
+       the ConcurrentFallback returns CANCEL 
       - If an underlying active state returns another outcome besides TICKING and CANCEL, the Sequence returns
     the outcome of the first such state (a "success" ) and cancels the other running states.
       - If any of the states has returned TICKING, the sequence returns TICKING
@@ -892,7 +892,8 @@ class ConcurrentFallback(GeneratorWithList):
     ```
         
     """
-    def __init__(self, name:str, children: List[TickingState]=[]) -> None:
+    def __init__(self, name:str, 
+                 children: List[TickingState]=[] ) -> None:
         """
         parameters:
             name: 
@@ -900,6 +901,7 @@ class ConcurrentFallback(GeneratorWithList):
             children:
                 a list of states 
                 you can use add_state(...) to add children.
+
         """
         super().__init__(name,[],children)
         
