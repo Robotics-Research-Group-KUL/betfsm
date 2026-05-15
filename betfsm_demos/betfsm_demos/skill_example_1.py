@@ -44,7 +44,7 @@ class MyStateMachine(TickingStateMachine):
         movinghome   = eTaSL_StateMachine("MovingHome","MovingHome")
         movingdown   = eTaSL_StateMachine("MovingDown","MovingDown")
         movingup     = eTaSL_StateMachine("MovingUp","MovingUp")
-        movingspline = eTaSL_StateMachine("MovingUp","MovingUp")
+        movingspline = eTaSL_StateMachine("MovingSpline","MovingSpline")
 
         self.add_state(movinghome, transitions={
             SUCCEED:   movingdown
