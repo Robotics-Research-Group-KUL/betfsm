@@ -38,7 +38,7 @@ def statemachine_graphviz(sm:TickingStateMachine):
 
         {
             rank=sink;
-            annotation [shape=none, fontname="Helvetica",fontsize=12,label="ABORT and TICKING outcomes always exit the state machine"];
+            annotation [shape=none, fontname="Helvetica",fontsize=12,label="ABORT and TICKING outcomes exit the state machine unless specified explicitly"];
         }
 
         // --- Default node style ---
@@ -120,14 +120,10 @@ def statemachine_graphviz(sm:TickingStateMachine):
         result = result + graphviz_node(state)
     exit_encountered=False
 
-    print()
-    print(f"\n\nOUTCOMES OF WHOLE STATE MACHINE:\n{sm.get_outcomes()}\n\n")
-
-
     for state in sm.states_ordered:
-        print(f"OUTCOMES OF STATE {state.name}\n{state.get_outcomes()}")
         transitions = sm.states[state.name]["transitions"]
-        for outcome in state.get_outcomes():
+        outcome_set = {s for s in state.get_outcomes()}
+        for outcome in outcome_set:
             unknown_outcome = ""
             if outcome in transitions:
                 target = transitions[outcome]
@@ -145,8 +141,7 @@ def statemachine_graphviz(sm:TickingStateMachine):
                     if not exit_encountered:
                         result = result + graphviz_exit;
                         exit_encountered=True
-                    result = result + graphviz_arrow_between_nodes(state.uid,"exit",f"{outcome}")                
-                    
+                    result = result + graphviz_arrow_between_nodes(state.uid,"exit",f"{outcome}")                                    
             elif target in sm.states: 
                 # transition from state to target state
                 result = result + graphviz_arrow_between_nodes(state.uid,sm.states[target]["state"].uid,f"{outcome}")
