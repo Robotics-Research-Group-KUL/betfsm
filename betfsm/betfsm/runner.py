@@ -31,9 +31,10 @@ from betfsm import (
     TickingState,Blackboard,TICKING,get_logger, set_loggers_from_specification_string, 
     get_logger_categories,LogPrinter
 )
+from .statemachine_visitor import StateMachineVisitor
+from .jsonvisitor import JsonVisitor
+from .graphviz_visitor import to_graphviz_dotfile
 from betfsm.backend.app import app,publish_tick,set_webserver_param
-from betfsm.graphviz_visitor import to_graphviz_dotfile
-from betfsm.jsonvisitor import JsonVisitor
 
 
 class TimerStats:

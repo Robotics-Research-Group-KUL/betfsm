@@ -27,7 +27,7 @@ from betfsm.betfsm import TickingState, GeneratorWithList, GeneratorWithState,Ti
 
 def parse_filter(filter_str: str) -> List[re.Pattern]:
     """
-    Parse a comma-separated string of regex patterns.
+    Parse a colon-separated string of regex patterns.
     Example: "Debug.*,InternalNode,Temp.*"
     """
     if not filter_str:
