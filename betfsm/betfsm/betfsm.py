@@ -20,6 +20,7 @@
 
 from typing import Dict, List, Union, Callable,Type, TypeAlias
 from enum import Enum
+import copy
 from threading import Lock
 from abc import ABC, abstractmethod
 import traceback
@@ -71,9 +72,22 @@ TickingState_Status = Enum("TickingState_Status",["ENTRY","DOO","EXIT"])
 
 
 
-def get_path_value(blackboard, path:str, default=None, delimiter:str='/') -> str:
+def get_path_value(blackboard:Dict, path:str, default=None, delimiter:str='/') -> str:
     """
-    gets a value in the blackboard at the given path
+    Gets a value in the blackboard at the given path,.
+
+    Parameters:
+        blackboard:
+            Blackboard Dict
+        path:
+            path to get the value of
+        default:
+            value to use if not found, by default = None
+        delimiter:
+            for the path, default='/'
+    Returns:
+        value:
+            the value at the given location
     """
     keys = [k for k in path.split(delimiter) if k]
     current = blackboard
@@ -86,7 +100,22 @@ def get_path_value(blackboard, path:str, default=None, delimiter:str='/') -> str
 
 def set_path_value(blackboard, path, value, delimiter='/'):
     """
-    sets a value in the blackboard at the given path
+    Sets a value in the blackboard at the given pat.
+
+    Parameters:
+        blackboard:
+            Blackboard Dict
+        path:
+            path to get the value of
+        value:
+            value to fill in.
+        delimiter:
+            for the path, default='/'
+
+    Warning:
+        if value is a Dict, only a shallow copy is made! So, if you later
+        change an element of value, it will also change the Blackboard.
+        you can use copy.deepcopy(subtree) to make a deep copy to avoid this.
     """
     keys = [k for k in path.split(delimiter) if k]   
     current = blackboard
@@ -96,6 +125,36 @@ def set_path_value(blackboard, path, value, delimiter='/'):
         current = current[key]
     if keys:
         current[keys[-1]] = value
+
+def get_path_location(blackboard, path, create_if_needed = True, delimiter='/'):
+    """
+    gets a location in the blackboard at the given path
+
+    Parameters:
+        blackboard:
+            Blackboard Dict
+        path:
+            path to get the value of
+        create_if_needed:
+            path will be created if needed, overwriting
+            any values if needed.
+        delimiter:
+            for the path, default='/'
+    """
+    keys = [k for k in path.split(delimiter) if k]   
+    print(keys)
+    current = blackboard
+    for i, key in enumerate(keys[:-1]):
+        if key not in current or not isinstance(current[key], dict):
+            current[key] = {}
+        current = current[key]
+    if keys:
+        if key[-1] not in current  or not isinstance(current[key], dict):
+            current[keys[-1]] = {}
+        return current[keys[-1]]
+    else:
+        return blackboard
+
 
 
 
@@ -270,6 +329,8 @@ class TickingState:
         self.name = self.expand_name(name)
         self.parent = None
         self.uid = str(uuid.uuid4())
+        self.typename = self.__class__.__name__
+        self.fqn      = f"{self.__class__.__module__}.{self.__class__.__name__}"
         self.status = TickingState_Status.ENTRY
         self.outcome = "" # will contain the last used outcome
         TickingState._global_registry[self.uid] = self
@@ -1609,9 +1670,7 @@ class TickingStateMachine(TickingState):
 
     - will exit when TICKING outcome is given by one of the substates, but then if it is called again,
       it will have remembered the state that had the TICKING outcome and start from that state.
-      - if returning with any other outcome, will start next time from the start state.
-    - should be drop in replacement of Yasmin StateMachine, (but not the other way around, StateMachine can't
-       handle TickingStates
+    - if returning with any other outcome, will start next time from the start state.
         
     """ 
 
@@ -1627,17 +1686,11 @@ class TickingStateMachine(TickingState):
                 the allowed outcomes of the state machine, any outcome not specified in transitions
                 will be an outcome of the state machine and should be contained in outcomes (otherwise exception+abort)         
         """
-
-            #         transitioncb: 
-            #     callback function called at each transition. 
-            #     Signature transitioncb(source_state:str, transtion:str, target_state:str).
-            #     See also 
-            # statecb: callback function called before entering each state. 
-            #         Signature statecb(name)
         outcomes.append(TICKING)
         super().__init__(name,outcomes)
 
         self.states = {}
+        self.states_ordered = [] # to keep track of the order of declaration, for visualization.
         self.start_state = None
         self.current_state = None
         # self.statecb = statecb
@@ -1660,6 +1713,11 @@ class TickingStateMachine(TickingState):
                 a dictionary that maps outcomes of the state to names of a state in this state machine.
                 As a shortcut/alternative, this can also be a dictionary that maps outcomes to TickingState 
                 (in that case TickingState.name is used)
+
+        Note:
+          - you can specify a state using its object or using its name.
+          - a BeTFSM object can only be added as a child once.  BeTFSM hierarchy is required to be a tree,
+            not a more general graph.                
         """
         if not isinstance(state,TickingState):
             raise Exception("TickingStateMachine.add_state() only accepts states that are subclasses of TickingState")
@@ -1678,6 +1736,7 @@ class TickingStateMachine(TickingState):
             "state": state,
             "transitions": transitions
         }
+        self.states_ordered.append(state)
         if state.parent is not None:
             raise ValueError(f"{state.name} already belongs to {state.parent.name}")
         state.parent = self

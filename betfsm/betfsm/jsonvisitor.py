@@ -23,9 +23,9 @@ import re
 from typing import List
 
 import re
-from betfsm.betfsm import TickingState, GeneratorWithList, GeneratorWithState
+from betfsm.betfsm import TickingState, GeneratorWithList, GeneratorWithState,TickingStateMachine
 
-def parse_name_filter(filter_str: str) -> List[re.Pattern]:
+def parse_filter(filter_str: str) -> List[re.Pattern]:
     """
     Parse a comma-separated string of regex patterns.
     Example: "Debug.*,InternalNode,Temp.*"
@@ -33,55 +33,61 @@ def parse_name_filter(filter_str: str) -> List[re.Pattern]:
     if not filter_str:
         return []
 
-    parts = [p.strip() for p in filter_str.split(",") if p.strip()]
-    return [re.compile(p) for p in parts]
+    parts = [p.strip() for p in filter_str.split(":") if p.strip()]
+    return parts
 
+
+
+# return [re.compile(p) for p in parts]
+# def _compile_name_filters(self, filters):
+#     if not filters:
+#         return []
+#     compiled = []
+#     for f in filters:
+#         if isinstance(f, str):
+#             compiled.append(re.compile(f))
+#         else:
+#             compiled.append(f)  # assume already a compiled regex
+#     return compiled
+# Check name regex filters
+# for pattern in self.name_filter:
+#     if pattern.search(state.name):
+#         return True
 
 
 class JsonVisitor:
     def __init__(self, name_filter=None, type_filter=None):
         """
-        name_filter: list of strings or regex patterns (compiled or raw)
-        type_filter: list of classes to stop descending into
+        name_filter: string with :-separated list of names
+        type_filter: string with :-separated list of types
         """
         self.nodes = {}
         self.root_id = None
 
         # Normalize filters
-        self.name_filter = self._compile_name_filters(name_filter)
-        self.type_filter = type_filter if type_filter else [] 
+        self.name_filter = parse_filter(name_filter)
+        self.type_filter =  parse_filter(type_filter)
 
-    def _compile_name_filters(self, filters):
-        if not filters:
-            return []
-        compiled = []
-        for f in filters:
-            if isinstance(f, str):
-                compiled.append(re.compile(f))
-            else:
-                compiled.append(f)  # assume already a compiled regex
-        return compiled
 
-    def _should_skip_descend(self, state):
+
+    def should_descend(self, state):
         """Return True if we should NOT descend into this node."""
         # Check type filter
         for ftype in self.type_filter:
-            if isinstance(state, ftype):
-                return True
-
-        # Check name regex filters
-        for pattern in self.name_filter:
-            if pattern.search(state.name):
-                return True
-
-        return False
+            if state.__class__.__name__ == ftype:
+                return False
+        for fname in self.name_filter:
+            if state.name == fname:
+                return False            
+        return True
 
     def pre(self, state) -> bool:
         # Build node info
         node = {
             "id": state.uid,
             "name": state.name,
-            "type": type(state).__name__,
+            "type": state.typename,
+            "fqn" : state.fqn,
             "status": state.status.name,
             "available_outcomes": list(state.get_outcomes()),
             "children": [],
@@ -89,12 +95,7 @@ class JsonVisitor:
             "collapsible": isinstance(state, GeneratorWithList)
         }
 
-        # Children extraction
-        if isinstance(state, GeneratorWithList):
-            node["children"] = [s["state"].uid for s in state.states]
 
-        if isinstance(state, GeneratorWithState):
-            node["children"] = [state.state.uid]
 
         self.nodes[state.uid] = node
 
@@ -102,8 +103,18 @@ class JsonVisitor:
             self.root_id = state.uid
 
         # Return False to stop descending
-        return not self._should_skip_descend(state)
-
+        if self.should_descend(state):
+            # Children extraction
+            if isinstance(state, GeneratorWithList):
+                node["children"] = [s["state"].uid for s in state.states]
+            if isinstance(state,TickingStateMachine):
+                node["children"] = [s.uid for s in state.states_ordered]
+            if isinstance(state, GeneratorWithState):
+                node["children"] = [state.state.uid]
+            return True
+        else:
+            return False
+        
     def post(self, state):
         pass
 

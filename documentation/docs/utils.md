@@ -73,3 +73,21 @@ This sets the ROS2 logger for all of the above categories.
       show_root_heading: true  
 
       
+::: betfsm.get_path_value
+    options:
+      heading_level: 3
+      show_source: false
+      show_root_heading: true 
+
+::: betfsm.set_path_value
+    options:
+      heading_level: 3
+      show_source: false
+      show_root_heading: true 
+
+
+::: betfsm.get_path_location
+    options:
+      heading_level: 3
+      show_source: false
+      show_root_heading: true 

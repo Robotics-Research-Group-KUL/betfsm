@@ -34,7 +34,7 @@ from betfsm_ros import (
 
 from betfsm import (
     SUCCEED,CANCEL,TIMEOUT, TICKING,ABORT,
-    add_logger_category, get_logger,
+    add_logger_category, get_logger,get_path_value,get_path_location,
     Blackboard, TickingState,Message,ConcurrentFallback, TickingStateMachine
 )
 
@@ -250,7 +250,7 @@ class eTaSLOutput(TickingState):
             name:str,
             topic: str,
             qos:QoSProfile=30,
-            bb_location: List = ["output_param"],
+            bb_location: str = "/output_param",
             node: Node = None,
         ) -> None:
         """
@@ -266,7 +266,8 @@ class eTaSLOutput(TickingState):
             qos:
                 specification of the topic quality of service profile (QOSProfile)
             bb_location:
-                list of strings indicating location in the blackboard.
+                a location in the blackboard, written as a path, e.g. '/output_param'.
+                The location has to exist when eTaSLOutput is first executed as a BeTFSM node
             node:
                 ROS2 node where the subscription will run.  if None, BeTFSMNode.get_instance() is used.
 
@@ -281,16 +282,7 @@ class eTaSLOutput(TickingState):
         self.topic = topic
         self.qos = qos
         self.bb_location = bb_location
-
-    def get_location(self,blackboard):
-        bb = blackboard
-        for key in self.bb_location:
-            if (key in bb) and isinstance(bb[key],Dict):
-                bb = bb[key]
-            else:
-                bb[key] = {}
-                bb      = bb[key]
-        return bb
+        self.bb_loc = None
 
     def cb_msg(self,msg) -> None:
         # if reduce(and_,msg.is_declared):
@@ -300,14 +292,14 @@ class eTaSLOutput(TickingState):
 
     def entry(self,blackboard:Blackboard):
         get_logger("crospi").info(f"eTaSLOutput: subscribing to topic {self.topic}")
+        self.bb_loc =  get_path_location(blackboard,self.bb_location)
         self.msgbuffer=None
         self.subscription = self.node.create_subscription(Output,self.topic,self.cb_msg,self.qos)
         return TICKING
         
     def doo(self,blackboard:Blackboard):
         if self.msgbuffer is not None:
-            bb = self.get_location(blackboard)
-            bb.update( [ e for e in zip(self.msgbuffer.names,self.msgbuffer.data) ] )
+            self.bb_loc.update( [ e for e in zip(self.msgbuffer.names,self.msgbuffer.data) ] )
         return TICKING
 
     def exit(self) -> str:
@@ -323,7 +315,7 @@ class eTaSLEvent(TickingState):
     def __init__(
             self,
             name: str,
-            topic: str,
+            topic: str = "/my_topic",
             qos:QoSProfile=10,
             mapping:Dict[str,tuple[int,str]]={"e_finished@crospi_node":(1,SUCCEED)},
             node: Node = None,
@@ -492,7 +484,7 @@ class eTaSL_StateMachine(TickingStateMachine):
         self.add_state(
             ConcurrentFallback("EXECUTING",[
                 eTaSLEvent(name="check_event",topic=event_topic, mapping=mapping,node=node),
-                eTaSLOutput("output", topic=output_topic, bb_location=["output_param",name], node=node)
+                eTaSLOutput("output", topic=output_topic, bb_location=f"/output_param/{name}", node=node)
             ]),
             transitions=transition_map_executing
         )

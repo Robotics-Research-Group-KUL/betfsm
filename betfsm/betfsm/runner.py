@@ -33,7 +33,7 @@ from betfsm import (
 )
 from betfsm.backend.app import app,publish_tick,set_webserver_param
 from betfsm.graphviz_visitor import to_graphviz_dotfile
-from betfsm.jsonvisitor import JsonVisitor, parse_name_filter
+from betfsm.jsonvisitor import JsonVisitor
 
 
 class TimerStats:
@@ -82,7 +82,8 @@ class RunnerBase:
     # __init__() ensures that parsed arguments are available at self.args
     #
     def __init__(self, statemachine: TickingState, blackboard: Blackboard, frequency: float=100.0, publish_frequency : float=10,debug: bool = False, 
-                 display_active:bool =False, betfsm_log:str=None, name_filter:str="", allow_generate_dot:bool=True,allow_generate_json:bool=True,serve:bool=True,
+                 display_active:bool =False, betfsm_log:str=None, name_filter:str="", type_filter:str="",  allow_generate_dot:bool=True,
+                 allow_generate_json:bool=True,serve:bool=True,
                  host:str="0.0.0.0", port:int=8000, workers:int=1, log_level:str="info"):
         """
         Initializes the BeTFSMRunner.  This BeTFSMRunner has no other dependencies and
@@ -110,6 +111,9 @@ class RunnerBase:
             name_filter:
                 comma-separated list of names of nodes that are not descended into in
                 the graphical user interface
+            type_filter:
+                comma-separated list of typrs of nodes that are not descended into in
+                the graphical user interface                
             allow_generate_dot:
                 adds the generate_dot command-line parameter. [default: True]
             allow_generate_json:
@@ -148,7 +152,8 @@ class RunnerBase:
         group_app.add_argument("--debug", action=argparse.BooleanOptionalAction, default=debug,help=f"Log statistics of the timing of each tick at publish_frequency [default: {debug}]")
         group_app.add_argument("--display_active",action=argparse.BooleanOptionalAction,default=display_active, help=f"Log the active nodes at rate equal to publish_frequency, only logs changes to activity[default: {display_active}] ")
         group_app.add_argument("--betfsm_log",type=str,default=betfsm_log, help=f"BeTFSM Log specification string, i.e. a list of categories separated with ':'. Known categories are {get_logger_categories()} but there can be user-defined categories   [default: '{betfsm_log}'] ")
-        group_app.add_argument("--name-filter",type=str,default=name_filter, help=f"specifies a comma-separated list of naes (can be regular expressions) to filter out.[default: '{name_filter}'")
+        group_app.add_argument("--name-filter",type=str,default=name_filter, help=f"specifies a comma-separated list of names (can be regular expressions) to filter out.[default: '{name_filter}'")
+        group_app.add_argument("--type-filter",type=str,default=name_filter, help=f"specifies a comma-separated list of types not to descent into.[default: '{type_filter}'")
         if allow_generate_dot:
             group_app.add_argument("--generate_dot",type=str, default="", help="generate a graphviz .dot file from the state machine and store in the specified file (and quit the program without running)")
         if allow_generate_json:
@@ -198,8 +203,8 @@ class RunnerBase:
             "log_level": args.log_level,
         }
         if self.serve:
-            self.name_filter = parse_name_filter(args.name_filter)
-            self.type_filter = [] 
+            self.name_filter = args.name_filter
+            self.type_filter = args.type_filter
             set_webserver_param(statemachine,self.name_filter,self.type_filter)  # set parameters for web-app
             threading.Thread(
                 target=lambda: uvicorn.run(app, **uvicorn_kwargs),
@@ -258,10 +263,10 @@ class Runner(RunnerBase):
     This is multi-threaded, only access member variables using the methods designed for this. (i.e. set_outcome, get_outcome)
     """    
     def __init__(self, statemachine: TickingState, blackboard: Blackboard, frequency: float=100.0, publish_frequency=5,debug: bool = False, 
-                 display_active=False, betfsm_log=None,logger=LogPrinter(),name_filter="", allow_generate_dot=True,allow_generate_json=True,serve=True,
+                 display_active=False, betfsm_log=None,logger=LogPrinter(),name_filter:str="",type_filter:str="", allow_generate_dot=True,allow_generate_json=True,serve=True,
                  host="0.0.0.0", port=8000, workers=1, log_level="info"):
    
-        super().__init__(statemachine, blackboard, frequency, publish_frequency, debug, display_active, betfsm_log,name_filter,allow_generate_dot,allow_generate_json,serve,
+        super().__init__(statemachine, blackboard, frequency, publish_frequency, debug, display_active, betfsm_log,name_filter,type_filter,allow_generate_dot,allow_generate_json,serve,
                  host, port, workers, log_level)
         args = self.args
 
