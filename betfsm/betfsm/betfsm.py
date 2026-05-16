@@ -1693,8 +1693,26 @@ class TickingStateMachine(TickingState):
         self.states_ordered = [] # to keep track of the order of declaration, for visualization.
         self.start_state = None
         self.current_state = None
-        # self.statecb = statecb
-        # self.transitioncb = transitioncb
+        self.default_transitions = {}
+        
+    def set_default_transitions(self,transitions: Dict[str, str|TickingState] = None):
+        """ 
+        Adds default transitions to each state added afterwards. The transitions
+        specified in `add_state` add to or overwrite these default transitions.
+
+        Parameters:
+            transitions:
+                a dictionary that maps outcomes of the state to other outcomes or another state. See `add_state`
+
+        """
+        for k,v in transitions.items():
+                    if not isinstance(k,str):
+                        raise Exception("TickingStateMachine.add_state() the key of the transitions dictionary should be a string")
+                    if isinstance(v,TickingState):
+                        transitions[k] = v.name 
+                    elif not isinstance(v,str):
+                        raise Exception("TickingStateMachine.add_state() the value of the transitions dictionary should be a string or a derived class from TickingState")
+        self.default_transitions = transitions
         
     def add_state(
         self,
@@ -1710,12 +1728,19 @@ class TickingStateMachine(TickingState):
             state: 
                 state to be added, it will be added under its name (i.e. state.name, as defined in TickingState)
             transitions:
-                a dictionary that maps outcomes of the state to names of a state in this state machine.
-                As a shortcut/alternative, this can also be a dictionary that maps outcomes to TickingState 
+                A Python Dict that maps outcome of the state to a target (see note below).
+                - a dictionary that maps outcomes of the state to names of a state in this state machine.
+                - As a shortcut/alternative, this can also be a dictionary that maps outcomes to TickingState 
                 (in that case TickingState.name is used)
 
         Note:
-          - you can specify a state using its object or using its name.
+          - The keys of the transitions Dict are outcomes. The values are targets.
+          - A target can be a **state object** or the  **name of a state**.
+          - A target can also be an **outcome** that is listed in the outcomes of the state machine. In that case the 
+            state machine will **exit** with that outcome.
+          - A target can be another outcome that the statemachine will try to resolve.  This is mostly useful for
+            default transitions (see `set_default_transitions`).  This redirection can even redirect 
+            TICKING (for advanced use).
           - a BeTFSM object can only be added as a child once.  BeTFSM hierarchy is required to be a tree,
             not a more general graph.                
         """
@@ -1724,17 +1749,20 @@ class TickingStateMachine(TickingState):
         if transitions is None:
             transitions = {}
         if not isinstance( transitions , Dict):
-            raise ValueError("transitions should be a dictionary")            
+            raise ValueError("transitions should be a dictionary")     
+        transitions_unified = self.default_transitions.copy()  # should be shallow copy  but not reference     
         for k,v in transitions.items():
             if not isinstance(k,str):
                 raise Exception("TickingStateMachine.add_state() the key of the transitions dictionary should be a string")
             if isinstance(v,TickingState):
-                transitions[k] = v.name 
-            elif not isinstance(v,str):
+                transitions_unified[k] = v.name 
+            elif not isinstance(v,str): 
                 raise Exception("TickingStateMachine.add_state() the value of the transitions dictionary should be a string or a derived class from TickingState")
+            else:
+                transitions_unified[k] = v  # add or overwrite the default transitions
         self.states[state.name] = {
             "state": state,
-            "transitions": transitions
+            "transitions": transitions_unified
         }
         self.states_ordered.append(state)
         if state.parent is not None:
@@ -1790,12 +1818,12 @@ class TickingStateMachine(TickingState):
         while True:
             state = self.states[self.current_state]
             name = self.current_state
-            # self.statecb(self,blackboard,name)   # EA: removed may 2026
             outcome = state["state"](blackboard)         
-            # outcome = self.transitioncb(self,blackboard,self.current_state, outcome)  # EA: removed May 2026
             # translate outcome using transitions
             if outcome in state["transitions"]:              
                 outcome = state["transitions"][outcome]
+            if outcome in state["transitions"]:           # in case outcome points to a reference of another outcome      
+                outcome = state["transitions"][outcome]                
             if outcome == TICKING:                # outcome is TICKING and exits state machine but keeps current state                                                 
                 return outcome
             elif outcome in self.get_outcomes():  # outcome is an outcome of the sm, reset current state
@@ -1803,9 +1831,11 @@ class TickingStateMachine(TickingState):
             elif outcome in self.states:          # outcome is a state
                 self.current_state = outcome
             else:                                 # outcome is not in the sm
-                raise Exception(f"""State {name} has outcome ({outcome}) without transition specified\n
-                                    transitions {state['transitions']} \n
-                                    outcomes state machine {self.get_outcomes()} """)
+                raise Exception(f"""State {name} has outcome ({outcome}) without transition specified
+                                    transitions defined for state {state['transitions']} 
+                                    outcomes of state machine {self.get_outcomes()} 
+                                    states of state machine   {[s.name for s in self.states_ordered]}
+                                 """)
     
     def exit(self) -> str:
         self.current_state = self.start_state
