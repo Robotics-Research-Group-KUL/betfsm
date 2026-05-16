@@ -409,20 +409,20 @@ function scheduleReconnect() {
   }, timeoutWebServer);
 }
 
-document.getElementById("play").onclick = () => {
-    playing = !playing;
-    if (playing) stepReplay();
-};
+// document.getElementById("play").onclick = () => {
+//     playing = !playing;
+//     if (playing) stepReplay();
+// };
 
-function stepReplay() {
-    if (!playing) return;
-    const frame = replayFrames[replayIndex];
-    activeIds.clear();
-    frame.active.forEach(id => activeIds.add(id));
-    applyActivity();
-    replayIndex = (replayIndex + 1) % replayFrames.length;
-    setTimeout(stepReplay, 33);
-}
+// function stepReplay() {
+//     if (!playing) return;
+//     const frame = replayFrames[replayIndex];
+//     activeIds.clear();
+//     frame.active.forEach(id => activeIds.add(id));
+//     applyActivity();
+//     replayIndex = (replayIndex + 1) % replayFrames.length;
+//     setTimeout(stepReplay, 33);
+// }
 
 let autoExpand = false;
 document.getElementById("autoExpand").onchange = ev => {
