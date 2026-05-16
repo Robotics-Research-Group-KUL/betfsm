@@ -451,33 +451,27 @@ class eTaSL_StateMachine(TickingStateMachine):
                     ABORT: "PARAMETER_CONFIG"}) 
         self.add_state(SetTaskParameters( "PARAMETER_CONFIG",task_name, srv_name, cb, timeout, node ),
                        transitions={
-                           SUCCEED: "ROBOT_SPECIFICATION",
-                           ABORT: ABORT
-                       })
+                           SUCCEED: "ROBOT_SPECIFICATION" })
         self.add_state(ReadRobotSpecification("ROBOT_SPECIFICATION",task_name,srv_name,timeout,node),
                 transitions={
-                    SUCCEED: "TASK_SPECIFICATION",
-                    ABORT: ABORT})
+                    SUCCEED: "TASK_SPECIFICATION"})
 
         self.add_state(ReadTaskSpecification("TASK_SPECIFICATION",task_name,srv_name,timeout,node),
                 transitions={
-                    SUCCEED: "CONFIG_ETASL",
-                    ABORT: ABORT})
+                    SUCCEED: "CONFIG_ETASL"})
 
         self.add_state(LifeCycle("CONFIG_ETASL",srv_name,Transition.CONFIGURE,timeout,node),
                 transitions={
-                    SUCCEED: "ACTIVATE_ETASL",
-                    ABORT: ABORT})
+                    SUCCEED: "ACTIVATE_ETASL"})
 
         self.add_state(LifeCycle("ACTIVATE_ETASL",srv_name,Transition.ACTIVATE,timeout,node),
                 transitions={
-                    SUCCEED: "EXECUTING",
-                    ABORT: ABORT})
+                    SUCCEED: "EXECUTING"})
 
         # executes until one returns SUCCEED,  eTaSLOutput only returns TICKING
         mapping={"e_finished@{}".format(srv_name[1:]):(1,SUCCEED)}
         if not deactivate_last:
-            transition_map_executing = {SUCCEED:  SUCCEED }
+            transition_map_executing = {}
         else:
             transition_map_executing = {SUCCEED: "DEACTIVATE_ETASL_LAST"}
             
