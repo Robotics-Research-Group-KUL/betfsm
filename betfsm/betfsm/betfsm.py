@@ -24,9 +24,8 @@ import copy
 from threading import Lock
 from abc import ABC, abstractmethod
 import traceback
-
-import time
 import uuid
+import time 
 import json
 from .logger import get_logger,add_logger_category,get_logger_categories
 
@@ -1686,7 +1685,6 @@ class TickingStateMachine(TickingState):
                 the allowed outcomes of the state machine, any outcome not specified in transitions
                 will be an outcome of the state machine and should be contained in outcomes (otherwise exception+abort)         
         """
-        outcomes.append(TICKING)
         super().__init__(name,outcomes)
 
         self.states = {}
@@ -1695,7 +1693,7 @@ class TickingStateMachine(TickingState):
         self.current_state = None
         self.default_transitions = {}
         
-    def set_default_transitions(self,transitions: Dict[str, str|TickingState] = None):
+    def set_default_transitions(self,transitions: Dict[str, str|TickingState] = {}):
         """ 
         Adds default transitions to each state added afterwards. The transitions
         specified in `add_state` add to or overwrite these default transitions.
@@ -1713,6 +1711,7 @@ class TickingStateMachine(TickingState):
                     elif not isinstance(v,str):
                         raise Exception("TickingStateMachine.add_state() the value of the transitions dictionary should be a string or a derived class from TickingState")
         self.default_transitions = transitions
+
         
     def add_state(
         self,
@@ -1746,10 +1745,12 @@ class TickingStateMachine(TickingState):
         """
         if not isinstance(state,TickingState):
             raise Exception("TickingStateMachine.add_state() only accepts states that are subclasses of TickingState")
+        if state.parent is not None:
+            raise ValueError(f"{state.name} already belongs to {state.parent.name}")                        
         if transitions is None:
             transitions = {}
         if not isinstance( transitions , Dict):
-            raise ValueError("transitions should be a dictionary")     
+            raise ValueError("transitions should be a dictionary")             
         transitions_unified = self.default_transitions.copy()  # should be shallow copy  but not reference     
         for k,v in transitions.items():
             if not isinstance(k,str):
@@ -1763,11 +1764,9 @@ class TickingStateMachine(TickingState):
         self.states[state.name] = {
             "state": state,
             "transitions": transitions_unified
-        }
-        self.states_ordered.append(state)
-        if state.parent is not None:
-            raise ValueError(f"{state.name} already belongs to {state.parent.name}")
+        }                
         state.parent = self
+        self.states_ordered.append(state)        
         if self.start_state is None:
             self.start_state = state.name
             self.current_state = state.name
