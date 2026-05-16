@@ -45,6 +45,7 @@ class ROSRunner(RunnerBase):
                  display_active:bool=False, betfsm_log:str=None,name_filter:str="", type_filter:str="",
                  allow_generate_dot:bool=True, allow_generate_sm_dot:bool=True,allow_generate_json:bool=True,serve:bool=True,
                  host:str="0.0.0.0", port:str=8000, workers:int=1, log_level:str="info"):
+   
         super().__init__(statemachine, blackboard, frequency, publish_frequency, debug, display_active, betfsm_log,
                          name_filter,type_filter,allow_generate_dot,allow_generate_sm_dot,allow_generate_json,serve,
                          host, port, workers, log_level)
