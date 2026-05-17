@@ -52,6 +52,7 @@ nav:
         - "CheckCancel": "checkcancel.md"
         - "Ctrl C Handler" : "ctrl_c_handler.md"
         - "AlwaysOutcome" : "alwaysoutcome.md"
+        - "Event": "event.md"
       - "Utilities" : 'utils.md'
       - "BeTFSM ROS2":  
         - "ServiceClient" : 'serviceclient.md'
@@ -60,6 +61,7 @@ nav:
         - "TimedRepeat for ROS2" : timedrepeat_ros.md
         - "TimedWait for ROS2" : 'timedwait_ros2.md'
         - "Timeout" : "timeout.md"
+        - "EventQueueSubscriber" : "eventqueuesubscriber.md"
       - "BeTFSM cROSpi":
         - "load_task_list" : "load_task_list.md"
         - "SetTaskParameters" : "settaskparameters.md"
@@ -68,6 +70,7 @@ nav:
         - "eTaSLOutput" : "etasloutput.md"
         - "eTaSLEvent"  : "etaslevent.md"
         - "eTaSL_StateMachine" : "etasl_statemachine.md"
+        - "crospi_polling_func" : "crospi_polling_func.md"
 #    - "BeTFSM eTaSL": 'etaslstatemachine.md'
 ##    - "Action server": "actionserver.md"
     

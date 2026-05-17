@@ -1,5 +1,6 @@
 
-::: betfsm.ConcurrentFallback
+
+::: betfsm_crospi.crospi_polling_func
     options:
       show_source: false
       show_root_heading: true 

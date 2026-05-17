@@ -26,20 +26,23 @@ from typing import Dict, List, Union, Callable,Type, TypeAlias
 
 # from betfsm_ros.betfsm_ros import *
 
-from betfsm_ros import (
-    Node,Duration,
-    BeTFSMNode,
-    ServiceClient, LifeCycle, Transition
-)
-
 from betfsm import (
     SUCCEED,CANCEL,TIMEOUT, TICKING,ABORT,
-    add_logger_category, get_logger,get_path_value,get_path_location,
+    add_logger_category, get_logger,get_path_value,get_path_location,set_path_value,
+    GeneratorWithList,
     Blackboard, TickingState,Message,ConcurrentFallback, TickingStateMachine
 )
 
+from betfsm_ros import (
+    Node,Duration,
+    BeTFSMNode,
+    ServiceClient, LifeCycle, Transition, EventQueueSubscriber
+)
+
+
 from crospi_interfaces.srv import TaskSpecificationFile
 from crospi_interfaces.srv import TaskSpecificationString
+
 # Output:
 #  - msg.names
 #  - msg.data
@@ -54,16 +57,19 @@ from crospi_py import etasl_params
 import json
 from jsonschema import validate, exceptions
 
+
+
+from rclpy.node import (
+    Node
+)
+from rclpy.qos import (
+    QoSProfile,
+    DurabilityPolicy,
+    ReliabilityPolicy,
+    QoSHistoryPolicy
+)
     
 
-
-        # qos_profile = QoSProfile(
-        #     history=QoSHistoryPolicy.KEEP_LAST, #Keeps the last msgs received in case buffer is fulll
-        #     depth=msg_queue, #Buffer size
-        #     reliability=QoSReliabilityPolicy.RELIABLE, #Uses TCP for relia
-        # bility instead of UDP
-        #     durability=QoSDurabilityPolicy.VOLATILE #Volatile, may not use first msgs if subscribed late (will not happen in this context)
-        # )  
 
 add_logger_category("crospi")
 
@@ -307,8 +313,30 @@ class eTaSLOutput(TickingState):
         return self.outcome
 
 
+def crospi_polling_func(
+        node:Node=None,
+        topic:str="crospi_node/my_output",
+        queue_size:int=10, 
+        max_age:float=0.05
+    ) -> Callable[[Dict, List[str]],str|None]:       
+    """ 
+    Returns a callback function to read crospi events suitable for use withy betfsm.Event.
+    Uses betfsm_ros.EventQueueSubscriber for the qeueu.  The default
+    parameters are suitable for crospi.
+    """     
+    if node==None:
+        node = BeTFSMNode.get_instance()
+    sub = EventQueueSubscriber.get_instance(node,topic,queue_size)
+    def polling(bb, events):
+        return sub.pol_recent_for(events,max_age)
+    return polling
+
+
+
 class eTaSLEvent(TickingState):
     """
+    to be OBSOLETE
+
     At every tick processes the latest message from the topic.
     Node will CANCEL when it is ticked and no topic has been received.
     """
