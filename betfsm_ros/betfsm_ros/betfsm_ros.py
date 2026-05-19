@@ -284,7 +284,7 @@ class ServiceClient(Generator):
 
     """
     def __init__(self, name:str, srv_name:str, srv_type: Type, outcomes:List[str], timeout:Duration = Duration(seconds=1.0), 
-                 node:Node = None) -> None:
+                 node:Node = None, always_succeed=False) -> None:
         """
         Creates a TickingState that calls a service and generates an outcome when the service returns back.
         While waiting, it continues to tick.
@@ -303,6 +303,8 @@ class ServiceClient(Generator):
                 (special value: Duration(): ad infinitum)
             node:
                 node, if None, BeTFSMNode.get_instance() will be used.
+            always_succeed:
+                Do your best, but always return SUCCEED or TICKING
         """
         if not( isinstance(name,str) and isinstance(srv_name,str) and isinstance(outcomes,list) ):
             raise ValueError("Error in argument types of constructor")
@@ -310,7 +312,8 @@ class ServiceClient(Generator):
             self.node = BeTFSMNode.get_instance()
         else:
             self.node = node
-        outcomes.append(TIMEOUT) #TickingState will add TICKING
+        if not always_succeed:
+            outcomes.append(TIMEOUT) #TickingState will add TICKING
         outcomes.append(SUCCEED) #TickingState will add TICKING
         super().__init__(name,outcomes)        
         self.clock     = self.node.get_clock()  
@@ -325,6 +328,7 @@ class ServiceClient(Generator):
 
         self.request   = srv_type.Request()
         self.timeout   = timeout
+        self.always_succeed = always_succeed
 
     def co_execute(self,blackboard:Blackboard):
         get_logger("service").info(f"calling ROS2 service {self.srv_name} ({self.srv_type.__name__})")
@@ -333,7 +337,10 @@ class ServiceClient(Generator):
             if self.timeout!=Duration():
                 if self.clock.now() - starttime > self.timeout:
                     get_logger().error(f"could not find service {self.srv_type.__name__} from {self.srv_name} in time")
-                    yield TIMEOUT
+                    if self.always_succeed:
+                        yield SUCCEED
+                    else:
+                        yield TIMEOUT
             yield TICKING
         self.request = self.fill_in_request(blackboard,self.request)
         future=self.srvclient.call_async(self.request)
@@ -341,11 +348,20 @@ class ServiceClient(Generator):
             if self.timeout!=Duration():
                 if self.clock.now() - starttime > self.timeout:
                     get_logger().error(f"service {self.srv_type} from {self.srv_name} did not answer in time")
-                    yield TIMEOUT            
+                    if self.always_succeed:
+                        yield SUCCEED
+                    else:
+                        yield TIMEOUT           
             yield TICKING
         result = future.result()
-        get_logger("service").info(f"received results from {self.srv_name}({self.srv_type.__name__})")
-        yield self.process_result(blackboard, result)        
+        
+        outcome = self.process_result(blackboard, result)
+        get_logger("service").info(f"received results from {self.srv_name}({self.srv_type.__name__}) with outcome {outcome}")
+        if self.always_succeed:
+            yield SUCCEED
+        else:
+            yield outcome
+        #yield self.process_result(blackboard, result)        
 
 
     def fill_in_request(self,blackboard:Blackboard, request:Type) -> Type:
@@ -568,7 +584,8 @@ class LifeCycle(ServiceClient):
                 srv_name:str = "/etasl_node", 
                 transition: Transition=Transition.ACTIVATE, 
                 timeout:Duration = Duration(seconds=1.0), 
-                node:Node = None):
+                node:Node = None,
+                always_succeed = False):
         """
         Parameters:
             name:
@@ -581,13 +598,15 @@ class LifeCycle(ServiceClient):
                 duration that indicates the timeout, 0 is forever
             node:
                 if None, singleton BeTFSMNode.get_instance() will be used.
+            always_succeed:
+                if True, will always return SUCCEED or TICKING
         """
         if node is None:
             self.node = BeTFSMNode.get_instance()
         else:
             self.node = node
         outcomes = [SUCCEED,ABORT] # TIMEOUT added by ServiceClient, TICKING added by TickingState
-        super().__init__(name,srv_name=srv_name+"/change_state",srv_type=ChangeState,outcomes=outcomes,timeout=timeout,node=node)
+        super().__init__(name,srv_name=srv_name+"/change_state",srv_type=ChangeState,outcomes=outcomes,timeout=timeout,node=node,always_succeed=always_succeed)
         self.transition = transition
         self.node_name = srv_name
 
