@@ -58,14 +58,28 @@ def cleanup_outcomes(outcomes:List[str])->List[str]:
 # just to allow a more systematic definition of states
 #
 
-SUCCEED  = "SUCCEED"    # everything is fine, continue as normal
-ABORT    = "ABORT"      # involuntary stop, e.g. due to exception raised, communication failure,...
-CANCEL   = "CANCEL"     # voluntary stop, deliberatly provoked, e.g. reacting to cancel request of an action
-TIMEOUT  = "TIMEOUT"      # some operation times out.
-TICKING  = "TICKING"      # only use this to yield and expecting to be called back the next tick
-CONTINUE = "CONTINUE"     # only used in the entry() method of TickingState, to signal tht you want to directly continue with Doo().
-                          # don't use it anywhere else
+SUCCEED  = "SUCCEED"    
+""" outcome to indicate that everything is fine, continue as normal"""
 
+ABORT    = "ABORT"      
+""" outcome to indicate an involuntary stop, e.g. due to exception raised, communication failure,..."""
+
+CANCEL   = "CANCEL"     
+""" outcome to indicate a voluntary stop, deliberatly provoked, e.g. reacting to cancel request of an action"""
+
+TIMEOUT  = "TIMEOUT"      
+""" outcome to indicate that some operation has timed out. """
+
+TICKING  = "TICKING"      
+""" outcome to indicate that you expect to called back the next tick (internally used when yielding)"""
+
+CONTINUE = "CONTINUE"     
+""" outcome only to be used in the entry() method of TickingState, to signal tht you want 
+    to directly continue with Doo. Do not use it anywhere else
+"""
+
+NO_EVENT = "NO_EVENT"
+"""outcome used in the eventmap of the Event... classes to indicate what to do when there is no event in the current tick."""
 
 TickingState_Status = Enum("TickingState_Status",["ENTRY","DOO","EXIT"])
 
