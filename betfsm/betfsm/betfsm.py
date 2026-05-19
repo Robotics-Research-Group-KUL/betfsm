@@ -18,7 +18,7 @@
 
 
 
-from typing import Dict, List, Union, Callable,Type, TypeAlias
+from typing import Dict, List, Union, Callable,Type, TypeAlias,Iterable,Optional
 from enum import Enum
 import copy
 from threading import Lock
@@ -28,6 +28,8 @@ import uuid
 import time 
 import json
 from .logger import get_logger,add_logger_category,get_logger_categories
+import signal,math
+from collections import deque
 
 add_logger_category("state")
 add_logger_category("service")
@@ -1855,24 +1857,152 @@ class TickingStateMachine(TickingState):
  
 
 
-def blackboard_polling_func( path:str ):
+def blackboard_polling_func( path:str ) -> Callable[[Dict, List[str]],str|None]:
     """
-    !!! warning
-        Preliminary - untested version
+    Returns a polling function that checks whether one of the given events
+    are present in the blackboard at location `path`.
+
+    Arguments:
+        path:
+            location in the blackboard as a '/' separated path.
+
+    Returns:
+        polling function
+
     """
     def polling(bb, events):
         ev = get_path_value(path)
         if ev is not None and ev in set(events):
-            set_path_value(path,"")  # you need to 'consume' the event !!
-            return ev
+            set_path_value(bb,path,"")  # you need to 'consume' the event !!
+            return str(ev)
         return None
+    return polling
+
+def ctrl_c_polling_func(value:str="CTRL_C", repeated=3 ) -> Callable[[Dict, List[str]],str|None]:
+    """
+    Returns a polling function that checks whether one of the given events
+    are present in the blackboard at location `path`.
+
+    Configures the system SIGINT (Ctrl+C) handler to interact with a blackboard, where
+    a variable will set to given value if Ctrl-c is pressed
+
+    Arguments:
+        value (str):
+            Value that will be set when ctrl-c is pressed.
+        repeated (int, None): 
+            number of times to repeat ctrl-c before KeyboardInterrupt is raised
+
+    Returns:
+        polling function
+
+    """
+    receiver = Ctrl_C_Receiver.get_instance(value, repeated)
+    def polling(bb, events):
+        return receiver.poll_for(events)
+    return polling
+
+
+def combine( *args):
+    """    
+    Combines multiple polling callbacks, takes as arguments the functions themselves
+    and returns a callback function that combines the polling functions.
+
+    e.g. combine(polling_func1,polling_func2,....)
+
+    The earlier arguments have priority
+   
+    """
+    def polling(cb, events):
+        for e in args:
+            ev = e(cb,events)
+            if ev is not None:
+                return ev
+        return None
+
+
+class Ctrl_C_Receiver:    
+    """
+    Installs a ctrl-C handler that puts a value into the blackboard. 
+    Should only be created using the get_instance class method.
+    """
+    _instance = {}
+
+    @classmethod
+    def get_instance( cls,  value:str="CTRL_C", repeated=math.inf  ):
+        """
+        One singleton queue per topic.
+
+        Configures the system SIGINT (Ctrl+C) handler to interact with a blackboard, where
+        a variable will set to given value if Ctrl-c is pressed
+
+        Arguments:
+            value (str):
+                Value that will be set when ctrl-c is pressed.
+            repeated (int, None): 
+                number of times to repeat ctrl-c before KeyboardInterrupt is raised
+
+        Returns:
+            Singleton instance of EventQueueSubscriber.
+
+        Example:
+            To start monitoring for Ctrl+C.  If ctrl-c is pressed, at the given path in the blackboard,
+            a `True` value will be written.
+            ```
+            Ctrl_C_Handler(blackboard,"/cancelation/ctrl_c",repeated=3) 
+            ```            
+        """
+        cls._instance = cls(value,repeated)
+        return cls._instance 
+    
+    def __init__(self, value:str="CTRL_C", repeated=math.inf):
+        self.repeated   = repeated
+        self.value      = value
+        self.count      = 0
+        self.buffer     = ""
+        assert( isinstance(value,str)  )        
+        signal.signal(signal.SIGINT, self._handler )
+
+    def remove_handler(self):
+         """ 
+         go back to the default ctrl-C handler
+         """
+         signal.signal(signal.SIGINT, signal.default_int_handler)       
+
+    def _handler(self,signum, frame):
+        self.buffer = self.value
+        self.count = self.count+1
+        get_logger().info(f"Ctrl-C pressed {self.count} times, pressing {self.repeated} times will interrupt")            
+        if self.count >= self.repeated:
+            raise KeyboardInterrupt
+    
+    def has_event( self, target_strings: Iterable[str]  ) -> bool:
+        """
+        checks whether one of the target_strings is present in the blackboard.        
+        """        
+        if self.buffer in target_strings:
+            return self.buffer
+        else:
+            return None
+
+    def poll_for( self, target_strings: Iterable[str] ) -> Optional[str]:      
+        """ 
+        checks whether one of the target_strings is present in the blackboard and consumes 
+        the event, i.e. sets the value in blackboard to ""
+        """          
+        if self.buffer in target_strings:
+            retval = self.buffer
+            self.buffer = ""
+            return retval
+        else:
+            return None
+
+
 
 
 # from collections import namedtuple
 # MapElement = namedtuple("MapElement", ["target", "index"])
 
-NO_EVENT="NO_EVENT"
-class Event(GeneratorWithList):
+# class Event(GeneratorWithList):
     """
     
     !!! warning
@@ -1894,17 +2024,6 @@ class Event(GeneratorWithList):
         
         SANTIAGO 
 
-          - change to crospi related to naming of events, 
-          - no need to encode the name of the node.
-          - custom message type (String is obsolete)
-          - custom payload for events?
-
-    
-    event_map: 
-
-      - event_map mapping EVENT to TARGET:
-
-          - event can be string on topic or NO_EVENT
           - target can be an outcome string or a TickingState
 
       - All subtrees will be executed as **ConcurrentSequence**:
@@ -1920,126 +2039,285 @@ class Event(GeneratorWithList):
             So it executes events for the same subtree sequentially ( qeueu is long enough to remember it)
 
 
-    Usage patterns:
-
-    - crospi_polling_func() or blackboard_polling_func() are two polling callback functions, but you can 
-      create your own.
-
-    - Event("check_finalized", crospi_polling_func(), {NO_EVENT:"SUCCEED", "e_finished":CANCEL}) 
-
-        a check whether there is an event, if not immediately returns SUCCEED, if e_finished return CANCEL
-        probabily you want to call this in a loop, make sure that there is at least one yield TICKING in the loop!
-
-    - Event("check_for_finished", crospi_polling_func(), {NO_EVENT: subtree, "e_finished": CANCEL})
-
-        runs the subtree but cancels it when e_finished comes and returns CANCEL, if subtree finishes on its own
-        returns its outcome.
-
-    - Event("check_for_cancel", crospi_polling_func(), {"e_finished": CANCEL})
-
-        wait for e_finished and then return CANCEL
-
-    - Event("check_for_cancel", crospi_polling_func(), {"e_open" : open_subtree, e_finished": SUCCEED})
-
-        wait for e_finished, if e_open is received then start executing open_subtree, finish when
-        opensubtree is finished and return its outcome
-
-    -  Event("check_for_cancel", crospi_polling_func(), {NO_EVENT: nominal_subtree, "e_open" : open_subtree, e_finished": SUCCEED})
-
-        - starts executing nominal_subtree
-        - if e_open received, concurrently start executing the open_subtree statemachine
-        - Event finishes when all active children return SUCCEED , then it returns SUCCEED, if any of the children
-            returns something else then it finishes Event and returns that other outcome.
-        - so e_finished here doesn't do anyting.
+ 
     
-    -  Event("check_for_cancel", crospi_polling_func(), {NO_EVENT: nominal_subtree, "e_open" : open_subtree, e_finished": CANCEL})
+    event_map: 
 
-        - same as before but now e_finished finishes Event and let it return CANCEL directly.
-    
+      - event_map mapping EVENT to TARGET:
+
+          - event can be string on topic or NO_EVENT
         
 
         
+#     """
+# # Event -> MapElement(target, index) with target==str/index<0 or target==TickintState/index>=0
+#                                 # index is into self.states
+
+#     def __init__(self, 
+#                  name:str, 
+#                  event_poller:Callable[[Dict, List[str]],str|None], 
+#                  event_map=Dict[str, str|TickingState] ):
+#         children          = []  # list of TickingStates
+#         outcomes          = []  # outcomes of Event()
+        
+#         # default is to wait until event arrives:
+#         if NO_EVENT not in event_map:
+#             event_map[NO_EVENT] = TICKING
+                
+#         # event_map will be split into two maps:
+#         self.event_to_outcome        = {} # str -> str        event to outcome-string
+#         self.event_to_state_ndx      = {} # str -> int        event to index in self.states
+#         index = 0
+#         for k,v in event_map.items():
+#             if isinstance(v,TickingState):
+#                 children.append(v)
+#                 self.event_to_state_ndx[k] = index
+#                 index = index + 1
+#             elif isinstance(v,str):
+#                 outcomes.append(v)
+#                 self.event_to_outcome[k] = v
+#         self.event_poller = event_poller
+
+#         # duplicate outcomes are taken care of by super()
+#         super().__init__(name, outcomes, children)
+
+    
+#     def add_state(self, state:TickingState):
+#         # should not be called
+#         assert(False)
+
+
+#     # test_case : {NO_EVENT: SUCCEED. "e_finished: STOP"}:  
+#     #        in case of event: STOP, in case of no event: SUCCEED
+#     # test_case : {NO_EVENT: CANCEL,"e_finished: STOP"}       
+#     #         OK
+#     # test_case : {NO_EVENT: SUCCEED, "e_finished": SUCCEED, "e_opengripper": bt_gripper}
+#     #         if no events will return SUCCEED
+#     #         if e_opengripper will execute, y and the whole will return when gripper is finished
+#     # test_case : {NO_EVENT: bt, "e_finished": SUCCEED, "e_opengripper": bt_gripper}
+#     #         if no events will tick bt and finishes when bt finished
+#     #         if event later on e_opengripper ti concurrently executes bt and bt_gripper until both SUCCEED
+#     #         if one cancels return   
+#     # TICKING only if you need to wait for the next sample time to catch events.
+
+#     def co_execute(self, blackboard):
+#         countActive = 0
+#         if NO_EVENT in self.event_to_state_ndx:
+#             ndx = self.event_to_state_ndx
+#             self.states[ndx]["active"] = True
+#         while True:
+#             ticked = False
+#             # 1. poll events related to non-active states.
+#             state_events = [  k for k,v in self.event_to_state_ndx.items() if self.states[v]["active"]==False ]
+#             ev = self.event_poller(blackboard, state_events )
+#             if ev is not None:
+#                 ndx = self.event_to_state_ndx[ev]
+#                 self.states[ndx]["active"] = True                    
+#                 countActive = countActive + 1
+
+#             # 2. poll events related to outcomes
+#             ev = self.event_poller(blackboard, [e for e,v in self.event_to_outcome.items()] )
+#             if ev is None and NO_EVENT in self.event_to_outcome:
+#                 ev = NO_EVENT
+#             if ev is not None:
+#                 outcome = self.event_to_outcome[ev]
+#                 if outcome==TICKING:
+#                     ticked=True
+#                 elif outcome!=SUCCEED:
+#                     # clean up all states
+#                     for s in self.states:
+#                         s["state"].reset()
+#                     yield outcome  # yielded before any tick before or after in the sequence
+#             # 2. loop through states
+#             for s in self.states:
+#                 if s["active"]==True:
+#                     outcome = s["state"](blackboard)
+#                     if outcome==TICKING:
+#                         ticked=True
+#                     elif outcome==SUCCEED:
+#                         countActive=countActive-1
+#                         s["active"]=False
+#                     else:
+#                         # in case any of the underlying states was not completed:
+#                         for s in self.states:
+#                             s["state"].reset()
+#                         yield outcome  # yielded before any tick before or after in the sequence
+#             if ticked:
+#                 yield TICKING
+#             if countActive > 0:
+#                 break
+#         for s in self.states:
+#             s["state"].reset()
+#         # all of the underlying states have necessarily completed
+#         yield SUCCEED
+        
+
+
+
+
+# from collections import namedtuple
+# MapElement = namedtuple("MapElement", ["target", "index"])
+
+
+class EventOutcome(Generator):
     """
-# Event -> MapElement(target, index) with target==str/index<0 or target==TickintState/index>=0
-                                # index is into self.states
+    !!! warning
+        Preliminary - untested version
 
+    Same as Event, but no subtrees in the event_map, only outcomes.
+    Is easier to understand.
+    """
     def __init__(self, 
                  name:str, 
                  event_poller:Callable[[Dict, List[str]],str|None], 
-                 event_map=Dict[str, str|TickingState] ):
-        children          = []  # list of TickingStates
-        outcomes          = []  # outcomes of Event()
-        
-        # default is to wait until event arrives:
+                 event_map=Dict[str, str] ):
+        outcomes          = []  # outcomes of Event()        
         if NO_EVENT not in event_map:
-            event_map[NO_EVENT] = TICKING
-                
-        # event_map will be split into two maps:
-        self.event_to_outcome        = {} # str -> str        event to outcome-string
-        self.event_to_state_ndx      = {} # str -> int        event to index in self.states
-        index = 0
+            event_map[NO_EVENT] = TICKING                # default is to wait until event arrives:
         for k,v in event_map.items():
-            if isinstance(v,TickingState):
-                children.append(v)
-                self.event_to_state_ndx[k] = index
-                index = index + 1
-            elif isinstance(v,str):
-                outcomes.append(v)
-                self.event_to_outcome[k] = v
+            outcomes.append(v)
         self.event_map    = event_map
+        self.events       = [e for e,v in self.event_map.items()]
         self.event_poller = event_poller
-
-        # duplicate outcomes are taken care of by super()
-        super().__init__(name, outcomes, children)
+        
+        super().__init__(name, outcomes) # duplicate outcomes are taken care of by super()
 
     
-    def add_state(self, state:TickingState):
-        # should not be called
-        assert(False)
-
-
-    # test_case : {NO_EVENT: SUCCEED. "e_finished: STOP"}:  
-    #        in case of event: STOP, in case of no event: SUCCEED
-    # test_case : {NO_EVENT: CANCEL,"e_finished: STOP"}       
-    #         OK
-    # test_case : {NO_EVENT: SUCCEED, "e_finished": SUCCEED, "e_opengripper": bt_gripper}
-    #         if no events will return SUCCEED
-    #         if e_opengripper will execute, y and the whole will return when gripper is finished
-    # test_case : {NO_EVENT: bt, "e_finished": SUCCEED, "e_opengripper": bt_gripper}
-    #         if no events will tick bt and finishes when bt finished
-    #         if event later on e_opengripper ti concurrently executes bt and bt_gripper until both SUCCEED
-    #         if one cancels return   
-    # TICKING only if you need to wait for the next sample time to catch events.
-
     def co_execute(self, blackboard):
-        countActive = 0
-        if NO_EVENT in self.event_to_state_ndx:
-            ndx = self.event_to_state_ndx
-            self.states[ndx]["active"] = True
         while True:
-            ticked = False
-            # 1. poll events related to non-active states.
-            state_events = [  k for k,v in self.event_to_state_ndx.items() if self.states[v]["active"]==False ]
-            ev = self.event_poller(blackboard, state_events )
-            if ev is not None:
+            ev = self.event_poller(blackboard, self.events )
+            if ev is None:
+                ev = NO_EVENT
+            outcome = self.event_map[ev]
+            if outcome!=TICKING:
+                break
+            yield TICKING
+        yield outcome
+        
+
+
+class EventConcurrent(GeneratorWithList):
+    """    
+    !!! warning
+        Preliminary - untested version
+
+    maps events to execution of subtrees.
+
+    Similar to ConcurrentSequence but the children start not activated and all
+    not active children are can be activated by an event.
+
+    A subtree matched with NO_EVENT starts also not activated, but is activated just after the
+    first polling.  
+
+    NO_EVENT is special and should not occur as incoming event. if NO_EVENT is not specified then
+    SubtreeEvent keeps waiting (TICKING) until one of the event subtrees returns something else than SUCCEED.
+
+    The NO_EVENT subtree will not be repeated.  the subtrees associated with events can be repeated but the same
+    subtree is never executed concurrently multiple times.  subtrees associated with multiple events are executed 
+    concurrently
+
+    See Also:
+        [events](events.md) for a discussion on usage patterns.
+
+    ```mermaid
+    stateDiagram-v2     
+        direction TB       
+        classDef successClass  fill:darkgreen,color:white
+        classDef tickingClass  fill:yellow,color:black
+        classDef otherClass  fill:darkorange,color:white
+        classDef abortClass  fill:darkred,color:white
+
+        
+        state "TICKING <br> if any TICK transition <br> is received" as TICKING
+        state "OTHER <br>returns first other outome" as OTHER
+        state "SUCCEED <br>if both transitions <br> are received" as SUCCEED
+
+        state fork_state <<fork>> 
+        [*] --> fork_state   
+        fork_state --> NO_EVENT_subtree  : NO_EVENT
+        fork_state --> EVENT_1_subtree : EVENT_1
+        EVENT_1_subtree --> EVENT_1_succeeded :  SUCCEED
+        EVENT_1_succeeded --> EVENT_1_subtree : EVENT_1
+        state join_state <<fork>>
+        NO_EVENT_subtree --> join_state : SUCCEED    
+        NO_EVENT_subtree --> OTHER : OTHER outcome    
+        EVENT_1_succeeded --> join_state 
+        EVENT_1_subtree --> OTHER : OTHER outcome
+        join_state --> SUCCEED
+        NO_EVENT_subtree --> TICKING : TICKING
+        EVENT_1_subtree --> TICKING : TICKING
+        
+
+
+        
+
+        class SUCCEED successClass
+        class OTHER otherClass
+        class TICKING tickingClass
+        class TIMEOUT abortClass
+    ```
+
+
+    """
+    def __init__(self, 
+                 name:str, 
+                 event_poller:Callable[[Dict, List[str]],str|None], 
+                 event_map=Dict[str, TickingState] ):
+        children                     = []  # list of TickingStates                
+        self.event_to_state_ndx      = {} # str -> int        event to index in self.states
+        index                        = 0        
+        for k,v in event_map.items():
+            children.append(v)
+            if k!=NO_EVENT:
+                self.event_to_state_ndx[k] = index
+            index = index + 1
+        self.event_poller = event_poller
+        self.nominal_state = event_map.get(NO_EVENT,None)
+        if self.nominal_state is None:  ########################################
+            self.nominal_state = AlwaysOutcome(TICKING)
+        self.add_state_safeguard = False
+        super().__init__(name, [], children)
+        self.add_state_safeguard = True
+
+
+    def add_state(self, state:TickingState):
+        """Not defined for an EventSequential"""
+        if self.add_state_safeguard:
+            raise AttributeError("do not use EventSequential.add_state(...), only add children via the event_map ")
+        super().add_state(state)
+
+    def co_execute(self,blackboard):
+        for s in self.states:
+            s["active"] = False
+        countActive = 0
+        nominal_succeeded = False
+        while True:                    
+            # poll events related to non-active states.
+            while True:
+                state_events = [  k for k,v in self.event_to_state_ndx.items() if self.states[v]["active"]==False ]
+                ev = self.event_poller(blackboard, state_events )
+                if ev is None:
+                    break
                 ndx = self.event_to_state_ndx[ev]
                 self.states[ndx]["active"] = True                    
-                countActive = countActive + 1
-
-            # 2. poll events related to outcomes
-            ev = self.event_poller(blackboard, [e for e,v in self.event_to_outcome.items()] )
-            if ev is None and NO_EVENT in self.event_to_outcome:
-                ev = NO_EVENT
-            if ev is not None:
-                outcome = self.event_to_outcome[ev]
-                if outcome==TICKING:
+                countActive = countActive + 1                                                
+            # handle nominal state and flag if it would be ticking:
+            ticked = False                            
+            if self.nominal_state == None:
+                ticked=True
+            else:
+                outcome = self.nominal_state(blackboard)
+                if outcome == TICKING:
                     ticked=True
-                elif outcome!=SUCCEED:
-                    # clean up all states
+                elif outcome == SUCCEED:                    
+                    nominal_succeeded = True
+                else:
+                    # this could have interrupted some states:
                     for s in self.states:
                         s["state"].reset()
-                    yield outcome  # yielded before any tick before or after in the sequence
-            # 2. loop through states
+                    # returning outcome != TICKING interrupts EventConcuurent.
+                    yield outcome                
+            # for all concurrent states, look for the active ones:
             for s in self.states:
                 if s["active"]==True:
                     outcome = s["state"](blackboard)
@@ -2047,7 +2325,7 @@ class Event(GeneratorWithList):
                         ticked=True
                     elif outcome==SUCCEED:
                         countActive=countActive-1
-                        s["active"]=False
+                        s["active"]=False  
                     else:
                         # in case any of the underlying states was not completed:
                         for s in self.states:
@@ -2055,11 +2333,107 @@ class Event(GeneratorWithList):
                         yield outcome  # yielded before any tick before or after in the sequence
             if ticked:
                 yield TICKING
-            if countActive > 0:
-                break
-        for s in self.states:
-            s["state"].reset()
-        # all of the underlying states have necessarily completed
+            if (countActive <= 0) and nominal_succeeded:
+                break        
+        for s in self.states:   # all of the underlying states have necessarily completed, not needed, just to be safe...
+            s["state"].reset()        
         yield SUCCEED
+
+class EventSequential(GeneratorWithList):
+    """
+    EventSequential checks events in a sequential way. It can execute a nominal subtree or wait by
+    ticking forever. If there are incoming events, these are queued in a FIFO way and the corresponding
+    subtree is executed one by one.  If any of the subtrees returns with an outcome different from TICKING or SUCCEED
+    EventSequential finishes with that outcome.
+
+    The nominal state can be interrupted by the events, will pause while the subtrees corresponding to the events
+    are executing, and, if all return SUCCEED, will resume after all subtrees are processed.
+
+    Typical use: 
+    - interrupt nominal state by event with cleanup 
+    - waiting when sequentially executing the subtrees associated with incomming events.
+    """
+
+    # Approach:
+    #  NO_LIMITS can be interrupted.
+    #  subtrees related to other events are executed sequentially
+    #  if NO_LIMITS not specified, similar to: NO_LIMITS = AlwaysOutcome(TICKING)
+    #  basically nominal_state and event_state, where event_state can still interrupt nominal state.
+    #  events are put on a FIFO stack
+    # (1) if nominal_state executing: check stack, if not empty take of to event_state and execute this in place.
+    # (2) if event_state is done: event_state=None, and go to (1)
+
+    def __init__(self, 
+                 name:str, 
+                 event_poller:Callable[[Dict, List[str]],str|None], 
+                 event_map=Dict[str, TickingState]
+                 ):
+        """
+
         
 
+        Parameters:
+            name:
+                name of this node
+            event_poller:
+                polling function from which we get the events.
+            event_map:
+                A map that maps events to BeTFSM subtrees.   The subtree
+                corresponding to the NO_EVENT entry is the nominal subtree.
+                If there is no NO_EVENT entry specified, EventSequential will
+                tick forever while listening to incomming events.
+        """
+        children                     = []  # list of TickingStates                
+        self.event_to_state_ndx      = {}  # str -> int        event to index in self.states
+        index                        = 0
+        for k,v in event_map.items():            
+            children.append(v)
+            if k!= NO_EVENT:
+                self.event_to_state_ndx[k] = index
+            index = index + 1
+        self.event_poller  = event_poller
+        self.nominal_state = event_map.get(NO_EVENT, None)
+        self.add_state_safeguard = False
+        super().__init__(name, [], children)
+        self.add_state_safeguard = True
+
+
+    def add_state(self, state:TickingState):
+        """Not defined for an EventSequential"""
+        if self.add_state_safeguard:
+            raise AttributeError("do not use EventSequential.add_state(...), only add children via the event_map ")
+        super().add_state(state)
+
+
+    def co_execute(self,blackboard):
+        # define a FIFO stack of all states that will interrupt the nominal state
+        # and will be executed sequentially
+        stack = deque()
+        state_events = [  k for k,_ in self.event_to_state_ndx.items() ]
+
+        while True:
+            # consume all allowable events  (less efficient with many matching events, no choice due to API)
+            while True:
+                ev = self.event_poller(blackboard, state_events )
+                if ev is None:
+                    break
+                ndx = self.event_to_state_ndx[ev]
+                stack.appendleft(self.states[ndx])
+            # execute stack or nominal_state:
+            if stack:
+                outcome = stack[-1]["state"](blackboard)
+                if outcome==SUCCEED:
+                    stack.pop()
+                elif outcome==TICKING:
+                    yield TICKING
+                else:
+                    # reset states that will be interrupted:
+                    for s in self.states:
+                        s["state"].reset()
+                    # interrupt by yielding != TICKING
+                    yield outcome
+            else:
+                if self.nominal_state is None:
+                    yield TICKING
+                else:
+                    yield self.nominal_state(blackboard)

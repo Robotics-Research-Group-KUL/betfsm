@@ -28,7 +28,7 @@ both high- and low level.
 
 
 
-(c) 2024, Erwin Aertbeliën, contributions of Federico Ulloa Rios and Santiago Iregui Rincon
+(c) 2024-2026, Erwin Aertbeliën, contributions of Federico Ulloa Rios and Santiago Iregui Rincon
 
 Published under the GNU LESSER GENERAL PUBLIC LICENSE Version 3, 29 June 2007.
 

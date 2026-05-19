@@ -29,7 +29,7 @@ It consists of multiple packages:
 In this documentation, you will find the following:
 
   - Quick [**overview**](overview.md) of behavior trees and state machines
-  - [**Installation**](installation.md) instructions using *pip* (python-only) and *ROS2* (with ros and crospi integration)
+ <!--- - [**Installation**](installation.md) instructions using *pip* (python-only) and *ROS2* (with ros and crospi integration) --->
   - A set of [**tutorials**](tutorials.md) on  using BeTFSM
   - A [**technical introduction**](technical_intro.md) to BeTFSM
   - [**API**](api_overview.md) documentation, this includes facilities to work with [ROS2](https://docs.ros.org/en/humble/index.html) and [cROSpi](https://rob.pages.gitlab.kuleuven.be/crospi)

@@ -620,10 +620,12 @@ class QueuedEvent:
     timestamp: float
 
 
-class EventQueueSubscriber:
+class TopicEventReceiver:
     """
     !!! warning
         Preliminary, untested version
+
+        old name was: EventQueueSubscriber
 
     Thread-safe event queue for recieving ROS2 String messages
 
@@ -658,14 +660,11 @@ class EventQueueSubscriber:
             cls._instances[topic_name] = cls(
                 node=node,
                 topic_name=topic_name,
-                queue_size=queue_size,
-                __get_instance_is_used=True
+                queue_size=queue_size
             )
         return cls._instances[topic_name]
 
-    def __init__( self, node: Node,  topic_name: str,  queue_size: int,__get_instance_is_used:bool = False ):
-
-        assert("You should always use get_instance() to create this object" and __get_instance_is_used )
+    def __init__( self, node: Node,  topic_name: str,  queue_size: int):
 
         self.node = node
         self.topic_name = topic_name
@@ -686,19 +685,43 @@ class EventQueueSubscriber:
             self.queue.append(event)
 
     def has_event( self, target_strings: Iterable[str]  ) -> bool:
+        """
+        Looks for an event in the queue that matches one of the target_strings.
+        Reads from the oldest to the newest element in the queueu.
+        Returns the matching event and None if no event matches.
+        It **does not** consume the matching event.
+        """
         targets = set(target_strings)
         with self.lock:
-            return any(
-                event.name in targets
-                for event in self.queue
-            )
-
+            for i, event in enumerate(self.queue):
+                if (   event.name in targets ):
+                    matched = event.name
+                    return matched
+        
+    def has_recent_event( self, target_strings: Iterable[str] ,  max_age_seconds: float  ) -> bool:
+        """ 
+        Looks for an event in the queue that matches one of the target_strings.
+        Reads from the oldest to the newest element in the queueu.
+        Returns the matching event and None if no event matches.
+        It only returns events that are at most max_age_seconds old.  
+        This can be useful to avoid stale events.
+        It **does not** consume the matching event.
+        """        
+        now = time.monotonic()
+        targets = set(target_strings)
+        with self.lock:
+            for i, event in enumerate(self.queue):
+                age = now - event.timestamp
+                if (   event.name in targets  and age <= max_age_seconds  ):
+                    matched = event.name
+                    return matched
+            
     def poll_for( self, target_strings: Iterable[str] ) -> Optional[str]:
         """ 
-        Looks for one of the given list of strings in the event queue and
-        returns this string back.  Reads from the oldest to the newest element in the queueu.
-
-        If no result, returns None.
+        Looks for an event in the queue that matches one of the target_strings.
+        Reads from the oldest to the newest element in the queueu.
+        Returns the matching event and None if no event matches.
+        It consumes the matching event.
         """
         targets = set(target_strings)
         with self.lock:
@@ -711,12 +734,12 @@ class EventQueueSubscriber:
 
     def poll_recent_for(  self,  target_strings: Iterable[str],  max_age_seconds: float ) -> Optional[str]:
         """ 
-        Looks for one of the given list of strings in the event queue and    !!! warning
-        Preliminary - untested version
-        returns this string back.  Reads from the oldest to the newest element in the queueu.
-        It only returns events that are at most max_age_seconds old.  This can be useful to avoid stale events.
-
-        If no result, returns None.
+        Looks for an event in the queue that matches one of the target_strings.
+        Reads from the oldest to the newest element in the queueu.
+        Returns the matching event and None if no event matches.
+        It only returns events that are at most max_age_seconds old.  
+        This can be useful to avoid stale events.        
+        It consumes the matching event.
         """
         now = time.monotonic()
         targets = set(target_strings)

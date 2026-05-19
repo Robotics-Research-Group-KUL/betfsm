@@ -13,9 +13,7 @@ nav:
   - "Documentation":
     - "Introduction": 
       - "Start page" : 'index.md'
-      - "Overview" : "overview.md"
-      - "Installation" : "installation.md"
-      - "Technical introduction" : "technical_intro.md"
+      - "Installation" : "installation.md"      
     - "Tutorials":
       - "Introduction" : "tutorials.md"
       - "Defining your own BeTFSM node" : "tutorial_node.md"
@@ -26,8 +24,12 @@ nav:
       - "Handling interruption" : "interruption.md"
 #      - "Up & Down": "upanddown.md"
 #      - "Action servers": "actionserver_ex.md" 
-    - "API" :
+    - "Technical documentation" :
+      - "Technical introduction" : "technical_intro.md"
       - "Overview of the API" : "api_overview.md"
+      - "Event handling": "event.md"
+      - "ROS2 Lifecycle" : "ros2lifecycle.md"
+      - "Utilities" : 'utils.md'
       - "BeTFSM":
         - "TickingState" : "tickingstate.md"
         - "TickingStateMachine" : "tickingstatemachine.md"
@@ -51,9 +53,13 @@ nav:
         - "Runner": "runner.md"
         - "CheckCancel": "checkcancel.md"
         - "Ctrl C Handler" : "ctrl_c_handler.md"
-        - "AlwaysOutcome" : "alwaysoutcome.md"
-        - "Event": "event.md"
-      - "Utilities" : 'utils.md'
+        - "Ctrl_C_Receiver" : "ctrl_c_receiver.md"
+        - "AlwaysOutcome" : "alwaysoutcome.md"        
+        - "EventOutcome" : "eventoutcome.md"
+        - "EventConcurrent" : "eventconcurrent.md"
+        - "EventSequential" : "eventsequential.md"
+        - "Polling functions" : "polling_func.md"
+      
       - "BeTFSM ROS2":  
         - "ServiceClient" : 'serviceclient.md'
         - "ActionClient" : 'actionclient_ros.md'
@@ -61,7 +67,7 @@ nav:
         - "TimedRepeat for ROS2" : timedrepeat_ros.md
         - "TimedWait for ROS2" : 'timedwait_ros2.md'
         - "Timeout" : "timeout.md"
-        - "EventQueueSubscriber" : "eventqueuesubscriber.md"
+        - "TopicEventReciever" : "topiceventreceiver.md"
       - "BeTFSM cROSpi":
         - "load_task_list" : "load_task_list.md"
         - "SetTaskParameters" : "settaskparameters.md"
@@ -73,7 +79,7 @@ nav:
         - "crospi_polling_func" : "crospi_polling_func.md"
 #    - "BeTFSM eTaSL": 'etaslstatemachine.md'
 ##    - "Action server": "actionserver.md"
-    
+    - "TODO": "todo.md"    
     - "About & Acknowledgements": 'about.md'
 
 

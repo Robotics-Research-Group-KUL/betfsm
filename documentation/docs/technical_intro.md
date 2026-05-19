@@ -186,39 +186,9 @@ To manage file locations in a ROS2 environment a function [expand_ref][betfsm_ro
 
 - [ServiceClient][betfsm_ros.ServiceClient] creates a TickingState that calls a ROS2 service and generates an outcome when the service returns back. While waiting, it continues to tick. Subclasses need to implement two methods `fill_in_request` to fill in the service request, most probably using information from the blackboard, and `process_result` to process the result from the service request, most probably putting some information in the blackboard.
 
+
 - [LifeCycle][betfsm_ros.LifeCycle] manages the lifecycle of some other ROS2 node.
-  The node is constructed with service_name, transition (see below), timeout and the transition is requested during execution of the state.
-  See below for a simplified view of this lifecycle (transition states not included):
-```mermaid
-    stateDiagram-v2
-        direction LR
-        classDef successClass  fill:darkgreen,color:white
-        classDef tickingClass  fill:yellow,color:black
-        classDef otherClass  fill:darkorange,color:white
-        classDef abortClass  fill:darkred,color:white
-
-        
-        [*] --> unconfigured
-        unconfigured --> inactive : CONFIGURE
-        inactive --> active : ACTIVATE
-        inactive --> unconfigured : CLEANUP
-        inactive --> finalized : INACTIVE_SHUTDOWN
-        active --> inactive : DEACTIVATE
-        active --> finalized : ACTIVE_SHUTDOWN
-        unconfigured --> finalized : UNCONFIGURED_SHUTDOWN
-```
-
-   These are the transtions that can be passed to a LifeCycle state:
-    ```python
-        class Transition(Enum):
-            CONFIGURE              = 1
-            CLEANUP                = 2
-            ACTIVATE               = 3
-            DEACTIVATE             = 4
-            UNCONFIGURED_SHUTDOWN  = 5
-            INACTIVE_SHUTDOWN      = 6
-            ACTIVE_SHUTDOWN        = 7    
-    ```
+    The node is constructed with service_name, transition (see [ROS2 Lifecycle](ros2lifecycle.md) ), timeout and the transition is requested during execution of the state.
 
 ### Related to eTaSL
 
@@ -265,6 +235,7 @@ your TickingState.  Most of the other nodes are implemented using these auxiliar
     Often it is sufficient to implement the constructor and the co_execute(self,blackboard) method and yield when
     you want to yield control to BeTFSM, and come back at the same location the next tick of BeTFSM.
 
+<!---
 ### Action server
 
 There is also a ROS2 Action server provided that allows us to respond to ROS2 Actions.  This contains
@@ -274,4 +245,4 @@ also a generic parameter-passing mechanism with a JSON message string that in th
 
 **ActionClientBTFSM** contains a Tickingstate that calls and action and generates an outcome when the action 
 returns back.   While waiting it gets the response of the action.
-
+--->

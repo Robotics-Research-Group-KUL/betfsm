@@ -36,7 +36,7 @@ from betfsm import (
 from betfsm_ros import (
     Node,Duration,
     BeTFSMNode,
-    ServiceClient, LifeCycle, Transition, EventQueueSubscriber
+    ServiceClient, LifeCycle, Transition, TopicEventReceiver
 )
 
 
@@ -323,6 +323,20 @@ def crospi_polling_func(
     Returns a callback function to read crospi events suitable for use withy betfsm.Event.
     Uses betfsm_ros.EventQueueSubscriber for the qeueu.  The default
     parameters are suitable for crospi.
+
+    Parameters:
+        node:
+            ROS2 node
+        topic_name:
+            name of the topic to subscribe to
+        queue_size:
+            size of the queue (related to maximum concurrent events, i.e. sample time in relation
+            to the events generated)
+        max_age:
+            maximum age of the events that still will be received.
+            
+    Returns:
+        Polling function
     """     
     if node==None:
         node = BeTFSMNode.get_instance()
