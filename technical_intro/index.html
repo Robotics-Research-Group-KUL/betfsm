@@ -40,17 +40,11 @@
 <div aria-label="Navigation menu" class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation">
 <p class="caption"><span class="caption-text">Documentation</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal current">Introduction</a>
-<ul class="current">
+<li class="toctree-l1"><a class="reference internal">Introduction</a>
+<ul>
 <li class="toctree-l2"><a class="reference internal" href="..">Start page</a>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../overview/">Overview</a>
-</li>
 <li class="toctree-l2"><a class="reference internal" href="../installation/">Installation</a>
-</li>
-<li class="toctree-l2 current"><a class="reference internal current" href="#">Technical introduction</a>
-<ul class="current">
-</ul>
 </li>
 </ul>
 </li>
@@ -72,9 +66,19 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal">API</a>
-<ul>
+<li class="toctree-l1 current"><a class="reference internal current">Technical documentation</a>
+<ul class="current">
+<li class="toctree-l2 current"><a class="reference internal current" href="#">Technical introduction</a>
+<ul class="current">
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../api_overview/">Overview of the API</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../event/">Event handling</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../ros2lifecycle/">ROS2 Lifecycle</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/">Utilities</a>
 </li>
 <li class="toctree-l2"><a class="reference internal">BeTFSM</a>
 <ul>
@@ -122,11 +126,19 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_handler/">Ctrl C Handler</a>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../ctrl_c_receiver/">Ctrl_C_Receiver</a>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../alwaysoutcome/">AlwaysOutcome</a>
 </li>
-</ul>
+<li class="toctree-l3"><a class="reference internal" href="../eventoutcome/">EventOutcome</a>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../utils/">Utilities</a>
+<li class="toctree-l3"><a class="reference internal" href="../eventconcurrent/">EventConcurrent</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../eventsequential/">EventSequential</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../polling_func/">Polling functions</a>
+</li>
+</ul>
 </li>
 <li class="toctree-l2"><a class="reference internal">BeTFSM ROS2</a>
 <ul>
@@ -141,6 +153,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../timedwait_ros2/">TimedWait for ROS2</a>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../timeout/">Timeout</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../topiceventreceiver/">TopicEventReciever</a>
 </li>
 </ul>
 </li>
@@ -160,9 +174,13 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../etasl_statemachine/">eTaSL_StateMachine</a>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../crospi_polling_func/">crospi_polling_func</a>
+</li>
 </ul>
 </li>
 </ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../todo/">TODO</a>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../about/">About &amp; Acknowledgements</a>
 </li>
@@ -180,7 +198,7 @@
 <ul class="wy-breadcrumbs">
 <li><a aria-label="Docs" class="icon icon-home" href=".."></a></li>
 <li class="breadcrumb-item">Documentation</li>
-<li class="breadcrumb-item">Introduction</li>
+<li class="breadcrumb-item">Technical documentation</li>
 <li class="breadcrumb-item active">Technical introduction</li>
 <li class="wy-breadcrumbs-aside">
 <a class="icon icon-github" href="https://github.com/Robotics-Research-Group-KUL/betfsm/edit/main/documentation/docs/technical_intro.md"> Edit on GitHub</a>
@@ -298,7 +316,7 @@ you also specify the transitions between states.  These transitions are specifie
 <p>The <a class="autorefs autorefs-internal" href="../tickingstatemachine/#betfsm.TickingStateMachine" title="betfsm.TickingStateMachine">constructor</a> takes a (<strong>instance</strong>) name of the state machine ands its allowable outcomes </p>
 <h3 id="behavior-tree-like-states">Behavior-tree like states</h3>
 <p>The most important behavior-tree like states are <a class="autorefs autorefs-internal" href="../sequence/#betfsm.Sequence" title="betfsm.Sequence">Sequence</a>,<a class="autorefs autorefs-internal" href="../fallback/#betfsm.Fallback" title="betfsm.Fallback">Fallback</a>,
-<a class="autorefs autorefs-internal" href="../concurrentsequence/#betfsm.betfsm.ConcurrentSequence" title="betfsm.betfsm.ConcurrentSequence">ConcurrentSequence</a>,<a class="autorefs autorefs-internal" href="../concurrentfallback/#betfsm.betfsm.ConcurrentFallback" title="betfsm.betfsm.ConcurrentFallback">ConcurrentFallback</a>, and <a class="autorefs autorefs-internal" href="../repeat/#betfsm.Repeat" title="betfsm.Repeat">Repeat</a></p>
+<a class="autorefs autorefs-internal" href="../concurrentsequence/#betfsm.betfsm.ConcurrentSequence" title="betfsm.betfsm.ConcurrentSequence">ConcurrentSequence</a>,<a class="autorefs autorefs-internal" href="../concurrentfallback/#betfsm.ConcurrentFallback" title="betfsm.ConcurrentFallback">ConcurrentFallback</a>, and <a class="autorefs autorefs-internal" href="../repeat/#betfsm.Repeat" title="betfsm.Repeat">Repeat</a></p>
 <p>The main difference is that for a typical behavior-tree implementation the outcomes can only be RUNNING, SUCCESS or FAILURE. Here, there can be more types of outcome.   The mapping to traditional behavior trees is explained below, detailed behavior is documented in the diagrams in the API-documentation.</p>
 <ul>
 <li>
@@ -322,7 +340,7 @@ In other words, success can be differentiated by different outcomes.</p>
 In other words, failure can be differentiated by different outcomes.</p>
 </li>
 </ul>
-<p><a class="autorefs autorefs-internal" href="../concurrentsequence/#betfsm.betfsm.ConcurrentSequence" title="betfsm.betfsm.ConcurrentSequence">ConcurrentSequence</a> and <a class="autorefs autorefs-internal" href="../concurrentfallback/#betfsm.betfsm.ConcurrentFallback" title="betfsm.betfsm.ConcurrentFallback">ConcurrentFallback</a> are basically the same as <a class="autorefs autorefs-internal" href="../sequence/#betfsm.Sequence" title="betfsm.Sequence">Sequence</a> and <a class="autorefs autorefs-internal" href="../fallback/#betfsm.Fallback" title="betfsm.Fallback">Fallback</a> but execute concurrently: at each tick they go to their complete list of states and follow the logic of sequence or fallback. e.g. in a ConcurrentSequence the states are executed concurrently, but within one tick, they are executed in the order specified.</p>
+<p><a class="autorefs autorefs-internal" href="../concurrentsequence/#betfsm.betfsm.ConcurrentSequence" title="betfsm.betfsm.ConcurrentSequence">ConcurrentSequence</a> and <a class="autorefs autorefs-internal" href="../concurrentfallback/#betfsm.ConcurrentFallback" title="betfsm.ConcurrentFallback">ConcurrentFallback</a> are basically the same as <a class="autorefs autorefs-internal" href="../sequence/#betfsm.Sequence" title="betfsm.Sequence">Sequence</a> and <a class="autorefs autorefs-internal" href="../fallback/#betfsm.Fallback" title="betfsm.Fallback">Fallback</a> but execute concurrently: at each tick they go to their complete list of states and follow the logic of sequence or fallback. e.g. in a ConcurrentSequence the states are executed concurrently, but within one tick, they are executed in the order specified.</p>
 <p><a class="autorefs autorefs-internal" href="../concurrent/#betfsm.betfsm.Concurrent" title="betfsm.betfsm.Concurrent">Concurrent</a> executes also its children concurrently (calling them in sequence for each tick). Concurrent stops executing when any child returns any outcome different from TICKING. See <a class="autorefs autorefs-internal" href="../concurrent/#betfsm.betfsm.Concurrent" title="betfsm.betfsm.Concurrent">API</a> for description fo detailed behavior.</p>
 <p>The <strong>Repeat</strong> state has one underlying state and repeats this state for a given number of times.</p>
 <h3 id="related-to-conditions">Related to conditions</h3>
@@ -362,36 +380,9 @@ The location to log is given by a list of strings.  </p>
 </li>
 <li>
 <p><a class="autorefs autorefs-internal" href="../lifecycle/#betfsm_ros.LifeCycle" title="betfsm_ros.LifeCycle">LifeCycle</a> manages the lifecycle of some other ROS2 node.
-  The node is constructed with service_name, transition (see below), timeout and the transition is requested during execution of the state.
-  See below for a simplified view of this lifecycle (transition states not included):
-<div class="mermaid">    stateDiagram-v2
-        direction LR
-        classDef successClass  fill:darkgreen,color:white
-        classDef tickingClass  fill:yellow,color:black
-        classDef otherClass  fill:darkorange,color:white
-        classDef abortClass  fill:darkred,color:white
-
-
-        [*] --&gt; unconfigured
-        unconfigured --&gt; inactive : CONFIGURE
-        inactive --&gt; active : ACTIVATE
-        inactive --&gt; unconfigured : CLEANUP
-        inactive --&gt; finalized : INACTIVE_SHUTDOWN
-        active --&gt; inactive : DEACTIVATE
-        active --&gt; finalized : ACTIVE_SHUTDOWN
-        unconfigured --&gt; finalized : UNCONFIGURED_SHUTDOWN</div></p>
+    The node is constructed with service_name, transition (see <a href="../ros2lifecycle/">ROS2 Lifecycle</a> ), timeout and the transition is requested during execution of the state.</p>
 </li>
 </ul>
-<p>These are the transtions that can be passed to a LifeCycle state:
-    <div class="highlight"><pre><span></span><code>    <span class="k">class</span><span class="w"> </span><span class="nc">Transition</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-        <span class="n">CONFIGURE</span>              <span class="o">=</span> <span class="mi">1</span>
-        <span class="n">CLEANUP</span>                <span class="o">=</span> <span class="mi">2</span>
-        <span class="n">ACTIVATE</span>               <span class="o">=</span> <span class="mi">3</span>
-        <span class="n">DEACTIVATE</span>             <span class="o">=</span> <span class="mi">4</span>
-        <span class="n">UNCONFIGURED_SHUTDOWN</span>  <span class="o">=</span> <span class="mi">5</span>
-        <span class="n">INACTIVE_SHUTDOWN</span>      <span class="o">=</span> <span class="mi">6</span>
-        <span class="n">ACTIVE_SHUTDOWN</span>        <span class="o">=</span> <span class="mi">7</span>    
-</code></pre></div></p>
 <h3 id="related-to-etasl">Related to eTaSL</h3>
 <h3 id="defining-your-own-states">Defining your own states</h3>
 <p>To implement a TickingState, you have to implement:</p>
@@ -432,17 +423,22 @@ your TickingState.  Most of the other nodes are implemented using these auxiliar
 Often it is sufficient to implement the constructor and the co_execute(self,blackboard) method and yield when
 you want to yield control to BeTFSM, and come back at the same location the next tick of BeTFSM.</p>
 </div>
-<h3 id="action-server">Action server</h3>
-<p>There is also a ROS2 Action server provided that allows us to respond to ROS2 Actions.  This contains
-also a generic parameter-passing mechanism with a JSON message string that in the black-board of BeTFSM.</p>
-<h3 id="action-client">Action client</h3>
-<p><strong>ActionClientBTFSM</strong> contains a Tickingstate that calls and action and generates an outcome when the action 
-returns back.   While waiting it gets the response of the action.</p>
+<!---
+### Action server
+
+There is also a ROS2 Action server provided that allows us to respond to ROS2 Actions.  This contains
+also a generic parameter-passing mechanism with a JSON message string that in the black-board of BeTFSM.
+
+### Action client
+
+**ActionClientBTFSM** contains a Tickingstate that calls and action and generates an outcome when the action 
+returns back.   While waiting it gets the response of the action.
+--->
 </div>
 </div><footer>
 <div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">
-<a class="btn btn-neutral float-left" href="../installation/" title="Installation"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-<a class="btn btn-neutral float-right" href="../tutorials/" title="Introduction">Next <span class="icon icon-circle-arrow-right"></span></a>
+<a class="btn btn-neutral float-left" href="../interruption/" title="Handling interruption"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+<a class="btn btn-neutral float-right" href="../api_overview/" title="Overview of the API">Next <span class="icon icon-circle-arrow-right"></span></a>
 </div>
 <hr/>
 <div role="contentinfo">
@@ -461,8 +457,8 @@ returns back.   While waiting it gets the response of the action.</p>
 <span>
 <a class="fa fa-github" href="https://github.com/Robotics-Research-Group-KUL/betfsm" style="color: #fcfcfc"> GitHub</a>
 </span>
-<span><a href="../installation/" style="color: #fcfcfc">« Previous</a></span>
-<span><a href="../tutorials/" style="color: #fcfcfc">Next »</a></span>
+<span><a href="../interruption/" style="color: #fcfcfc">« Previous</a></span>
+<span><a href="../api_overview/" style="color: #fcfcfc">Next »</a></span>
 </span>
 </div>
 <script src="../js/jquery-3.6.0.min.js"></script>

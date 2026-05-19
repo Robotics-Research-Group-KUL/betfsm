@@ -44,11 +44,7 @@
 <ul>
 <li class="toctree-l2"><a class="reference internal" href="..">Start page</a>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../overview/">Overview</a>
-</li>
 <li class="toctree-l2"><a class="reference internal" href="../installation/">Installation</a>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../technical_intro/">Technical introduction</a>
 </li>
 </ul>
 </li>
@@ -70,9 +66,17 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="reference internal current">API</a>
+<li class="toctree-l1 current"><a class="reference internal current">Technical documentation</a>
 <ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../technical_intro/">Technical introduction</a>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../api_overview/">Overview of the API</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../event/">Event handling</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../ros2lifecycle/">ROS2 Lifecycle</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/">Utilities</a>
 </li>
 <li class="toctree-l2 current"><a class="reference internal current">BeTFSM</a>
 <ul class="current">
@@ -124,11 +128,19 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_handler/">Ctrl C Handler</a>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../ctrl_c_receiver/">Ctrl_C_Receiver</a>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../alwaysoutcome/">AlwaysOutcome</a>
 </li>
-</ul>
+<li class="toctree-l3"><a class="reference internal" href="../eventoutcome/">EventOutcome</a>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../utils/">Utilities</a>
+<li class="toctree-l3"><a class="reference internal" href="../eventconcurrent/">EventConcurrent</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../eventsequential/">EventSequential</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../polling_func/">Polling functions</a>
+</li>
+</ul>
 </li>
 <li class="toctree-l2"><a class="reference internal">BeTFSM ROS2</a>
 <ul>
@@ -143,6 +155,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../timedwait_ros2/">TimedWait for ROS2</a>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../timeout/">Timeout</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../topiceventreceiver/">TopicEventReciever</a>
 </li>
 </ul>
 </li>
@@ -162,9 +176,13 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../etasl_statemachine/">eTaSL_StateMachine</a>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../crospi_polling_func/">crospi_polling_func</a>
+</li>
 </ul>
 </li>
 </ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../todo/">TODO</a>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../about/">About &amp; Acknowledgements</a>
 </li>
@@ -182,7 +200,7 @@
 <ul class="wy-breadcrumbs">
 <li><a aria-label="Docs" class="icon icon-home" href=".."></a></li>
 <li class="breadcrumb-item">Documentation</li>
-<li class="breadcrumb-item">API</li>
+<li class="breadcrumb-item">Technical documentation</li>
 <li class="breadcrumb-item">BeTFSM</li>
 <li class="breadcrumb-item active">Fallback</li>
 <li class="wy-breadcrumbs-aside">
@@ -203,8 +221,12 @@
 <details class="implements-a-behaviortree-like-fallback-node" open="">
 <summary>Implements a behaviortree-like Fallback node</summary>
 <ul>
-<li>success any other outcome,</li>
-<li>failure is CANCEL outcome</li>
+<li>executes a child and if it is a failure, continues with the next child. Otherwise 
+  it returns the outcome of the child that did not fail.  If all children fail
+  it returns CANCEL.</li>
+<li><strong>definition of failure can be overridden using callback</strong> but by default
+  is corresponds to a CANCEL outcome. The failure callback
+  can not only depend on the outcome but also on some information in the blackboard</li>
 </ul>
 </details> <p>There is a method <code>add_state</code> to add underlying nodes to the Fallback node, these are executed
 in order.  </p>
@@ -221,7 +243,7 @@ next node in the list is started (without any intermediate tick!).</p>
         [*] --&gt; Loop
         Loop --&gt; state_1 : current_state==1
         Loop --&gt; state_2 : current_state==2
-        Loop --&gt; CANCEL : last state succeeded
+        Loop --&gt; CANCEL : last state failed
         state_1 --&gt; Loop : CANCEL
         state_2 --&gt; Loop : CANCEL
 
@@ -241,7 +263,7 @@ next node in the list is started (without any intermediate tick!).</p>
 <div class="doc doc-children">
 <div class="doc doc-object doc-function">
 <h3 class="doc doc-heading" id="betfsm.Fallback.__init__">
-<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">children</span><span class="o">=</span><span class="p">[])</span></code>
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">children</span><span class="o">=</span><span class="p">[],</span> <span class="n">failure</span><span class="o">=</span><span class="k">lambda</span> <span class="n">bb</span><span class="p">,</span> <span class="n">outc</span><span class="p">:</span> <span class="n">outc</span> <span class="o">==</span> <span class="n">CANCEL</span><span class="p">)</span></code>
 </h3>
 <div class="doc doc-contents">
 <table class="field-list">
@@ -273,11 +295,26 @@ next node in the list is started (without any intermediate tick!).</p>
 you can use add_state(...) to add children.</p>
 </div>
 </li>
+<li>
+<b><code>failure</code></b>
+                  (<code><span title="typing.Callable">Callable</span>[[<span title="typing.Dict">Dict</span>, <span title="str">str</span>], <span title="bool">bool</span>]</code>, default:
+                      <code>lambda bb, outc: <span title="outc">outc</span> == <span title="betfsm.betfsm.CANCEL">CANCEL</span></code>
+)
+              –
+              <div class="doc-md-description">
+<p>This callback defines what a failure is, can use blackboard or
+outcome. A callback with signature: <code>def failure(bb:Blackboard,outcome:str)-&gt;bool</code> </p>
+</div>
+</li>
 </ul>
 </td>
 </tr>
 </tbody>
 </table>
+<details class="warning" open="">
+<summary>warning</summary>
+<p>The failure callback should also take into account TICKING outcomes.</p>
+</details>
 </div>
 </div>
 </div>

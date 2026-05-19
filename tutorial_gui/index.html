@@ -48,11 +48,7 @@
     <ul>
                 <li class="toctree-l2"><a class="reference internal" href="..">Start page</a>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="../overview/">Overview</a>
-                </li>
                 <li class="toctree-l2"><a class="reference internal" href="../installation/">Installation</a>
-                </li>
-                <li class="toctree-l2"><a class="reference internal" href="../technical_intro/">Technical introduction</a>
                 </li>
     </ul>
                   </li>
@@ -90,9 +86,17 @@
                 </li>
     </ul>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" >API</a>
+                  <li class="toctree-l1"><a class="reference internal" >Technical documentation</a>
     <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../technical_intro/">Technical introduction</a>
+                </li>
                 <li class="toctree-l2"><a class="reference internal" href="../api_overview/">Overview of the API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../event/">Event handling</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../ros2lifecycle/">ROS2 Lifecycle</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../utils/">Utilities</a>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >BeTFSM</a>
     <ul>
@@ -140,11 +144,19 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_handler/">Ctrl C Handler</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_receiver/">Ctrl_C_Receiver</a>
+                </li>
                 <li class="toctree-l3"><a class="reference internal" href="../alwaysoutcome/">AlwaysOutcome</a>
                 </li>
-    </ul>
+                <li class="toctree-l3"><a class="reference internal" href="../eventoutcome/">EventOutcome</a>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="../utils/">Utilities</a>
+                <li class="toctree-l3"><a class="reference internal" href="../eventconcurrent/">EventConcurrent</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../eventsequential/">EventSequential</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../polling_func/">Polling functions</a>
+                </li>
+    </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >BeTFSM ROS2</a>
     <ul>
@@ -159,6 +171,8 @@
                 <li class="toctree-l3"><a class="reference internal" href="../timedwait_ros2/">TimedWait for ROS2</a>
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../timeout/">Timeout</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../topiceventreceiver/">TopicEventReciever</a>
                 </li>
     </ul>
                 </li>
@@ -178,9 +192,13 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../etasl_statemachine/">eTaSL_StateMachine</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../crospi_polling_func/">crospi_polling_func</a>
+                </li>
     </ul>
                 </li>
     </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../todo/">TODO</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../about/">About & Acknowledgements</a>
                   </li>
@@ -473,12 +491,15 @@ to stop the robot.</p>
 <span class="normal">80</span>
 <span class="normal">81</span>
 <span class="normal">82</span>
-<span class="normal">83</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">rclpy</span>
+<span class="normal">83</span>
+<span class="normal">84</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">rclpy</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">betfsm</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">Sequence</span><span class="p">,</span>  <span class="n">Message</span><span class="p">,</span> <span class="n">SUCCEED</span><span class="p">,</span> <span class="n">TICKING</span><span class="p">,</span> <span class="n">CANCEL</span><span class="p">,</span> <span class="n">ABORT</span><span class="p">,</span><span class="n">TIMEOUT</span><span class="p">,</span><span class="n">TickingStateMachine</span><span class="p">,</span><span class="n">get_logger</span><span class="p">,</span><span class="n">set_logger</span><span class="p">,</span>
-    <span class="n">Ctrl_C_Handler</span><span class="p">,</span><span class="n">CheckCancel</span><span class="p">,</span> <span class="n">get_path_value</span>
+    <span class="n">Sequence</span><span class="p">,</span>  <span class="n">Message</span><span class="p">,</span> 
+    <span class="n">SUCCEED</span><span class="p">,</span> <span class="n">TICKING</span><span class="p">,</span> <span class="n">CANCEL</span><span class="p">,</span> <span class="n">ABORT</span><span class="p">,</span> <span class="n">TIMEOUT</span><span class="p">,</span> <span class="n">NO_EVENT</span><span class="p">,</span>
+    <span class="n">TickingStateMachine</span><span class="p">,</span><span class="n">get_logger</span><span class="p">,</span><span class="n">set_logger</span><span class="p">,</span>
+    <span class="n">EventSequential</span><span class="p">,</span> <span class="n">ctrl_c_polling_func</span><span class="p">,</span> <span class="n">get_path_value</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">betfsm_crospi</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_task_list</span><span class="p">,</span> <span class="n">eTaSL_StateMachine</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">betfsm_ros</span><span class="w"> </span><span class="kn">import</span> <span class="n">BeTFSMNode</span><span class="p">,</span><span class="n">ROSRunner</span><span class="p">,</span><span class="n">Node</span><span class="p">,</span><span class="n">Duration</span><span class="p">,</span><span class="n">LifeCycle</span><span class="p">,</span><span class="n">Transition</span>
@@ -535,11 +556,10 @@ to stop the robot.</p>
     <span class="n">load_task_list</span><span class="p">(</span><span class="s2">&quot;$[crospi_application_template]/skill_specifications/libraries/skill_lib_example/tasks/skill_example.json&quot;</span><span class="p">,</span><span class="n">blackboard</span><span class="p">)</span>
 
 
-    <span class="n">Ctrl_C_Handler</span><span class="p">(</span><span class="n">blackboard</span><span class="p">,</span><span class="s2">&quot;/cancelation/ctrl_c&quot;</span><span class="p">,</span><span class="n">repeated</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>    
     <span class="n">nominal_sm</span> <span class="o">=</span> <span class="n">MySequence</span><span class="p">()</span>
     <span class="n">cleanup_sm</span> <span class="o">=</span> <span class="n">MyCleanup</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="n">my_node</span><span class="p">)</span>
-    <span class="n">sm</span> <span class="o">=</span> <span class="n">CheckCancel</span><span class="p">(</span><span class="s2">&quot;check_cancelation&quot;</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">bb</span><span class="p">:</span> <span class="n">get_path_value</span><span class="p">(</span><span class="n">bb</span><span class="p">,</span><span class="s2">&quot;/cancelation/ctrl_c&quot;</span><span class="p">),</span> <span class="n">nominal_sm</span><span class="p">,</span> <span class="n">cleanup_sm</span><span class="p">)</span>
 
+    <span class="n">sm</span> <span class="o">=</span> <span class="n">EventSequential</span><span class="p">(</span><span class="s2">&quot;check_cancel&quot;</span><span class="p">,</span> <span class="n">ctrl_c_polling_func</span><span class="p">(</span><span class="s2">&quot;CTRL_C&quot;</span><span class="p">,</span><span class="mi">3</span><span class="p">),{</span><span class="n">NO_EVENT</span><span class="p">:</span><span class="n">nominal_sm</span><span class="p">,</span> <span class="s2">&quot;CTRL_C&quot;</span><span class="p">:</span><span class="n">cleanup_sm</span><span class="p">})</span>
     <span class="c1"># This is now working and recommended, accepts command-line parameters (see --help)</span>
     <span class="c1"># has many more optional arguments, see API documentation</span>
     <span class="c1"># checks whether timing exceeds sample period.</span>
@@ -643,12 +663,15 @@ a robot to continue until he is in a safe state before stopping.</p>
 <span class="normal">80</span>
 <span class="normal">81</span>
 <span class="normal">82</span>
-<span class="normal">83</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">rclpy</span>
+<span class="normal">83</span>
+<span class="normal">84</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">rclpy</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">betfsm</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">Sequence</span><span class="p">,</span>  <span class="n">Message</span><span class="p">,</span> <span class="n">SUCCEED</span><span class="p">,</span> <span class="n">TICKING</span><span class="p">,</span> <span class="n">CANCEL</span><span class="p">,</span> <span class="n">ABORT</span><span class="p">,</span><span class="n">TIMEOUT</span><span class="p">,</span><span class="n">TickingStateMachine</span><span class="p">,</span><span class="n">get_logger</span><span class="p">,</span><span class="n">set_logger</span><span class="p">,</span>
-    <span class="n">Ctrl_C_Handler</span><span class="p">,</span><span class="n">CheckCancel</span><span class="p">,</span> <span class="n">get_path_value</span>
+    <span class="n">Sequence</span><span class="p">,</span>  <span class="n">Message</span><span class="p">,</span> 
+    <span class="n">SUCCEED</span><span class="p">,</span> <span class="n">TICKING</span><span class="p">,</span> <span class="n">CANCEL</span><span class="p">,</span> <span class="n">ABORT</span><span class="p">,</span> <span class="n">TIMEOUT</span><span class="p">,</span> <span class="n">NO_EVENT</span><span class="p">,</span>
+    <span class="n">TickingStateMachine</span><span class="p">,</span><span class="n">get_logger</span><span class="p">,</span><span class="n">set_logger</span><span class="p">,</span>
+    <span class="n">EventSequential</span><span class="p">,</span> <span class="n">ctrl_c_polling_func</span><span class="p">,</span> <span class="n">get_path_value</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">betfsm_crospi</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_task_list</span><span class="p">,</span> <span class="n">eTaSL_StateMachine</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">betfsm_ros</span><span class="w"> </span><span class="kn">import</span> <span class="n">BeTFSMNode</span><span class="p">,</span><span class="n">ROSRunner</span><span class="p">,</span><span class="n">Node</span><span class="p">,</span><span class="n">Duration</span><span class="p">,</span><span class="n">LifeCycle</span><span class="p">,</span><span class="n">Transition</span>
@@ -705,11 +728,10 @@ a robot to continue until he is in a safe state before stopping.</p>
     <span class="n">load_task_list</span><span class="p">(</span><span class="s2">&quot;$[crospi_application_template]/skill_specifications/libraries/skill_lib_example/tasks/skill_example.json&quot;</span><span class="p">,</span><span class="n">blackboard</span><span class="p">)</span>
 
 
-    <span class="n">Ctrl_C_Handler</span><span class="p">(</span><span class="n">blackboard</span><span class="p">,</span><span class="s2">&quot;/cancelation/ctrl_c&quot;</span><span class="p">,</span><span class="n">repeated</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>    
     <span class="n">nominal_sm</span> <span class="o">=</span> <span class="n">MySequence</span><span class="p">()</span>
     <span class="n">cleanup_sm</span> <span class="o">=</span> <span class="n">MyCleanup</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="n">my_node</span><span class="p">)</span>
-    <span class="n">sm</span> <span class="o">=</span> <span class="n">CheckCancel</span><span class="p">(</span><span class="s2">&quot;check_cancelation&quot;</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">bb</span><span class="p">:</span> <span class="n">get_path_value</span><span class="p">(</span><span class="n">bb</span><span class="p">,</span><span class="s2">&quot;/cancelation/ctrl_c&quot;</span><span class="p">),</span> <span class="n">nominal_sm</span><span class="p">,</span> <span class="n">cleanup_sm</span><span class="p">)</span>
 
+    <span class="n">sm</span> <span class="o">=</span> <span class="n">EventSequential</span><span class="p">(</span><span class="s2">&quot;check_cancel&quot;</span><span class="p">,</span> <span class="n">ctrl_c_polling_func</span><span class="p">(</span><span class="s2">&quot;CTRL_C&quot;</span><span class="p">,</span><span class="mi">3</span><span class="p">),{</span><span class="n">NO_EVENT</span><span class="p">:</span><span class="n">nominal_sm</span><span class="p">,</span> <span class="s2">&quot;CTRL_C&quot;</span><span class="p">:</span><span class="n">cleanup_sm</span><span class="p">})</span>
     <span class="c1"># This is now working and recommended, accepts command-line parameters (see --help)</span>
     <span class="c1"># has many more optional arguments, see API documentation</span>
     <span class="c1"># checks whether timing exceeds sample period.</span>

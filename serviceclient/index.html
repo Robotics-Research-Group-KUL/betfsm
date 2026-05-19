@@ -44,11 +44,7 @@
 <ul>
 <li class="toctree-l2"><a class="reference internal" href="..">Start page</a>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../overview/">Overview</a>
-</li>
 <li class="toctree-l2"><a class="reference internal" href="../installation/">Installation</a>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../technical_intro/">Technical introduction</a>
 </li>
 </ul>
 </li>
@@ -70,9 +66,17 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="reference internal current">API</a>
+<li class="toctree-l1 current"><a class="reference internal current">Technical documentation</a>
 <ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../technical_intro/">Technical introduction</a>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../api_overview/">Overview of the API</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../event/">Event handling</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../ros2lifecycle/">ROS2 Lifecycle</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/">Utilities</a>
 </li>
 <li class="toctree-l2"><a class="reference internal">BeTFSM</a>
 <ul>
@@ -120,11 +124,19 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_handler/">Ctrl C Handler</a>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../ctrl_c_receiver/">Ctrl_C_Receiver</a>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../alwaysoutcome/">AlwaysOutcome</a>
 </li>
-</ul>
+<li class="toctree-l3"><a class="reference internal" href="../eventoutcome/">EventOutcome</a>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../utils/">Utilities</a>
+<li class="toctree-l3"><a class="reference internal" href="../eventconcurrent/">EventConcurrent</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../eventsequential/">EventSequential</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../polling_func/">Polling functions</a>
+</li>
+</ul>
 </li>
 <li class="toctree-l2 current"><a class="reference internal current">BeTFSM ROS2</a>
 <ul class="current">
@@ -148,6 +160,8 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../timeout/">Timeout</a>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../topiceventreceiver/">TopicEventReciever</a>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal">BeTFSM cROSpi</a>
@@ -166,9 +180,13 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../etasl_statemachine/">eTaSL_StateMachine</a>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../crospi_polling_func/">crospi_polling_func</a>
+</li>
 </ul>
 </li>
 </ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../todo/">TODO</a>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../about/">About &amp; Acknowledgements</a>
 </li>
@@ -186,7 +204,7 @@
 <ul class="wy-breadcrumbs">
 <li><a aria-label="Docs" class="icon icon-home" href=".."></a></li>
 <li class="breadcrumb-item">Documentation</li>
-<li class="breadcrumb-item">API</li>
+<li class="breadcrumb-item">Technical documentation</li>
 <li class="breadcrumb-item">BeTFSM ROS2</li>
 <li class="breadcrumb-item active">ServiceClient</li>
 <li class="wy-breadcrumbs-aside">
@@ -445,7 +463,7 @@ the outcome to give back (should be final outcome, i.e. TICKING not allowed)</p>
 </div>
 </div><footer>
 <div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">
-<a class="btn btn-neutral float-left" href="../utils/" title="Utilities"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+<a class="btn btn-neutral float-left" href="../polling_func/" title="Polling functions"><span class="icon icon-circle-arrow-left"></span> Previous</a>
 <a class="btn btn-neutral float-right" href="../actionclient_ros/" title="ActionClient">Next <span class="icon icon-circle-arrow-right"></span></a>
 </div>
 <hr/>
@@ -465,7 +483,7 @@ the outcome to give back (should be final outcome, i.e. TICKING not allowed)</p>
 <span>
 <a class="fa fa-github" href="https://github.com/Robotics-Research-Group-KUL/betfsm" style="color: #fcfcfc"> GitHub</a>
 </span>
-<span><a href="../utils/" style="color: #fcfcfc">« Previous</a></span>
+<span><a href="../polling_func/" style="color: #fcfcfc">« Previous</a></span>
 <span><a href="../actionclient_ros/" style="color: #fcfcfc">Next »</a></span>
 </span>
 </div>

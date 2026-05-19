@@ -48,11 +48,7 @@
     <ul>
                 <li class="toctree-l2"><a class="reference internal" href="..">Start page</a>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="../overview/">Overview</a>
-                </li>
                 <li class="toctree-l2"><a class="reference internal" href="../installation/">Installation</a>
-                </li>
-                <li class="toctree-l2"><a class="reference internal" href="../technical_intro/">Technical introduction</a>
                 </li>
     </ul>
                   </li>
@@ -74,9 +70,17 @@
                 </li>
     </ul>
                   </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" >API</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" >Technical documentation</a>
     <ul class="current">
+                <li class="toctree-l2"><a class="reference internal" href="../technical_intro/">Technical introduction</a>
+                </li>
                 <li class="toctree-l2"><a class="reference internal" href="../api_overview/">Overview of the API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../event/">Event handling</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../ros2lifecycle/">ROS2 Lifecycle</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../utils/">Utilities</a>
                 </li>
                 <li class="toctree-l2 current"><a class="reference internal current" >BeTFSM</a>
     <ul class="current">
@@ -126,11 +130,19 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_handler/">Ctrl C Handler</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_receiver/">Ctrl_C_Receiver</a>
+                </li>
                 <li class="toctree-l3"><a class="reference internal" href="../alwaysoutcome/">AlwaysOutcome</a>
                 </li>
-    </ul>
+                <li class="toctree-l3"><a class="reference internal" href="../eventoutcome/">EventOutcome</a>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="../utils/">Utilities</a>
+                <li class="toctree-l3"><a class="reference internal" href="../eventconcurrent/">EventConcurrent</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../eventsequential/">EventSequential</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../polling_func/">Polling functions</a>
+                </li>
+    </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >BeTFSM ROS2</a>
     <ul>
@@ -145,6 +157,8 @@
                 <li class="toctree-l3"><a class="reference internal" href="../timedwait_ros2/">TimedWait for ROS2</a>
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../timeout/">Timeout</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../topiceventreceiver/">TopicEventReciever</a>
                 </li>
     </ul>
                 </li>
@@ -164,9 +178,13 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../etasl_statemachine/">eTaSL_StateMachine</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../crospi_polling_func/">crospi_polling_func</a>
+                </li>
     </ul>
                 </li>
     </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../todo/">TODO</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../about/">About & Acknowledgements</a>
                   </li>
@@ -186,7 +204,7 @@
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
           <li class="breadcrumb-item">Documentation</li>
-          <li class="breadcrumb-item">API</li>
+          <li class="breadcrumb-item">Technical documentation</li>
           <li class="breadcrumb-item">BeTFSM</li>
       <li class="breadcrumb-item active">Runner</li>
     <li class="wy-breadcrumbs-aside">
@@ -309,7 +327,7 @@ enough information to reconstruct the BeTFSM tree.</p>
 
 
 <h3 id="betfsm.RunnerBase.__init__" class="doc doc-heading">
-            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">statemachine</span><span class="p">,</span> <span class="n">blackboard</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">publish_frequency</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">display_active</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">betfsm_log</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name_filter</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">allow_generate_dot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">allow_generate_json</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">serve</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">8000</span><span class="p">,</span> <span class="n">workers</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">log_level</span><span class="o">=</span><span class="s1">&#39;info&#39;</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">statemachine</span><span class="p">,</span> <span class="n">blackboard</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">publish_frequency</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">display_active</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">betfsm_log</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name_filter</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">type_filter</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">allow_generate_dot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">allow_generate_sm_dot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">allow_generate_json</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">serve</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">8000</span><span class="p">,</span> <span class="n">workers</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">log_level</span><span class="o">=</span><span class="s1">&#39;info&#39;</span><span class="p">)</span></code>
 
 </h3>
 
@@ -411,6 +429,17 @@ the graphical user interface</p>
               </div>
             </li>
             <li>
+              <b><code>type_filter</code></b>
+                  (<code><span title="str">str</span></code>, default:
+                      <code>&#39;&#39;</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>comma-separated list of typrs of nodes that are not descended into in
+the graphical user interface                </p>
+              </div>
+            </li>
+            <li>
               <b><code>allow_generate_dot</code></b>
                   (<code><span title="bool">bool</span></code>, default:
                       <code>True</code>
@@ -418,6 +447,16 @@ the graphical user interface</p>
               –
               <div class="doc-md-description">
                 <p>adds the generate_dot command-line parameter. [default: True]</p>
+              </div>
+            </li>
+            <li>
+              <b><code>allow_generate_sm_dot</code></b>
+                  (<code><span title="bool">bool</span></code>, default:
+                      <code>True</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>adds the generate_sm_dot command-line parameter. [default: True]                </p>
               </div>
             </li>
             <li>

@@ -48,11 +48,7 @@
     <ul>
                 <li class="toctree-l2"><a class="reference internal" href="..">Start page</a>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="../overview/">Overview</a>
-                </li>
                 <li class="toctree-l2"><a class="reference internal" href="../installation/">Installation</a>
-                </li>
-                <li class="toctree-l2"><a class="reference internal" href="../technical_intro/">Technical introduction</a>
                 </li>
     </ul>
                   </li>
@@ -74,9 +70,17 @@
                 </li>
     </ul>
                   </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" >API</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" >Technical documentation</a>
     <ul class="current">
+                <li class="toctree-l2"><a class="reference internal" href="../technical_intro/">Technical introduction</a>
+                </li>
                 <li class="toctree-l2"><a class="reference internal" href="../api_overview/">Overview of the API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../event/">Event handling</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../ros2lifecycle/">ROS2 Lifecycle</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../utils/">Utilities</a>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >BeTFSM</a>
     <ul>
@@ -124,11 +128,19 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_handler/">Ctrl C Handler</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_receiver/">Ctrl_C_Receiver</a>
+                </li>
                 <li class="toctree-l3"><a class="reference internal" href="../alwaysoutcome/">AlwaysOutcome</a>
                 </li>
-    </ul>
+                <li class="toctree-l3"><a class="reference internal" href="../eventoutcome/">EventOutcome</a>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="../utils/">Utilities</a>
+                <li class="toctree-l3"><a class="reference internal" href="../eventconcurrent/">EventConcurrent</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../eventsequential/">EventSequential</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../polling_func/">Polling functions</a>
+                </li>
+    </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >BeTFSM ROS2</a>
     <ul>
@@ -143,6 +155,8 @@
                 <li class="toctree-l3"><a class="reference internal" href="../timedwait_ros2/">TimedWait for ROS2</a>
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../timeout/">Timeout</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../topiceventreceiver/">TopicEventReciever</a>
                 </li>
     </ul>
                 </li>
@@ -166,9 +180,13 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../etasl_statemachine/">eTaSL_StateMachine</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../crospi_polling_func/">crospi_polling_func</a>
+                </li>
     </ul>
                 </li>
     </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../todo/">TODO</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../about/">About & Acknowledgements</a>
                   </li>
@@ -188,7 +206,7 @@
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
           <li class="breadcrumb-item">Documentation</li>
-          <li class="breadcrumb-item">API</li>
+          <li class="breadcrumb-item">Technical documentation</li>
           <li class="breadcrumb-item">BeTFSM cROSpi</li>
       <li class="breadcrumb-item active">eTaSLEvent</li>
     <li class="wy-breadcrumbs-aside">
@@ -217,7 +235,13 @@
 
 
 
-        <p>At every tick processes the latest message from the topic.
+        <div class="admonition error">
+<p class="admonition-title">Error</p>
+<p>This class is now obsolete, do <strong>NOT</strong> use. Use EventOutcome together 
+with crospi_polling_func instead.  Additional posibilities using
+EventSequential and EventConcurrent.</p>
+</div>
+<p>At every tick processes the latest message from the topic.
 Node will CANCEL when it is ticked and no topic has been received.</p>
 
 
@@ -244,7 +268,7 @@ Node will CANCEL when it is ticked and no topic has been received.</p>
 
 
 <h3 id="betfsm_crospi.eTaSLEvent.__init__" class="doc doc-heading">
-            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">topic</span><span class="p">,</span> <span class="n">qos</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;e_finished@crospi_node&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">SUCCEED</span><span class="p">)},</span> <span class="n">node</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">topic</span><span class="o">=</span><span class="s1">&#39;/my_topic&#39;</span><span class="p">,</span> <span class="n">qos</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;e_finished@crospi_node&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">SUCCEED</span><span class="p">)},</span> <span class="n">node</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h3>
 
@@ -274,7 +298,9 @@ Node will CANCEL when it is ticked and no topic has been received.</p>
             </li>
             <li>
               <b><code>topic</code></b>
-                  (<code><span title="str">str</span></code>)
+                  (<code><span title="str">str</span></code>, default:
+                      <code>&#39;/my_topic&#39;</code>
+)
               –
               <div class="doc-md-description">
                 <p>name of the topic.  Topics of type String are expected.</p>
@@ -305,7 +331,7 @@ event will be selected.</p>
             </li>
             <li>
               <b><code>node</code></b>
-                  (<code><span title="betfsm_ros.Node">Node</span></code>, default:
+                  (<code><span title="rclpy.node.Node">Node</span></code>, default:
                       <code>None</code>
 )
               –

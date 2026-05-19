@@ -44,11 +44,7 @@
 <ul>
 <li class="toctree-l2"><a class="reference internal" href="..">Start page</a>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../overview/">Overview</a>
-</li>
 <li class="toctree-l2"><a class="reference internal" href="../installation/">Installation</a>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../technical_intro/">Technical introduction</a>
 </li>
 </ul>
 </li>
@@ -70,9 +66,17 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="reference internal current">API</a>
+<li class="toctree-l1 current"><a class="reference internal current">Technical documentation</a>
 <ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../technical_intro/">Technical introduction</a>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../api_overview/">Overview of the API</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../event/">Event handling</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../ros2lifecycle/">ROS2 Lifecycle</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/">Utilities</a>
 </li>
 <li class="toctree-l2 current"><a class="reference internal current">BeTFSM</a>
 <ul class="current">
@@ -92,9 +96,9 @@
 </li>
 <li class="toctree-l3 current"><a class="reference internal current" href="#">ConcurrentFallback</a>
 <ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="#betfsm.betfsm.ConcurrentFallback.__init__">__init__</a>
+<li class="toctree-l4"><a class="reference internal" href="#betfsm.ConcurrentFallback.__init__">__init__</a>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="#betfsm.betfsm.ConcurrentFallback.co_execute">co_execute</a>
+<li class="toctree-l4"><a class="reference internal" href="#betfsm.ConcurrentFallback.co_execute">co_execute</a>
 </li>
 </ul>
 </li>
@@ -126,11 +130,19 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_handler/">Ctrl C Handler</a>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../ctrl_c_receiver/">Ctrl_C_Receiver</a>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../alwaysoutcome/">AlwaysOutcome</a>
 </li>
-</ul>
+<li class="toctree-l3"><a class="reference internal" href="../eventoutcome/">EventOutcome</a>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../utils/">Utilities</a>
+<li class="toctree-l3"><a class="reference internal" href="../eventconcurrent/">EventConcurrent</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../eventsequential/">EventSequential</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../polling_func/">Polling functions</a>
+</li>
+</ul>
 </li>
 <li class="toctree-l2"><a class="reference internal">BeTFSM ROS2</a>
 <ul>
@@ -145,6 +157,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../timedwait_ros2/">TimedWait for ROS2</a>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../timeout/">Timeout</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../topiceventreceiver/">TopicEventReciever</a>
 </li>
 </ul>
 </li>
@@ -164,9 +178,13 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../etasl_statemachine/">eTaSL_StateMachine</a>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../crospi_polling_func/">crospi_polling_func</a>
+</li>
 </ul>
 </li>
 </ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../todo/">TODO</a>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../about/">About &amp; Acknowledgements</a>
 </li>
@@ -184,7 +202,7 @@
 <ul class="wy-breadcrumbs">
 <li><a aria-label="Docs" class="icon icon-home" href=".."></a></li>
 <li class="breadcrumb-item">Documentation</li>
-<li class="breadcrumb-item">API</li>
+<li class="breadcrumb-item">Technical documentation</li>
 <li class="breadcrumb-item">BeTFSM</li>
 <li class="breadcrumb-item active">ConcurrentFallback</li>
 <li class="wy-breadcrumbs-aside">
@@ -196,8 +214,8 @@
 <div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
 <div class="section" itemprop="articleBody">
 <div class="doc doc-object doc-class">
-<h2 class="doc doc-heading" id="betfsm.betfsm.ConcurrentFallback">
-<code>betfsm.betfsm.ConcurrentFallback</code>
+<h2 class="doc doc-heading" id="betfsm.ConcurrentFallback">
+<code>betfsm.ConcurrentFallback</code>
 </h2>
 <div class="doc doc-contents first">
 <p class="doc doc-class-bases">
@@ -214,7 +232,7 @@ in order. </p>
 the list of underlying active states and:</p>
 <ul>
 <li>If an underlying state returns CANCEL, it becomes inactive. If all states have become inactive,
-   the Sequence returns CANCEL (a "success")</li>
+   the ConcurrentFallback returns CANCEL </li>
 <li>If an underlying active state returns another outcome besides TICKING and CANCEL, the Sequence returns
 the outcome of the first such state (a "success" ) and cancels the other running states.</li>
 <li>If any of the states has returned TICKING, the sequence returns TICKING</li>
@@ -251,7 +269,7 @@ ConcurrentFallback waits until all underlying states have finished ( a "join")</
     class CANCEL abortClass</div>
 <div class="doc doc-children">
 <div class="doc doc-object doc-function">
-<h3 class="doc doc-heading" id="betfsm.betfsm.ConcurrentFallback.__init__">
+<h3 class="doc doc-heading" id="betfsm.ConcurrentFallback.__init__">
 <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">children</span><span class="o">=</span><span class="p">[])</span></code>
 </h3>
 <div class="doc doc-contents">
@@ -292,7 +310,7 @@ you can use add_state(...) to add children.</p>
 </div>
 </div>
 <div class="doc doc-object doc-function">
-<h3 class="doc doc-heading" id="betfsm.betfsm.ConcurrentFallback.co_execute">
+<h3 class="doc doc-heading" id="betfsm.ConcurrentFallback.co_execute">
 <code class="highlight language-python"><span class="n">co_execute</span><span class="p">(</span><span class="n">blackboard</span><span class="p">)</span></code>
 </h3>
 <div class="doc doc-contents">

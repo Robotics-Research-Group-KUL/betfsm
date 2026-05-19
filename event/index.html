@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Erwin Aertbelien" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Event handling - BeTFSM documentation</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../assets/_mkdocstrings.css" rel="stylesheet" />
+        <link href="../css/mkdocstrings.css" rel="stylesheet" />
+        <link href="../css/extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Event handling";
+        var mkdocs_page_input_path = "event.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> BeTFSM documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Documentation</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" >Introduction</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="..">Start page</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../installation/">Installation</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Tutorials</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../tutorials/">Introduction</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../tutorial_node/">Defining your own BeTFSM node</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../tutorial_sequence1/">My first BeTFSM tree</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../tutorial_gui/">Executing a BeTFSM tree</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../tutorial_statemachine/">Defining state machines</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../tutorial_common_nodes/">Example with common nodes</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../interruption/">Handling interruption</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" >Technical documentation</a>
+    <ul class="current">
+                <li class="toctree-l2"><a class="reference internal" href="../technical_intro/">Technical introduction</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../api_overview/">Overview of the API</a>
+                </li>
+                <li class="toctree-l2 current"><a class="reference internal current" href="#">Event handling</a>
+    <ul class="current">
+    <li class="toctree-l3"><a class="reference internal" href="#event-receivers">Event receivers</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#event-checkers">Event checkers</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#polling-functions">Polling functions</a>
+    </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../ros2lifecycle/">ROS2 Lifecycle</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../utils/">Utilities</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" >BeTFSM</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../tickingstate/">TickingState</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../tickingstatemachine/">TickingStateMachine</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../visitor/">Visitor</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../generator/">Generator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../sequence/">Sequence</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../concurrentsequence/">ConcurrentSequence</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../fallback/">Fallback</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../concurrentfallback/">ConcurrentFallback</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../concurrent/">Concurrent</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../waitfor/">WaitFor</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../waitforever/">WaitForever</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../timedwait/">TimedWait</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../timedrepeat/">TimedRepeat</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../while/">While</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../repeat/">Repeat</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../message/">Message</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../logblackboard/">LogBlackboard</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../compute/">Compute</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../adapt/">Adapt</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../runner/">Runner</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../checkcancel/">CheckCancel</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_handler/">Ctrl C Handler</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_receiver/">Ctrl_C_Receiver</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../alwaysoutcome/">AlwaysOutcome</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../eventoutcome/">EventOutcome</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../eventconcurrent/">EventConcurrent</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../eventsequential/">EventSequential</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../polling_func/">Polling functions</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" >BeTFSM ROS2</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../serviceclient/">ServiceClient</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../actionclient_ros/">ActionClient</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../lifecycle/">LifeCycle</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../timedrepeat_ros/">TimedRepeat for ROS2</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../timedwait_ros2/">TimedWait for ROS2</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../timeout/">Timeout</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../topiceventreceiver/">TopicEventReciever</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" >BeTFSM cROSpi</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../load_task_list/">load_task_list</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../settaskparameters/">SetTaskParameters</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../readrobotspecification/">ReadRobotSpecification</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../readtaskspecification/">ReadTaskSpecification</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../etasloutput/">eTaSLOutput</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../etaslevent/">eTaSLEvent</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../etasl_statemachine/">eTaSL_StateMachine</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../crospi_polling_func/">crospi_polling_func</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../todo/">TODO</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../about/">About & Acknowledgements</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">BeTFSM documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Documentation</li>
+          <li class="breadcrumb-item">Technical documentation</li>
+      <li class="breadcrumb-item active">Event handling</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/Robotics-Research-Group-KUL/betfsm/edit/main/documentation/docs/event.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="events-in-betfsm">Events in BeTFSM</h1>
+<p>Without loss of generality, <strong>events</strong> in BeTFSM are identified by strings.  If the event source uses another
+form of event identification, the event receiver (see below) will translate this into strings.</p>
+<p>Event-handling in BeTFSM is handled in two parts:</p>
+<ul>
+<li>An <strong>event receiver</strong> that receives events.  Most often this receiver should be a <strong>singleton class</strong> for each channel by which 
+   you receive the events.  It is up to the event receiver to decide on the policy of receiving the events, e.g. whether they should
+   be queued in a FIFO way, a priority queue or something else.  The event receiver should provide a <strong>polling function</strong>, a
+   function that takes a list of events and returns a matching event that has been received or None if no there is no matching
+   event received.  An event receiver should provide a <strong>consuming</strong> (i.e. the matching event is removed from the queue) and
+    <strong>non-consuming</strong> (i.e. the matching event is not removed from the queue) polling function.  Not all event receivers have or should 
+    have a queue (e.g. ctrl-C handler).  </li>
+<li>An <strong>event checker</strong> is a TickingState that can be used in a BeTFSM tree to check whether an event has been received. The modalities
+   such as blocking/one-time check  or sending out an outcome/executing a BeTFSM subtree/interrupting a BeTFSM tree depend on the
+   specific event checker class. The event checker and event receiver are (very) loosely coupled using a <strong>callback function</strong>
+   given as an argument to the event checker constructor. Typically a very small function couples the event receiver class and 
+   polling function with the blackboard and is used as callback function.</li>
+</ul>
+<details class="note">
+<summary><strong>Checking at multiple locations in the BeTFSM tree</strong></summary>
+<p>A big advantage of the decoupling of event receiver with event checker is that you can check the events
+at multiple locations in your BeTFSM tree.  It is not a problem to have a consuming check at multiple locations
+in your BeTFSM tree, as long as you check for different events.  If you want to check for the same event at
+different locations, you probably want only to have one check consuming and the other non-consuming.</p>
+</details>
+<details class="note">
+<summary><strong>Queuing at BeTFSM's side</strong></summary>
+<p>The event receiver has to manage its own queue and cannot easily let the middleware handle it.  It needs
+  to examine the whole queue for a matching event.</p>
+</details>
+<details class="note">
+<summary><strong>Multiplexing event receivers</strong></summary>
+<p>For particular applications, such as listening to multiple topics, a short, special purpose callback function can
+  be written to call multiple event receivers and fuse them together according to your application specific policies.</p>
+</details>
+<h2 id="event-receivers">Event receivers</h2>
+<table>
+<thead>
+<tr>
+<th>Event receiver</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a class="autorefs autorefs-internal" title="betfsm_ros.TopicEventReceiver" href="../topiceventreceiver/#betfsm_ros.TopicEventReceiver">TopicEventReciever</a></td>
+<td>Receives events from a ROS2 topic and uses a FIFO queue to <br/>store the events.</td>
+</tr>
+<tr>
+<td><a class="autorefs autorefs-internal" title="betfsm.Ctrl_C_Receiver" href="../ctrl_c_receiver/#betfsm.Ctrl_C_Receiver">Ctrl_C_Receiver</a></td>
+<td>Rembers whether ctrl-c has been pressed such that the polling <br/>function can check for that event.</td>
+</tr>
+<tr>
+<td><em>to be implemented</em></td>
+<td>Checking for events coming from the webserver, to implement <br/>GUI interaction.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition todo">
+<p class="admonition-title">Todo</p>
+<p>What about timing events?</p>
+</div>
+<div class="admonition todo">
+<p class="admonition-title">Todo</p>
+<p>More structured way besides blackboard with input and output parameters?</p>
+</div>
+<h2 id="event-checkers">Event checkers</h2>
+<table>
+<thead>
+<tr>
+<th>Event checker</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a class="autorefs autorefs-internal" title="betfsm.EventOutcome" href="../eventoutcome/#betfsm.EventOutcome">EventOutcome</a></td>
+<td>A BeTFSM node that checks for a given list of events and gives an <br> outcome depending on which event is received. Can be blocking or<br> non-blocking</td>
+</tr>
+<tr>
+<td><a class="autorefs autorefs-internal" title="betfsm.EventConcurrent" href="../eventconcurrent/#betfsm.EventConcurrent">EventConcurrent</a></td>
+<td>Similar as a ConcurrentSequence, but the children are only started <br> when an event is received. Multiple children can be started<br> concurrently. The same child can be started multiple times but will<br> only be executed sequentially. The NO_EVENT child is active from<br> the start and will only executed once (i.e. it is a <em>nominal subtree</em>)</td>
+</tr>
+<tr>
+<td><a class="autorefs autorefs-internal" title="betfsm.EventSequential" href="../eventsequential/#betfsm.EventSequential">EventSequential</a></td>
+<td>Similar as sequence, but children are started sequentially, one at a <br>time, when an event is received. Children are started one at a time.  <br>The same child can be  started multiple times. The NO_EVENT child<br> is active from the start and will only be executed once (i.e. it is a <br><em>nominal subtree</em>)</td>
+</tr>
+</tbody>
+</table>
+<p><a class="autorefs autorefs-internal" title="betfsm.EventOutcome" href="../eventoutcome/#betfsm.EventOutcome">EventOutcome</a>, <a class="autorefs autorefs-internal" title="betfsm.EventConcurrent" href="../eventconcurrent/#betfsm.EventConcurrent">EventConcurrent</a> and <a class="autorefs autorefs-internal" title="betfsm.EventSequential" href="../eventsequential/#betfsm.EventSequential">EventSequential</a> take an <strong>event_map</strong> as constructor argument. An event_map
+maps an event string to a BETFSM outcome (also a string)( <a class="autorefs autorefs-internal" title="betfsm.EventOutcome" href="../eventoutcome/#betfsm.EventOutcome">EventOutcome</a> ) or a BeTFSM subtree (one of the TickingState subclasses) ( <a class="autorefs autorefs-internal" title="betfsm.EventConcurrent" href="../eventconcurrent/#betfsm.EventConcurrent">EventConcurrent</a>, <a class="autorefs autorefs-internal" title="betfsm.EventSequential" href="../eventsequential/#betfsm.EventSequential">EventSequential</a> ).</p>
+<p><a class="autorefs autorefs-internal" title="betfsm.AlwaysOutcome" href="../alwaysoutcome/#betfsm.AlwaysOutcome">AlwaysOutcome</a> is useful when you want to mix returning directly an outcome and subtrees.</p>
+<p>A typical use case for <a class="autorefs autorefs-internal" title="betfsm.EventConcurrent" href="../eventconcurrent/#betfsm.EventConcurrent">EventConcurrent</a> is handling events that have to run concurrently with the nominal subtree specified using "NO_EVENT" in the event_map, such as "open gripper"
+A typical use case for <a class="autorefs autorefs-internal" title="betfsm.EventSequential" href="../eventsequential/#betfsm.EventSequential">EventSequential</a> is handling a cancel event that directly interrupts the nominal subtree and starts executing a cleanup subtree, such as "soft_emergency_stop"</p>
+<h2 id="polling-functions">Polling functions</h2>
+<p>Polling functions bind event checkers with event receivers.  The following
+functions are factory functions that return polling_func functions,
+they are not polling_func's themselves.</p>
+<table>
+<thead>
+<tr>
+<th>Polling function</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a class="autorefs autorefs-internal" title="betfsm_crospi.crospi_polling_func(node=None, topic='crospi_node/my_output', queue_size=10, max_age=0.05)" href="../crospi_polling_func/#betfsm_crospi.crospi_polling_func">crospi_polling_func</a></td>
+<td>to read out events from a topic (using crospi conventions)</td>
+</tr>
+<tr>
+<td><a class="autorefs autorefs-internal" title="betfsm.blackboard_polling_func(path)" href="../polling_func/#betfsm.blackboard_polling_func">blackboard_polling_func</a></td>
+<td>to read out events from a blackboard location</td>
+</tr>
+<tr>
+<td><a class="autorefs autorefs-internal" title="betfsm.ctrl_c_polling_func(value='CTRL_C', repeated=3)" href="../polling_func/#betfsm.ctrl_c_polling_func">ctrl_c_polling_func</a></td>
+<td>to read out ctrl-c pressed events</td>
+</tr>
+<tr>
+<td><a class="autorefs autorefs-internal" title="betfsm.combine(*args)" href="../polling_func/#betfsm.combine">combine</a></td>
+<td>combines multiple callbacks</td>
+</tr>
+<tr>
+<td>## Usage patterns</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>
+<p>Configure the polling callback function. You pass the function name, you do not call polling_func yourself.
+  <div class="highlight"><pre><span></span><code>  <span class="n">pollingfunc</span> <span class="o">=</span> <span class="n">crospi_polling_func</span><span class="p">()</span>
+</code></pre></div></p>
+</li>
+<li>
+<p>Check whether there is an event, if not immediately returns SUCCEED, if e_finished return "FINISH"
+Probabily you want to call this in a loop, make sure that there is at least one yield TICKING in the loop!.
+  <div class="highlight"><pre><span></span><code>  <span class="n">EventOutcome</span><span class="p">(</span> <span class="s2">&quot;check_finalized&quot;</span><span class="p">,</span> 
+                  <span class="n">polling_func</span><span class="p">,</span> 
+                  <span class="p">{</span> <span class="n">NO_EVENT</span><span class="p">:</span><span class="n">SUCCEED</span><span class="p">,</span> <span class="s2">&quot;e_finished&quot;</span><span class="p">:</span><span class="s2">&quot;FINISH&quot;</span> <span class="p">}</span>
+  <span class="p">)</span>
+</code></pre></div></p>
+</li>
+<li>
+<p>Waits until it receives "e_open" or "e_finished". If "e_open" is received return "OPEN" outcome,
+if "e_finished" is received, return SUCCEED outcome.
+  <div class="highlight"><pre><span></span><code>  <span class="n">EventOutcome</span><span class="p">(</span> <span class="s2">&quot;check_finalized&quot;</span><span class="p">,</span>  <span class="n">polling_func</span><span class="p">,</span> <span class="p">{</span> 
+                  <span class="s2">&quot;e_open&quot;</span> <span class="p">:</span><span class="s2">&quot;OPEN&quot;</span><span class="p">,</span> 
+                  <span class="s2">&quot;e_finished&quot;</span><span class="p">:</span><span class="n">SUCCEED</span> 
+               <span class="p">})</span>
+</code></pre></div></p>
+</li>
+<li>
+<p>Executes nominal_subtree, if "e_something_is_wrong" is received, directly returns CANCEL.
+If "e_open_gripper" is received executes opengripper_subtree concurrent with nominal_subtree until
+both return SUCCEED or one of them returns something else (i.e. ConcurrentSequence behavior).
+  <div class="highlight"><pre><span></span><code>    <span class="n">EventSubtree</span><span class="p">(</span> <span class="s2">&quot;check_finalized&quot;</span><span class="p">,</span>  <span class="n">polling_func</span><span class="p">,</span>  <span class="p">{</span> 
+                      <span class="n">NO_EVENT</span><span class="p">:</span>                <span class="n">nominal_subtree</span><span class="p">,</span> 
+                      <span class="s2">&quot;e_something_is_wrong&quot;</span> <span class="p">:</span> <span class="n">AlwaysOutcome</span><span class="p">(</span><span class="n">CANCEL</span><span class="p">),</span> 
+                      <span class="s2">&quot;e_open_gripper&quot;</span><span class="p">:</span>        <span class="n">open_grippersubtree</span> 
+              <span class="p">})</span>
+</code></pre></div></p>
+</li>
+<li>
+<p>Executes a <em>nominal_subtree</em> that already checks for the "e_finished" event. We augment
+  this behavior from the 'outside' with checking for "e_open_gripper" and "e_something_is_wrong" 
+  (as described above). Events can be checked at multiple places.  If the <em>nominal_subtree</em>
+  is finished but <em>open_gripper_subtree</em> is still running, it will wait for <em>open_gripper_subtree</em>  </p>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><code>  <span class="n">nominal_subtree</span> <span class="o">=</span> <span class="n">Sequence</span><span class="p">(</span><span class="s2">&quot;crospi_statemachine, [ ... EventOutcome(&quot;</span><span class="n">check_finished</span><span class="s2">&quot;, crospi_polling_func])....])</span>
+  <span class="n">EventSubtree</span><span class="p">(</span> <span class="s2">&quot;add_error_check&quot;</span><span class="p">,</span>  <span class="n">polling_func</span><span class="p">,</span> <span class="p">{</span> 
+                  <span class="n">NO_EVENT</span><span class="p">:</span> <span class="n">nominal_subtree</span><span class="p">,</span>
+                  <span class="s2">&quot;e_something_is_wrong&quot;</span><span class="p">:</span><span class="n">AlwaysOutcome</span><span class="p">(</span><span class="n">CANCEL</span><span class="p">),</span>
+                  <span class="s2">&quot;e_open_gripper&quot;</span><span class="p">:</span>      <span class="n">open_gripper_subtree</span>                    
+               <span class="p">})</span>
+</code></pre></div>
+<ul>
+<li>Remember the behavior similar to ConcurrentSequence: All children of EventSubtree need to 
+   return SUCCEED (if they are activated), so in the following below, the event "e_nothing_done" 
+   doesn't do anything.  This behavior is deliberately chosen such that you can execute subtrees similar
+   to open_gripper_subtree simultaneously with the nominal_subtree and you have a guarantee that the trees
+   will be finished, except when someone returns something else than SUCCEED. So if nominal_subtree is finished
+   and "e_open_gripper" was called, EventSubtree will wait until open_gripper_subtree is finished.</li>
+</ul>
+<div class="highlight"><pre><span></span><code>  <span class="n">nominal_subtree</span> <span class="o">=</span> <span class="n">Sequence</span><span class="p">(</span><span class="s2">&quot;crospi_statemachine, [ ... EventOutcome(&quot;</span><span class="n">check_finished</span><span class="s2">&quot;, crospi_polling_func])....])</span>
+  <span class="n">EventSubtree</span><span class="p">(</span> <span class="s2">&quot;add_error_check&quot;</span><span class="p">,</span>  <span class="n">polling_func</span><span class="p">,</span> <span class="p">{</span> 
+                  <span class="n">NO_EVENT</span><span class="p">:</span> <span class="n">nominal_subtree</span><span class="p">,</span>
+                  <span class="s2">&quot;e_something_is_wrong&quot;</span><span class="p">:</span><span class="n">AlwaysOutcome</span><span class="p">(</span><span class="n">CANCEL</span><span class="p">),</span>
+                  <span class="s2">&quot;e_open_gripper&quot;</span><span class="p">:</span>      <span class="n">open_gripper_subtree</span>                    
+                  <span class="s2">&quot;e_nothing_done&quot;</span><span class="p">:</span>      <span class="n">AlwaysOutcome</span><span class="p">(</span><span class="n">SUCCEED</span><span class="p">)</span>
+               <span class="p">})</span>
+</code></pre></div>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../api_overview/" class="btn btn-neutral float-left" title="Overview of the API"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../ros2lifecycle/" class="btn btn-neutral float-right" title="ROS2 Lifecycle">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>LGPL-3.0-only</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Robotics-Research-Group-KUL/betfsm" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../api_overview/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../ros2lifecycle/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="https://cdn.jsdelivr.net/gh/rod2ik/cdn@main/mkdocs/javascripts/mkdocs-graphviz.js"></script>
+      <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

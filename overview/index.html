@@ -43,18 +43,12 @@
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption"><span class="caption-text">Documentation</span></p>
-              <ul class="current">
-                  <li class="toctree-l1 current"><a class="reference internal current" >Introduction</a>
-    <ul class="current">
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" >Introduction</a>
+    <ul>
                 <li class="toctree-l2"><a class="reference internal" href="..">Start page</a>
                 </li>
-                <li class="toctree-l2 current"><a class="reference internal current" href="#">Overview</a>
-    <ul class="current">
-    </ul>
-                </li>
                 <li class="toctree-l2"><a class="reference internal" href="../installation/">Installation</a>
-                </li>
-                <li class="toctree-l2"><a class="reference internal" href="../technical_intro/">Technical introduction</a>
                 </li>
     </ul>
                   </li>
@@ -76,9 +70,17 @@
                 </li>
     </ul>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" >API</a>
+                  <li class="toctree-l1"><a class="reference internal" >Technical documentation</a>
     <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../technical_intro/">Technical introduction</a>
+                </li>
                 <li class="toctree-l2"><a class="reference internal" href="../api_overview/">Overview of the API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../event/">Event handling</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../ros2lifecycle/">ROS2 Lifecycle</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../utils/">Utilities</a>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >BeTFSM</a>
     <ul>
@@ -126,11 +128,19 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_handler/">Ctrl C Handler</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_receiver/">Ctrl_C_Receiver</a>
+                </li>
                 <li class="toctree-l3"><a class="reference internal" href="../alwaysoutcome/">AlwaysOutcome</a>
                 </li>
-    </ul>
+                <li class="toctree-l3"><a class="reference internal" href="../eventoutcome/">EventOutcome</a>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="../utils/">Utilities</a>
+                <li class="toctree-l3"><a class="reference internal" href="../eventconcurrent/">EventConcurrent</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../eventsequential/">EventSequential</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../polling_func/">Polling functions</a>
+                </li>
+    </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >BeTFSM ROS2</a>
     <ul>
@@ -145,6 +155,8 @@
                 <li class="toctree-l3"><a class="reference internal" href="../timedwait_ros2/">TimedWait for ROS2</a>
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../timeout/">Timeout</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../topiceventreceiver/">TopicEventReciever</a>
                 </li>
     </ul>
                 </li>
@@ -164,9 +176,13 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../etasl_statemachine/">eTaSL_StateMachine</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../crospi_polling_func/">crospi_polling_func</a>
+                </li>
     </ul>
                 </li>
     </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../todo/">TODO</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../about/">About & Acknowledgements</a>
                   </li>
@@ -185,8 +201,6 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-          <li class="breadcrumb-item">Documentation</li>
-          <li class="breadcrumb-item">Introduction</li>
       <li class="breadcrumb-item active">Overview</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/Robotics-Research-Group-KUL/betfsm/edit/main/documentation/docs/overview.md" class="icon icon-github"> Edit on GitHub</a>
@@ -201,10 +215,6 @@
               
             </div>
           </div><footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href=".." class="btn btn-neutral float-left" title="Start page"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../installation/" class="btn btn-neutral float-right" title="Installation">Next <span class="icon icon-circle-arrow-right"></span></a>
-    </div>
 
   <hr/>
 
@@ -231,10 +241,6 @@
         </span>
     
     
-      <span><a href=".." style="color: #fcfcfc">&laquo; Previous</a></span>
-    
-    
-      <span><a href="../installation/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

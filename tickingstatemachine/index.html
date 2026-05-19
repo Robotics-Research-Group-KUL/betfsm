@@ -48,11 +48,7 @@
     <ul>
                 <li class="toctree-l2"><a class="reference internal" href="..">Start page</a>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="../overview/">Overview</a>
-                </li>
                 <li class="toctree-l2"><a class="reference internal" href="../installation/">Installation</a>
-                </li>
-                <li class="toctree-l2"><a class="reference internal" href="../technical_intro/">Technical introduction</a>
                 </li>
     </ul>
                   </li>
@@ -74,9 +70,17 @@
                 </li>
     </ul>
                   </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" >API</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" >Technical documentation</a>
     <ul class="current">
+                <li class="toctree-l2"><a class="reference internal" href="../technical_intro/">Technical introduction</a>
+                </li>
                 <li class="toctree-l2"><a class="reference internal" href="../api_overview/">Overview of the API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../event/">Event handling</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../ros2lifecycle/">ROS2 Lifecycle</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../utils/">Utilities</a>
                 </li>
                 <li class="toctree-l2 current"><a class="reference internal current" >BeTFSM</a>
     <ul class="current">
@@ -91,6 +95,8 @@
     <li class="toctree-l4"><a class="reference internal" href="#betfsm.TickingStateMachine.add_state">add_state</a>
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#betfsm.TickingStateMachine.reset">reset</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#betfsm.TickingStateMachine.set_default_transitions">set_default_transitions</a>
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#betfsm.TickingStateMachine.set_start_state">set_start_state</a>
     </li>
@@ -136,11 +142,19 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_handler/">Ctrl C Handler</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_receiver/">Ctrl_C_Receiver</a>
+                </li>
                 <li class="toctree-l3"><a class="reference internal" href="../alwaysoutcome/">AlwaysOutcome</a>
                 </li>
-    </ul>
+                <li class="toctree-l3"><a class="reference internal" href="../eventoutcome/">EventOutcome</a>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="../utils/">Utilities</a>
+                <li class="toctree-l3"><a class="reference internal" href="../eventconcurrent/">EventConcurrent</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../eventsequential/">EventSequential</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../polling_func/">Polling functions</a>
+                </li>
+    </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >BeTFSM ROS2</a>
     <ul>
@@ -155,6 +169,8 @@
                 <li class="toctree-l3"><a class="reference internal" href="../timedwait_ros2/">TimedWait for ROS2</a>
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../timeout/">Timeout</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../topiceventreceiver/">TopicEventReciever</a>
                 </li>
     </ul>
                 </li>
@@ -174,9 +190,13 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../etasl_statemachine/">eTaSL_StateMachine</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../crospi_polling_func/">crospi_polling_func</a>
+                </li>
     </ul>
                 </li>
     </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../todo/">TODO</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../about/">About & Acknowledgements</a>
                   </li>
@@ -196,7 +216,7 @@
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
           <li class="breadcrumb-item">Documentation</li>
-          <li class="breadcrumb-item">API</li>
+          <li class="breadcrumb-item">Technical documentation</li>
           <li class="breadcrumb-item">BeTFSM</li>
       <li class="breadcrumb-item active">TickingStateMachine</li>
     <li class="wy-breadcrumbs-aside">
@@ -231,8 +251,6 @@
 <li>will exit when TICKING outcome is given by one of the substates, but then if it is called again,
   it will have remembered the state that had the TICKING outcome and start from that state.</li>
 <li>if returning with any other outcome, will start next time from the start state.</li>
-<li>should be drop in replacement of Yasmin StateMachine, (but not the other way around, StateMachine can't
-   handle TickingStates</li>
 </ul>
 
 
@@ -365,8 +383,9 @@ using the method <code>set_start_state</code>.</p>
 )
               –
               <div class="doc-md-description">
-                <p>a dictionary that maps outcomes of the state to names of a state in this state machine.
-As a shortcut/alternative, this can also be a dictionary that maps outcomes to TickingState 
+                <p>A Python Dict that maps outcome of the state to a target (see note below).
+- a dictionary that maps outcomes of the state to names of a state in this state machine.
+- As a shortcut/alternative, this can also be a dictionary that maps outcomes to TickingState 
 (in that case TickingState.name is used)</p>
               </div>
             </li>
@@ -375,6 +394,21 @@ As a shortcut/alternative, this can also be a dictionary that maps outcomes to T
     </tr>
   </tbody>
 </table>
+
+<details class="note" open>
+  <summary>Note</summary>
+  <ul>
+<li>The keys of the transitions Dict are outcomes. The values are targets.</li>
+<li>A target can be a <strong>state object</strong> or the  <strong>name of a state</strong>.</li>
+<li>A target can also be an <strong>outcome</strong> that is listed in the outcomes of the state machine. In that case the 
+  state machine will <strong>exit</strong> with that outcome.</li>
+<li>A target can be another outcome that the statemachine will try to resolve.  This is mostly useful for
+  default transitions (see <code>set_default_transitions</code>).  This redirection can even redirect 
+  TICKING (for advanced use).</li>
+<li>a BeTFSM object can only be added as a child once.  BeTFSM hierarchy is required to be a tree,
+  not a more general graph.</li>
+</ul>
+</details>
 
     </div>
 
@@ -394,6 +428,51 @@ As a shortcut/alternative, this can also be a dictionary that maps outcomes to T
         <p>Resets the state-machine.  Ensures that the next call will start again
 from the starting state.  Calls reset on all the states it contains.</p>
 
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="betfsm.TickingStateMachine.set_default_transitions" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">set_default_transitions</span><span class="p">(</span><span class="n">transitions</span><span class="o">=</span><span class="p">{})</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Adds default transitions to each state added afterwards. The transitions
+specified in <code>add_state</code> add to or overwrite these default transitions.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>transitions</code></b>
+                  (<code><span title="typing.Dict">Dict</span>[<span title="str">str</span>, <span title="str">str</span> | <a class="autorefs autorefs-internal" title="betfsm.TickingState (betfsm.betfsm.TickingState)" href="../tickingstate/#betfsm.TickingState">TickingState</a>]</code>, default:
+                      <code>{}</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>a dictionary that maps outcomes of the state to other outcomes or another state. See <code>add_state</code></p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
     </div>
 

@@ -48,11 +48,7 @@
     <ul>
                 <li class="toctree-l2"><a class="reference internal" href="..">Start page</a>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="../overview/">Overview</a>
-                </li>
                 <li class="toctree-l2"><a class="reference internal" href="../installation/">Installation</a>
-                </li>
-                <li class="toctree-l2"><a class="reference internal" href="../technical_intro/">Technical introduction</a>
                 </li>
     </ul>
                   </li>
@@ -74,9 +70,45 @@
                 </li>
     </ul>
                   </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" >API</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" >Technical documentation</a>
     <ul class="current">
+                <li class="toctree-l2"><a class="reference internal" href="../technical_intro/">Technical introduction</a>
+                </li>
                 <li class="toctree-l2"><a class="reference internal" href="../api_overview/">Overview of the API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../event/">Event handling</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../ros2lifecycle/">ROS2 Lifecycle</a>
+                </li>
+                <li class="toctree-l2 current"><a class="reference internal current" href="#">Utilities</a>
+    <ul class="current">
+    <li class="toctree-l3"><a class="reference internal" href="#logging">Logging</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#utility-functions">Utility functions</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#betfsm_ros.expand_package_ref">expand_package_ref</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#betfsm_ros.expand_env_ref">expand_env_ref</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#betfsm_ros.expand_ref">expand_ref</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#betfsm.logger.set_logger">set_logger</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#betfsm.logger.get_logger">get_logger</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#betfsm.cleanup_outcomes">cleanup_outcomes</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#betfsm.dumps_blackboard">dumps_blackboard</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#betfsm.get_path_value">get_path_value</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#betfsm.set_path_value">set_path_value</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#betfsm.get_path_location">get_path_location</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >BeTFSM</a>
     <ul>
@@ -124,32 +156,18 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_handler/">Ctrl C Handler</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_receiver/">Ctrl_C_Receiver</a>
+                </li>
                 <li class="toctree-l3"><a class="reference internal" href="../alwaysoutcome/">AlwaysOutcome</a>
                 </li>
-    </ul>
+                <li class="toctree-l3"><a class="reference internal" href="../eventoutcome/">EventOutcome</a>
                 </li>
-                <li class="toctree-l2 current"><a class="reference internal current" href="#">Utilities</a>
-    <ul class="current">
-    <li class="toctree-l3"><a class="reference internal" href="#logging">Logging</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#utility-functions">Utility functions</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#betfsm_ros.expand_package_ref">expand_package_ref</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#betfsm_ros.expand_env_ref">expand_env_ref</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#betfsm_ros.expand_ref">expand_ref</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#betfsm.logger.set_logger">set_logger</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#betfsm.logger.get_logger">get_logger</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#betfsm.cleanup_outcomes">cleanup_outcomes</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#betfsm.dumps_blackboard">dumps_blackboard</a>
-    </li>
-        </ul>
-    </li>
+                <li class="toctree-l3"><a class="reference internal" href="../eventconcurrent/">EventConcurrent</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../eventsequential/">EventSequential</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../polling_func/">Polling functions</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >BeTFSM ROS2</a>
@@ -165,6 +183,8 @@
                 <li class="toctree-l3"><a class="reference internal" href="../timedwait_ros2/">TimedWait for ROS2</a>
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../timeout/">Timeout</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../topiceventreceiver/">TopicEventReciever</a>
                 </li>
     </ul>
                 </li>
@@ -184,9 +204,13 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../etasl_statemachine/">eTaSL_StateMachine</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../crospi_polling_func/">crospi_polling_func</a>
+                </li>
     </ul>
                 </li>
     </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../todo/">TODO</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../about/">About & Acknowledgements</a>
                   </li>
@@ -206,7 +230,7 @@
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
           <li class="breadcrumb-item">Documentation</li>
-          <li class="breadcrumb-item">API</li>
+          <li class="breadcrumb-item">Technical documentation</li>
       <li class="breadcrumb-item active">Utilities</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/Robotics-Research-Group-KUL/betfsm/edit/main/documentation/docs/utils.md" class="icon icon-github"> Edit on GitHub</a>
@@ -539,14 +563,33 @@ if not specified, "default" is used.</p>
 
 
 <h3 id="betfsm.dumps_blackboard" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">betfsm</span><span class="o">.</span><span class="n">dumps_blackboard</span><span class="p">(</span><span class="n">blackboard</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">betfsm</span><span class="o">.</span><span class="n">dumps_blackboard</span><span class="p">(</span><span class="n">blackboard</span><span class="p">,</span> <span class="n">indent_spaces</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span></code>
 
 </h3>
 
 
     <div class="doc doc-contents first">
 
-        <p>returns a string-dump of a (piece of the ) blackboard</p>
+        <p>Recursively constructs a  formatted, indented string 
+representing a hierarchical Python data structure.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="betfsm.get_path_value" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">betfsm</span><span class="o">.</span><span class="n">get_path_value</span><span class="p">(</span><span class="n">blackboard</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Gets a value in the blackboard at the given path,.</p>
 
 
 <table class="field-list">
@@ -561,20 +604,170 @@ if not specified, "default" is used.</p>
         <ul class="first simple">
             <li>
               <b><code>blackboard</code></b>
-                  (<code><span title="betfsm.betfsm.Blackboard">Blackboard</span></code>)
+                  (<code><span title="typing.Dict">Dict</span></code>)
               –
               <div class="doc-md-description">
-                <p>Blackboard to be dumped</p>
+                <p>Blackboard Dict</p>
               </div>
             </li>
             <li>
-              <b><code>indent</code></b>
-                  (<code><span title="int">int</span></code>, default:
-                      <code>0</code>
+              <b><code>path</code></b>
+                  (<code><span title="str">str</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>path to get the value of</p>
+              </div>
+            </li>
+            <li>
+              <b><code>default</code></b>
+              –
+              <div class="doc-md-description">
+                <p>value to use if not found, by default = None</p>
+              </div>
+            </li>
+            <li>
+              <b><code>delimiter</code></b>
+                  (<code><span title="str">str</span></code>, default:
+                      <code>&#39;/&#39;</code>
 )
               –
               <div class="doc-md-description">
-                <p>determines the indentation for printing.</p>
+                <p>for the path, default='/'</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>        <p>Returns:
+    value:
+        the value at the given location</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="betfsm.set_path_value" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">betfsm</span><span class="o">.</span><span class="n">set_path_value</span><span class="p">(</span><span class="n">blackboard</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Sets a value in the blackboard at the given pat.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>blackboard</code></b>
+              –
+              <div class="doc-md-description">
+                <p>Blackboard Dict</p>
+              </div>
+            </li>
+            <li>
+              <b><code>path</code></b>
+              –
+              <div class="doc-md-description">
+                <p>path to get the value of</p>
+              </div>
+            </li>
+            <li>
+              <b><code>value</code></b>
+              –
+              <div class="doc-md-description">
+                <p>value to fill in.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>delimiter</code></b>
+              –
+              <div class="doc-md-description">
+                <p>for the path, default='/'</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<details class="warning" open>
+  <summary>Warning</summary>
+  <p>if value is a Dict, only a shallow copy is made! So, if you later
+change an element of value, it will also change the Blackboard.
+you can use copy.deepcopy(subtree) to make a deep copy to avoid this.</p>
+</details>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="betfsm.get_path_location" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">betfsm</span><span class="o">.</span><span class="n">get_path_location</span><span class="p">(</span><span class="n">blackboard</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">create_if_needed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents first">
+
+        <p>gets a location in the blackboard at the given path</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>blackboard</code></b>
+              –
+              <div class="doc-md-description">
+                <p>Blackboard Dict</p>
+              </div>
+            </li>
+            <li>
+              <b><code>path</code></b>
+              –
+              <div class="doc-md-description">
+                <p>path to get the value of</p>
+              </div>
+            </li>
+            <li>
+              <b><code>create_if_needed</code></b>
+              –
+              <div class="doc-md-description">
+                <p>path will be created if needed, overwriting
+any values if needed.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>delimiter</code></b>
+              –
+              <div class="doc-md-description">
+                <p>for the path, default='/'</p>
               </div>
             </li>
         </ul>
@@ -590,8 +783,8 @@ if not specified, "default" is used.</p>
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../alwaysoutcome/" class="btn btn-neutral float-left" title="AlwaysOutcome"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../serviceclient/" class="btn btn-neutral float-right" title="ServiceClient">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../ros2lifecycle/" class="btn btn-neutral float-left" title="ROS2 Lifecycle"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../tickingstate/" class="btn btn-neutral float-right" title="TickingState">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -619,10 +812,10 @@ if not specified, "default" is used.</p>
         </span>
     
     
-      <span><a href="../alwaysoutcome/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../ros2lifecycle/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../serviceclient/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../tickingstate/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
