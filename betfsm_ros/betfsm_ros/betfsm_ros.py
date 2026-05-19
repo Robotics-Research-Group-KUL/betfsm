@@ -641,7 +641,7 @@ class TopicEventReceiver:
     _instances = {}
 
     @classmethod
-    def get_instance( cls,  node: Node,  topic_name: str, queue_size: int = 20  ):
+    def get_instance( cls,  node: Node,  topic_name: str, queue_size: int = 10  ):
         """
         One singleton queue per topic.
 
@@ -672,12 +672,12 @@ class TopicEventReceiver:
         self.lock = Lock()
         qos = QoSProfile(
             history     = QoSHistoryPolicy.KEEP_LAST,
-            depth       = queue_size,
-            reliability = ReliabilityPolicy.RELIABLE,
-            durability  = DurabilityPolicy.VOLATILE
+            depth       = 5,
+            reliability = QoSReliabilityPolicy.RELIABLE,
+            durability  = QoSDurabilityPolicy.VOLATILE
         )
         self.subscription = node.create_subscription( String,  topic_name, self._callback, qos  )
-        self.node.get_logger().info( f"EventQueueSubscriber attached to {topic_name}" )
+        self.node.get_logger().info( f"TopicEventReceiver attached to {topic_name}" )
 
     def _callback(self, msg: String):
         event = QueuedEvent( name=msg.data, timestamp=time.monotonic() )
@@ -780,8 +780,14 @@ class TopicEventReceiver:
             "\n============================"
         )
 
-
-
+    def set_minimum_queue_size(self,sz : int):
+        """
+        sets the minimum queue size
+        """
+        with self.lock:
+            if self.queue.maxlen < sz:
+                new = deque(self.queue,maxlen=sz)
+                self.queue = new
 
 
 

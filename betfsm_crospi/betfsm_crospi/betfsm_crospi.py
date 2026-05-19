@@ -328,11 +328,15 @@ def crospi_polling_func(
     Parameters:
         node:
             ROS2 node
+            
         topic_name:
             name of the topic to subscribe to
+
         queue_size:
-            size of the queue (related to maximum concurrent events, i.e. sample time in relation
-            to the events generated)
+            size of the queue related to maximum concurrent events, i.e. sample time in relation
+            to the events generated. Because the underlying receiver is a singleton, the maximum
+            queue size of everybody who requested an instance of the receiver is taken.
+
         max_age:
             maximum age of the events that still will be received.
             
@@ -341,9 +345,10 @@ def crospi_polling_func(
     """     
     if node==None:
         node = BeTFSMNode.get_instance()
-    sub = EventQueueSubscriber.get_instance(node,topic,queue_size)
+    sub = TopicEventReceiver.get_instance(node,topic,queue_size)
+    sub.set_minimum_queue_size(queue_size)
     def polling(bb, events):
-        return sub.pol_recent_for(events,max_age)
+        return sub.poll_recent_for(events,max_age)
     return polling
 
 
