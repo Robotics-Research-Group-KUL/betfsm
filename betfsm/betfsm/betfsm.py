@@ -37,6 +37,40 @@ add_logger_category("service")
 
 
 
+# Track which classes have already shown their deprecation notice
+from colorama import Fore, Back, Style
+import inspect
+
+
+
+__shown_deprecation_for_class = {}
+
+def deprecated_msg(msg):
+    """
+    Prints a deprecation warning once per class, including:
+    - module name
+    - class name
+    """
+    # Inspect the call stack
+    frame = inspect.currentframe()
+    caller = frame.f_back
+
+    module = caller.f_globals.get("__name__", "<unknown module>")
+    func_name = caller.f_code.co_name
+
+    # Try to detect the class (works when called inside a method)
+    cls = caller.f_locals.get("self", None).__class__ if "self" in caller.f_locals else None
+    cls_name = cls.__name__ if cls else "<no class>"
+
+    # Only print once per class
+    if cls and cls not in __shown_deprecation_for_class:
+        print(
+            f"{Fore.RED}{Style.BRIGHT}DEPRECATION WARNING:{Style.RESET_ALL} "
+            f"{module}.{cls_name} is deprecated and will be removed in the future.\n{Fore.RED}{Style.BRIGHT}{msg}{Style.RESET_ALL}"
+        )
+        __shown_deprecation_for_class[cls] = True
+
+
 
 Blackboard: TypeAlias = Dict[str, Dict|any]
 

@@ -34,9 +34,9 @@ import sys
 
 from betfsm import (
     Sequence,  Repeat, Message, AlwaysOutcome,
-    SUCCEED, TICKING, CANCEL, ABORT,TIMEOUT,
+    SUCCEED, TICKING, CANCEL, ABORT,TIMEOUT,NO_EVENT,
     get_logger,set_logger,
-    Ctrl_C_Handler,CheckCancel, get_path_value,LogBlackboard    
+    EventOutcome, ctrl_c_polling_func,get_path_value,LogBlackboard    
 )
 from betfsm_crospi import load_task_list, eTaSL_StateMachine
 from betfsm_ros import BeTFSMNode, RunnerBase,ROSRunner
@@ -44,9 +44,10 @@ from betfsm_ros import BeTFSMNode, RunnerBase,ROSRunner
 
 class MyTree(Repeat):
     def __init__(self):
+        ctrl_c_polling_func()
         sequence = Sequence("my_sequence", [
             Message(None,msg="start of a new loop"),
-            CheckCancel("check_cancelation", lambda bb: get_path_value(bb,"/cancelation/ctrl_c"), AlwaysOutcome(SUCCEED), AlwaysOutcome(CANCEL)),
+            EventOutcome("check_ctrl_c",ctrl_c_polling_func(), {"CTRL_C":CANCEL, NO_EVENT:SUCCEED}),
             eTaSL_StateMachine("MovingHome","MovingHome"),
             LogBlackboard("logblackboard",[]),
             eTaSL_StateMachine("MovingDown","MovingDown"),
@@ -72,7 +73,6 @@ def main(args=None):
 
 
     
-    Ctrl_C_Handler(blackboard,"/cancelation/ctrl_c",repeated=3)    
     sm = MyTree()
     
 

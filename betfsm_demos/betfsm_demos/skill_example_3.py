@@ -31,8 +31,10 @@ import rclpy
 import sys
 
 from betfsm import (
-    Sequence,  Message, SUCCEED, TICKING, CANCEL, ABORT,TIMEOUT,TickingStateMachine,get_logger,set_logger,
-    Ctrl_C_Handler,CheckCancel, get_path_value
+    Sequence,  Message, 
+    SUCCEED, TICKING, CANCEL, ABORT, TIMEOUT, NO_EVENT,
+    TickingStateMachine,get_logger,set_logger,
+    EventSequential, ctrl_c_polling_func, get_path_value
 )
 from betfsm_crospi import load_task_list, eTaSL_StateMachine
 from betfsm_ros import BeTFSMNode,ROSRunner,Node,Duration,LifeCycle,Transition
@@ -88,12 +90,11 @@ def main(args=None):
     blackboard = {}
     load_task_list("$[crospi_application_template]/skill_specifications/libraries/skill_lib_example/tasks/skill_example.json",blackboard)
     
-    
-    Ctrl_C_Handler(blackboard,"/cancelation/ctrl_c",repeated=3)    
+        
     nominal_sm = MySequence()
     cleanup_sm = MyCleanup(node=my_node)
-    sm = CheckCancel("check_cancelation", lambda bb: get_path_value(bb,"/cancelation/ctrl_c"), nominal_sm, cleanup_sm)
 
+    sm = EventSequential("check_cancel", ctrl_c_polling_func("CTRL_C",3),{NO_EVENT:nominal_sm, "CTRL_C":cleanup_sm})
     # This is now working and recommended, accepts command-line parameters (see --help)
     # has many more optional arguments, see API documentation
     # checks whether timing exceeds sample period.

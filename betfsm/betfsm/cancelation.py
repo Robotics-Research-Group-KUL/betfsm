@@ -20,7 +20,10 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 from betfsm.logger import *
-from betfsm import (SUCCEED, CANCEL,GeneratorWithList,TickingState,Callable,AlwaysOutcome,set_path_value,get_path_value)
+from betfsm import (SUCCEED, CANCEL,
+                    GeneratorWithList,TickingState,Callable,AlwaysOutcome,set_path_value,get_path_value,
+                    deprecated_msg
+                    )
 import signal
 import math
 
@@ -47,6 +50,7 @@ class Ctrl_C_Handler:
             Ctrl_C_Handler(blackboard,"/cancelation/ctrl_c",repeated=3) 
             ```
         """                
+        deprecated_msg("Use Ctrl_C_Receiver with CheckSequential/CheckOutcome instead")
         self.blackboard = blackboard
         self.pth        = pth
         self.repeated   = repeated
@@ -76,6 +80,9 @@ class CheckCancel(GeneratorWithList):
     """    
     def __init__(self, name:str,  cb:Callable, nominal_sm:TickingState=None, cleanup_sm:TickingState=None) -> None:
         """
+        !!! warning
+            **Deprecated, use Ctrl_C_Receiver with CheckSequential/Checkoutcome instead**
+            
         Args:
             name (str): name of the BeTFSM node
             cb(Callable): callback with signature `def cb(blackboard)->bool`, true if cancel is triggered.
@@ -107,6 +114,7 @@ class CheckCancel(GeneratorWithList):
                that returns `CANCEL` when there is a cancelation request and `SUCCEED` otherwise
 
         """
+        deprecated_msg("Use Ctrl_C_Receiver with CheckSequential/CheckOutcome instead")
         super().__init__(name,[])
         self.cb = cb
         self.nominal = True

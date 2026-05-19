@@ -30,7 +30,8 @@ from betfsm import (
     SUCCEED,CANCEL,TIMEOUT, TICKING,ABORT,
     add_logger_category, get_logger,get_path_value,get_path_location,set_path_value,
     GeneratorWithList,
-    Blackboard, TickingState,Message,ConcurrentFallback, TickingStateMachine
+    Blackboard, TickingState,Message,ConcurrentFallback, TickingStateMachine,
+    deprecated_msg
 )
 
 from betfsm_ros import (
@@ -68,7 +69,7 @@ from rclpy.qos import (
     ReliabilityPolicy,
     QoSHistoryPolicy
 )
-    
+
 
 
 add_logger_category("crospi")
@@ -349,7 +350,10 @@ def crospi_polling_func(
 
 class eTaSLEvent(TickingState):
     """
-    to be OBSOLETE
+    !!! Error
+        This class is now obsolete, do **NOT** use. Use EventOutcome together 
+        with crospi_polling_func instead.  Additional posibilities using
+        EventSequential and EventConcurrent.
 
     At every tick processes the latest message from the topic.
     Node will CANCEL when it is ticked and no topic has been received.
@@ -380,6 +384,7 @@ class eTaSLEvent(TickingState):
             node:
                 node or BeTFSMNode if node==None.
         """
+        deprecated_msg("Use CheckOutcome with crospi_polling_func(...) instead")
         if node==None:
             self.node = BeTFSMNode.get_instance()
         else:
