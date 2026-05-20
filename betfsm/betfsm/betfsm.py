@@ -1486,7 +1486,6 @@ class AlwaysOutcome(TickingState):
         if outcome is None:
             outcome = name
             name = None
-        assert(outcome != TICKING)    
         super().__init__(name,[outcome,])        
         self.outcome = outcome
     def entry(self, blackboard):
