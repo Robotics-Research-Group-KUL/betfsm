@@ -266,8 +266,9 @@ parameters are suitable for crospi.</p>
 )
               –
               <div class="doc-md-description">
-                <p>size of the queue (related to maximum concurrent events, i.e. sample time in relation
-to the events generated)</p>
+                <p>size of the queue related to maximum concurrent events, i.e. sample time in relation
+to the events generated. Because the underlying receiver is a singleton, the maximum
+queue size of everybody who requested an instance of the receiver is taken.</p>
               </div>
             </li>
             <li>

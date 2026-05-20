@@ -257,7 +257,7 @@ returns (should be listed in <code>outcomes</code> argument to constructor)</p>
 <div class="doc doc-children">
 <div class="doc doc-object doc-function">
 <h3 class="doc doc-heading" id="betfsm_ros.ServiceClient.__init__">
-<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">srv_name</span><span class="p">,</span> <span class="n">srv_type</span><span class="p">,</span> <span class="n">outcomes</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">Duration</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mf">1.0</span><span class="p">),</span> <span class="n">node</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">srv_name</span><span class="p">,</span> <span class="n">srv_type</span><span class="p">,</span> <span class="n">outcomes</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">Duration</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mf">1.0</span><span class="p">),</span> <span class="n">node</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">always_succeed</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
 </h3>
 <div class="doc doc-contents">
 <p>Creates a TickingState that calls a service and generates an outcome when the service returns back.
@@ -323,6 +323,13 @@ While waiting, it continues to tick.</p>
               –
               <div class="doc-md-description">
 <p>node, if None, BeTFSMNode.get_instance() will be used.</p>
+</div>
+</li>
+<li>
+<b><code>always_succeed</code></b>
+              –
+              <div class="doc-md-description">
+<p>Do your best, but always return SUCCEED or TICKING</p>
 </div>
 </li>
 </ul>

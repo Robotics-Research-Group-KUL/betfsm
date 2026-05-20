@@ -249,7 +249,7 @@ not depicted here. Documentation of the full state machine can be found <a href=
 <div class="doc doc-children">
 <div class="doc doc-object doc-function">
 <h3 class="doc doc-heading" id="betfsm_ros.LifeCycle.__init__">
-<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">srv_name</span><span class="o">=</span><span class="s1">'/etasl_node'</span><span class="p">,</span> <span class="n">transition</span><span class="o">=</span><span class="n">Transition</span><span class="o">.</span><span class="n">ACTIVATE</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">Duration</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mf">1.0</span><span class="p">),</span> <span class="n">node</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">srv_name</span><span class="o">=</span><span class="s1">'/etasl_node'</span><span class="p">,</span> <span class="n">transition</span><span class="o">=</span><span class="n">Transition</span><span class="o">.</span><span class="n">ACTIVATE</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">Duration</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mf">1.0</span><span class="p">),</span> <span class="n">node</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">always_succeed</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
 </h3>
 <div class="doc doc-contents">
 <table class="field-list">
@@ -308,6 +308,13 @@ not depicted here. Documentation of the full state machine can be found <a href=
               –
               <div class="doc-md-description">
 <p>if None, singleton BeTFSMNode.get_instance() will be used.</p>
+</div>
+</li>
+<li>
+<b><code>always_succeed</code></b>
+              –
+              <div class="doc-md-description">
+<p>if True, will always return SUCCEED or TICKING</p>
 </div>
 </li>
 </ul>

@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Erwin Aertbelien" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>TopicEventReciever - BeTFSM documentation</title>
+    <title>Hhtpeventreceiver - BeTFSM documentation</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -15,8 +15,8 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "TopicEventReciever";
-        var mkdocs_page_input_path = "topiceventreceiver.md";
+        var mkdocs_page_name = "Hhtpeventreceiver";
+        var mkdocs_page_input_path = "hhtpeventreceiver.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -43,7 +43,7 @@
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption"><span class="caption-text">Documentation</span></p>
-              <ul class="current">
+              <ul>
                   <li class="toctree-l1"><a class="reference internal" >Introduction</a>
     <ul>
                 <li class="toctree-l2"><a class="reference internal" href="..">Start page</a>
@@ -70,8 +70,8 @@
                 </li>
     </ul>
                   </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" >Technical documentation</a>
-    <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" >Technical documentation</a>
+    <ul>
                 <li class="toctree-l2"><a class="reference internal" href="../technical_intro/">Technical introduction</a>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../api_overview/">Overview of the API</a>
@@ -142,8 +142,8 @@
                 </li>
     </ul>
                 </li>
-                <li class="toctree-l2 current"><a class="reference internal current" >BeTFSM ROS2</a>
-    <ul class="current">
+                <li class="toctree-l2"><a class="reference internal" >BeTFSM ROS2</a>
+    <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../serviceclient/">ServiceClient</a>
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../actionclient_ros/">ActionClient</a>
@@ -156,27 +156,7 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../timeout/">Timeout</a>
                 </li>
-                <li class="toctree-l3 current"><a class="reference internal current" href="#">TopicEventReciever</a>
-    <ul class="current">
-    <li class="toctree-l4"><a class="reference internal" href="#betfsm_ros.TopicEventReceiver.clear">clear</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#betfsm_ros.TopicEventReceiver.get_instance">get_instance</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#betfsm_ros.TopicEventReceiver.has_event">has_event</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#betfsm_ros.TopicEventReceiver.has_recent_event">has_recent_event</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#betfsm_ros.TopicEventReceiver.log_queue">log_queue</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#betfsm_ros.TopicEventReceiver.poll_for">poll_for</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#betfsm_ros.TopicEventReceiver.poll_recent_for">poll_recent_for</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#betfsm_ros.TopicEventReceiver.set_minimum_queue_size">set_minimum_queue_size</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#betfsm_ros.TopicEventReceiver.size">size</a>
-    </li>
-    </ul>
+                <li class="toctree-l3"><a class="reference internal" href="../topiceventreceiver/">TopicEventReciever</a>
                 </li>
     </ul>
                 </li>
@@ -221,12 +201,9 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-          <li class="breadcrumb-item">Documentation</li>
-          <li class="breadcrumb-item">Technical documentation</li>
-          <li class="breadcrumb-item">BeTFSM ROS2</li>
-      <li class="breadcrumb-item active">TopicEventReciever</li>
+      <li class="breadcrumb-item active">Hhtpeventreceiver</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/Robotics-Research-Group-KUL/betfsm/edit/main/documentation/docs/topiceventreceiver.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/Robotics-Research-Group-KUL/betfsm/edit/main/documentation/docs/hhtpeventreceiver.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -238,8 +215,8 @@
 
 
 
-<h2 id="betfsm_ros.TopicEventReceiver" class="doc doc-heading">
-            <code>betfsm_ros.TopicEventReceiver</code>
+<h2 id="betfsm.HTTPEventReceiver" class="doc doc-heading">
+            <code>betfsm.HTTPEventReceiver</code>
 
 
 </h2>
@@ -248,17 +225,6 @@
     <div class="doc doc-contents first">
 
 
-
-        <div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>Preliminary, untested version</p>
-<p>old name was: EventQueueSubscriber</p>
-</div>
-<p>Thread-safe event queue for recieving ROS2 String messages</p>
-<p>Messages are received in a queue with limited size</p>
-<p>Functions for polling the queue, possibly with a max_age parameters
-to avoid stale events.</p>
-<p>No priorities. Multithread save.</p>
 
 
 
@@ -283,7 +249,7 @@ to avoid stale events.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="betfsm_ros.TopicEventReceiver.clear" class="doc doc-heading">
+<h3 id="betfsm.HTTPEventReceiver.clear" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">clear</span><span class="p">()</span></code>
 
 </h3>
@@ -301,8 +267,8 @@ to avoid stale events.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="betfsm_ros.TopicEventReceiver.get_instance" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">get_instance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">topic_name</span><span class="p">,</span> <span class="n">queue_size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span></code>
+<h3 id="betfsm.HTTPEventReceiver.get_instance" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">get_instance</span><span class="p">(</span><span class="n">channel_name</span><span class="p">,</span> <span class="n">queue_size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
@@ -327,15 +293,7 @@ to avoid stale events.</p>
       <td class="field-body">
         <ul class="first simple">
             <li>
-              <b><code>node</code></b>
-                  (<code><span title="rclpy.node.Node">Node</span></code>)
-              –
-              <div class="doc-md-description">
-                <p>ROS2 node</p>
-              </div>
-            </li>
-            <li>
-              <b><code>topic_name</code></b>
+              <b><code>channel_name</code></b>
                   (<code><span title="str">str</span></code>)
               –
               <div class="doc-md-description">
@@ -368,7 +326,7 @@ to the events generated)</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="betfsm_ros.TopicEventReceiver.has_event" class="doc doc-heading">
+<h3 id="betfsm.HTTPEventReceiver.has_event" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">has_event</span><span class="p">(</span><span class="n">target_strings</span><span class="p">)</span></code>
 
 </h3>
@@ -389,7 +347,7 @@ It <strong>does not</strong> consume the matching event.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="betfsm_ros.TopicEventReceiver.has_recent_event" class="doc doc-heading">
+<h3 id="betfsm.HTTPEventReceiver.has_recent_event" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">has_recent_event</span><span class="p">(</span><span class="n">target_strings</span><span class="p">,</span> <span class="n">max_age_seconds</span><span class="p">)</span></code>
 
 </h3>
@@ -412,7 +370,7 @@ It <strong>does not</strong> consume the matching event.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="betfsm_ros.TopicEventReceiver.log_queue" class="doc doc-heading">
+<h3 id="betfsm.HTTPEventReceiver.log_queue" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">log_queue</span><span class="p">(</span><span class="n">max_items</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span></code>
 
 </h3>
@@ -430,7 +388,7 @@ It <strong>does not</strong> consume the matching event.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="betfsm_ros.TopicEventReceiver.poll_for" class="doc doc-heading">
+<h3 id="betfsm.HTTPEventReceiver.poll_for" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">poll_for</span><span class="p">(</span><span class="n">target_strings</span><span class="p">)</span></code>
 
 </h3>
@@ -451,7 +409,7 @@ It consumes the matching event.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="betfsm_ros.TopicEventReceiver.poll_recent_for" class="doc doc-heading">
+<h3 id="betfsm.HTTPEventReceiver.poll_recent_for" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">poll_recent_for</span><span class="p">(</span><span class="n">target_strings</span><span class="p">,</span> <span class="n">max_age_seconds</span><span class="p">)</span></code>
 
 </h3>
@@ -474,25 +432,7 @@ It consumes the matching event.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="betfsm_ros.TopicEventReceiver.set_minimum_queue_size" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">set_minimum_queue_size</span><span class="p">(</span><span class="n">sz</span><span class="p">)</span></code>
-
-</h3>
-
-
-    <div class="doc doc-contents ">
-
-        <p>sets the minimum queue size</p>
-
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h3 id="betfsm_ros.TopicEventReceiver.size" class="doc doc-heading">
+<h3 id="betfsm.HTTPEventReceiver.size" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">size</span><span class="p">()</span></code>
 
 </h3>
@@ -518,10 +458,6 @@ It consumes the matching event.</p>
               
             </div>
           </div><footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../timeout/" class="btn btn-neutral float-left" title="Timeout"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../load_task_list/" class="btn btn-neutral float-right" title="load_task_list">Next <span class="icon icon-circle-arrow-right"></span></a>
-    </div>
 
   <hr/>
 
@@ -548,10 +484,6 @@ It consumes the matching event.</p>
         </span>
     
     
-      <span><a href="../timeout/" style="color: #fcfcfc">&laquo; Previous</a></span>
-    
-    
-      <span><a href="../load_task_list/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

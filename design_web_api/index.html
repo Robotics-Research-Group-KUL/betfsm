@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Erwin Aertbelien" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>TODO list - BeTFSM documentation</title>
+    <title>Design web api - BeTFSM documentation</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -15,8 +15,8 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "TODO list";
-        var mkdocs_page_input_path = "TODO.md";
+        var mkdocs_page_name = "Design web api";
+        var mkdocs_page_input_path = "design_web_api.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -201,9 +201,9 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">TODO list</li>
+      <li class="breadcrumb-item active">Design web api</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/Robotics-Research-Group-KUL/betfsm/edit/main/documentation/docs/TODO.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/Robotics-Research-Group-KUL/betfsm/edit/main/documentation/docs/design_web_api.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -211,28 +211,16 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="todo-list">TODO list</h1>
+                <p>Use the swagger facilities </p>
 <ul>
 <li>
-<p>Investigate the difference between reset() and cancel_state().  How does the original yasmin code handles concurrent access?</p>
+<p>"/docs" gives swagger access,  still need to document API</p>
 </li>
 <li>
-<p>clean up the outcomes list</p>
+<p>getting and setting blackboard in JSON format, optionally validated.</p>
 </li>
-<li>
-<p>uniform treatment of names</p>
-</li>
-<li>
-<p>generating graphviz representation of state machine.</p>
-</li>
+<li></li>
 </ul>
-<h2 id="how-do-we-model-this">How do we model this:</h2>
-<p>So, for an eTaSL state:</p>
-<p>ConcurrentFallback( EventTopic, OutputTopic, Sequence(Activate, Wait) )</p>
-<p>But for EventTopic this means that the topics have to be with a durability = transient local
-  because the topic can be created late. Could we tune the qos parameters to be transient local for
-  a small time, i.e. 0.1 (or even smaller) ?</p>
-<p>relatively short Lifespan and transient local durability are probably the best.</p>
               
             </div>
           </div><footer>

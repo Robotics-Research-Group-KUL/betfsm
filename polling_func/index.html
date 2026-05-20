@@ -412,14 +412,104 @@ parameters are suitable for crospi.</p>
 )
               –
               <div class="doc-md-description">
-                <p>size of the queue (related to maximum concurrent events, i.e. sample time in relation
-to the events generated)</p>
+                <p>size of the queue related to maximum concurrent events, i.e. sample time in relation
+to the events generated. Because the underlying receiver is a singleton, the maximum
+queue size of everybody who requested an instance of the receiver is taken.</p>
               </div>
             </li>
             <li>
               <b><code>max_age</code></b>
                   (<code><span title="float">float</span></code>, default:
                       <code>0.05</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>maximum age of the events that still will be received.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="typing.Callable">Callable</span>[[<span title="typing.Dict">Dict</span>, <span title="typing.List">List</span>[<span title="str">str</span>]], <span title="str">str</span> | None]</code>
+              –
+              <div class="doc-md-description">
+                <p>Polling function</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="betfsm.http_polling_func" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">betfsm</span><span class="o">.</span><span class="n">http_polling_func</span><span class="p">(</span><span class="n">channel_name</span><span class="o">=</span><span class="s1">&#39;betfsm&#39;</span><span class="p">,</span> <span class="n">queue_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">max_age</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Returns a callback function to read HTTP events suitable for use withy betfsm.Event.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>channel_name</code></b>
+                  (<code><span title="str">str</span></code>, default:
+                      <code>&#39;betfsm&#39;</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>name of the topic to subscribe to</p>
+              </div>
+            </li>
+            <li>
+              <b><code>queue_size</code></b>
+                  (<code><span title="int">int</span></code>, default:
+                      <code>10</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>size of the queue related to maximum concurrent events, i.e. sample time in relation
+to the events generated. Because the underlying receiver is a singleton, the maximum
+queue size of everybody who requested an instance of the receiver is taken.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>max_age</code></b>
+                  (<code><span title="float">float</span></code>, default:
+                      <code>0.5</code>
 )
               –
               <div class="doc-md-description">
