@@ -226,7 +226,7 @@ class RunnerBase:
         if self.serve:
             self.name_filter = args.name_filter
             self.type_filter = args.type_filter
-            set_webserver_param(statemachine,self.name_filter,self.type_filter)  # set parameters for web-app
+            set_webserver_param(statemachine,self.blackboard,self.name_filter,self.type_filter)  # set parameters for web-app
             threading.Thread(
                 target=lambda: uvicorn.run(app, **uvicorn_kwargs),
                 daemon=True

@@ -123,7 +123,7 @@ TickingState_Status = Enum("TickingState_Status",["ENTRY","DOO","EXIT"])
 
 
 
-def get_path_value(blackboard:Dict, path:str, default=None, delimiter:str='/') -> str:
+def get_path_value(blackboard, path, default=None):
     """
     Gets a value in the blackboard at the given path,.
 
@@ -139,17 +139,44 @@ def get_path_value(blackboard:Dict, path:str, default=None, delimiter:str='/') -
     Returns:
         value:
             the value at the given location
+
+    Note:
+        See [Utilities](utils.md) for a more extensive explanation of the mini-language to specify and manipulate the path.
     """
+    delimiter="/"
     keys = [k for k in path.split(delimiter) if k]
     current = blackboard
+
     for key in keys:
+
+        # LIST LENGTH
+        if key == "~len":
+            if isinstance(current, list):
+                return len(current)
+            return default
+
+        # LIST INDEX
+        if isinstance(current, list) and key.isdigit():
+            idx = int(key)
+            if 0 <= idx < len(current):
+                current = current[idx]
+            else:
+                return default
+            continue
+
+        # NORMAL DICT ACCESS
         if isinstance(current, dict) and key in current:
             current = current[key]
-        else:
-            return default
+            continue
+
+        # UNKNOWN PATH
+        return default
+
     return current
 
-def set_path_value(blackboard, path, value, delimiter='/'):
+
+
+def set_path_value(blackboard, path, value):
     """
     Sets a value in the blackboard at the given pat.
 
@@ -160,22 +187,80 @@ def set_path_value(blackboard, path, value, delimiter='/'):
             path to get the value of
         value:
             value to fill in.
-        delimiter:
-            for the path, default='/'
 
     Warning:
         if value is a Dict, only a shallow copy is made! So, if you later
         change an element of value, it will also change the Blackboard.
         you can use copy.deepcopy(subtree) to make a deep copy to avoid this.
-    """
-    keys = [k for k in path.split(delimiter) if k]   
+    
+    Note:
+        See [Utilities](utils.md) for a more extensive explanation of the mini-language to specify and manipulate the path.
+    """    
+    delimiter='/'
+    keys = [k for k in path.split(delimiter) if k]
     current = blackboard
+
+    # Traverse until the parent of the last key
     for i, key in enumerate(keys[:-1]):
+        next_key = keys[i + 1]
+        # If next is list operation, ensure list exists
+        if next_key.isdigit() or next_key.startswith("~"):
+            if key not in current or not isinstance(current[key], list):
+                current[key] = []
+            current = current[key]
+            continue
+        # Normal dict creation
         if key not in current or not isinstance(current[key], dict):
             current[key] = {}
         current = current[key]
-    if keys:
-        current[keys[-1]] = value
+    last = keys[-1]
+    # LIST OPERATIONS
+    # APPEND
+    if last == "~append":
+        if not isinstance(current, list):
+            raise TypeError("Cannot append to non-list")
+        current.append(value)
+        return
+    # POP
+    if last == "~pop":
+        if not isinstance(current, list):
+            raise TypeError("Cannot pop from non-list")
+        if current:
+            current.pop()
+        return
+    # DELETE INDEX
+    if last.startswith("~del:"):
+        idx = int(last.split(":", 1)[1])
+        if not isinstance(current, list):
+            raise TypeError("Cannot delete from non-list")
+        if 0 <= idx < len(current):
+            del current[idx]
+        return
+    # INSERT INDEX
+    if last.startswith("~insert:"):
+        idx = int(last.split(":", 1)[1])
+        if not isinstance(current, list):
+            raise TypeError("Cannot insert into non-list")
+        current.insert(idx, value)
+        return
+    # REPLACE INDEX
+    if last.isdigit():
+        idx = int(last)
+        if not isinstance(current, list):
+            raise TypeError("Cannot index non-list")
+        # auto-extend list
+        while len(current) <= idx:
+            current.append(None)
+        current[idx] = value
+        return
+
+    
+    # NORMAL DICT SET
+    
+    current[last] = value
+
+
+
 
 def get_path_location(blackboard, path, create_if_needed = True, delimiter='/'):
     """

@@ -25,7 +25,7 @@ set_logger("state",my_node.get_logger())
 ```
 This sets the ROS2 logger for all of the above categories.
 
-## Utility functions
+## Utility functions related to ROS2/environment package references
 
      
 
@@ -48,6 +48,8 @@ This sets the ROS2 logger for all of the above categories.
       show_source: false
       show_root_heading: true             
 
+## Logger related:
+
 ::: betfsm.logger.set_logger
     options:
       heading_level: 3
@@ -60,11 +62,96 @@ This sets the ROS2 logger for all of the above categories.
       show_source: false
       show_root_heading: true  
 
+
+## making a list of outcomes unique
 ::: betfsm.cleanup_outcomes
     options:
       heading_level: 3
       show_source: false
       show_root_heading: true
+
+
+## blackboard related
+
+
+### Hierarchical Path Syntax for Blackboard Access
+
+The blackboard is a nested structure composed of dictionaries and lists.
+Values inside this structure can be accessed or modified using a path
+string, where components are separated by "/" (e.g. "users/list/0").
+
+This extended syntax supports:
+- dictionary navigation
+- list indexing
+- list operations (length, append, insert, delete, pop)
+All operators are chosen to be URL‑safe and easy to type directly in a browser.
+
+### Basic rules
+
+- Each path component is separated by "/".
+- Dictionary keys are addressed by name:
+      "config/system/mode"
+- List elements are addressed by numeric indices:
+      "users/0/name"
+
+
+### List Operators 
+
+The following operators apply when the current node is a list:
+
+-  "~len"
+      Returns the length of the list.
+      Example: "users/~len"
+
+-  "~append"
+      Appends a new value to the list.
+      Example: "users/~append"
+
+-  "~insert:N"
+      Inserts a value at index N.
+      Example: "users/~insert:2"
+
+-  "~del:N"
+      Deletes the element at index N.
+      Example: "users/~del:1"
+
+-  "~pop"
+      Removes and returns the last element.
+      Example: "users/~pop"
+
+-  "N"   (digit)
+      Replaces or retrieves the element at index N.
+      Example: "users/3"
+
+### Examples
+```python
+    #  Get a nested dictionary value:
+    get_path_value(bb, "settings/ui/theme")
+
+    # Get the third item in a list:
+    get_path_value(bb, "users/2")
+
+    # Get the length of a list:
+    get_path_value(bb, "users/~len")
+
+    # Append a new user:
+    set_path_value(bb, "users/~append", {"name": "Alice"})
+
+    #Insert at index 1:
+    set_path_value(bb, "users/~insert:1", {"name": "Bob"})
+
+    # Replace element at index 3:
+    set_path_value(bb, "users/3", {"name": "Charlie"})
+
+    # Delete element at index 0:
+    set_path_value(bb, "users/~del:0", None)
+```
+### Notes
+
+- All operators are ASCII‑only and require no URL encoding.
+- Intermediate dictionaries or lists are created automatically when needed.
+- When replacing a list element by index, the list is auto‑extended with
+  None values if the index is beyond the current length.
 
 ::: betfsm.dumps_blackboard
     options:

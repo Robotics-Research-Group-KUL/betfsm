@@ -17,11 +17,13 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
+from typing import Any
+
 from betfsm.betfsm import TickingState
 from betfsm import HTTPEventReceiver
 
 import importlib.resources
-from fastapi import FastAPI, WebSocket
+from fastapi import FastAPI, WebSocket, HTTPException
 from fastapi.responses import JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.websockets import WebSocketDisconnect
@@ -36,11 +38,70 @@ import time
 from pathlib import Path
 from pydantic import BaseModel, Field
 
+description="""
+This is the **API** documentationfor **BeTFSM**
 
+BeTFSM is a library for "ticking" statemachines and behavior trees. In this
+unified framework, discrete tasks can be specified with the modularity of
+behavior trees and at the lower-level precise interaction can be specified
+using state machines. It targets discrete coordination of robotic systems at
+both high- and low level.
+
+
+It consists of multiple packages:
+
+  - **betfsm** contains the core library, only dependent on python packages, e.g. the implementation of a set of state machines and behavior tree nodes, such as [Sequence](sequence.md), [Fallback](fallback.md), [Repeat](repeat.md), [ConcurrentSequence](concurrentsequence.md), ...
+  - **betfsm_ros** contains facilities to use BeTFSM on [ROS2](https://github.com/ros2), e.g. managing timing using ROS2, calling services, calling actions, ...
+  - **betfsm_crospi** contains facilities to use BeTFSM with [cROSpi](https://github.com/Robotics-Research-Group-KUL/crospi), e.g. communicating with cROSpi over ROS2, managing the lifecycle of a task, sending over parameters to a cROSpi task, ...
+
+Documentation of BeTFSM can be found [here](https://robotics-research-group-kul.github.io/betfsm/).
+
+Published under the GNU LESSER GENERAL PUBLIC LICENSE Version 3, 29 June 2007.
+
+(c) 2024-2026, Erwin Aertbeliën, contributions of Federico Ulloa Rios and Santiago Iregui Rincon
+
+ KU Leuven, Department of Mechanical Engineering, ROB-Group. The ROB Group is part of core labs M&A and MPRO of Flanders Make.
+"""
 app = FastAPI(
     title="BeTFSM webserver API",
-    description="This API handles visualization of a running BeTFSM tree, interaction with the blackboard and giving events to BeTFSM"    
+    description=description,
+    license_info={
+        "name": "GNU LESSER GENERAL PUBLIC LICENSE Version 3, 29 June 2007",
+        "url": "https://www.gnu.org/licenses/lgpl-3.0.en.html",
+    },    
 )
+
+
+
+# Models for the API:
+
+class Event(BaseModel):
+    channel: str = Field("betfsm", 
+                         description="Name of the channel, i.e. a BeTFSM receiver subscribes to channel and will have a queue of all events for that channel.",
+                         max_length=30)
+    event:   str = Field("", 
+                         description="Name of the event",
+                         max_length=30)
+
+class SetValueRequest(BaseModel):
+    value: Any = Field(
+        ...,
+        description="The value to store at the given path. Can be any valid JSON type."
+    )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Serve files from the "static" directory at the URL path "/static"
 frontend_path = importlib.resources.files(betfsm) / Path("frontend")
@@ -50,24 +111,28 @@ app.mount("/static", StaticFiles(directory=str(frontend_path),html=True), name="
 
 clients = set()
 root = None   # root state machine to display. (set from outside)
+blackboard = None
 name_filter = None
 type_filter = None
 
-def set_webserver_param(sm, my_name_filter=None, my_type_filter=None):
+def set_webserver_param(sm:TickingState, bb:dict,my_name_filter:str|None = None, my_type_filter:str|None = None):
     """
     Sets parameters for the webserver:
 
     Parameters:
         sm:
             A BeTFSM tree
+        bb:
+            Blackboard (hierarchical tree using Python's dict)
         my_name_filter:
             do not descend further into nodes that match the names in this list.
             The name can be a regular expression.
         my_type_filter:
             do not descend further into nodes that are an instance of the types in this list.
     """
-    global root, name_filter, type_filter
+    global root, name_filter, type_filter,blackboard
     root = sm
+    blackboard = bb
     name_filter = my_name_filter
     type_filter = my_type_filter
 
@@ -128,17 +193,44 @@ def main_page():
 
 
 
-class Event(BaseModel):
-    channel: str = Field(None, description="Name of the channel, i.e. a BeTFSM receiver subscribes to channel and will have a queue of all events for that channel.")
-    event:   str = Field(None, description="Name of the event")
 
-@app.post("/event")
+
+@app.post(
+    "/api/event",
+    summary="Push an event towards a HTTPEventReceiver",
+    response_description=""
+)
 async def receive_event(event: Event):
     get_logger().info(f"HTTP event received: channel: {event.channel} event:{event.event}")
     instance = HTTPEventReceiver.lookup_instance(event.channel)
     if instance is not None:
         instance.push(event.event)
     return {"status":"ok"}
+
+
+
+@app.get(
+    "/api/blackboard/{path:path}",
+    summary="Get a value from the blackboard",
+    description="Returns the value stored at the given hierarchical path."
+)
+async def get_blackboard_value(path: str):
+    get_logger().info(f"HTTP REQUEST : get_blackboard_value {path}")
+    value = betfsm.get_path_value(blackboard, path)
+    if value is None:
+        raise HTTPException(status_code=404, detail="Path not found")
+    return {"path": path, "value": value}
+
+
+@app.put(
+    "/api/blackboard/{path:path}",
+    summary="Set a value in the blackboard",
+    description="Stores a value at the given hierarchical path, creating intermediate nodes if needed."
+)
+async def set_blackboard_value(path: str, req: SetValueRequest):
+    get_logger().info(f"HTTP REQUEST : set_blackboard_value {path}")
+    betfsm.set_path_value(blackboard, path, req.value)
+    return {"path": path, "value": req.value}
 
 
 @app.get("/api/alive")

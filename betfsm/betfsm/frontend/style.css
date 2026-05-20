@@ -165,3 +165,10 @@ input:checked + .slider:before {
 .btn.danger:hover {
   background-color: #da190b;
 }
+
+.headertxt {
+    color: white;
+}
+.headertxt :visited{
+    color: white;
+}
