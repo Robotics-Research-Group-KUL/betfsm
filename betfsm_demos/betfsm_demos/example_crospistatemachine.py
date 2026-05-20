@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 
 #
-# Using a TickingStateMachine ( infinite loop)
-#
-# Also illustrates proper shutdown of node
-# 
-# If control-C is pressed, the currently running crospi task will continue to run
+# This example brings together the new CrospiTask and
+# some more complex event handling to deal with:
+#   - ctrl-c : interrupt and cleanup
+#   - STOP from HTTP : interrupt and cleanup
+#   - OPEN, CLOSE from HTTP:  they should not interfere with each other, but can run concurrently with robot.
+#   - PLAYSOUND from HTTP: can run concurrently with all of the above.
 #
 
 import rclpy
@@ -13,8 +14,8 @@ import sys
 
 from betfsm import (
     SUCCEED, TICKING, CANCEL, TIMEOUT,ABORT,NO_EVENT,
-    get_logger,set_logger,Sequence, Repeat,
-    EventSequential, ctrl_c_polling_func
+    get_logger,set_logger,Sequence, Repeat, Message, TimedWait,
+    EventSequential, ctrl_c_polling_func, http_polling_func,combine,EventConcurrent, ConcurrentSequence
 )
 
 from betfsm_ros import (
@@ -38,7 +39,26 @@ def my_task():
     ]))
 
 
+def open_gripper():
+    return Sequence("open_gripper",[
+        Message(msg="Gripper starts to open (3 sec)"),
+        TimedWait("waiting",3.0),
+        Message(msg="Gripper finished opening")
+    ])
 
+def close_gripper():
+    return Sequence("open_gripper",[
+        Message(msg="Gripper starts to close (3 sec)"),
+        TimedWait("waiting",3.0),
+        Message(msg="Gripper finished closing")
+    ])
+
+def play_sound():
+    return Sequence("play_sound",[
+        Message(msg="Sound start playing for 5 sec"),
+        TimedWait("waiting",5.0),
+        Message(msg="Sound is stopped")
+    ])
 
 # main
 def main(args=None):
@@ -57,11 +77,25 @@ def main(args=None):
     load_task_list("$[crospi_application_template]/skill_specifications/libraries/skill_lib_example/tasks/skill_example.json",blackboard)
     
     get_logger().info("Creating state machine: ")
-    
-    sm = EventSequential("ctrl_c_check", ctrl_c_polling_func(),{
-        NO_EVENT: my_task(),
-        "CTRL_C": csm.CrospiDeactivate(force_outcome="CANCEL")
+
+    nominal_sm = ConcurrentSequence("concurrentseq", [
+                        my_task(),
+                        EventSequential("sequential", http_polling_func(), {
+                                 "OPEN" : open_gripper(),  "CLOSE" : open_gripper(),
+                            }),
+                        EventSequential("check_play_sound", http_polling_func(), {
+                                 "PLAYSOUND": play_sound()
+                                 })                            
+                    ])
+        
+
+    # can't use twice the same subtree!
+    sm = EventSequential("ctrl_c_check", combine( ctrl_c_polling_func(),http_polling_func()),{
+        NO_EVENT: nominal_sm,
+        "CTRL_C": csm.CrospiDeactivate(force_outcome="CANCEL"),
+        "STOP": csm.CrospiDeactivate(force_outcome="CANCEL")
     })
+
 
 
     runner = ROSRunner(

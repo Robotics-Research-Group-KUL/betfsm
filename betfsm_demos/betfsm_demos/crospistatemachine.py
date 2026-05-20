@@ -92,7 +92,7 @@ class CrospiTask(Fallback):
         # e_finished is always handled.  The rest should be handled outside
         event_mapping={ NO_EVENT: TICKING,f"e_finished@{srv_name[1:]}" : SUCCEED}
         # Note: outcomes in mapping will automatically be added to outcomes of checkevent and crospiRun node
-        msg_start         = Message(name=name,msg="crospiTask {name} has started")
+        msg_start         = Message(name=name,msg=f"crospiTask {name} has started")
         settaskparam      = SetTaskParameters( "SetTaskParameters",task_name, srv_name, cb, timeout, node )
         readrobotspec     = ReadRobotSpecification("ReadRobotSpec",task_name,srv_name,timeout,node)
         readtaskspec      = ReadTaskSpecification("ReadTaskSpec",task_name,srv_name,timeout,node)
@@ -107,13 +107,13 @@ class CrospiTask(Fallback):
             checkevent        = EventOutcome("checkevent",crospi_polling_func(node,event_topic,eventqueue_size,max_age=max_age),event_mapping)        
             deactivate_end    = LifeCycle("DEACTIVATE_CROSPI",srv_name,Transition.DEACTIVATE,timeout,node,always_succeed=True)
             cleanup_end       = LifeCycle("CLEANUP_CROSPI",srv_name,Transition.CLEANUP,timeout,node,always_succeed=True)
-            msg_end           = Message(name=name,msg="crospiTask {name} has finished, crospi is deactivated")
+            msg_end           = Message(name=name,msg=f"crospiTask {name} has finished, crospi is deactivated")
             seq.add_state(checkevent)
             seq.add_state(deactivate_end)
             seq.add_state(cleanup_end)
             seq.add_state(msg_end)
         else: 
-            msg_end           = Message(name=name,msg="crospiTask {name} finished, crospi will keep running")
+            msg_end           = Message(name=name,msg=f"crospiTask {name} finished, crospi will keep running")
             seq.add_state(msg_end)
         
         cleanup_seq = CrospiDeactivate(srv_name,timeout,node,force_outcome=CANCEL)        
