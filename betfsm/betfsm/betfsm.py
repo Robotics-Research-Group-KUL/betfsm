@@ -28,8 +28,10 @@ import uuid
 import time 
 import json
 from .logger import get_logger,add_logger_category,get_logger_categories
+
 import signal,math
 from collections import deque
+from dataclasses import dataclass
 
 add_logger_category("state")
 add_logger_category("service")
@@ -2317,3 +2319,193 @@ class EventSequential(GeneratorWithList):
                     yield TICKING
                 else:
                     yield self.nominal_state(blackboard)
+
+
+
+
+
+
+
+class HTTPEventReceiver:
+    """
+    """
+
+    @dataclass
+    class QueuedEvent:
+        name: str
+        timestamp: float
+
+
+    _instances = {}
+
+    @classmethod
+    def get_instance( cls, channel_name: str, queue_size: int = 10  ):
+        """
+        One singleton queue per topic.
+
+        Parameters:
+            channel_name:
+                name of the topic to subscribe to
+            queue_size:
+                size of the queue (related to maximum concurrent events, i.e. sample time in relation
+                to the events generated)
+        Returns:
+            Singleton instance of EventQueueSubscriber.
+        """        
+        print(f"{cls._instances=}")
+        print(f"{channel_name=}")
+        if channel_name not in cls._instances:
+            cls._instances[channel_name] = cls(
+                channel_name,
+                queue_size=queue_size
+            )
+            instance = cls._instances[channel_name]
+        else:
+            instance = cls._instances[channel_name]
+            with instance.lock:
+                if instance.queue.maxlen < queue_size:
+                    new = deque(instance.queue,maxlen=queue_size)
+                    instance.queue = new
+        return instance
+
+    @classmethod
+    def lookup_instance(cls, channel_name):
+        return cls._instances.get(channel_name,None)
+
+    def __init__( self, channel_name: str,  queue_size: int):
+        self.channel_name = channel_name
+        self.queue = deque(maxlen=queue_size)
+        self.lock = Lock()
+
+    def push(self, ev: str):
+        event = HTTPEventReceiver.QueuedEvent( name=ev, timestamp=time.monotonic() )
+        with self.lock:
+            self.queue.append(event)
+
+    def has_event( self, target_strings: Iterable[str]  ) -> bool:
+        """
+        Looks for an event in the queue that matches one of the target_strings.
+        Reads from the oldest to the newest element in the queueu.
+        Returns the matching event and None if no event matches.
+        It **does not** consume the matching event.
+        """
+        targets = set(target_strings)
+        with self.lock:
+            for i, event in enumerate(self.queue):
+                if (   event.name in targets ):
+                    matched = event.name
+                    return matched
+        
+    def has_recent_event( self, target_strings: Iterable[str] ,  max_age_seconds: float  ) -> bool:
+        """ 
+        Looks for an event in the queue that matches one of the target_strings.
+        Reads from the oldest to the newest element in the queueu.
+        Returns the matching event and None if no event matches.
+        It only returns events that are at most max_age_seconds old.  
+        This can be useful to avoid stale events.
+        It **does not** consume the matching event.
+        """        
+        now = time.monotonic()
+        targets = set(target_strings)
+        with self.lock:
+            for i, event in enumerate(self.queue):
+                age = now - event.timestamp
+                if (   event.name in targets  and age <= max_age_seconds  ):
+                    matched = event.name
+                    return matched
+            
+    def poll_for( self, target_strings: Iterable[str] ) -> Optional[str]:
+        """ 
+        Looks for an event in the queue that matches one of the target_strings.
+        Reads from the oldest to the newest element in the queueu.
+        Returns the matching event and None if no event matches.
+        It consumes the matching event.
+        """
+        targets = set(target_strings)
+        with self.lock:
+            for i, event in enumerate(self.queue):
+                if event.name in targets:
+                    matched = event.name
+                    del self.queue[i]
+                    return matched
+        return None
+
+    def poll_recent_for(  self,  target_strings: Iterable[str],  max_age_seconds: float ) -> Optional[str]:
+        """ 
+        Looks for an event in the queue that matches one of the target_strings.
+        Reads from the oldest to the newest element in the queueu.
+        Returns the matching event and None if no event matches.
+        It only returns events that are at most max_age_seconds old.  
+        This can be useful to avoid stale events.        
+        It consumes the matching event.
+        """
+        now = time.monotonic()
+        targets = set(target_strings)
+        with self.lock:
+            for i, event in enumerate(self.queue):
+                age = now - event.timestamp
+                if (   event.name in targets  and age <= max_age_seconds  ):
+                    matched = event.name
+                    del self.queue[i]
+                    return matched
+        return None
+
+    def clear(self):
+        """
+        Clears the qeueue
+        """
+        with self.lock:
+            self.queue.clear()
+
+    def size(self) -> int:
+        """
+        Size of the queue
+        """
+        with self.lock:
+            return len(self.queue)
+
+    def log_queue(self, max_items: int = 20):
+        """
+        Logs a snapshot of queue.
+        """
+        with self.lock:
+            def format_queue(q):
+                return [ f"{e.name} (age={time.monotonic() - e.timestamp:.3f}s)"  for e in list(q)[:max_items]  ]
+            msgs = format_queue(self.queue)
+        self.node.get_logger().info(
+            "=== Event Queue Snapshot ===\n"
+            + "\n".join(msgs) +
+            "\n============================"
+        )
+
+
+
+def http_polling_func(        
+        channel_name:str="betfsm",
+        queue_size:int=10, 
+        max_age:float=0.5
+    ) -> Callable[[Dict, List[str]],str|None]:       
+    """ 
+    Returns a callback function to read HTTP events suitable for use withy betfsm.Event.
+    
+    Parameters:
+        channel_name:
+            name of the topic to subscribe to
+
+        queue_size:
+            size of the queue related to maximum concurrent events, i.e. sample time in relation
+            to the events generated. Because the underlying receiver is a singleton, the maximum
+            queue size of everybody who requested an instance of the receiver is taken.
+
+        max_age:
+            maximum age of the events that still will be received.
+            
+    Returns:
+        Polling function
+    """     
+    print(f"http_polling_func({channel_name=}{queue_size=}{max_age=} )")
+    sub = HTTPEventReceiver.get_instance(channel_name,queue_size)    
+    def polling(bb, events):
+        return sub.poll_recent_for(events,max_age)
+    return polling
+

@@ -18,6 +18,8 @@
 
 
 from betfsm.betfsm import TickingState
+from betfsm import HTTPEventReceiver
+
 import importlib.resources
 from fastapi import FastAPI, WebSocket
 from fastapi.responses import JSONResponse, FileResponse
@@ -32,8 +34,13 @@ from collections import deque
 import time
 
 from pathlib import Path
+from pydantic import BaseModel, Field
 
-app = FastAPI()
+
+app = FastAPI(
+    title="BeTFSM webserver API",
+    description="This API handles visualization of a running BeTFSM tree, interaction with the blackboard and giving events to BeTFSM"    
+)
 
 # Serve files from the "static" directory at the URL path "/static"
 frontend_path = importlib.resources.files(betfsm) / Path("frontend")
@@ -120,6 +127,18 @@ def main_page():
     return FileResponse(str(index_file))
 
 
+
+class Event(BaseModel):
+    channel: str = Field(None, description="Name of the channel, i.e. a BeTFSM receiver subscribes to channel and will have a queue of all events for that channel.")
+    event:   str = Field(None, description="Name of the event")
+
+@app.post("/event")
+async def receive_event(event: Event):
+    get_logger().info(f"HTTP event received: channel: {event.channel} event:{event.event}")
+    instance = HTTPEventReceiver.lookup_instance(event.channel)
+    if instance is not None:
+        instance.push(event.event)
+    return {"status":"ok"}
 
 
 @app.get("/api/alive")
