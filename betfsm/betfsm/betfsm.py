@@ -1938,7 +1938,7 @@ def ctrl_c_polling_func(value:str="CTRL_C", repeated=3 ) -> Callable[[Dict, List
     return polling
 
 
-def combine( *args):
+def  combine( *args):
     """    
     Combines multiple polling callbacks, takes as arguments the functions themselves
     and returns a callback function that combines the polling functions.
@@ -1954,6 +1954,7 @@ def combine( *args):
             if ev is not None:
                 return ev
         return None
+    return polling
 
 
 class Ctrl_C_Receiver:    
@@ -2137,7 +2138,7 @@ class EventConcurrent(GeneratorWithList):
     def __init__(self, 
                  name:str, 
                  event_poller:Callable[[Dict, List[str]],str|None], 
-                 event_map=Dict[str, TickingState] ):
+                 event_map=Dict[str, TickingState] ):         
         children                     = []  # list of TickingStates                
         self.event_to_state_ndx      = {} # str -> int        event to index in self.states
         index                        = 0        
