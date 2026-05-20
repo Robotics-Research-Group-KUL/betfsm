@@ -153,6 +153,7 @@ The following operators apply when the current node is a list:
 - When replacing a list element by index, the list is auto‑extended with
   None values if the index is beyond the current length.
 
+
 ::: betfsm.dumps_blackboard
     options:
       heading_level: 3
