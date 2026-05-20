@@ -2261,13 +2261,18 @@ class EventSequential(GeneratorWithList):
         children                     = []  # list of TickingStates                
         self.event_to_state_ndx      = {}  # str -> int        event to index in self.states
         index                        = 0
+        self.nominal_state           = None
         for k,v in event_map.items():            
+            if isinstance(v,str):
+                v = AlwaysOutcome(name=None,outcome=v)
             children.append(v)
             if k!= NO_EVENT:
                 self.event_to_state_ndx[k] = index
+            else:
+                self.nominal_state = v                
             index = index + 1
         self.event_poller  = event_poller
-        self.nominal_state = event_map.get(NO_EVENT, None)
+        
         self.add_state_safeguard = False
         super().__init__(name, [], children)
         self.add_state_safeguard = True
