@@ -40,7 +40,7 @@ Event-handling in BeTFSM is handled in two parts:
 |-----------------------|-----------------------------------------------------------------------|
 |  [TopicEventReciever][betfsm_ros.TopicEventReceiver]   | Receives events from a ROS2 topic and uses a FIFO queue to <br/>store the events. |
 |  [Ctrl_C_Receiver][betfsm.Ctrl_C_Receiver]       | Rembers whether ctrl-c has been pressed such that the polling <br/>function can check for that event.   |
-|  *to be implemented*  | Checking for events coming from the webserver, to implement <br/>GUI interaction. |
+|  [HTTPEventReceiver][betfsm.HTTPEventReceiver] | Checking for events coming from the webserver, to implement <br/>GUI interaction. |
 
 
 !!! TODO
@@ -83,6 +83,7 @@ they are not polling_func's themselves.
 | [blackboard_polling_func][betfsm.blackboard_polling_func] |  to read out events from a blackboard location |
 | [ctrl_c_polling_func][betfsm.ctrl_c_polling_func]         |  to read out ctrl-c pressed events  |
 | [combine][betfsm.combine]                                 |  combines multiple callbacks |
+| [http_polling_func][betfsm.http_polling_func]             |  to read out events that come from the HTTP server | 
 ## Usage patterns
 
 

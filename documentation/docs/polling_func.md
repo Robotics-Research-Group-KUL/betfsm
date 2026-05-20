@@ -4,4 +4,6 @@
 
 ::: betfsm_crospi.crospi_polling_func
 
+::: betfsm.http_polling_func
+
 ::: betfsm.combine
