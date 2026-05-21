@@ -355,8 +355,7 @@ class Runner(RunnerBase):
             jitter = (now - previous_run) - self.interval_sec
             if abs(jitter) > self.interval_sec*0.5:   
                 get_logger().warn(f"Timing: large deviation : {jitter} s")   
-            if self.debug:
-                self.stats.add(jitter)                  
+            self.stats.add(jitter)                  
             if (now >= next_publish - self.interval_sec*0.5) or (outcome != TICKING):
                 self.process_publish_cycle()
                 next_publish = now + self.publish_period                            

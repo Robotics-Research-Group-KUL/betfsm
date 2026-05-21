@@ -85,9 +85,8 @@ class ROSRunner(RunnerBase):
             self.first_time = False
         jitter = (self.now - self.previous_run)*1E-9 - self.interval_sec
         if abs(jitter) > self.interval_ns*0.5:   
-            get_logger().warn(f"Timing: large deviation : {jitter:6f} s")   
-        if self.debug:
-            self.stats.add(jitter)           
+            get_logger().warn(f"Timing: large deviation : {jitter:6f} s")           
+        self.stats.add(jitter)           
         outcome = self.statemachine(self.blackboard)
         if (self.now >= self.next_publish - self.interval_ns*0.5) or (outcome != TICKING):
             self.process_publish_cycle()
