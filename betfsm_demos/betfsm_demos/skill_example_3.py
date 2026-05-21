@@ -12,7 +12,7 @@
 
 #  Copyright (c) 2025 KU Leuven, Belgium
 #
-#  Author: Santiago Iregui, Erwin Aertbelien
+#  Author: Erwin Aertbelien
 #
 #  GNU Lesser General Public License Usage
 #  Alternatively, this file may be used under the terms of the GNU Lesser
@@ -34,47 +34,20 @@ from betfsm import (
     Sequence,  Message, 
     SUCCEED, TICKING, CANCEL, ABORT, TIMEOUT, NO_EVENT,
     TickingStateMachine,get_logger,set_logger,
-    EventSequential, ctrl_c_polling_func, get_path_value
+    EventSequential, Ctrl_C_Condition
 )
-from betfsm_crospi import load_task_list, eTaSL_StateMachine
+from betfsm_crospi import load_task_list, CrospiTask, CrospiDeactivate
 from betfsm_ros import BeTFSMNode,ROSRunner,Node,Duration,LifeCycle,Transition
 
 
 class MySequence(Sequence):
     def __init__(self):
         super().__init__("my_sequence", [
-            eTaSL_StateMachine("MovingHome","MovingHome"),
-            eTaSL_StateMachine("MovingDown","MovingDown"),
-            eTaSL_StateMachine("MovingUp","MovingUp"),
-            eTaSL_StateMachine("MovingSpline","MovingSpline") ]
+            CrospiTask("MovingHome","MovingHome"),
+            CrospiTask("MovingDown","MovingDown"),
+            CrospiTask("MovingUp","MovingUp"),
+            CrospiTask("MovingSpline","MovingSpline") ]
         )
-
-class MyCleanup(TickingStateMachine):
-    """
-    Cleaning up eTaSL i.e. stop any motion and put the crospi node in a cleaned up state
-    """
-    def __init__(self,srv_name:str="/crospi_node",timeout:Duration = Duration(seconds=0.1), node : Node = None):
-        # execute in sequence but don't care about ABORT, only way to fail is TIMEOUT
-        super().__init__("Cleanup",[CANCEL,SUCCEED])
-
-        msg        =  Message(msg="State machine to cleanup is now running")
-        deactivate =  LifeCycle("DEACTIVATE_ETASL",srv_name,Transition.DEACTIVATE,timeout,node)
-        cleanup    =  LifeCycle("CLEANUP_ETASL",srv_name,Transition.CLEANUP,timeout,node)
-
-        self.add_state(msg, transitions={
-            SUCCEED:deactivate
-        })
-        self.add_state(deactivate, transitions={
-            SUCCEED: cleanup,
-            ABORT:   cleanup,
-            TIMEOUT: cleanup
-        })
-        self.add_state(cleanup, transitions={
-            SUCCEED:     CANCEL,
-            TIMEOUT:     CANCEL,
-            ABORT:       CANCEL
-        })
-
 
 # main
 def main(args=None):
@@ -90,14 +63,14 @@ def main(args=None):
     blackboard = {}
     load_task_list("$[crospi_application_template]/skill_specifications/libraries/skill_lib_example/tasks/skill_example.json",blackboard)
     
-        
-    nominal_sm = MySequence()
-    cleanup_sm = MyCleanup(node=my_node)
 
-    sm = EventSequential("check_cancel", ctrl_c_polling_func("CTRL_C",3),{NO_EVENT:nominal_sm, "CTRL_C":cleanup_sm})
-    # This is now working and recommended, accepts command-line parameters (see --help)
-    # has many more optional arguments, see API documentation
-    # checks whether timing exceeds sample period.
+    # running MySequence() and cleaning up when CTRL_C is pressed        
+    nominal_sm = MySequence()
+    cleanup_sm = CrospiDeactivate(force_outcome=CANCEL)
+    sm = EventSequential("check_cancel", Ctrl_C_Condition("CTRL_C",repeated=3),{NO_EVENT:nominal_sm, "CTRL_C":cleanup_sm})
+
+    # ROSRunner accepts command-line parameters (see --help)
+    # has many more optional arguments than used below, see API documentation
     runner = ROSRunner(my_node,sm,blackboard, frequency=100.0, publish_frequency=5.0, debug=False, display_active=False)
 
     try:

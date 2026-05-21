@@ -52,10 +52,9 @@ The API is split up in three parts:
 
 | Class                     |      Description            |
 |---------------------------|-----------------------------|
-| [WaitFor][betfsm.WaitFor] | |
-| [WaitForever][betfsm.WaitForever] | |
-| [TimedWait][betfsm.TimedWait]  | |
+| [TimedWait][betfsm.TimedWait]     | |
 | [TimedRepeat][betfsm.TimedRepeat] | |
+
 
 
 
@@ -68,7 +67,8 @@ The API is split up in three parts:
 | [Adapt][betfsm.Adapt] | | 
 | [Compute][betfsm.Compute] | |
 | [AlwaysOutcome][betfsm.AlwaysOutcome]  ||
-
+| [WaitFor][betfsm.WaitFor] | |
+| [WaitForever][betfsm.WaitForever] | redundant AlwaysOutcome(TICKING) Waitfor(lambda bb: True| 
 
 
 

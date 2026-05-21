@@ -31,7 +31,7 @@ import sys
 from betfsm import (
     SUCCEED, TICKING, CANCEL, TIMEOUT,ABORT, TickingStateMachine, get_logger,set_logger
 )
-from betfsm_crospi import load_task_list, eTaSL_StateMachine
+from betfsm_crospi import load_task_list, CrospiTask
 from betfsm_ros import BeTFSMNode,ROSRunner
 
 
@@ -41,10 +41,10 @@ class MyStateMachine(TickingStateMachine):
 
         # you can also use the names of the states in the transitions, but using the variables
         # avoids issues with spelling errors in the name and is "cleaner"
-        movinghome   = eTaSL_StateMachine("MovingHome","MovingHome")
-        movingdown   = eTaSL_StateMachine("MovingDown","MovingDown")
-        movingup     = eTaSL_StateMachine("MovingUp","MovingUp")
-        movingspline = eTaSL_StateMachine("MovingSpline","MovingSpline")
+        movinghome   = CrospiTask("MovingHome","MovingHome")
+        movingdown   = CrospiTask("MovingDown","MovingDown")
+        movingup     = CrospiTask("MovingUp","MovingUp")
+        movingspline = CrospiTask("MovingSpline","MovingSpline")
 
         self.add_state(movinghome, transitions={
             SUCCEED:   movingdown
@@ -67,6 +67,7 @@ def main(args=None):
 
     set_logger("default",my_node.get_logger())
     set_logger("crospi",my_node.get_logger())
+
     #set_logger("service",my_node.get_logger()) 
     #set_logger("state",my_node.get_logger())   
 

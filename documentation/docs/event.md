@@ -30,9 +30,6 @@ Event-handling in BeTFSM is handled in two parts:
       The event receiver has to manage its own queue and cannot easily let the middleware handle it.  It needs
       to examine the whole queue for a matching event.
 
-??? Note "**Multiplexing event receivers**"
-      For particular applications, such as listening to multiple topics, a short, special purpose callback function can
-      be written to call multiple event receivers and fuse them together according to your application specific policies.
 
 ## Event receivers
 
@@ -43,13 +40,51 @@ Event-handling in BeTFSM is handled in two parts:
 |  [HTTPEventReceiver][betfsm.HTTPEventReceiver] | Checking for events coming from the webserver, to implement <br/>GUI interaction. |
 
 
-!!! TODO
-    
-    What about timing events?
+
 
 !!! TODO
 
-    More structured way besides blackboard with input and output parameters?
+    Investigate Jobqueue idea:  way to push jobs to a queue together with a piece of blackboard in payload.
+    An Event that consumes it and puts the payload in the blackboard. Different types of queues
+
+
+## Conditions
+
+Conditions are classes that are used for which events to listen.  Conditions can **consume** their
+event, i.e. if immediately called again, they will not return the same event again, or they
+do **not consume** the event.  For a queue related event, this corresponds to taking away
+the event from the queue or to leave it in the queue.
+
+Conditions **return a string** corresponding to the matching "event". For a condition coming in via HTTP
+or a ROS2 topic, this is the string that is communicated.  For conditions such as Timeout_Condition
+or Callback_Condition, it is a string that is given in the constructor arguments. If there is no event,
+a condition **returns None**.
+
+Conditions can be composed using operators:  **|** (corresponding to OR) and **&** (corresponding to AND)
+There is a [Not][betfsm.Not] condition, that however requires an additional  string as constructor argument
+since it needs to know what to return if the underlying Condition returns None.
+
+So, Conditions can form a small expression tree that is evaluated at run time. For debugging purposes
+you can convert it to a string using `str(my_condition_obj)`.
+
+The HTTP events are managed by the (asynchronous) webserver that is also dealing with the visualization.
+It has an API documentation using Swagger under `0.0.0.0:8000/docs` (or the endpoint that you indicated
+in the command line)
+
+| Condition              | description                                                          |
+|------------------------|----------------------------------------------------------------------|
+| Condition              | Base class for conditions                                            |
+| [Not][betfsm.Not]      | Negation                                                             |
+| [OrCondition][betfsm.OrCondition] | OR, typically you use `|` operator                         |
+| [AndCondition][betfsm.AndCondition] | AND, typically you use `&` operator                      |
+| [Callback_Condition][betfsm.Callback_Condition] | a condition determined by a callback function|
+| [Timeout_Condition][betfsm.Timeout_Condition] | a Timeout condition (can be repeated or one-shot) |
+| [HTTPEvent_Condition][betfsm.HTTPEvent_Condition]| A string is received on an HTTP event channel (see HTTP API of BeTFSM) |
+| [Ctrl_C_Condition][betfsm.Ctrl_C_Condition] | Ctrl-C has been pressed  |
+| [TopicEvent_Condition][betfsm_ros.TopicEvent_Condition] | A string is received on a ROS2 Topic |
+
+
+
 
 ## Event checkers
 
@@ -71,51 +106,45 @@ A typical use case for [EventSequential][betfsm.EventSequential] is handling a c
 
 
 
-## Polling functions
 
-Polling functions bind event checkers with event receivers.  The following
-functions are factory functions that return polling_func functions,
-they are not polling_func's themselves.
-
-| Polling function                                         | description                                        |
-|----------------------------------------------------------|----------------------------------------------------|
-| [crospi_polling_func][betfsm_crospi.crospi_polling_func]  |  to read out events from a topic (using crospi conventions) |
-| [blackboard_polling_func][betfsm.blackboard_polling_func] |  to read out events from a blackboard location |
-| [ctrl_c_polling_func][betfsm.ctrl_c_polling_func]         |  to read out ctrl-c pressed events  |
-| [combine][betfsm.combine]                                 |  combines multiple callbacks |
-| [http_polling_func][betfsm.http_polling_func]             |  to read out events that come from the HTTP server | 
 ## Usage patterns
 
 
 - Configure the polling callback function. You pass the function name, you do not call polling_func yourself.
   ```python
-    pollingfunc = crospi_polling_func()
+    cond = HTTPEvent_Condition("betfsm")
   ```
 
 - Check whether there is an event, if not immediately returns SUCCEED, if e_finished return "FINISH"
-Probabily you want to call this in a loop, make sure that there is at least one yield TICKING in the loop!.
+Probabily you want to call this in a loop, make sure that there is at least one yield TICKING in the loop! (**does not wait**)
   ```python 
     EventOutcome( "check_finalized", 
-                    polling_func, 
+                    cond, 
                     { NO_EVENT:SUCCEED, "e_finished":"FINISH" }
     )
   ``` 
 
-- Waits until it receives "e_open" or "e_finished". If "e_open" is received return "OPEN" outcome,
+- **Waits** until it receives "e_open" or "e_finished". If "e_open" is received return "OPEN" outcome,
 if "e_finished" is received, return SUCCEED outcome.
   ```python 
-    EventOutcome( "check_finalized",  polling_func, { 
+    EventOutcome( "check_finalized",  cond, { 
                     "e_open" :"OPEN", 
                     "e_finished":SUCCEED 
                  })
   ``` 
-
-
-- Executes nominal_subtree, if "e_something_is_wrong" is received, directly returns CANCEL.
-If "e_open_gripper" is received executes opengripper_subtree concurrent with nominal_subtree until
+equivalent to:
+  ```python 
+    EventOutcome( "check_finalized",  cond, { 
+                    NO_EVENT : TICKING,
+                    "e_open" :"OPEN", 
+                    "e_finished":SUCCEED 
+                 })
+  ``` 
+- Executes nominal_subtree, if "e_something_is_wrong" is received, interrupts nominal subtree and directly returns CANCEL.
+If "e_open_gripper" is received executes opengripper_subtree concurrently with nominal_subtree until
 both return SUCCEED or one of them returns something else (i.e. ConcurrentSequence behavior).
   ```python 
-      EventSubtree( "check_finalized",  polling_func,  { 
+      EventConcurrent( "check_finalized",  cond,  { 
                         NO_EVENT:                nominal_subtree, 
                         "e_something_is_wrong" : AlwaysOutcome(CANCEL), 
                         "e_open_gripper":        open_grippersubtree 
@@ -125,30 +154,41 @@ both return SUCCEED or one of them returns something else (i.e. ConcurrentSequen
 - Executes a *nominal_subtree* that already checks for the "e_finished" event. We augment
   this behavior from the 'outside' with checking for "e_open_gripper" and "e_something_is_wrong" 
   (as described above). Events can be checked at multiple places.  If the *nominal_subtree*
-  is finished but *open_gripper_subtree* is still running, it will wait for *open_gripper_subtree*  
+  is finished but *open_gripper_subtree* is still running, it will wait for *open_gripper_subtree*.
+
+  The "e_open_gripper" and "e_something_is_wrong" event strings can also come via an HTTP connection.
 
   ```python
-    nominal_subtree = Sequence("crospi_statemachine, [ ... EventOutcome("check_finished", crospi_polling_func])....])
-    EventSubtree( "add_error_check",  polling_func, { 
+    cond_topic = TopicEvent_Condition()
+    cond_http  = HTTPEvent_Condition()
+
+    nominal_subtree = Sequence("crospi_statemachine, [ ... EventOutcome("check_finished", cond_topic])....])
+    EventConcurrent( "add_error_check",  cond_topic | cond_http, { 
                     NO_EVENT: nominal_subtree,
                     "e_something_is_wrong":AlwaysOutcome(CANCEL),
                     "e_open_gripper":      open_gripper_subtree                    
                  })
   ```
 
-- Remember the behavior similar to ConcurrentSequence: All children of EventSubtree need to 
-   return SUCCEED (if they are activated), so in the following below, the event "e_nothing_done" 
-   doesn't do anything.  This behavior is deliberately chosen such that you can execute subtrees similar
-   to open_gripper_subtree simultaneously with the nominal_subtree and you have a guarantee that the trees
-   will be finished, except when someone returns something else than SUCCEED. So if nominal_subtree is finished
-   and "e_open_gripper" was called, EventSubtree will wait until open_gripper_subtree is finished.
+-            
+    The following executes a nominal state machine `nominal_sm`.  If a ctrl-c is pressed or a STOP is send over HTTP or after 60 seconds, 
+    deactivates Crospi, and interrupt the nominal state machine and return "CANCEL".  
 
-  ```python
-    nominal_subtree = Sequence("crospi_statemachine, [ ... EventOutcome("check_finished", crospi_polling_func])....])
-    EventSubtree( "add_error_check",  polling_func, { 
-                    NO_EVENT: nominal_subtree,
-                    "e_something_is_wrong":AlwaysOutcome(CANCEL),
-                    "e_open_gripper":      open_gripper_subtree                    
-                    "e_nothing_done":      AlwaysOutcome(SUCCEED)
-                 })
-  ```
+    Every 15 seconds a time-out condition is triggered and the nominal state machine is interrupted and a message is send out.    
+    ```
+    sm = EventSequential("check", 
+                         Ctrl_C_Condition("CTRL_C") | HTTPEvent_Condition() | Timeout_Condition("MESSAGE",15,-1) | Timeout_Condition("QUIT",60),
+                         event_map={
+                            NO_EVENT: nominal_sm,
+                            "CTRL_C": CrospiDeactivate(force_outcome="CANCEL"),
+                            "STOP":   CrospiDeactivate(force_outcome="CANCEL"),
+                            "MESSAGE" : say_message,
+                            "QUIT" :  CrospiDeactivate(force_outcome="CANCEL")
+                        }
+    )
+    ```
+    Note that you have to create three times the CrospiDeactivate(...).  Otherwise your BeTFSM graph wouldn't be a **tree** anymore. (This condition is checked).
+
+    !!! TODO
+        In principle, since EventSequential executes all non-NO_EVENT state machines sequentially, an implementation could handle multiple identical
+        state machines as values for the event_maps. This is not (yet) done. This is **not** the case for EventConcurrent, where it is really necessary.

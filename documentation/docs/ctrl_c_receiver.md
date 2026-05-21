@@ -1,5 +1,5 @@
 
-::: betfsm.Ctrl_C_Receiver
-    options:
+
+::: betfsm.events.Ctrl_C_Receiver
       show_source: false
       show_root_heading: true 

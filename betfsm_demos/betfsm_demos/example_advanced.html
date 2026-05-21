@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Event Sender</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    button { margin: 5px; padding: 10px 20px; }
+    #status { margin-top: 15px; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <h1>Send Events</h1>
+
+  <button onclick="sendEvent('OPEN')">OPEN</button>
+  <button onclick="sendEvent('CLOSE')">CLOSE</button>
+  <button onclick="sendEvent('STOP')">STOP</button>
+  <button onclick="sendEvent('PLAYSOUND')">PLAYSOUND</button>
+  <button onclick="sendEvent('COMPLAIN')">COMPLAIN</button>
+
+  <div id="status"></div>
+  <p id="result"></p>
+
+    <script>
+    function sendEvent(eventName) {
+        fetch("http://localhost:8000/api/event", {
+            method: "POST",
+            headers: {
+                "accept": "application/json",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                channel: "betfsm",
+                event: eventName
+            })
+        })
+        .then(response => response.text())
+        .then(text => {
+            document.getElementById("result").innerText = text;
+        })
+        .catch(err => {
+            document.getElementById("result").innerText = "Error: " + err;
+        });
+    }
+    </script>
+
+</body>
+</html>
+
+

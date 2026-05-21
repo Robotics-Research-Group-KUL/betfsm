@@ -116,7 +116,7 @@ The following operators apply when the current node is a list:
       Example: "users/~del:1"
 
 -  "~pop"
-      Removes and returns the last element.
+      Removes the last element
       Example: "users/~pop"
 
 -  "N"   (digit)

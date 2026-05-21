@@ -20,55 +20,47 @@
 """
 BeTFSM states related to eTaSL
 """
-from rclpy.qos import QoSProfile
 from abc import abstractmethod
-from typing import Dict, List, Union, Callable,Type, TypeAlias
+from typing import Dict, Callable
+from functools import reduce
+from operator import and_
+import json
+from jsonschema import validate, exceptions
 
-# from betfsm_ros.betfsm_ros import *
 
 from betfsm import (
-    SUCCEED,CANCEL,TIMEOUT, TICKING,ABORT,
+    SUCCEED,CANCEL,TIMEOUT, TICKING,ABORT,NO_EVENT,
     add_logger_category, get_logger,get_path_value,get_path_location,set_path_value,
-    GeneratorWithList,
     Blackboard, TickingState,Message,ConcurrentFallback, TickingStateMachine,
+    Fallback,Sequence, AlwaysOutcome,
+    EventOutcome,
     deprecated_msg
 )
 
 from betfsm_ros import (
     Node,Duration,
     BeTFSMNode,
-    ServiceClient, LifeCycle, Transition, TopicEventReceiver
+    ServiceClient, LifeCycle, Transition,
+    TopicEvent_Condition
 )
 
 
 from crospi_interfaces.srv import TaskSpecificationFile
 from crospi_interfaces.srv import TaskSpecificationString
+from crospi_interfaces.msg import Output
+from std_msgs.msg import String
 
 # Output:
 #  - msg.names
 #  - msg.data
 #  - msg.is_declared    
-from crospi_interfaces.msg import Output
-from std_msgs.msg import String
-from functools import reduce
-from operator import and_
+
 
 
 from crospi_py import etasl_params
-import json
-from jsonschema import validate, exceptions
 
+from rclpy.qos import QoSProfile
 
-
-from rclpy.node import (
-    Node
-)
-from rclpy.qos import (
-    QoSProfile,
-    DurabilityPolicy,
-    ReliabilityPolicy,
-    QoSHistoryPolicy
-)
 
 
 
@@ -314,42 +306,42 @@ class eTaSLOutput(TickingState):
         return self.outcome
 
 
-def crospi_polling_func(
-        node:Node=None,
-        topic:str="crospi_node/my_output",
-        queue_size:int=10, 
-        max_age:float=0.05
-    ) -> Callable[[Dict, List[str]],str|None]:       
-    """ 
-    Returns a callback function to read crospi events suitable for use withy betfsm.Event.
-    Uses betfsm_ros.EventQueueSubscriber for the qeueu.  The default
-    parameters are suitable for crospi.
+# def crospi_polling_func(
+#         node:Node=None,
+#         topic:str="crospi_node/my_output",
+#         queue_size:int=10, 
+#         max_age:float=0.05
+#     ) -> Callable[[Dict, List[str]],str|None]:       
+#     """ 
+#     Returns a callback function to read crospi events suitable for use withy betfsm.Event.
+#     Uses betfsm_ros.EventQueueSubscriber for the qeueu.  The default
+#     parameters are suitable for crospi.
 
-    Parameters:
-        node:
-            ROS2 node
+#     Parameters:
+#         node:
+#             ROS2 node
             
-        topic_name:
-            name of the topic to subscribe to
+#         topic:
+#             name of the topic to subscribe to
 
-        queue_size:
-            size of the queue related to maximum concurrent events, i.e. sample time in relation
-            to the events generated. Because the underlying receiver is a singleton, the maximum
-            queue size of everybody who requested an instance of the receiver is taken.
+#         queue_size:
+#             size of the queue related to maximum concurrent events, i.e. sample time in relation
+#             to the events generated. Because the underlying receiver is a singleton, the maximum
+#             queue size of everybody who requested an instance of the receiver is taken.
 
-        max_age:
-            maximum age of the events that still will be received.
+#         max_age:
+#             maximum age of the events that still will be received.
             
-    Returns:
-        Polling function
-    """     
-    if node==None:
-        node = BeTFSMNode.get_instance()
-    sub = TopicEventReceiver.get_instance(node,topic,queue_size)
-    sub.set_minimum_queue_size(queue_size)
-    def polling(bb, events):
-        return sub.poll_recent_for(events,max_age)
-    return polling
+#     Returns:
+#         Polling function
+#     """     
+#     if node==None:
+#         node = BeTFSMNode.get_instance()
+#     sub = TopicEventReceiver.get_instance(node,topic,queue_size)
+#     sub.set_minimum_queue_size(queue_size)
+#     def polling(bb, events):
+#         return sub.poll_recent_for(events,max_age)
+#     return polling
 
 
 
@@ -482,14 +474,7 @@ class eTaSL_StateMachine(TickingStateMachine):
         warning:            
             TODO: default name of output topic needs to be changed.
         """
-
-        # commented out documentation
-        # """ 
-        #     transitioncb:
-        #         [optional] callback that is called at each transition, signature `def transitioncb(statemachine,blackboard,source,outcome)->outcome`
-        #     statecb:
-        #         [optional] callback that is called at each, signature `default_statecb(statemachine,blackboard,state)`
-        # """
+        deprecated_msg("Use CrospiTask instead")
         super().__init__(name,outcomes=[SUCCEED, ABORT,TIMEOUT]) # removed parameters: ,transitioncb=transitioncb,statecb=statecb)
         msg = Message(name="display_name", msg=f"cROSpi task {name}", logCategory="crospi")
         self.add_state(msg,transitions={SUCCEED: "DEACTIVATE_ETASL"})
@@ -544,3 +529,127 @@ class eTaSL_StateMachine(TickingStateMachine):
                     transitions={SUCCEED: SUCCEED,
                                  ABORT: ABORT,
                                  TIMEOUT: ABORT}) 
+
+
+
+
+
+class CrospiDeactivate(Sequence):    
+    def __init__(self, srv_name: str = "/crospi_node",
+                 timeout:Duration = Duration(seconds=1.0),
+                 node : Node = None, force_outcome:str=None):
+        """ 
+        Sets lifecycle cROSpi to UNCONFIGURED state (if not already in that state)
+        
+        Always tries to go true the whole sequence, also in case of errors.  Depending
+        on the context (cleanup, or initial check), you can use `force_outcome` to force the outcome to
+        a given value.
+
+        Parameters:
+            srv_name:
+                name of the crospi_node
+            timeout:
+                duration of timeout
+            node:
+                ROS2 node that BeTFSM uses (None: will get singleton instance)
+            outcome:
+                the outcome of this statemachine (in all circumstances)
+        """
+        super().__init__("crospi_deactivate")
+        
+        deactivate_end  = LifeCycle("DEACTIVATE_CROSPI",srv_name,Transition.DEACTIVATE,timeout,node,always_succeed=True)
+        cleanup_end     = LifeCycle("CLEANUP_CROSPI",srv_name,Transition.CLEANUP,timeout,node,always_succeed=True)
+
+        self.add_state(deactivate_end)
+        self.add_state(cleanup_end) 
+        if force_outcome is not None:
+            self.add_state( AlwaysOutcome(force_outcome) )
+        
+
+class CrospiTask(Fallback):
+    def __init__(self, 
+                 name : str,
+                 task_name: str,
+                 srv_name: str = "/crospi_node",
+                 cb:Callable=default_parameter_setter,
+                 event_topic: str = "crospi_node/events",
+                 timeout:Duration = Duration(seconds=1.0),
+                 node : Node = None,
+                 eventqueue_size: int = 10,
+                 max_age: float = 0.1,
+                 event_check: bool = True
+                 ):
+        """
+        returns a subtree that starts an eTaSL task on a cROSpi node.  The first two
+        arguments are the most important, all the others have reasonable default
+        settings.  the event_check parameter is useful when you just want to startup
+        the Crospi task and call CrospiDeactivate(...) yourself.
+
+        This tasks still starts by calling deactivate and cleanup on the crospy lifecycle.
+        This takes care of Crospi being in the wrong state of its lifecycle due to a previous
+        run of another application with an error.
+
+        Parameters:
+            name:
+                name of this state machine (i.e. task instance)
+            task_name:
+                name of the task to be executed (i.e. task type) Will be looked up in the blackboard.
+            srv_name:
+                name of the eTaSL node, by default /crospi_node
+            cb:
+                callback that sets the parameters, with signature `def cb(blackboard) ->param`
+                where param is a Dict with the parameters of the task that will be used to update
+                the default parameters.
+            event_topic:
+                topic where the events are read.  Topic should be of type std_msgs/msg/string
+            timeout:
+                [optional] returns TIMEOUT if the communication timeout of any of the substeps is exceeded. 
+                Uses a duration of 1 second otherwise.
+            node:
+                [optional] ROS2 node to be used. Uses BeTFSMNode.get_instance() otherwise.
+            eventqeueu_size:
+                minimum size of the event queue that receives crospi events.
+            max_age:
+                maximum age in seconds that is allowed to be received.
+            event_check:
+                when false, just starts the crospi task but do not check for e_finished event or deactivate/cleanup crospi
+                otherwise wait while checking and deactivate/cleanup crospi afterwards.
+
+        """        
+        # e_finished is always handled.  The rest should be handled outside
+        event_mapping={ NO_EVENT: TICKING,f"e_finished@{srv_name[1:]}" : SUCCEED}
+        # Note: outcomes in mapping will automatically be added to outcomes of checkevent and crospiRun node
+        msg_start         = Message(name=name,msg=f"crospiTask {name} has started",logCategory="crospi")
+        # not really needed, except for a previous run that leaves crospi in wrong state:
+        deactivate_start  = LifeCycle("DEACTIVATE_CROSPI",srv_name,Transition.DEACTIVATE,timeout,node,always_succeed=True) 
+        cleanup_start     = LifeCycle("CLEANUP_CROSPI",srv_name,Transition.CLEANUP,timeout,node,always_succeed=True)        
+        # set parameters, robot and task spec
+        settaskparam      = SetTaskParameters( "SetTaskParameters",task_name, srv_name, cb, timeout, node )
+        readrobotspec     = ReadRobotSpecification("ReadRobotSpec",task_name,srv_name,timeout,node)
+        readtaskspec      = ReadTaskSpecification("ReadTaskSpec",task_name,srv_name,timeout,node)
+        configure         = LifeCycle("CONFIGURE_CROSPI",srv_name,Transition.CONFIGURE,timeout,node)
+        activate          = LifeCycle("ACTIVATE_CROSPI",srv_name,Transition.ACTIVATE,timeout,node)
+
+        seq               = Sequence(name+"_seq",[
+                                msg_start, 
+                                deactivate_start,cleanup_start,
+                                settaskparam,readrobotspec,readtaskspec, 
+                                configure, activate
+                            ])                
+        if event_check:
+            checkevent        = EventOutcome("checkevent",TopicEvent_Condition(node,event_topic,eventqueue_size,max_age),event_mapping)        
+            deactivate_end    = LifeCycle("DEACTIVATE_CROSPI",srv_name,Transition.DEACTIVATE,timeout,node,always_succeed=True)
+            cleanup_end       = LifeCycle("CLEANUP_CROSPI",srv_name,Transition.CLEANUP,timeout,node,always_succeed=True)
+            msg_end           = Message(name=name,msg=f"crospiTask {name} has finished, crospi is deactivated",logCategory="crospi")
+            seq.add_state(checkevent)
+            seq.add_state(deactivate_end)
+            seq.add_state(cleanup_end)
+            seq.add_state(msg_end)
+        else: 
+            msg_end           = Message(name=name,msg=f"crospiTask {name} finished, crospi will keep running",logCategory="crospi")
+            seq.add_state(msg_end)
+        
+        cleanup_seq = CrospiDeactivate(srv_name,timeout,node,force_outcome=CANCEL)        
+        # if the seq ends with ABORT or TIMEOUT, fallback to cleanup_seq
+        super().__init__(name+"_fallback",[seq,cleanup_seq],lambda bb,oc: oc==ABORT or oc==TIMEOUT)
+

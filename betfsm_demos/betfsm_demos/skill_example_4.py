@@ -36,23 +36,21 @@ from betfsm import (
     Sequence,  Repeat, Message, AlwaysOutcome,
     SUCCEED, TICKING, CANCEL, ABORT,TIMEOUT,NO_EVENT,
     get_logger,set_logger,
-    EventOutcome, ctrl_c_polling_func,get_path_value,LogBlackboard    
+    EventOutcome, Ctrl_C_Condition
 )
-from betfsm_crospi import load_task_list, eTaSL_StateMachine
+from betfsm_crospi import load_task_list, CrospiTask
 from betfsm_ros import BeTFSMNode, RunnerBase,ROSRunner
 
 
 class MyTree(Repeat):
     def __init__(self):
-        ctrl_c_polling_func()
         sequence = Sequence("my_sequence", [
-            Message(None,msg="start of a new loop"),
-            EventOutcome("check_ctrl_c",ctrl_c_polling_func(), {"CTRL_C":CANCEL, NO_EVENT:SUCCEED}),
-            eTaSL_StateMachine("MovingHome","MovingHome"),
-            LogBlackboard("logblackboard",[]),
-            eTaSL_StateMachine("MovingDown","MovingDown"),
-            eTaSL_StateMachine("MovingUp","MovingUp"),
-            eTaSL_StateMachine("MovingSpline","MovingSpline")
+            Message(None,msg="start of a new loop, ctrl-c will interrupt the cylce only directly after this message"),
+            EventOutcome("check_ctrl_c",Ctrl_C_Condition(), {"CTRL_C":CANCEL, NO_EVENT:SUCCEED}),
+            CrospiTask("MovingHome","MovingHome"),
+            CrospiTask("MovingDown","MovingDown"),
+            CrospiTask("MovingUp","MovingUp"),
+            CrospiTask("MovingSpline","MovingSpline")
         ])
         super().__init__("my_tree",-1,sequence)
 

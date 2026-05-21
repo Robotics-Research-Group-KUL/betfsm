@@ -7,3 +7,5 @@
   we can simplify the design of the etasl/crospi state machines.
 
 - make it possible to add twice the same subtree when handling events. (internally refer to the same for the different events)
+
+- More structured way besides blackboard with input and output parameters?

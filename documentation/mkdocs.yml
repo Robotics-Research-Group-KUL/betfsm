@@ -27,7 +27,7 @@ nav:
     - "Technical documentation" :
       - "Technical introduction" : "technical_intro.md"
       - "Overview of the API" : "api_overview.md"
-      - "Event handling": "event.md"
+      - "Event handling and conditions": "event.md"
       - "ROS2 Lifecycle" : "ros2lifecycle.md"
       - "Utilities" : 'utils.md'
       - "BeTFSM":
@@ -51,14 +51,18 @@ nav:
         - "Compute" : "compute.md"
         - "Adapt" : "adapt.md"
         - "Runner": "runner.md"
-        - "CheckCancel": "checkcancel.md"
-        - "Ctrl C Handler" : "ctrl_c_handler.md"
-        - "Ctrl_C_Receiver" : "ctrl_c_receiver.md"
+        # - "Ctrl_C_Receiver" : "ctrl_c_receiver.md"  # not useful for user
         - "AlwaysOutcome" : "alwaysoutcome.md"        
         - "EventOutcome" : "eventoutcome.md"
         - "EventConcurrent" : "eventconcurrent.md"
-        - "EventSequential" : "eventsequential.md"
-        - "Polling functions" : "polling_func.md"
+        - "EventSequential" : "eventsequential.md"        
+        - "Not" : "notcondition.md"
+        - "OrCondition" : "orcondition.md"
+        - "AndCondition" : "andcondition.md"
+        - "Callback_Condition" : "callbackcondition.md"
+        - "Timeout_Condition" : "timeout_condition.md"
+        - "HTTPEvent_Condition" : "httpevent_condition.md"
+        - "Ctrl_C_Condition"  : "ctrl_c_condition.md"
       
       - "BeTFSM ROS2":  
         - "ServiceClient" : 'serviceclient.md'
@@ -67,18 +71,18 @@ nav:
         - "TimedRepeat for ROS2" : timedrepeat_ros.md
         - "TimedWait for ROS2" : 'timedwait_ros2.md'
         - "Timeout" : "timeout.md"
-        - "TopicEventReciever" : "topiceventreceiver.md"
+        - "TopicEvent_Condition" : "topicevent_condition.md"
+        # - "TopicEventReciever" : "topiceventreceiver.md"  # not useful for user
       - "BeTFSM cROSpi":
         - "load_task_list" : "load_task_list.md"
         - "SetTaskParameters" : "settaskparameters.md"
         - "ReadRobotSpecification" : "readrobotspecification.md"
         - "ReadTaskSpecification" : "readtaskspecification.md"
         - "eTaSLOutput" : "etasloutput.md"
-        - "eTaSLEvent"  : "etaslevent.md"
-        - "eTaSL_StateMachine" : "etasl_statemachine.md"
-        - "crospi_polling_func" : "crospi_polling_func.md"
-#    - "BeTFSM eTaSL": 'etaslstatemachine.md'
-##    - "Action server": "actionserver.md"
+        #- "eTaSLEvent"  : "etaslevent.md"
+        #- "eTaSL_StateMachine" : "etasl_statemachine.md"
+        - "CrospiTask" : "crospi_task.md"
+        - "CrospiDeactivate" : "crospi_deactivate.md"
     - "TODO": "todo.md"    
     - "About & Acknowledgements": 'about.md'
 

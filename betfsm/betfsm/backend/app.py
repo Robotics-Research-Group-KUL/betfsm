@@ -19,8 +19,6 @@
 
 from typing import Any
 
-from betfsm.betfsm import TickingState
-from betfsm import HTTPEventReceiver
 
 import importlib.resources
 from fastapi import FastAPI, WebSocket, HTTPException
@@ -30,6 +28,8 @@ from starlette.websockets import WebSocketDisconnect
 import asyncio, json, time
 
 import betfsm
+from betfsm.betfsm import TickingState
+from betfsm.events import HTTPEventReceiver
 from betfsm.jsonvisitor import JsonVisitor
 from betfsm.logger import get_logger
 from collections import deque
@@ -61,6 +61,22 @@ Published under the GNU LESSER GENERAL PUBLIC LICENSE Version 3, 29 June 2007.
 (c) 2024-2026, Erwin Aertbeliën, contributions of Federico Ulloa Rios and Santiago Iregui Rincon
 
  KU Leuven, Department of Mechanical Engineering, ROB-Group. The ROB Group is part of core labs M&A and MPRO of Flanders Make.
+
+
+## WebSocket: /ws/stream
+
+**URL:** `ws://yourserver/ws/stream
+
+**Protocol:** WebSocket  
+**Description:** The nodes in the tree that have to be painted as active.
+
+The message is in json:
+
+    ```
+    msg = {"type": "tick", "tick": time_in_milliseconds, "active": list of active UUID's of nodes}
+    ```
+
+
 """
 app = FastAPI(
     title="BeTFSM webserver API",
@@ -69,6 +85,19 @@ app = FastAPI(
         "name": "GNU LESSER GENERAL PUBLIC LICENSE Version 3, 29 June 2007",
         "url": "https://www.gnu.org/licenses/lgpl-3.0.en.html",
     },    
+)
+
+
+# To deal with browser CORS protocol and being able to send
+# from all origins:
+from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],        # allow all origins (or restrict later)
+    allow_credentials=True,
+    allow_methods=["*"],        # allow POST, GET, OPTIONS, etc.
+    allow_headers=["*"],        # allow Content-Type, Accept, etc.
 )
 
 
@@ -212,7 +241,14 @@ async def receive_event(event: Event):
 @app.get(
     "/api/blackboard/{path:path}",
     summary="Get a value from the blackboard",
-    description="Returns the value stored at the given hierarchical path."
+    description= 
+        """
+Returns the value stored at the given hierarchical path.  
+
+- Each path component is separated with '/'. 
+- List elements are adressed by numeric indices, e.g. /output/0/name
+- length is obtained using '~len', e.g. /output/~len
+        """
 )
 async def get_blackboard_value(path: str):
     get_logger().info(f"HTTP REQUEST : get_blackboard_value {path}")
@@ -225,7 +261,18 @@ async def get_blackboard_value(path: str):
 @app.put(
     "/api/blackboard/{path:path}",
     summary="Set a value in the blackboard",
-    description="Stores a value at the given hierarchical path, creating intermediate nodes if needed."
+    description=
+"""
+Stores a value at the given hierarchical path, creating intermediate nodes if needed.
+A path and a value should be given.
+The path has the following syntax:
+
+- '~append' appends a new value to a list
+- '~insert:N' inserts a value at index N, e.g. /output/~insert:2
+- "~del:N" deletes a value at index N
+- "~pop~ removes the last element
+- "N" replaces the element at index N
+"""
 )
 async def set_blackboard_value(path: str, req: SetValueRequest):
     get_logger().info(f"HTTP REQUEST : set_blackboard_value {path}")
@@ -233,11 +280,11 @@ async def set_blackboard_value(path: str, req: SetValueRequest):
     return {"path": path, "value": req.value}
 
 
-@app.get("/api/alive")
+@app.get("/api/alive", summary="Ping server to see if it is alive")
 def alive():
     return JSONResponse({"alive":1}) 
 
-@app.get("/api/tree")
+@app.get("/api/tree", summary="Get the BeTFSM tree in JSON")
 def get_tree():
     get_logger().info("/api/tree called")
     global root
@@ -268,7 +315,7 @@ async def ws_stream(ws: WebSocket):
     finally:
         clients.discard(ws)
 
-@app.get("/api/history")
+@app.get("/api/history",summary="work in progress")
 def get_history(from_ts: float, to_ts: float):
     get_logger().warn("/api/history called")
     frames = history.slice(from_ts, to_ts)

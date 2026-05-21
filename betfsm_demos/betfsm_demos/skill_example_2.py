@@ -32,16 +32,16 @@ import sys
 from betfsm import (
     Sequence,  Message, SUCCEED, TICKING, CANCEL, ABORT, get_logger,set_logger
 )
-from betfsm_crospi import load_task_list, eTaSL_StateMachine
+from betfsm_crospi import load_task_list, CrospiTask
 from betfsm_ros import BeTFSMNode,ROSRunner
 
 class MySequence(Sequence):
     def __init__(self):
         super().__init__("my_sequence", [
-            eTaSL_StateMachine("MovingHome","MovingHome"),
-            eTaSL_StateMachine("MovingDown","MovingDown"),
-            eTaSL_StateMachine("MovingUp","MovingUp"),
-            eTaSL_StateMachine("MovingSpline","MovingSpline") ]
+            CrospiTask("MovingHome","MovingHome"),
+            CrospiTask("MovingDown","MovingDown"),
+            CrospiTask("MovingUp","MovingUp"),
+            CrospiTask("MovingSpline","MovingSpline") ]
         )
 
 def main(args=None):
