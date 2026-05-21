@@ -39,7 +39,7 @@ from betfsm.backend.app import app,publish_tick,set_webserver_param
 
 class TimerStats:
     def __init__(self):
-        self.reset();
+        self.reset_all()
     
     def reset(self):
         self.sum   = 0
@@ -48,23 +48,40 @@ class TimerStats:
         self.min   = math.inf
         self.max   = -math.inf
     
+    def reset_all(self):
+        self.reset();
+        self.global_N = 0
+        self.global_sum   = 0
+        self.global_sumsq = 0
+        self.global_min   = math.inf
+        self.global_max   = -math.inf        
+
     def add(self, value):
+        sq = value*value
         self.N     += 1
-        self.sum   += value
-        self.sumsq += value*value
+        self.sum   += value        
+        self.sumsq += sq
         self.min   = min(self.min, value)
         self.max   = max(self.max, value)
+        self.global_N     += 1
+        self.global_sum   += value        
+        self.global_sumsq += sq
+        self.global_min   = min(self.global_min, value)
+        self.global_max   = max(self.global_max, value)        
 
-    def __str__(self):
+    def cycle(self):
         if self.N==0:
             return f"N={0:5d}"
         mean = self.sum / self.N
-        var  = (self.sumsq - self.sum*self.sum/self.N)/self.N
+        var  = self.sumsq / self.N - mean*mean
         std  =  math.sqrt(var)
         return f"N={self.N:5d} mean = {mean:10.6f}, std = {std:10.6f}, min = {self.min:10.6f}, max = {self.max:10.6f}"
 
-
-
+    def all(self):
+        mean = self.global_sum / self.global_N
+        var  = self.global_sumsq / self.global_N - mean*mean
+        std  =  math.sqrt(var)
+        return f"N={self.N:5d} mean = {mean:10.6f}, std = {std:10.6f}, min = {self.global_min:10.6f}, max = {self.global_max:10.6f}"
 
 
 class RunnerBase:
@@ -230,12 +247,9 @@ class RunnerBase:
             threading.Thread(
                 target=lambda: uvicorn.run(app, **uvicorn_kwargs),
                 daemon=True
-            ).start()
-        if self.debug:
-            self.stats = TimerStats()
+            ).start()        
+        self.stats = TimerStats()
 
-        # initialize state of the class:
-        self.first_time = True                        
         
                 
     def initialize(self):
@@ -243,6 +257,7 @@ class RunnerBase:
             TickingState.global_publish_log = {}  # turn on global_publish_log
         self.set_outcome("TICKING")       
         self.previous_active = []
+        self.stats.reset_all()
 
     def process_publish_cycle(self):
         # ensure the last one is always published
@@ -260,8 +275,12 @@ class RunnerBase:
             TickingState.global_publish_log.clear()               
         if self.debug:
             print("debug")
-            get_logger().info(f"Timer deviation statistics : {self.stats}")
+            get_logger().info(f"Timer stat. : {self.stats.cycle()}")
             self.stats.reset()
+
+    def finalize(self):
+        get_logger().info(f"Runner finished with outcome {self.get_outcome()}")
+        get_logger().info(f"Global timer stat. : {self.stats.all()}")
 
     def set_outcome(self, outcome):
         self.outcome = outcome
@@ -314,32 +333,66 @@ class Runner(RunnerBase):
             the final outcome of the statemachine
         """
         # Use monotonic clock to avoid issues with system time changes
-        start    = time.monotonic()
-        self.initialize()
-        next_run = start + self.interval_sec        
-        now      = start
-        if self.debug:
-            get_logger().debug(f"Runner: time: {start:10.4f} s started (frequency:{self.frequency})")
+        # start    = time.monotonic()
+        # self.initialize()
+        # next_run = start + self.interval_sec        
+        # now      = start
+        # if self.debug:
+        #     get_logger().debug(f"Runner: time: {start:10.4f} s started (frequency:{self.frequency})")
         
-        next_publish = now
+        # next_publish = now
         outcome = TICKING
-        while outcome == TICKING:
-            outcome = self.statemachine(self.blackboard)
-            if (now >= next_publish - self.interval_sec/2) or (outcome != TICKING):
+
+
+        now          = time.monotonic()
+        previous_run = now - self.interval_sec           
+        next_publish = now                                   # ensure publishing at start
+        self.initialize()
+        if self.debug:
+            get_logger().info(f"ROSRunner: started at {now/1.0E9:10.4f} s started (frequency:{self.frequency})")        
+        while True:
+            outcome = self.statemachine(self.blackboard)            
+            jitter = (now - previous_run) - self.interval_sec
+            if abs(jitter) > self.interval_sec*0.5:   
+                get_logger().warn(f"Timing: large deviation : {jitter} s")   
+            if self.debug:
+                self.stats.add(jitter)                  
+            if (now >= next_publish - self.interval_sec*0.5) or (outcome != TICKING):
                 self.process_publish_cycle()
-                next_publish = now + self.publish_period
-            now = time.monotonic()
+                next_publish = now + self.publish_period                            
+            previous_run = now            
             # Sleep until the next scheduled time
-            sleep_time = next_run - now
+            sleep_time = previous_run + self.interval_sec - time.monotonic()
             if sleep_time > 0:
                 time.sleep(sleep_time)
             else:
                 # If we're behind schedule, log drift
-                get_logger().warn(f"[Warning] Drift detected: {abs(sleep_time):.3f} s late")
-            # Schedule next run
-            if self.debug:
-                self.stats.add((now - next_run) )
-            next_run += self.interval_sec
+                if abs(sleep_time) > 0.5*self.interval_sec:
+                    get_logger().warn(f"Timing: large deviation {-sleep_time:.6f} s late")                
+            now          = time.monotonic()                                                     
+            if outcome!=TICKING:                
+                break
+        # while outcome == TICKING:
+        #     outcome = self.statemachine(self.blackboard)
+        #     if (now >= next_publish - self.interval_sec/2) or (outcome != TICKING):
+        #         self.process_publish_cycle()
+        #         next_publish = now + self.publish_period
+        #     now = time.monotonic()
+        #     # Sleep until the next scheduled time
+        #     sleep_time = next_run - now
+        #     if sleep_time > 0:
+        #         time.sleep(sleep_time)
+        #     else:
+        #         # If we're behind schedule, log drift
+        #         get_logger().warn(f"[Warning] Drift detected: {abs(sleep_time):.3f} s late")
+        #     # Schedule next run
+        #     if self.debug:
+        #         self.stats.add((now - next_run) )
+        #     next_run += self.interval_sec
+        # get_logger().info(f"Runner finished with outcome {outcome}")            
+        # self.finalize()
+        self.set_outcome(outcome)
+        self.finalize()
         return outcome
 
 

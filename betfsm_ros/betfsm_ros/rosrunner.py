@@ -27,7 +27,7 @@ from rclpy.node import Node
 import rclpy
 from rclpy.task import Future
 from rclpy.utilities import remove_ros_args
-
+import time
 
 from betfsm import RunnerBase
 
@@ -62,6 +62,7 @@ class ROSRunner(RunnerBase):
         self.steady_clock    = Clock(clock_type=ClockType.STEADY_TIME)  #steady_now = steady_clock.now()
         self.timer           = self.node.create_timer(self.interval_sec, self.timer_cb)
         self.outcome_lock = Lock()
+        self.first_time = True                        
 
     def parse_arguments(self, parser, group_app, group_uvr):
         clean_args        = remove_ros_args(args=sys.argv[1:])
@@ -72,29 +73,31 @@ class ROSRunner(RunnerBase):
         """ 
         called by ROS timer, should not be called by user.  
         """
-        self.now = self.steady_clock.now().nanoseconds            
+        # both time sources should work.
+        self.now = self.steady_clock.now().nanoseconds    
+        #self.now = time.monotonic()*1.0E9        
         if self.first_time:
-            self.next_run = self.now
+            self.previous_run = self.now - self.interval_ns  
             self.next_publish = self.now  # ensure publishing at start
             self.initialize()
             if self.debug:
-                get_logger().info(f"BeTFSMROSRunnerGUI time: {self.now/1.0E9:10.4f} s started (frequency:{self.frequency})")        
+                get_logger().info(f"ROSRunner: started at {self.now/1.0E9:10.4f} s started (frequency:{self.frequency})")        
             self.first_time = False
-        if self.now > self.next_run + self.interval_ns*0.5:
-            self.next_run = self.now - self.interval_ns
-            get_logger().warn(f"Sample period exceeded/drifted : {(self.now-self.next_run)/1E9:.6f} s late")   
+        jitter = (self.now - self.previous_run)*1E-9 - self.interval_sec
+        if abs(jitter) > self.interval_ns*0.5:   
+            get_logger().warn(f"Timing: large deviation : {jitter:6f} s")   
         if self.debug:
-            self.stats.add((self.now - self.next_run)/1.0E9)
-        self.next_run += self.interval_ns            
+            self.stats.add(jitter)           
         outcome = self.statemachine(self.blackboard)
-        if (self.now >= self.next_publish - self.interval_ns/2) or (outcome != TICKING):
+        if (self.now >= self.next_publish - self.interval_ns*0.5) or (outcome != TICKING):
             self.process_publish_cycle()
             self.next_publish = self.now + self.publish_period
         if outcome!=TICKING:
             self.timer.cancel()            
             self.set_outcome(outcome)
-            get_logger().info(f"BeTFSM finished with outcome {outcome}")
+            self.finalize()
             self.shutdown_future.set_result(True)         
+        self.previous_run = self.now
 
     def run(self) -> str:
         """
