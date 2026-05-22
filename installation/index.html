@@ -44,18 +44,16 @@
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption"><span class="caption-text">Documentation</span></p>
               <ul class="current">
-                  <li class="toctree-l1 current"><a class="reference internal current" >Introduction</a>
+                  <li class="toctree-l1"><a class="reference internal" href="..">Start page</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Installation</a>
     <ul class="current">
-                <li class="toctree-l2"><a class="reference internal" href="..">Start page</a>
-                </li>
-                <li class="toctree-l2 current"><a class="reference internal current" href="#">Installation</a>
-    <ul class="current">
-    <li class="toctree-l3"><a class="reference internal" href="#installation-using-pip">Installation using pip</a>
+    <li class="toctree-l2"><a class="reference internal" href="#installation-using-pip">Installation using pip</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#installation-in-ros2">Installation in ROS2</a>
+    <li class="toctree-l2"><a class="reference internal" href="#installation-in-ros2">Installation in ROS2</a>
     </li>
-    </ul>
-                </li>
+    <li class="toctree-l2"><a class="reference internal" href="#installation-in-ros2-together-with-crospi">installation in ROS2 together with Crospi</a>
+    </li>
     </ul>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" >Tutorials</a>
@@ -66,13 +64,15 @@
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../tutorial_sequence1/">My first BeTFSM tree</a>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="../tutorial_gui/">Executing a BeTFSM tree</a>
-                </li>
                 <li class="toctree-l2"><a class="reference internal" href="../tutorial_statemachine/">Defining state machines</a>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../tutorial_common_nodes/">Example with common nodes</a>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../interruption/">Handling interruption</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../tutorial_gui/">Executing a BeTFSM tree</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../tutorial_gui_ros/">BeTFSM with ROS2 and Crospi</a>
                 </li>
     </ul>
                   </li>
@@ -88,6 +88,12 @@
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../utils/">Utilities</a>
                 </li>
+                <li class="toctree-l2"><a class="reference internal" href="../logger/">Logging</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >API</a>
+    <ul>
                 <li class="toctree-l2"><a class="reference internal" >BeTFSM</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../tickingstate/">TickingState</a>
@@ -212,7 +218,6 @@
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
           <li class="breadcrumb-item">Documentation</li>
-          <li class="breadcrumb-item">Introduction</li>
       <li class="breadcrumb-item active">Installation</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/Robotics-Research-Group-KUL/betfsm/edit/main/documentation/docs/installation.md" class="icon icon-github"> Edit on GitHub</a>
@@ -261,6 +266,8 @@ colcon-build --symlink-install
 The examples can also be run directly from their source directory:
 <div class="highlight"><pre><span></span><code>your-workspace/src/betfsm/betfsm/betfsm_examples
 </code></pre></div></p>
+<h2 id="installation-in-ros2-together-with-crospi">installation in ROS2 together with Crospi</h2>
+<p>See <a href="https://rob.pages.gitlab.kuleuven.be/crospi/">the cROSpi website</a></p>
               
             </div>
           </div><footer>

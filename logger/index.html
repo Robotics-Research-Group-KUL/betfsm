@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Erwin Aertbelien" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>eTaSLOutput - BeTFSM documentation</title>
+    <title>Logging - BeTFSM documentation</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -15,8 +15,8 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "eTaSLOutput";
-        var mkdocs_page_input_path = "etasloutput.md";
+        var mkdocs_page_name = "Logging";
+        var mkdocs_page_input_path = "logger.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -68,8 +68,8 @@
                 </li>
     </ul>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" >Technical documentation</a>
-    <ul>
+                  <li class="toctree-l1 current"><a class="reference internal current" >Technical documentation</a>
+    <ul class="current">
                 <li class="toctree-l2"><a class="reference internal" href="../technical_intro/">Technical introduction</a>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../api_overview/">Overview of the API</a>
@@ -80,12 +80,50 @@
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../utils/">Utilities</a>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="../logger/">Logging</a>
+                <li class="toctree-l2 current"><a class="reference internal current" href="#">Logging</a>
+    <ul class="current">
+    <li class="toctree-l3"><a class="reference internal" href="#categories">Categories</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#api">API</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#betfsm.get_logger">get_logger</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#betfsm.set_logger">set_logger</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#betfsm.DummyLogPrinter">DummyLogPrinter</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#betfsm.DummyLogPrinter.debug">debug</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#betfsm.DummyLogPrinter.error">error</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#betfsm.DummyLogPrinter.fatal">fatal</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#betfsm.DummyLogPrinter.info">info</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#betfsm.DummyLogPrinter.warn">warn</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#betfsm.LogPrinter">LogPrinter</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#betfsm.LogPrinter.debug">debug</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#betfsm.LogPrinter.error">error</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#betfsm.LogPrinter.fatal">fatal</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#betfsm.LogPrinter.info">info</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#betfsm.LogPrinter.warn">warn</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
                 </li>
     </ul>
                   </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" >API</a>
-    <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" >API</a>
+    <ul>
                 <li class="toctree-l2"><a class="reference internal" >BeTFSM</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../tickingstate/">TickingState</a>
@@ -170,8 +208,8 @@
                 </li>
     </ul>
                 </li>
-                <li class="toctree-l2 current"><a class="reference internal current" >BeTFSM cROSpi</a>
-    <ul class="current">
+                <li class="toctree-l2"><a class="reference internal" >BeTFSM cROSpi</a>
+    <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../load_task_list/">load_task_list</a>
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../settaskparameters/">SetTaskParameters</a>
@@ -180,11 +218,7 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../readtaskspecification/">ReadTaskSpecification</a>
                 </li>
-                <li class="toctree-l3 current"><a class="reference internal current" href="#">eTaSLOutput</a>
-    <ul class="current">
-    <li class="toctree-l4"><a class="reference internal" href="#betfsm_crospi.eTaSLOutput.__init__">__init__</a>
-    </li>
-    </ul>
+                <li class="toctree-l3"><a class="reference internal" href="../etasloutput/">eTaSLOutput</a>
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../crospi_task/">CrospiTask</a>
                 </li>
@@ -214,11 +248,10 @@
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
           <li class="breadcrumb-item">Documentation</li>
-          <li class="breadcrumb-item">API</li>
-          <li class="breadcrumb-item">BeTFSM cROSpi</li>
-      <li class="breadcrumb-item active">eTaSLOutput</li>
+          <li class="breadcrumb-item">Technical documentation</li>
+      <li class="breadcrumb-item active">Logging</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/Robotics-Research-Group-KUL/betfsm/edit/main/documentation/docs/etasloutput.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/Robotics-Research-Group-KUL/betfsm/edit/main/documentation/docs/logger.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -226,12 +259,147 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <div class="doc doc-object doc-class">
+                <h1 id="logging-in-betfsm">Logging in BeTFSM</h1>
+<p>You can easily log by calling <a class="autorefs autorefs-internal" title="betfsm.get_logger(category='default')" href="#betfsm.get_logger">get_logger().info("my_message")</a>
+You can also specify a category using <a class="autorefs autorefs-internal" title="betfsm.get_logger(category='default')" href="#betfsm.get_logger">get_logger("my_lib").info("my message")</a>.
+Categories are used to turn on/turn off the logging for a given categories.</p>
+<p>The logging functions have also a severity, i.e. in order: <code>debug</code>, <code>info</code>, <code>warn</code>, <code>error</code>,<code>fatal</code>.</p>
+<p>Each category can be associated with a Logger class that directly prints to console or connects to a logging system of a larger framework. The purpose of the logging classes in BeTFSM is just to connect to existing systems, not to provide an elaborate framework itself.  Some tools or environments can use this severity for additional filtering and display (such as ROS2).</p>
+<p>The logger for a given category can be specified using <a class="autorefs autorefs-internal" title="betfsm.set_logger(category, logger)" href="#betfsm.set_logger">set_logger(category, logger_class)</a>.  You can use ROS2's <a href="https://docs.ros.org/en/rolling/Tutorials/Demos/Logging-and-logger-configuration.html">node.get_logger()</a> as a directly as logger class, or the <a class="autorefs autorefs-internal" title="betfsm.DummyLogPrinter" href="#betfsm.DummyLogPrinter">DummyLogPrinter</a> or <a class="autorefs autorefs-internal" title="betfsm.LogPrinter" href="#betfsm.LogPrinter">LogPrinter</a> that BeTFSM provides.  </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you use one of the <a class="autorefs autorefs-internal" title="betfsm.Runner" href="../runner/#betfsm.Runner">Runner</a> or [RosRunner][betfsm.RosRunner] classes, you can activate categories from <strong>the
+command-line</strong>.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>There is a 'constructor' logger that logs the constructor calls when you are defining your BeTFSM, this can
+be useful to trace back if you have exceptions raised during construction, deep in your hierarchy.
+Since it involves construction of the BeTFSM tree, it has to be set before this constructions. Therefore it cannot be set
+using the Runner command-line parameters.</p>
+</div>
+<h2 id="categories">Categories</h2>
+<p>The BeTFSM libraries and (possibly) user can (optionally) declare the logging
+categories they use, by calling in their library the <code>add_logger_category(my_cat)</code> 
+functions.  Users (or e.g. the Runner command-line help) can get the available
+categories using the <code>get_logger_categories()</code> function.</p>
+<p>Known categories used in betfsm_crospi:</p>
+<ul>
+<li>'default': the default logger, i.e. empty string: (<a class="autorefs autorefs-internal" title="betfsm.LogPrinter" href="#betfsm.LogPrinter">LogPrinter</a> to console)</li>
+<li>'state'  : entry/exit of all BeTFSM nodes (run-time).</li>
+<li>'constructor' : during construction of the BeTFSM tree.</li>
+<li>'crospi' : crospi BeTFSM nodes.</li>
+<li>'action' : related to the BeTFSM action client</li>
+<li>'service': ROS2 service calls</li>
+<li>'unknown': an unknown category for which there is no handler class defined. </li>
+</ul>
+<p>By default, the default logger is <a class="autorefs autorefs-internal" title="betfsm.LogPrinter" href="#betfsm.LogPrinter">LogPrinter</a> and and unknown is <a class="autorefs autorefs-internal" title="betfsm.DummyLogPrinter" href="#betfsm.DummyLogPrinter">DummyLogPrinter</a>, and no other categories have a Logger class specified.</p>
+<h2 id="api">API</h2>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="betfsm.get_logger" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">betfsm</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Use this to get a logger</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>category</code></b>
+                  (<code><span title="str">str</span></code>, default:
+                      <code>&#39;default&#39;</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>arbitrary name. You can associate a specific LogPrinter to a name,
+if not specified, "default" is used.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="betfsm.set_logger" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">betfsm</span><span class="o">.</span><span class="n">set_logger</span><span class="p">(</span><span class="n">category</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Use this to set the logger, either LogPrinter() or ROS2node.get_logger()</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>category</code></b>
+                  (<code><span title="str">str</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>arbitrary name. You can associate a specific LogPrinter to a name,
+You probably want to specify at least the "default" logger
+(if not LogPrinter() is used, i.e. to Console)</p>
+              </div>
+            </li>
+            <li>
+              <b><code>logger</code></b>
+                  (<code><span title="betfsm.logger.Logger">Logger</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Logger to associate with this category.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
 
 
 
-<h2 id="betfsm_crospi.eTaSLOutput" class="doc doc-heading">
-            <code>betfsm_crospi.eTaSLOutput</code>
+<h2 id="betfsm.DummyLogPrinter" class="doc doc-heading">
+            <code>betfsm.DummyLogPrinter</code>
 
 
 </h2>
@@ -239,9 +407,11 @@
 
     <div class="doc doc-contents first">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="betfsm.TickingState" href="../tickingstate/#betfsm.TickingState">TickingState</a></code></p>
+              Bases: <code><span title="betfsm.logger.Logger">Logger</span></code></p>
 
 
+
+        <p>Can be used with set_logger for a do-nothing logger.</p>
 
 
 
@@ -266,86 +436,207 @@
 <div class="doc doc-object doc-function">
 
 
-<h3 id="betfsm_crospi.eTaSLOutput.__init__" class="doc doc-heading">
-            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">topic</span><span class="p">,</span> <span class="n">qos</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">bb_location</span><span class="o">=</span><span class="s1">&#39;/output_param&#39;</span><span class="p">,</span> <span class="n">node</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+<h3 id="betfsm.DummyLogPrinter.debug" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">debug</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span></code>
 
 </h3>
 
 
     <div class="doc doc-contents ">
 
-        <p>At every tick processes the latest message from the topic and puts it 
-on a predetermined location in the blackboard.</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
 
 
-<table class="field-list">
-  <colgroup>
-    <col class="field-name" />
-    <col class="field-body" />
-  </colgroup>
-  <tbody valign="top">
-    <tr class="field">
-      <th class="field-name">Parameters:</th>
-      <td class="field-body">
-        <ul class="first simple">
-            <li>
-              <b><code>name</code></b>
-                  (<code><span title="str">str</span></code>)
-              –
-              <div class="doc-md-description">
-                <p>instance name</p>
-              </div>
-            </li>
-            <li>
-              <b><code>topic</code></b>
-                  (<code><span title="str">str</span></code>)
-              –
-              <div class="doc-md-description">
-                <p>topic to listen to, topics with interfacev <code>crospi_interfaces/msg/Output</code>
-are expected</p>
-              </div>
-            </li>
-            <li>
-              <b><code>qos</code></b>
-                  (<code><span title="rclpy.qos.QoSProfile">QoSProfile</span></code>, default:
-                      <code>30</code>
-)
-              –
-              <div class="doc-md-description">
-                <p>specification of the topic quality of service profile (QOSProfile)</p>
-              </div>
-            </li>
-            <li>
-              <b><code>bb_location</code></b>
-                  (<code><span title="str">str</span></code>, default:
-                      <code>&#39;/output_param&#39;</code>
-)
-              –
-              <div class="doc-md-description">
-                <p>a location in the blackboard, written as a path, e.g. '/output_param'.
-The location has to exist when eTaSLOutput is first executed as a BeTFSM node</p>
-              </div>
-            </li>
-            <li>
-              <b><code>node</code></b>
-                  (<code><span title="betfsm_ros.Node">Node</span></code>, default:
-                      <code>None</code>
-)
-              –
-              <div class="doc-md-description">
-                <p>ROS2 node where the subscription will run.  if None, BeTFSMNode.get_instance() is used.</p>
-              </div>
-            </li>
-        </ul>
-      </td>
-    </tr>
-  </tbody>
-</table>
+<h3 id="betfsm.DummyLogPrinter.error" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">error</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span></code>
 
-<details class="warning" open>
-  <summary>warning</summary>
-  <p>will only store messages where for all variables in the message is_declared is true.</p>
-</details>
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="betfsm.DummyLogPrinter.fatal" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">fatal</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="betfsm.DummyLogPrinter.info" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">info</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="betfsm.DummyLogPrinter.warn" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">warn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="betfsm.LogPrinter" class="doc doc-heading">
+            <code>betfsm.LogPrinter</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="betfsm.logger.Logger">Logger</span></code></p>
+
+
+
+        <p>Can be used with set_logger to install a logger that prints to console.
+Is the default if not overridden by a call to set_logger()</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="betfsm.LogPrinter.debug" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">debug</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="betfsm.LogPrinter.error" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">error</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="betfsm.LogPrinter.fatal" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">fatal</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="betfsm.LogPrinter.info" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">info</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="betfsm.LogPrinter.warn" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">warn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
 
     </div>
 
@@ -363,8 +654,8 @@ The location has to exist when eTaSLOutput is first executed as a BeTFSM node</p
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../readtaskspecification/" class="btn btn-neutral float-left" title="ReadTaskSpecification"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../crospi_task/" class="btn btn-neutral float-right" title="CrospiTask">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../utils/" class="btn btn-neutral float-left" title="Utilities"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../tickingstate/" class="btn btn-neutral float-right" title="TickingState">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -392,10 +683,10 @@ The location has to exist when eTaSLOutput is first executed as a BeTFSM node</p
         </span>
     
     
-      <span><a href="../readtaskspecification/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../utils/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../crospi_task/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../tickingstate/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

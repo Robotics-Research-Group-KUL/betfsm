@@ -1,0 +1,82 @@
+
+digraph StateMachine {
+    rankdir=LR;
+    splines=true;
+    nodesep=0.7;
+    ranksep=0.4;
+
+    edge [
+        fontname="Helvetica",
+        fontsize=9,
+        color="#333333",
+        arrowsize=0.8
+    ];
+
+    
+    node [
+        shape=rectangle,
+        style="rounded,filled",
+        fillcolor="#f7f7ff",
+        color="#4a4a8a",
+        fontname="Helvetica",
+        fontsize=10,
+        penwidth=1.2
+    ];
+
+
+
+    "098f1371-d6a5-4e2d-885c-df286fb54f42" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>sequence_phase</b></td></tr>
+                <tr><td align="left">Type: Sequence</td></tr>
+            </table>
+        >
+    ];
+    
+    "51f4f3d7-9e50-4727-9620-1e6b108716e7" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>message_1</b></td></tr>
+                <tr><td align="left">Type: Message</td></tr>
+            </table>
+        >
+    ];
+    
+    "098f1371-d6a5-4e2d-885c-df286fb54f42" -> "51f4f3d7-9e50-4727-9620-1e6b108716e7" [];
+    
+    "498fca2f-83bc-4fd2-ba16-46787a130dad" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>seq_counter_1</b></td></tr>
+                <tr><td align="left">Type: CountDown</td></tr>
+            </table>
+        >
+    ];
+    
+    "098f1371-d6a5-4e2d-885c-df286fb54f42" -> "498fca2f-83bc-4fd2-ba16-46787a130dad" [];
+    
+    "fe428691-4b09-4cbe-9f90-0e82cf972cb7" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>message_2</b></td></tr>
+                <tr><td align="left">Type: Message</td></tr>
+            </table>
+        >
+    ];
+    
+    "098f1371-d6a5-4e2d-885c-df286fb54f42" -> "fe428691-4b09-4cbe-9f90-0e82cf972cb7" [];
+    
+    "74f286a9-31e5-4818-97a0-c333cdeb4f37" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>message_3</b></td></tr>
+                <tr><td align="left">Type: Message</td></tr>
+            </table>
+        >
+    ];
+    
+    "098f1371-d6a5-4e2d-885c-df286fb54f42" -> "74f286a9-31e5-4818-97a0-c333cdeb4f37" [];
+    
+}
+

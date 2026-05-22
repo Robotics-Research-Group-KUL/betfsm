@@ -44,13 +44,9 @@
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption"><span class="caption-text">Documentation</span></p>
               <ul class="current">
-                  <li class="toctree-l1"><a class="reference internal" >Introduction</a>
-    <ul>
-                <li class="toctree-l2"><a class="reference internal" href="..">Start page</a>
-                </li>
-                <li class="toctree-l2"><a class="reference internal" href="../installation/">Installation</a>
-                </li>
-    </ul>
+                  <li class="toctree-l1"><a class="reference internal" href="..">Start page</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../installation/">Installation</a>
                   </li>
                   <li class="toctree-l1 current"><a class="reference internal current" >Tutorials</a>
     <ul class="current">
@@ -60,13 +56,13 @@
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../tutorial_sequence1/">My first BeTFSM tree</a>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="../tutorial_gui/">Executing a BeTFSM tree</a>
-                </li>
                 <li class="toctree-l2 current"><a class="reference internal current" href="#">Defining state machines</a>
     <ul class="current">
     <li class="toctree-l3"><a class="reference internal" href="#defining-some-betfsm-nodes-to-play-with">Defining some BeTFSM nodes to play with</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#defining-the-state-machine">Defining the state machine</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#visualization">Visualization:</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#putting-everything-together">Putting everything together</a>
     </li>
@@ -75,6 +71,10 @@
                 <li class="toctree-l2"><a class="reference internal" href="../tutorial_common_nodes/">Example with common nodes</a>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../interruption/">Handling interruption</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../tutorial_gui/">Executing a BeTFSM tree</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../tutorial_gui_ros/">BeTFSM with ROS2 and Crospi</a>
                 </li>
     </ul>
                   </li>
@@ -90,6 +90,12 @@
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../utils/">Utilities</a>
                 </li>
+                <li class="toctree-l2"><a class="reference internal" href="../logger/">Logging</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >API</a>
+    <ul>
                 <li class="toctree-l2"><a class="reference internal" >BeTFSM</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../tickingstate/">TickingState</a>
@@ -227,7 +233,10 @@
               
                 <h2 id="specifying-state-machines">Specifying state machines</h2>
 <p>BeTFSM is an hybrid framework that uses both primitives from behavior trees as wel as finite state machine specifications.
-This tutorial explains how to specify a state machine.</p>
+This tutorial explains how to specify a state machine.
+You can find the code of the example in 
+<a href="https://github.com/Robotics-Research-Group-KUL/betfsm/blob/main/betfsm/betfsm_examples">betfsm_examples</a> in the file
+<a href="https://github.com/Robotics-Research-Group-KUL/betfsm/blob/main/betfsm/betfsm_examples/example_statemachine.py">example_statemachine.py</a>.</p>
 <h3 id="defining-some-betfsm-nodes-to-play-with">Defining some BeTFSM nodes to play with</h3>
 <p>We first define some nodes to do something non-trivial.  A CountDown node that at each tick
 counts down until 0 is reached:
@@ -272,7 +281,7 @@ in the state-machine:</p>
 This makes the state machine easily reusable in other parts of your overall BeTFSM tree.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>BeTFSM is built to encourage users to develop an hierarchy of BeTFSM nodes.  Users could be tempted to define their whole application logic in one big state machine.  To increase reuseability, users are advised to split up into smaller statemachines and achieve the rest of the functionality by composing these smaller statemachines. </p>
+<p>BeTFSM is built to encourage users to develop an hierarchy of BeTFSM nodes.  Users could be tempted to define their whole application logic in one big state machine.  To increase reuseability, users are advised to split up into smaller BeTFSM nodes and achieve the rest of the functionality by implementing and composing a few smaller statemachines. </p>
 </div>
 <p>The overall procedure is:</p>
 <ul>
@@ -310,8 +319,22 @@ This makes the state machine easily reusable in other parts of your overall BeTF
 </code></pre></div>
 <p>Another approach to specify a state machine is to use a plain <a class="autorefs autorefs-internal" title="betfsm.TickingStateMachine" href="../tickingstatemachine/#betfsm.TickingStateMachine">TickingStateMachine</a> object and add the states and transitions externally.<br />
 This could be advisable when you want to build a generator that generates the state machine (or complete BeTFSM tree) from a domain specific file.</p>
+<h3 id="visualization">Visualization:</h3>
+<p>We can visualize the BeTFSM tree we just defined by calling our program with specific
+command-line parameters to generate these visualizations (instead of executing).
+The generated files are <a href="https://graphviz.org/">graphviz</a> files, and converted
+to an svg file.  Editors such as Visual Code can display the .dot format natively.</p>
+<div class="highlight"><pre><span></span><code>./example_statemachine.py --generate-dot=example_statemachine.dot
+dot -Tsvg example_statemachine.dot -o example_statemachine.svg 
+</code></pre></div>
+<p><img alt="example_statemachine figure" src="../static/example_statemachine.svg" /></p>
+<p>You can also visualize the state-machine part of a BeTFSM tree (with root 'my_state_machine'):
+<div class="highlight"><pre><span></span><code>./example_statemachine.py --generate-sm-dot=example_statemachine_sm.dot --select-name=my_state_machine
+</code></pre></div>
+<img alt="example_statemachine figure2" src="../static/example_statemachine_sm.svg" /></p>
 <h3 id="putting-everything-together">Putting everything together</h3>
-<p>In the file <code>betfsm_examples/example_statemachine.py</code>, you find everything put together:</p>
+<p>In the file <code>betfsm_examples/example_statemachine.py</code>, you find everything put together, including
+the boiler-plate to run the BeTFSM tree</p>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
 <span class="normal"> 2</span>
 <span class="normal"> 3</span>
@@ -368,78 +391,37 @@ This could be advisable when you want to build a generator that generates the st
 <span class="normal">54</span>
 <span class="normal">55</span>
 <span class="normal">56</span>
-<span class="normal">57</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">rclpy</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">betfsm</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">Sequence</span><span class="p">,</span>  <span class="n">Message</span><span class="p">,</span> 
-    <span class="n">SUCCEED</span><span class="p">,</span> <span class="n">TICKING</span><span class="p">,</span> <span class="n">CANCEL</span><span class="p">,</span> <span class="n">ABORT</span><span class="p">,</span> <span class="n">TIMEOUT</span><span class="p">,</span> <span class="n">NO_EVENT</span><span class="p">,</span>
-    <span class="n">TickingStateMachine</span><span class="p">,</span><span class="n">get_logger</span><span class="p">,</span><span class="n">set_logger</span><span class="p">,</span>
-    <span class="n">EventSequential</span><span class="p">,</span> <span class="n">Ctrl_C_Condition</span>
-<span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">betfsm_crospi</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_task_list</span><span class="p">,</span> <span class="n">CrospiTask</span><span class="p">,</span> <span class="n">CrospiDeactivate</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">betfsm_ros</span><span class="w"> </span><span class="kn">import</span> <span class="n">BeTFSMNode</span><span class="p">,</span><span class="n">ROSRunner</span><span class="p">,</span><span class="n">Node</span><span class="p">,</span><span class="n">Duration</span><span class="p">,</span><span class="n">LifeCycle</span><span class="p">,</span><span class="n">Transition</span>
-
-
-<span class="k">class</span><span class="w"> </span><span class="nc">MySequence</span><span class="p">(</span><span class="n">Sequence</span><span class="p">):</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;my_sequence&quot;</span><span class="p">,</span> <span class="p">[</span>
-            <span class="n">CrospiTask</span><span class="p">(</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">,</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">),</span>
-            <span class="n">CrospiTask</span><span class="p">(</span><span class="s2">&quot;MovingDown&quot;</span><span class="p">,</span><span class="s2">&quot;MovingDown&quot;</span><span class="p">),</span>
-            <span class="n">CrospiTask</span><span class="p">(</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">,</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">),</span>
-            <span class="n">CrospiTask</span><span class="p">(</span><span class="s2">&quot;MovingSpline&quot;</span><span class="p">,</span><span class="s2">&quot;MovingSpline&quot;</span><span class="p">)</span> <span class="p">]</span>
-        <span class="p">)</span>
-
-<span class="c1"># main</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="n">rclpy</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">)</span>    
-    <span class="n">my_node</span> <span class="o">=</span> <span class="n">BeTFSMNode</span><span class="o">.</span><span class="n">get_instance</span><span class="p">(</span><span class="s2">&quot;skill_example&quot;</span><span class="p">)</span>
-
-    <span class="n">set_logger</span><span class="p">(</span><span class="s2">&quot;default&quot;</span><span class="p">,</span><span class="n">my_node</span><span class="o">.</span><span class="n">get_logger</span><span class="p">())</span>
-    <span class="n">set_logger</span><span class="p">(</span><span class="s2">&quot;crospi&quot;</span><span class="p">,</span><span class="n">my_node</span><span class="o">.</span><span class="n">get_logger</span><span class="p">())</span>
-
-    <span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;skill_example_3 started&quot;</span><span class="p">)</span>
-    <span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;This example cleans up after a ctrl-c using a cleanup state machine&quot;</span><span class="p">)</span>
-
-    <span class="n">blackboard</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="n">load_task_list</span><span class="p">(</span><span class="s2">&quot;$[crospi_application_template]/skill_specifications/libraries/skill_lib_example/tasks/skill_example.json&quot;</span><span class="p">,</span><span class="n">blackboard</span><span class="p">)</span>
-
-
-    <span class="c1"># running MySequence() and cleaning up when CTRL_C is pressed        </span>
-    <span class="n">nominal_sm</span> <span class="o">=</span> <span class="n">MySequence</span><span class="p">()</span>
-    <span class="n">cleanup_sm</span> <span class="o">=</span> <span class="n">CrospiDeactivate</span><span class="p">(</span><span class="n">force_outcome</span><span class="o">=</span><span class="n">CANCEL</span><span class="p">)</span>
-    <span class="n">sm</span> <span class="o">=</span> <span class="n">EventSequential</span><span class="p">(</span><span class="s2">&quot;check_cancel&quot;</span><span class="p">,</span> <span class="n">Ctrl_C_Condition</span><span class="p">(</span><span class="s2">&quot;CTRL_C&quot;</span><span class="p">,</span><span class="n">repeated</span><span class="o">=</span><span class="mi">3</span><span class="p">),{</span><span class="n">NO_EVENT</span><span class="p">:</span><span class="n">nominal_sm</span><span class="p">,</span> <span class="s2">&quot;CTRL_C&quot;</span><span class="p">:</span><span class="n">cleanup_sm</span><span class="p">})</span>
-
-    <span class="c1"># ROSRunner accepts command-line parameters (see --help)</span>
-    <span class="c1"># has many more optional arguments than used below, see API documentation</span>
-    <span class="n">runner</span> <span class="o">=</span> <span class="n">ROSRunner</span><span class="p">(</span><span class="n">my_node</span><span class="p">,</span><span class="n">sm</span><span class="p">,</span><span class="n">blackboard</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">publish_frequency</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">display_active</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">runner</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
-        <span class="n">my_node</span><span class="o">.</span><span class="n">destroy_node</span><span class="p">()</span>
-        <span class="k">return</span>   
-    <span class="n">my_node</span><span class="o">.</span><span class="n">destroy_node</span><span class="p">()</span>
-    <span class="n">rclpy</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;shutdown&quot;</span><span class="p">)</span>
-
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">main</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">))</span>
-</code></pre></div></td></tr></table></div>
-<div class="highlight"><pre><span></span><code><span class="ch">#!/usr/bin/env python3</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="ch">#!/usr/bin/env python3</span>
 
 <span class="c1">#</span>
 <span class="c1"># Example of a state machine</span>
 <span class="c1">#</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">betfsm.betfsm</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">BeTFSMRunner</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span>  <span class="n">TickingStateMachine</span><span class="p">,</span>
-    <span class="n">TimedWait</span><span class="p">,</span> <span class="n">Message</span><span class="p">,</span> <span class="n">TimedRepeat</span><span class="p">,</span>
-    <span class="n">SUCCEED</span><span class="p">,</span> <span class="n">TICKING</span><span class="p">,</span> <span class="n">CANCEL</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">Blackboard</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">betfsm</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Runner</span><span class="p">,</span>   <span class="n">TickingStateMachine</span><span class="p">,</span>
+    <span class="n">TimedWait</span><span class="p">,</span> <span class="n">Message</span><span class="p">,</span>
+    <span class="n">SUCCEED</span><span class="p">,</span> <span class="n">TICKING</span><span class="p">,</span> <span class="n">CANCEL</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">get_logger</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">betfsm.graphviz_visitor</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_graphviz_dotfile</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">betfsm.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_logger</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
 
 <span class="c1"># A user defined TickingState:</span>
@@ -456,7 +438,7 @@ This could be advisable when you want to build a generator that generates the st
             <span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">yield</span> <span class="n">TICKING</span>
         <span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: Finished counting down!&quot;</span><span class="p">)</span>
-        <span class="k">yield</span> <span class="n">SUCCEED</span>
+        <span class="k">yield</span> <span class="n">SUCCEED</span><span class="c1"># Example of a sequence</span>
 
 <span class="c1"># A user defined TickingState:</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">FailSometimes</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
@@ -477,8 +459,6 @@ This could be advisable when you want to build a generator that generates the st
             <span class="k">yield</span> <span class="n">SUCCEED</span>
 
 
-
-
 <span class="k">class</span><span class="w"> </span><span class="nc">MyStateMachine</span><span class="p">(</span><span class="n">TickingStateMachine</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">name</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,[</span><span class="n">SUCCEED</span><span class="p">])</span>
@@ -496,34 +476,22 @@ This could be advisable when you want to build a generator that generates the st
         <span class="bp">self</span><span class="o">.</span><span class="n">set_start_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">home</span><span class="p">)</span>
 
 
-
-
 <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
     <span class="c1"># Create a blackboard</span>
     <span class="n">bb</span> <span class="o">=</span> <span class="p">{}</span>
-
-    <span class="c1"># 1. Example Sequence</span>
-    <span class="c1"># This will execute its children one after another.</span>
-
     <span class="n">sm</span> <span class="o">=</span> <span class="n">MyStateMachine</span><span class="p">(</span><span class="s2">&quot;my_state_machine&quot;</span><span class="p">)</span>
-
-    <span class="c1"># 2. visualize in a dot file</span>
-    <span class="n">to_graphviz_dotfile</span><span class="p">(</span><span class="s2">&quot;example_statemachine.dot&quot;</span><span class="p">,</span> <span class="n">sm</span><span class="p">)</span>
-
-    <span class="c1"># 3. Run it using BeTFSMRunner at 100 Hz</span>
-    <span class="n">runner</span> <span class="o">=</span> <span class="n">BeTFSMRunner</span><span class="p">(</span><span class="n">sm</span><span class="p">,</span> <span class="n">bb</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="mf">100.0</span><span class="p">)</span> <span class="c1"># Hz</span>
-    <span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Running State Machine...&quot;</span><span class="p">)</span>
+    <span class="n">runner</span> <span class="o">=</span> <span class="n">Runner</span><span class="p">(</span><span class="n">sm</span><span class="p">,</span> <span class="n">bb</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="mf">100.0</span><span class="p">)</span> <span class="c1"># Hz</span>
     <span class="n">outcome</span> <span class="o">=</span> <span class="n">runner</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
     <span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;State Machine Finished with outcome: </span><span class="si">{</span><span class="n">outcome</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="n">main</span><span class="p">()</span>
-</code></pre></div>
+</code></pre></div></td></tr></table></div>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../tutorial_gui/" class="btn btn-neutral float-left" title="Executing a BeTFSM tree"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../tutorial_sequence1/" class="btn btn-neutral float-left" title="My first BeTFSM tree"><span class="icon icon-circle-arrow-left"></span> Previous</a>
         <a href="../tutorial_common_nodes/" class="btn btn-neutral float-right" title="Example with common nodes">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
@@ -552,7 +520,7 @@ This could be advisable when you want to build a generator that generates the st
         </span>
     
     
-      <span><a href="../tutorial_gui/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../tutorial_sequence1/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
       <span><a href="../tutorial_common_nodes/" style="color: #fcfcfc">Next &raquo;</a></span>

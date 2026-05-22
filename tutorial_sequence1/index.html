@@ -44,13 +44,9 @@
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption"><span class="caption-text">Documentation</span></p>
               <ul class="current">
-                  <li class="toctree-l1"><a class="reference internal" >Introduction</a>
-    <ul>
-                <li class="toctree-l2"><a class="reference internal" href="..">Start page</a>
-                </li>
-                <li class="toctree-l2"><a class="reference internal" href="../installation/">Installation</a>
-                </li>
-    </ul>
+                  <li class="toctree-l1"><a class="reference internal" href="..">Start page</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../installation/">Installation</a>
                   </li>
                   <li class="toctree-l1 current"><a class="reference internal current" >Tutorials</a>
     <ul class="current">
@@ -66,13 +62,15 @@
     </li>
     </ul>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="../tutorial_gui/">Executing a BeTFSM tree</a>
-                </li>
                 <li class="toctree-l2"><a class="reference internal" href="../tutorial_statemachine/">Defining state machines</a>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../tutorial_common_nodes/">Example with common nodes</a>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../interruption/">Handling interruption</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../tutorial_gui/">Executing a BeTFSM tree</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../tutorial_gui_ros/">BeTFSM with ROS2 and Crospi</a>
                 </li>
     </ul>
                   </li>
@@ -88,6 +86,12 @@
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../utils/">Utilities</a>
                 </li>
+                <li class="toctree-l2"><a class="reference internal" href="../logger/">Logging</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >API</a>
+    <ul>
                 <li class="toctree-l2"><a class="reference internal" >BeTFSM</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../tickingstate/">TickingState</a>
@@ -224,12 +228,15 @@
             <div class="section" itemprop="articleBody">
               
                 <h2 id="your-first-betfsm-behaviour-tree">Your first BeTFSM behaviour tree</h2>
-<p>This tutorial builds your first very simple BeTFSM behaviour tree. This tree will display a start message, countdown from 4 and displays an end message.  You can find the code of the example in <code>betfsm_examples</code> in the files <code>example_sequence1.py</code>, <code>example_sequence2.py</code> and <code>example_sequence3.py</code>.  This tutorial uses the BeTFSM node defined in the <a href="../tutorial_node/">My first BetTFSm node</a> tutorial.</p>
+<p>This tutorial builds your first very simple BeTFSM behaviour tree. This tree will display a start message, countdown from 4 and displays an end message.  You can find the code of the example in 
+<a href="https://github.com/Robotics-Research-Group-KUL/betfsm/blob/main/betfsm/betfsm_examples">betfsm_examples</a> in the file
+<a href="https://github.com/Robotics-Research-Group-KUL/betfsm/blob/main/betfsm/betfsm_examples/example_sequence1.py">example_sequence1.py</a>.</p>
+<p>This tutorial uses the BeTFSM node defined in the <a href="../tutorial_node/">Defining your own BeTFSM node</a> tutorial.</p>
 <h3 id="putting-your-betfsm-tree-together">Putting your BeTFSM tree together</h3>
 <p>BeTFSM contains a library of pre-defined nodes that implement the typical Behaviour-tree nodes such as <a class="autorefs autorefs-internal" title="betfsm.Sequence" href="../sequence/#betfsm.Sequence">Sequence</a> or <a class="autorefs autorefs-internal" title="betfsm.Fallback" href="../fallback/#betfsm.Fallback">Fallback</a>.</p>
 <p>As said before, this tutorial builds your first very simple BeTFSM behaviour tree. This tree will display a start message, countdown from 4 and displays an end message.</p>
 <p>For this example, we will use the node <a class="autorefs autorefs-internal" title="betfsm.Message" href="../message/#betfsm.Message">Message</a> from the BeTFSM library. This nodes prints a given message to the log.</p>
-<p>We will use a <a class="autorefs autorefs-internal" title="betfsm.Sequence" href="../sequence/#betfsm.Sequence">Sequence</a> to execute first the start message, then the count down and then the end message.  A <a class="autorefs autorefs-internal" title="betfsm.Sequence" href="../sequence/#betfsm.Sequence">Sequence</a> executes the first element in the sequence and continues with this element as long as it returns TICKING, and the sequence itself also returns TICKING.  If the elements returns SUCCEED, it continues with the second element in the sequence (and the sequence does not yet return anything). If the element returns another outcome, the sequence returns that outcome.</p>
+<p>We will use a <a class="autorefs autorefs-internal" title="betfsm.Sequence" href="../sequence/#betfsm.Sequence">Sequence</a> to execute first the start message, then the count down and then the end message.  A <a class="autorefs autorefs-internal" title="betfsm.Sequence" href="../sequence/#betfsm.Sequence">Sequence</a> executes the first element in the sequence and continues with this element as long as it returns TICKING, and the sequence itself also returns TICKING.  If the elements returns SUCCEED, it continues with the second element in the sequence (and the sequence does not yet return anything). If the element returns another outcome, the sequence returns that outcome.  <strong>For many BeTFSM nodes, the API documentation contains a useful diagram to exactly explain the semantics.</strong></p>
 <div class="highlight"><pre><span></span><code>    <span class="n">sm</span> <span class="o">=</span> <span class="n">Sequence</span><span class="p">(</span><span class="s2">&quot;sequence_phase&quot;</span><span class="p">,</span> <span class="p">[</span>
         <span class="n">Message</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s2">&quot;--- Starting Sequence Phase ---&quot;</span><span class="p">),</span>
         <span class="n">CountDown</span><span class="p">(</span><span class="s2">&quot;seq_counter_1&quot;</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
@@ -244,7 +251,7 @@ method calls:
     <span class="n">sm</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span> <span class="n">Message</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s2">&quot;--- Sequence Phase Finished ---&quot;</span><span class="p">)</span> <span class="p">)</span>
 </code></pre></div></p>
 <p>Another alternative is to encapsulate the sequence as a separate class. This is useful when
-the sequence itself needs to be reusable, with some additional parameters passed in the constructor:</p>
+the sequence itself needs to be reusable, with some additional parameters passed in the constructor. Another advantage is that the base node has type <code>MySequence</code> instead of <code>Sequence</code>. You could use this type for filtering when generating a visualization.</p>
 <div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MySequence</span><span class="p">(</span><span class="n">Sequence</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">count</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;MySequence&quot;</span><span class="p">)</span> <span class="c1"># do not forget to initialize the super class</span>
@@ -253,10 +260,11 @@ the sequence itself needs to be reusable, with some additional parameters passed
         <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span> <span class="n">CountDown</span><span class="p">(</span><span class="s2">&quot;seq_counter_1&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">count</span><span class="p">)</span> <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span> <span class="n">Message</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s2">&quot;--- Sequence Phase Finished ---&quot;</span><span class="p">)</span> <span class="p">)</span>
 </code></pre></div>
-<p>These alternative ways to define a subtree are very useful.  The <strong>first</strong> approach, an all inclusive call to the constructror, gives a one statement quick definition of a whole tree. The <strong>second</strong>, a gradual built-up of the subtrree, allows to write code that constructs the tree (e.g. from a 
+<p>These alternative ways to define a subtree are very useful.  The <strong>first</strong> approach, an all inclusive call to the constructor, gives a one statement quick definition of a whole tree. The <strong>second</strong>, a gradual built-up of the subtrree, allows to write code that constructs the tree (e.g. from a 
 higher-level plan).  The <strong>third</strong> approach defines a new class, and allows to encapsulate the tree and further parameterize it by adding parameters to the constructor; from then on the class can be used as
 just another BeTFSM node.</p>
-<p>All of these alternatives result in the same BeTFSM tree.</p>
+<p>All of these alternatives result in the same BeTFSM tree:</p>
+<p><img alt="fg" src="../static/example_sequence1.svg" /></p>
 <h3 id="running-your-betfsm-tree">Running your BeTFSM tree</h3>
 <p>To execute the BeTFSM tree, you use a BeTFSM runner.  Multiple BeTFSM runners exist, e.g. to interface with a graphical user interface while executing or to use ROS2 primitives for timing.  In this example we will use the pure python BeTFSM runner <a class="autorefs autorefs-internal" title="betfsm.Runner" href="../runner/#betfsm.Runner">Runner</a> or the ROS2-version <a class="autorefs autorefs-internal" title="betfsm_ros.ROSRunner" href="../runner/#betfsm_ros.ROSRunner">ROSRunner</a></p>
 <p>You pass the BeTFSM tree <code>sm</code>, the (empty) blackboard, and the desired frequency to the constructor and call the <code>`run</code>
@@ -393,7 +401,7 @@ understand the exact semantics.</p>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
         <a href="../tutorial_node/" class="btn btn-neutral float-left" title="Defining your own BeTFSM node"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../tutorial_gui/" class="btn btn-neutral float-right" title="Executing a BeTFSM tree">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../tutorial_statemachine/" class="btn btn-neutral float-right" title="Defining state machines">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -424,7 +432,7 @@ understand the exact semantics.</p>
       <span><a href="../tutorial_node/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../tutorial_gui/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../tutorial_statemachine/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
