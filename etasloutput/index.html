@@ -76,7 +76,7 @@
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../api_overview/">Overview of the API</a>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="../event/">Event handling</a>
+                <li class="toctree-l2"><a class="reference internal" href="../event/">Event handling and conditions</a>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../ros2lifecycle/">ROS2 Lifecycle</a>
                 </li>
@@ -124,12 +124,6 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../runner/">Runner</a>
                 </li>
-                <li class="toctree-l3"><a class="reference internal" href="../checkcancel/">CheckCancel</a>
-                </li>
-                <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_handler/">Ctrl C Handler</a>
-                </li>
-                <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_receiver/">Ctrl_C_Receiver</a>
-                </li>
                 <li class="toctree-l3"><a class="reference internal" href="../alwaysoutcome/">AlwaysOutcome</a>
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../eventoutcome/">EventOutcome</a>
@@ -138,7 +132,19 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../eventsequential/">EventSequential</a>
                 </li>
-                <li class="toctree-l3"><a class="reference internal" href="../polling_func/">Polling functions</a>
+                <li class="toctree-l3"><a class="reference internal" href="../notcondition/">Not</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../orcondition/">OrCondition</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../andcondition/">AndCondition</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../callbackcondition/">Callback_Condition</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../timeout_condition/">Timeout_Condition</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../httpevent_condition/">HTTPEvent_Condition</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_condition/">Ctrl_C_Condition</a>
                 </li>
     </ul>
                 </li>
@@ -156,7 +162,7 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../timeout/">Timeout</a>
                 </li>
-                <li class="toctree-l3"><a class="reference internal" href="../topiceventreceiver/">TopicEventReciever</a>
+                <li class="toctree-l3"><a class="reference internal" href="../topicevent_condition/">TopicEvent_Condition</a>
                 </li>
     </ul>
                 </li>
@@ -176,11 +182,9 @@
     </li>
     </ul>
                 </li>
-                <li class="toctree-l3"><a class="reference internal" href="../etaslevent/">eTaSLEvent</a>
+                <li class="toctree-l3"><a class="reference internal" href="../crospi_task/">CrospiTask</a>
                 </li>
-                <li class="toctree-l3"><a class="reference internal" href="../etasl_statemachine/">eTaSL_StateMachine</a>
-                </li>
-                <li class="toctree-l3"><a class="reference internal" href="../crospi_polling_func/">crospi_polling_func</a>
+                <li class="toctree-l3"><a class="reference internal" href="../crospi_deactivate/">CrospiDeactivate</a>
                 </li>
     </ul>
                 </li>
@@ -320,7 +324,7 @@ The location has to exist when eTaSLOutput is first executed as a BeTFSM node</p
             </li>
             <li>
               <b><code>node</code></b>
-                  (<code><span title="rclpy.node.Node">Node</span></code>, default:
+                  (<code><span title="betfsm_ros.Node">Node</span></code>, default:
                       <code>None</code>
 )
               –
@@ -356,7 +360,7 @@ The location has to exist when eTaSLOutput is first executed as a BeTFSM node</p
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
         <a href="../readtaskspecification/" class="btn btn-neutral float-left" title="ReadTaskSpecification"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../etaslevent/" class="btn btn-neutral float-right" title="eTaSLEvent">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../crospi_task/" class="btn btn-neutral float-right" title="CrospiTask">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -387,7 +391,7 @@ The location has to exist when eTaSLOutput is first executed as a BeTFSM node</p
       <span><a href="../readtaskspecification/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../etaslevent/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../crospi_task/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

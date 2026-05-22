@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Erwin Aertbelien" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Ctrl_C_Receiver - BeTFSM documentation</title>
+    <title>Ctrl c receiver - BeTFSM documentation</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -15,7 +15,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Ctrl_C_Receiver";
+        var mkdocs_page_name = "Ctrl c receiver";
         var mkdocs_page_input_path = "ctrl_c_receiver.md";
         var mkdocs_page_url = null;
       </script>
@@ -43,7 +43,7 @@
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption"><span class="caption-text">Documentation</span></p>
-              <ul class="current">
+              <ul>
                   <li class="toctree-l1"><a class="reference internal" >Introduction</a>
     <ul>
                 <li class="toctree-l2"><a class="reference internal" href="..">Start page</a>
@@ -70,20 +70,20 @@
                 </li>
     </ul>
                   </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" >Technical documentation</a>
-    <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" >Technical documentation</a>
+    <ul>
                 <li class="toctree-l2"><a class="reference internal" href="../technical_intro/">Technical introduction</a>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../api_overview/">Overview of the API</a>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="../event/">Event handling</a>
+                <li class="toctree-l2"><a class="reference internal" href="../event/">Event handling and conditions</a>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../ros2lifecycle/">ROS2 Lifecycle</a>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../utils/">Utilities</a>
                 </li>
-                <li class="toctree-l2 current"><a class="reference internal current" >BeTFSM</a>
-    <ul class="current">
+                <li class="toctree-l2"><a class="reference internal" >BeTFSM</a>
+    <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../tickingstate/">TickingState</a>
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../tickingstatemachine/">TickingStateMachine</a>
@@ -124,22 +124,6 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../runner/">Runner</a>
                 </li>
-                <li class="toctree-l3"><a class="reference internal" href="../checkcancel/">CheckCancel</a>
-                </li>
-                <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_handler/">Ctrl C Handler</a>
-                </li>
-                <li class="toctree-l3 current"><a class="reference internal current" href="#">Ctrl_C_Receiver</a>
-    <ul class="current">
-    <li class="toctree-l4"><a class="reference internal" href="#betfsm.Ctrl_C_Receiver.get_instance">get_instance</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#betfsm.Ctrl_C_Receiver.has_event">has_event</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#betfsm.Ctrl_C_Receiver.poll_for">poll_for</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#betfsm.Ctrl_C_Receiver.remove_handler">remove_handler</a>
-    </li>
-    </ul>
-                </li>
                 <li class="toctree-l3"><a class="reference internal" href="../alwaysoutcome/">AlwaysOutcome</a>
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../eventoutcome/">EventOutcome</a>
@@ -148,7 +132,19 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../eventsequential/">EventSequential</a>
                 </li>
-                <li class="toctree-l3"><a class="reference internal" href="../polling_func/">Polling functions</a>
+                <li class="toctree-l3"><a class="reference internal" href="../notcondition/">Not</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../orcondition/">OrCondition</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../andcondition/">AndCondition</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../callbackcondition/">Callback_Condition</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../timeout_condition/">Timeout_Condition</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../httpevent_condition/">HTTPEvent_Condition</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_condition/">Ctrl_C_Condition</a>
                 </li>
     </ul>
                 </li>
@@ -166,7 +162,7 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../timeout/">Timeout</a>
                 </li>
-                <li class="toctree-l3"><a class="reference internal" href="../topiceventreceiver/">TopicEventReciever</a>
+                <li class="toctree-l3"><a class="reference internal" href="../topicevent_condition/">TopicEvent_Condition</a>
                 </li>
     </ul>
                 </li>
@@ -182,11 +178,9 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../etasloutput/">eTaSLOutput</a>
                 </li>
-                <li class="toctree-l3"><a class="reference internal" href="../etaslevent/">eTaSLEvent</a>
+                <li class="toctree-l3"><a class="reference internal" href="../crospi_task/">CrospiTask</a>
                 </li>
-                <li class="toctree-l3"><a class="reference internal" href="../etasl_statemachine/">eTaSL_StateMachine</a>
-                </li>
-                <li class="toctree-l3"><a class="reference internal" href="../crospi_polling_func/">crospi_polling_func</a>
+                <li class="toctree-l3"><a class="reference internal" href="../crospi_deactivate/">CrospiDeactivate</a>
                 </li>
     </ul>
                 </li>
@@ -211,10 +205,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-          <li class="breadcrumb-item">Documentation</li>
-          <li class="breadcrumb-item">Technical documentation</li>
-          <li class="breadcrumb-item">BeTFSM</li>
-      <li class="breadcrumb-item active">Ctrl_C_Receiver</li>
+      <li class="breadcrumb-item active">Ctrl c receiver</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/Robotics-Research-Group-KUL/betfsm/edit/main/documentation/docs/ctrl_c_receiver.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
@@ -228,8 +219,8 @@
 
 
 
-<h2 id="betfsm.Ctrl_C_Receiver" class="doc doc-heading">
-            <code>betfsm.Ctrl_C_Receiver</code>
+<h2 id="betfsm.events.Ctrl_C_Receiver" class="doc doc-heading">
+            <code>betfsm.events.Ctrl_C_Receiver</code>
 
 
 </h2>
@@ -265,7 +256,7 @@ Should only be created using the get_instance class method.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="betfsm.Ctrl_C_Receiver.get_instance" class="doc doc-heading">
+<h3 id="betfsm.events.Ctrl_C_Receiver.get_instance" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">get_instance</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s1">&#39;CTRL_C&#39;</span><span class="p">,</span> <span class="n">repeated</span><span class="o">=</span><span class="n">math</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span></code>
 
   <span class="doc doc-labels">
@@ -343,9 +334,9 @@ a variable will set to given value if Ctrl-c is pressed</p>
 <details class="example" open>
   <summary>Example</summary>
   <p>To start monitoring for Ctrl+C.  If ctrl-c is pressed, at the given path in the blackboard,
-a <code>True</code> value will be written.
+a <code>True</code> value will be written.</p>
 <div class="highlight"><pre><span></span><code>Ctrl_C_Handler(blackboard,&quot;/cancelation/ctrl_c&quot;,repeated=3) 
-</code></pre></div></p>
+</code></pre></div>
 </details>
 
     </div>
@@ -355,7 +346,7 @@ a <code>True</code> value will be written.
 <div class="doc doc-object doc-function">
 
 
-<h3 id="betfsm.Ctrl_C_Receiver.has_event" class="doc doc-heading">
+<h3 id="betfsm.events.Ctrl_C_Receiver.has_event" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">has_event</span><span class="p">(</span><span class="n">target_strings</span><span class="p">)</span></code>
 
 </h3>
@@ -373,7 +364,7 @@ a <code>True</code> value will be written.
 <div class="doc doc-object doc-function">
 
 
-<h3 id="betfsm.Ctrl_C_Receiver.poll_for" class="doc doc-heading">
+<h3 id="betfsm.events.Ctrl_C_Receiver.poll_for" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">poll_for</span><span class="p">(</span><span class="n">target_strings</span><span class="p">)</span></code>
 
 </h3>
@@ -382,7 +373,7 @@ a <code>True</code> value will be written.
     <div class="doc doc-contents ">
 
         <p>checks whether one of the target_strings is present in the blackboard and consumes 
-the event, i.e. sets the value in blackboard to ""</p>
+the event, i.e. sets the value in blackboard to</p>
 
 
     </div>
@@ -392,7 +383,7 @@ the event, i.e. sets the value in blackboard to ""</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="betfsm.Ctrl_C_Receiver.remove_handler" class="doc doc-heading">
+<h3 id="betfsm.events.Ctrl_C_Receiver.remove_handler" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">remove_handler</span><span class="p">()</span></code>
 
 </h3>
@@ -418,10 +409,6 @@ the event, i.e. sets the value in blackboard to ""</p>
               
             </div>
           </div><footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../ctrl_c_handler/" class="btn btn-neutral float-left" title="Ctrl C Handler"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../alwaysoutcome/" class="btn btn-neutral float-right" title="AlwaysOutcome">Next <span class="icon icon-circle-arrow-right"></span></a>
-    </div>
 
   <hr/>
 
@@ -448,10 +435,6 @@ the event, i.e. sets the value in blackboard to ""</p>
         </span>
     
     
-      <span><a href="../ctrl_c_handler/" style="color: #fcfcfc">&laquo; Previous</a></span>
-    
-    
-      <span><a href="../alwaysoutcome/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Erwin Aertbelien" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>CheckCancel - BeTFSM documentation</title>
+    <title>CrospiTask - BeTFSM documentation</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -15,8 +15,8 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "CheckCancel";
-        var mkdocs_page_input_path = "checkcancel.md";
+        var mkdocs_page_name = "CrospiTask";
+        var mkdocs_page_input_path = "crospi_task.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -76,14 +76,14 @@
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../api_overview/">Overview of the API</a>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="../event/">Event handling</a>
+                <li class="toctree-l2"><a class="reference internal" href="../event/">Event handling and conditions</a>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../ros2lifecycle/">ROS2 Lifecycle</a>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../utils/">Utilities</a>
                 </li>
-                <li class="toctree-l2 current"><a class="reference internal current" >BeTFSM</a>
-    <ul class="current">
+                <li class="toctree-l2"><a class="reference internal" >BeTFSM</a>
+    <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../tickingstate/">TickingState</a>
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../tickingstatemachine/">TickingStateMachine</a>
@@ -124,16 +124,6 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../runner/">Runner</a>
                 </li>
-                <li class="toctree-l3 current"><a class="reference internal current" href="#">CheckCancel</a>
-    <ul class="current">
-    <li class="toctree-l4"><a class="reference internal" href="#betfsm.CheckCancel.__init__">__init__</a>
-    </li>
-    </ul>
-                </li>
-                <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_handler/">Ctrl C Handler</a>
-                </li>
-                <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_receiver/">Ctrl_C_Receiver</a>
-                </li>
                 <li class="toctree-l3"><a class="reference internal" href="../alwaysoutcome/">AlwaysOutcome</a>
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../eventoutcome/">EventOutcome</a>
@@ -142,7 +132,19 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../eventsequential/">EventSequential</a>
                 </li>
-                <li class="toctree-l3"><a class="reference internal" href="../polling_func/">Polling functions</a>
+                <li class="toctree-l3"><a class="reference internal" href="../notcondition/">Not</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../orcondition/">OrCondition</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../andcondition/">AndCondition</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../callbackcondition/">Callback_Condition</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../timeout_condition/">Timeout_Condition</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../httpevent_condition/">HTTPEvent_Condition</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_condition/">Ctrl_C_Condition</a>
                 </li>
     </ul>
                 </li>
@@ -160,12 +162,12 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../timeout/">Timeout</a>
                 </li>
-                <li class="toctree-l3"><a class="reference internal" href="../topiceventreceiver/">TopicEventReciever</a>
+                <li class="toctree-l3"><a class="reference internal" href="../topicevent_condition/">TopicEvent_Condition</a>
                 </li>
     </ul>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" >BeTFSM cROSpi</a>
-    <ul>
+                <li class="toctree-l2 current"><a class="reference internal current" >BeTFSM cROSpi</a>
+    <ul class="current">
                 <li class="toctree-l3"><a class="reference internal" href="../load_task_list/">load_task_list</a>
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../settaskparameters/">SetTaskParameters</a>
@@ -176,11 +178,13 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../etasloutput/">eTaSLOutput</a>
                 </li>
-                <li class="toctree-l3"><a class="reference internal" href="../etaslevent/">eTaSLEvent</a>
+                <li class="toctree-l3 current"><a class="reference internal current" href="#">CrospiTask</a>
+    <ul class="current">
+    <li class="toctree-l4"><a class="reference internal" href="#betfsm_crospi.CrospiTask.__init__">__init__</a>
+    </li>
+    </ul>
                 </li>
-                <li class="toctree-l3"><a class="reference internal" href="../etasl_statemachine/">eTaSL_StateMachine</a>
-                </li>
-                <li class="toctree-l3"><a class="reference internal" href="../crospi_polling_func/">crospi_polling_func</a>
+                <li class="toctree-l3"><a class="reference internal" href="../crospi_deactivate/">CrospiDeactivate</a>
                 </li>
     </ul>
                 </li>
@@ -207,10 +211,10 @@
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
           <li class="breadcrumb-item">Documentation</li>
           <li class="breadcrumb-item">Technical documentation</li>
-          <li class="breadcrumb-item">BeTFSM</li>
-      <li class="breadcrumb-item active">CheckCancel</li>
+          <li class="breadcrumb-item">BeTFSM cROSpi</li>
+      <li class="breadcrumb-item active">CrospiTask</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/Robotics-Research-Group-KUL/betfsm/edit/main/documentation/docs/checkcancel.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/Robotics-Research-Group-KUL/betfsm/edit/main/documentation/docs/crospi_task.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -222,8 +226,8 @@
 
 
 
-<h2 id="betfsm.CheckCancel" class="doc doc-heading">
-            <code>betfsm.CheckCancel</code>
+<h2 id="betfsm_crospi.CrospiTask" class="doc doc-heading">
+            <code>betfsm_crospi.CrospiTask</code>
 
 
 </h2>
@@ -231,13 +235,9 @@
 
     <div class="doc doc-contents first">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="betfsm.GeneratorWithList" href="../generator/#betfsm.GeneratorWithList">GeneratorWithList</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="betfsm.Fallback" href="../fallback/#betfsm.Fallback">Fallback</a></code></p>
 
 
-
-        <p>State that contiuously evaluates a condition and if this condition is False it triggers the nominal state.
-Once the condition is True, the state switches to an abnormal state and will trigger
-the cleanup state (and will never go back to the normal state)</p>
 
 
 
@@ -262,18 +262,21 @@ the cleanup state (and will never go back to the normal state)</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="betfsm.CheckCancel.__init__" class="doc doc-heading">
-            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">cb</span><span class="p">,</span> <span class="n">nominal_sm</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cleanup_sm</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+<h3 id="betfsm_crospi.CrospiTask.__init__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">task_name</span><span class="p">,</span> <span class="n">srv_name</span><span class="o">=</span><span class="s1">&#39;/crospi_node&#39;</span><span class="p">,</span> <span class="n">cb</span><span class="o">=</span><span class="n">default_parameter_setter</span><span class="p">,</span> <span class="n">event_topic</span><span class="o">=</span><span class="s1">&#39;crospi_node/events&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">Duration</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mf">1.0</span><span class="p">),</span> <span class="n">node</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">eventqueue_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">max_age</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">event_check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
 
 </h3>
 
 
     <div class="doc doc-contents ">
 
-        <div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p><strong>Deprecated, use Ctrl_C_Receiver with CheckSequential/Checkoutcome instead</strong></p>
-</div>
+        <p>returns a subtree that starts an eTaSL task on a cROSpi node.  The first two
+arguments are the most important, all the others have reasonable default
+settings.  the event_check parameter is useful when you just want to startup
+the Crospi task and call CrospiDeactivate(...) yourself.</p>
+<p>This tasks still starts by calling deactivate and cleanup on the crospy lifecycle.
+This takes care of Crospi being in the wrong state of its lifecycle due to a previous
+run of another application with an error.</p>
 
 
 <table class="field-list">
@@ -291,37 +294,96 @@ the cleanup state (and will never go back to the normal state)</p>
                   (<code><span title="str">str</span></code>)
               –
               <div class="doc-md-description">
-                <p>name of the BeTFSM node</p>
+                <p>name of this state machine (i.e. task instance)</p>
+              </div>
+            </li>
+            <li>
+              <b><code>task_name</code></b>
+                  (<code><span title="str">str</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>name of the task to be executed (i.e. task type) Will be looked up in the blackboard.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>srv_name</code></b>
+                  (<code><span title="str">str</span></code>, default:
+                      <code>&#39;/crospi_node&#39;</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>name of the eTaSL node, by default /crospi_node</p>
               </div>
             </li>
             <li>
               <b><code>cb</code></b>
-                  (<code><span title="betfsm.Callable">Callable</span></code>)
+                  (<code><span title="typing.Callable">Callable</span></code>, default:
+                      <code><span title="betfsm_crospi.betfsm_crospi.default_parameter_setter">default_parameter_setter</span></code>
+)
               –
               <div class="doc-md-description">
-                <p>callback with signature <code>def cb(blackboard)-&gt;bool</code>, true if cancel is triggered.</p>
+                <p>callback that sets the parameters, with signature <code>def cb(blackboard) -&gt;param</code>
+where param is a Dict with the parameters of the task that will be used to update
+the default parameters.</p>
               </div>
             </li>
             <li>
-              <b><code>nominal_sm</code></b>
-                  (<code><a class="autorefs autorefs-internal" title="betfsm.TickingState" href="../tickingstate/#betfsm.TickingState">TickingState</a></code>, default:
+              <b><code>event_topic</code></b>
+                  (<code><span title="str">str</span></code>, default:
+                      <code>&#39;crospi_node/events&#39;</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>topic where the events are read.  Topic should be of type std_msgs/msg/string</p>
+              </div>
+            </li>
+            <li>
+              <b><code>timeout</code></b>
+                  (<code><span title="betfsm_ros.Duration">Duration</span></code>, default:
+                      <code><span title="betfsm_ros.Duration">Duration</span>(seconds=1.0)</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>[optional] returns TIMEOUT if the communication timeout of any of the substeps is exceeded. 
+Uses a duration of 1 second otherwise.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>node</code></b>
+                  (<code><span title="betfsm_ros.Node">Node</span></code>, default:
                       <code>None</code>
 )
               –
               <div class="doc-md-description">
-                <p>nominal state (running while checking cancelation), if None, 
-                      a state is used  that always returns SUCCEED</p>
+                <p>[optional] ROS2 node to be used. Uses BeTFSMNode.get_instance() otherwise.</p>
               </div>
             </li>
             <li>
-              <b><code>cleanup_sm</code></b>
-                  (<code><a class="autorefs autorefs-internal" title="betfsm.TickingState" href="../tickingstate/#betfsm.TickingState">TickingState</a></code>, default:
-                      <code>None</code>
+              <b><code>eventqeueu_size</code></b>
+              –
+              <div class="doc-md-description">
+                <p>minimum size of the event queue that receives crospi events.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>max_age</code></b>
+                  (<code><span title="float">float</span></code>, default:
+                      <code>0.1</code>
 )
               –
               <div class="doc-md-description">
-                <p>cleanup state (running after cancelation to cleanup). if None,
-                      a state is used  that always returns CANCEL</p>
+                <p>maximum age in seconds that is allowed to be received.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>event_check</code></b>
+                  (<code><span title="bool">bool</span></code>, default:
+                      <code>True</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>when false, just starts the crospi task but do not check for e_finished event or deactivate/cleanup crospi
+otherwise wait while checking and deactivate/cleanup crospi afterwards.</p>
               </div>
             </li>
         </ul>
@@ -329,35 +391,6 @@ the cleanup state (and will never go back to the normal state)</p>
     </tr>
   </tbody>
 </table>
-
-<details class="remarks" open>
-  <summary>Remarks</summary>
-  <ul>
-<li>
-<p>syntax lambda function in python :     <code>f = lambda bb: get_path_value(bb,"/mypath/...")</code>, to examine
-  the blackboard <code>get_path_value</code> can be used, but you can write other functions to check for a cancel
-  condition</p>
-</li>
-<li>
-<p>Can be used to check for a ctrl-c condition, but is not limited to that, can check all kinds
-  of interrupt conditions such as events coming from a gui, or button,etc..</p>
-</li>
-<li>
-<p>to check a whole tree continuously for cancelation, can be for the whole statemachine or a
-     subtree of the state machine</p>
-<div class="highlight"><pre><span></span><code>blackboard_ctrl_c_handler(blackboard, &quot;/cancelation/ctrl_c&quot;)
-sm_overall = CheckCancel(&quot;cancelation_check&quot;,                     
-    lambda bb: get_path_value(bb,&quot;/cancelation/ctrl_c&quot;), 
-    sm,
-    cleanup_sm)
-</code></pre></div>
-</li>
-<li>
-<p>with no statemachines specified it can be used a node in a state machine/behavior node 
-     that returns <code>CANCEL</code> when there is a cancelation request and <code>SUCCEED</code> otherwise</p>
-</li>
-</ul>
-</details>
 
     </div>
 
@@ -375,8 +408,8 @@ sm_overall = CheckCancel(&quot;cancelation_check&quot;,
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../runner/" class="btn btn-neutral float-left" title="Runner"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../ctrl_c_handler/" class="btn btn-neutral float-right" title="Ctrl C Handler">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../etasloutput/" class="btn btn-neutral float-left" title="eTaSLOutput"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../crospi_deactivate/" class="btn btn-neutral float-right" title="CrospiDeactivate">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -404,10 +437,10 @@ sm_overall = CheckCancel(&quot;cancelation_check&quot;,
         </span>
     
     
-      <span><a href="../runner/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../etasloutput/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../ctrl_c_handler/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../crospi_deactivate/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

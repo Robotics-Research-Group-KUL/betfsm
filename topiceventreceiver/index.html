@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Erwin Aertbelien" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>TopicEventReciever - BeTFSM documentation</title>
+    <title>Topiceventreceiver - BeTFSM documentation</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -15,7 +15,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "TopicEventReciever";
+        var mkdocs_page_name = "Topiceventreceiver";
         var mkdocs_page_input_path = "topiceventreceiver.md";
         var mkdocs_page_url = null;
       </script>
@@ -43,7 +43,7 @@
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption"><span class="caption-text">Documentation</span></p>
-              <ul class="current">
+              <ul>
                   <li class="toctree-l1"><a class="reference internal" >Introduction</a>
     <ul>
                 <li class="toctree-l2"><a class="reference internal" href="..">Start page</a>
@@ -70,13 +70,13 @@
                 </li>
     </ul>
                   </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" >Technical documentation</a>
-    <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" >Technical documentation</a>
+    <ul>
                 <li class="toctree-l2"><a class="reference internal" href="../technical_intro/">Technical introduction</a>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../api_overview/">Overview of the API</a>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="../event/">Event handling</a>
+                <li class="toctree-l2"><a class="reference internal" href="../event/">Event handling and conditions</a>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../ros2lifecycle/">ROS2 Lifecycle</a>
                 </li>
@@ -124,12 +124,6 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../runner/">Runner</a>
                 </li>
-                <li class="toctree-l3"><a class="reference internal" href="../checkcancel/">CheckCancel</a>
-                </li>
-                <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_handler/">Ctrl C Handler</a>
-                </li>
-                <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_receiver/">Ctrl_C_Receiver</a>
-                </li>
                 <li class="toctree-l3"><a class="reference internal" href="../alwaysoutcome/">AlwaysOutcome</a>
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../eventoutcome/">EventOutcome</a>
@@ -138,12 +132,24 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../eventsequential/">EventSequential</a>
                 </li>
-                <li class="toctree-l3"><a class="reference internal" href="../polling_func/">Polling functions</a>
+                <li class="toctree-l3"><a class="reference internal" href="../notcondition/">Not</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../orcondition/">OrCondition</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../andcondition/">AndCondition</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../callbackcondition/">Callback_Condition</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../timeout_condition/">Timeout_Condition</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../httpevent_condition/">HTTPEvent_Condition</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_condition/">Ctrl_C_Condition</a>
                 </li>
     </ul>
                 </li>
-                <li class="toctree-l2 current"><a class="reference internal current" >BeTFSM ROS2</a>
-    <ul class="current">
+                <li class="toctree-l2"><a class="reference internal" >BeTFSM ROS2</a>
+    <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../serviceclient/">ServiceClient</a>
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../actionclient_ros/">ActionClient</a>
@@ -156,27 +162,7 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../timeout/">Timeout</a>
                 </li>
-                <li class="toctree-l3 current"><a class="reference internal current" href="#">TopicEventReciever</a>
-    <ul class="current">
-    <li class="toctree-l4"><a class="reference internal" href="#betfsm_ros.TopicEventReceiver.clear">clear</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#betfsm_ros.TopicEventReceiver.get_instance">get_instance</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#betfsm_ros.TopicEventReceiver.has_event">has_event</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#betfsm_ros.TopicEventReceiver.has_recent_event">has_recent_event</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#betfsm_ros.TopicEventReceiver.log_queue">log_queue</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#betfsm_ros.TopicEventReceiver.poll_for">poll_for</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#betfsm_ros.TopicEventReceiver.poll_recent_for">poll_recent_for</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#betfsm_ros.TopicEventReceiver.set_minimum_queue_size">set_minimum_queue_size</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#betfsm_ros.TopicEventReceiver.size">size</a>
-    </li>
-    </ul>
+                <li class="toctree-l3"><a class="reference internal" href="../topicevent_condition/">TopicEvent_Condition</a>
                 </li>
     </ul>
                 </li>
@@ -192,11 +178,9 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../etasloutput/">eTaSLOutput</a>
                 </li>
-                <li class="toctree-l3"><a class="reference internal" href="../etaslevent/">eTaSLEvent</a>
+                <li class="toctree-l3"><a class="reference internal" href="../crospi_task/">CrospiTask</a>
                 </li>
-                <li class="toctree-l3"><a class="reference internal" href="../etasl_statemachine/">eTaSL_StateMachine</a>
-                </li>
-                <li class="toctree-l3"><a class="reference internal" href="../crospi_polling_func/">crospi_polling_func</a>
+                <li class="toctree-l3"><a class="reference internal" href="../crospi_deactivate/">CrospiDeactivate</a>
                 </li>
     </ul>
                 </li>
@@ -221,10 +205,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-          <li class="breadcrumb-item">Documentation</li>
-          <li class="breadcrumb-item">Technical documentation</li>
-          <li class="breadcrumb-item">BeTFSM ROS2</li>
-      <li class="breadcrumb-item active">TopicEventReciever</li>
+      <li class="breadcrumb-item active">Topiceventreceiver</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/Robotics-Research-Group-KUL/betfsm/edit/main/documentation/docs/topiceventreceiver.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
@@ -249,12 +230,7 @@
 
 
 
-        <div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>Preliminary, untested version</p>
-<p>old name was: EventQueueSubscriber</p>
-</div>
-<p>Thread-safe event queue for recieving ROS2 String messages</p>
+        <p>Thread-safe event queue for recieving ROS2 String messages</p>
 <p>Messages are received in a queue with limited size</p>
 <p>Functions for polling the queue, possibly with a max_age parameters
 to avoid stale events.</p>
@@ -328,7 +304,7 @@ to avoid stale events.</p>
         <ul class="first simple">
             <li>
               <b><code>node</code></b>
-                  (<code><span title="rclpy.node.Node">Node</span></code>)
+                  (<code><span title="betfsm_ros.betfsm_ros.Node">Node</span></code>)
               –
               <div class="doc-md-description">
                 <p>ROS2 node</p>
@@ -518,10 +494,6 @@ It consumes the matching event.</p>
               
             </div>
           </div><footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../timeout/" class="btn btn-neutral float-left" title="Timeout"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../load_task_list/" class="btn btn-neutral float-right" title="load_task_list">Next <span class="icon icon-circle-arrow-right"></span></a>
-    </div>
 
   <hr/>
 
@@ -548,10 +520,6 @@ It consumes the matching event.</p>
         </span>
     
     
-      <span><a href="../timeout/" style="color: #fcfcfc">&laquo; Previous</a></span>
-    
-    
-      <span><a href="../load_task_list/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

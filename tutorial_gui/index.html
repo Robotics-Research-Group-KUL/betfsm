@@ -92,7 +92,7 @@
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../api_overview/">Overview of the API</a>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="../event/">Event handling</a>
+                <li class="toctree-l2"><a class="reference internal" href="../event/">Event handling and conditions</a>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../ros2lifecycle/">ROS2 Lifecycle</a>
                 </li>
@@ -140,12 +140,6 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../runner/">Runner</a>
                 </li>
-                <li class="toctree-l3"><a class="reference internal" href="../checkcancel/">CheckCancel</a>
-                </li>
-                <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_handler/">Ctrl C Handler</a>
-                </li>
-                <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_receiver/">Ctrl_C_Receiver</a>
-                </li>
                 <li class="toctree-l3"><a class="reference internal" href="../alwaysoutcome/">AlwaysOutcome</a>
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../eventoutcome/">EventOutcome</a>
@@ -154,7 +148,19 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../eventsequential/">EventSequential</a>
                 </li>
-                <li class="toctree-l3"><a class="reference internal" href="../polling_func/">Polling functions</a>
+                <li class="toctree-l3"><a class="reference internal" href="../notcondition/">Not</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../orcondition/">OrCondition</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../andcondition/">AndCondition</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../callbackcondition/">Callback_Condition</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../timeout_condition/">Timeout_Condition</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../httpevent_condition/">HTTPEvent_Condition</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_condition/">Ctrl_C_Condition</a>
                 </li>
     </ul>
                 </li>
@@ -172,7 +178,7 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../timeout/">Timeout</a>
                 </li>
-                <li class="toctree-l3"><a class="reference internal" href="../topiceventreceiver/">TopicEventReciever</a>
+                <li class="toctree-l3"><a class="reference internal" href="../topicevent_condition/">TopicEvent_Condition</a>
                 </li>
     </ul>
                 </li>
@@ -188,11 +194,9 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../etasloutput/">eTaSLOutput</a>
                 </li>
-                <li class="toctree-l3"><a class="reference internal" href="../etaslevent/">eTaSLEvent</a>
+                <li class="toctree-l3"><a class="reference internal" href="../crospi_task/">CrospiTask</a>
                 </li>
-                <li class="toctree-l3"><a class="reference internal" href="../etasl_statemachine/">eTaSL_StateMachine</a>
-                </li>
-                <li class="toctree-l3"><a class="reference internal" href="../crospi_polling_func/">crospi_polling_func</a>
+                <li class="toctree-l3"><a class="reference internal" href="../crospi_deactivate/">CrospiDeactivate</a>
                 </li>
     </ul>
                 </li>
@@ -368,16 +372,16 @@ node communicates with cROSpi to execute the task with the given name:</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">betfsm</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Sequence</span><span class="p">,</span>  <span class="n">Message</span><span class="p">,</span> <span class="n">SUCCEED</span><span class="p">,</span> <span class="n">TICKING</span><span class="p">,</span> <span class="n">CANCEL</span><span class="p">,</span> <span class="n">ABORT</span><span class="p">,</span> <span class="n">get_logger</span><span class="p">,</span><span class="n">set_logger</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">betfsm_crospi</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_task_list</span><span class="p">,</span> <span class="n">eTaSL_StateMachine</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">betfsm_crospi</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_task_list</span><span class="p">,</span> <span class="n">CrospiTask</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">betfsm_ros</span><span class="w"> </span><span class="kn">import</span> <span class="n">BeTFSMNode</span><span class="p">,</span><span class="n">ROSRunner</span>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">MySequence</span><span class="p">(</span><span class="n">Sequence</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;my_sequence&quot;</span><span class="p">,</span> <span class="p">[</span>
-            <span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">,</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">),</span>
-            <span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;MovingDown&quot;</span><span class="p">,</span><span class="s2">&quot;MovingDown&quot;</span><span class="p">),</span>
-            <span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">,</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">),</span>
-            <span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;MovingSpline&quot;</span><span class="p">,</span><span class="s2">&quot;MovingSpline&quot;</span><span class="p">)</span> <span class="p">]</span>
+            <span class="n">CrospiTask</span><span class="p">(</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">,</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">),</span>
+            <span class="n">CrospiTask</span><span class="p">(</span><span class="s2">&quot;MovingDown&quot;</span><span class="p">,</span><span class="s2">&quot;MovingDown&quot;</span><span class="p">),</span>
+            <span class="n">CrospiTask</span><span class="p">(</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">,</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">),</span>
+            <span class="n">CrospiTask</span><span class="p">(</span><span class="s2">&quot;MovingSpline&quot;</span><span class="p">,</span><span class="s2">&quot;MovingSpline&quot;</span><span class="p">)</span> <span class="p">]</span>
         <span class="p">)</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -465,81 +469,27 @@ to stop the robot.</p>
 <span class="normal">54</span>
 <span class="normal">55</span>
 <span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">rclpy</span>
+<span class="normal">57</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">rclpy</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">betfsm</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Sequence</span><span class="p">,</span>  <span class="n">Message</span><span class="p">,</span> 
     <span class="n">SUCCEED</span><span class="p">,</span> <span class="n">TICKING</span><span class="p">,</span> <span class="n">CANCEL</span><span class="p">,</span> <span class="n">ABORT</span><span class="p">,</span> <span class="n">TIMEOUT</span><span class="p">,</span> <span class="n">NO_EVENT</span><span class="p">,</span>
     <span class="n">TickingStateMachine</span><span class="p">,</span><span class="n">get_logger</span><span class="p">,</span><span class="n">set_logger</span><span class="p">,</span>
-    <span class="n">EventSequential</span><span class="p">,</span> <span class="n">ctrl_c_polling_func</span><span class="p">,</span> <span class="n">get_path_value</span>
+    <span class="n">EventSequential</span><span class="p">,</span> <span class="n">Ctrl_C_Condition</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">betfsm_crospi</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_task_list</span><span class="p">,</span> <span class="n">eTaSL_StateMachine</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">betfsm_crospi</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_task_list</span><span class="p">,</span> <span class="n">CrospiTask</span><span class="p">,</span> <span class="n">CrospiDeactivate</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">betfsm_ros</span><span class="w"> </span><span class="kn">import</span> <span class="n">BeTFSMNode</span><span class="p">,</span><span class="n">ROSRunner</span><span class="p">,</span><span class="n">Node</span><span class="p">,</span><span class="n">Duration</span><span class="p">,</span><span class="n">LifeCycle</span><span class="p">,</span><span class="n">Transition</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">MySequence</span><span class="p">(</span><span class="n">Sequence</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;my_sequence&quot;</span><span class="p">,</span> <span class="p">[</span>
-            <span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">,</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">),</span>
-            <span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;MovingDown&quot;</span><span class="p">,</span><span class="s2">&quot;MovingDown&quot;</span><span class="p">),</span>
-            <span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">,</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">),</span>
-            <span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;MovingSpline&quot;</span><span class="p">,</span><span class="s2">&quot;MovingSpline&quot;</span><span class="p">)</span> <span class="p">]</span>
+            <span class="n">CrospiTask</span><span class="p">(</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">,</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">),</span>
+            <span class="n">CrospiTask</span><span class="p">(</span><span class="s2">&quot;MovingDown&quot;</span><span class="p">,</span><span class="s2">&quot;MovingDown&quot;</span><span class="p">),</span>
+            <span class="n">CrospiTask</span><span class="p">(</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">,</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">),</span>
+            <span class="n">CrospiTask</span><span class="p">(</span><span class="s2">&quot;MovingSpline&quot;</span><span class="p">,</span><span class="s2">&quot;MovingSpline&quot;</span><span class="p">)</span> <span class="p">]</span>
         <span class="p">)</span>
-
-<span class="k">class</span><span class="w"> </span><span class="nc">MyCleanup</span><span class="p">(</span><span class="n">TickingStateMachine</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Cleaning up eTaSL i.e. stop any motion and put the crospi node in a cleaned up state</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">srv_name</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="s2">&quot;/crospi_node&quot;</span><span class="p">,</span><span class="n">timeout</span><span class="p">:</span><span class="n">Duration</span> <span class="o">=</span> <span class="n">Duration</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mf">0.1</span><span class="p">),</span> <span class="n">node</span> <span class="p">:</span> <span class="n">Node</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="c1"># execute in sequence but don&#39;t care about ABORT, only way to fail is TIMEOUT</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;Cleanup&quot;</span><span class="p">,[</span><span class="n">CANCEL</span><span class="p">,</span><span class="n">SUCCEED</span><span class="p">])</span>
-
-        <span class="n">msg</span>        <span class="o">=</span>  <span class="n">Message</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s2">&quot;State machine to cleanup is now running&quot;</span><span class="p">)</span>
-        <span class="n">deactivate</span> <span class="o">=</span>  <span class="n">LifeCycle</span><span class="p">(</span><span class="s2">&quot;DEACTIVATE_ETASL&quot;</span><span class="p">,</span><span class="n">srv_name</span><span class="p">,</span><span class="n">Transition</span><span class="o">.</span><span class="n">DEACTIVATE</span><span class="p">,</span><span class="n">timeout</span><span class="p">,</span><span class="n">node</span><span class="p">)</span>
-        <span class="n">cleanup</span>    <span class="o">=</span>  <span class="n">LifeCycle</span><span class="p">(</span><span class="s2">&quot;CLEANUP_ETASL&quot;</span><span class="p">,</span><span class="n">srv_name</span><span class="p">,</span><span class="n">Transition</span><span class="o">.</span><span class="n">CLEANUP</span><span class="p">,</span><span class="n">timeout</span><span class="p">,</span><span class="n">node</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">transitions</span><span class="o">=</span><span class="p">{</span>
-            <span class="n">SUCCEED</span><span class="p">:</span><span class="n">deactivate</span>
-        <span class="p">})</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">deactivate</span><span class="p">,</span> <span class="n">transitions</span><span class="o">=</span><span class="p">{</span>
-            <span class="n">SUCCEED</span><span class="p">:</span> <span class="n">cleanup</span><span class="p">,</span>
-            <span class="n">ABORT</span><span class="p">:</span>   <span class="n">cleanup</span><span class="p">,</span>
-            <span class="n">TIMEOUT</span><span class="p">:</span> <span class="n">cleanup</span>
-        <span class="p">})</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">cleanup</span><span class="p">,</span> <span class="n">transitions</span><span class="o">=</span><span class="p">{</span>
-            <span class="n">SUCCEED</span><span class="p">:</span>     <span class="n">CANCEL</span><span class="p">,</span>
-            <span class="n">TIMEOUT</span><span class="p">:</span>     <span class="n">CANCEL</span><span class="p">,</span>
-            <span class="n">ABORT</span><span class="p">:</span>       <span class="n">CANCEL</span>
-        <span class="p">})</span>
-
 
 <span class="c1"># main</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -556,13 +506,13 @@ to stop the robot.</p>
     <span class="n">load_task_list</span><span class="p">(</span><span class="s2">&quot;$[crospi_application_template]/skill_specifications/libraries/skill_lib_example/tasks/skill_example.json&quot;</span><span class="p">,</span><span class="n">blackboard</span><span class="p">)</span>
 
 
+    <span class="c1"># running MySequence() and cleaning up when CTRL_C is pressed        </span>
     <span class="n">nominal_sm</span> <span class="o">=</span> <span class="n">MySequence</span><span class="p">()</span>
-    <span class="n">cleanup_sm</span> <span class="o">=</span> <span class="n">MyCleanup</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="n">my_node</span><span class="p">)</span>
+    <span class="n">cleanup_sm</span> <span class="o">=</span> <span class="n">CrospiDeactivate</span><span class="p">(</span><span class="n">force_outcome</span><span class="o">=</span><span class="n">CANCEL</span><span class="p">)</span>
+    <span class="n">sm</span> <span class="o">=</span> <span class="n">EventSequential</span><span class="p">(</span><span class="s2">&quot;check_cancel&quot;</span><span class="p">,</span> <span class="n">Ctrl_C_Condition</span><span class="p">(</span><span class="s2">&quot;CTRL_C&quot;</span><span class="p">,</span><span class="n">repeated</span><span class="o">=</span><span class="mi">3</span><span class="p">),{</span><span class="n">NO_EVENT</span><span class="p">:</span><span class="n">nominal_sm</span><span class="p">,</span> <span class="s2">&quot;CTRL_C&quot;</span><span class="p">:</span><span class="n">cleanup_sm</span><span class="p">})</span>
 
-    <span class="n">sm</span> <span class="o">=</span> <span class="n">EventSequential</span><span class="p">(</span><span class="s2">&quot;check_cancel&quot;</span><span class="p">,</span> <span class="n">ctrl_c_polling_func</span><span class="p">(</span><span class="s2">&quot;CTRL_C&quot;</span><span class="p">,</span><span class="mi">3</span><span class="p">),{</span><span class="n">NO_EVENT</span><span class="p">:</span><span class="n">nominal_sm</span><span class="p">,</span> <span class="s2">&quot;CTRL_C&quot;</span><span class="p">:</span><span class="n">cleanup_sm</span><span class="p">})</span>
-    <span class="c1"># This is now working and recommended, accepts command-line parameters (see --help)</span>
-    <span class="c1"># has many more optional arguments, see API documentation</span>
-    <span class="c1"># checks whether timing exceeds sample period.</span>
+    <span class="c1"># ROSRunner accepts command-line parameters (see --help)</span>
+    <span class="c1"># has many more optional arguments than used below, see API documentation</span>
     <span class="n">runner</span> <span class="o">=</span> <span class="n">ROSRunner</span><span class="p">(</span><span class="n">my_node</span><span class="p">,</span><span class="n">sm</span><span class="p">,</span><span class="n">blackboard</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">publish_frequency</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">display_active</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>
@@ -637,81 +587,27 @@ a robot to continue until he is in a safe state before stopping.</p>
 <span class="normal">54</span>
 <span class="normal">55</span>
 <span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">rclpy</span>
+<span class="normal">57</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">rclpy</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">betfsm</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Sequence</span><span class="p">,</span>  <span class="n">Message</span><span class="p">,</span> 
     <span class="n">SUCCEED</span><span class="p">,</span> <span class="n">TICKING</span><span class="p">,</span> <span class="n">CANCEL</span><span class="p">,</span> <span class="n">ABORT</span><span class="p">,</span> <span class="n">TIMEOUT</span><span class="p">,</span> <span class="n">NO_EVENT</span><span class="p">,</span>
     <span class="n">TickingStateMachine</span><span class="p">,</span><span class="n">get_logger</span><span class="p">,</span><span class="n">set_logger</span><span class="p">,</span>
-    <span class="n">EventSequential</span><span class="p">,</span> <span class="n">ctrl_c_polling_func</span><span class="p">,</span> <span class="n">get_path_value</span>
+    <span class="n">EventSequential</span><span class="p">,</span> <span class="n">Ctrl_C_Condition</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">betfsm_crospi</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_task_list</span><span class="p">,</span> <span class="n">eTaSL_StateMachine</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">betfsm_crospi</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_task_list</span><span class="p">,</span> <span class="n">CrospiTask</span><span class="p">,</span> <span class="n">CrospiDeactivate</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">betfsm_ros</span><span class="w"> </span><span class="kn">import</span> <span class="n">BeTFSMNode</span><span class="p">,</span><span class="n">ROSRunner</span><span class="p">,</span><span class="n">Node</span><span class="p">,</span><span class="n">Duration</span><span class="p">,</span><span class="n">LifeCycle</span><span class="p">,</span><span class="n">Transition</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">MySequence</span><span class="p">(</span><span class="n">Sequence</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;my_sequence&quot;</span><span class="p">,</span> <span class="p">[</span>
-            <span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">,</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">),</span>
-            <span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;MovingDown&quot;</span><span class="p">,</span><span class="s2">&quot;MovingDown&quot;</span><span class="p">),</span>
-            <span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">,</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">),</span>
-            <span class="n">eTaSL_StateMachine</span><span class="p">(</span><span class="s2">&quot;MovingSpline&quot;</span><span class="p">,</span><span class="s2">&quot;MovingSpline&quot;</span><span class="p">)</span> <span class="p">]</span>
+            <span class="n">CrospiTask</span><span class="p">(</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">,</span><span class="s2">&quot;MovingHome&quot;</span><span class="p">),</span>
+            <span class="n">CrospiTask</span><span class="p">(</span><span class="s2">&quot;MovingDown&quot;</span><span class="p">,</span><span class="s2">&quot;MovingDown&quot;</span><span class="p">),</span>
+            <span class="n">CrospiTask</span><span class="p">(</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">,</span><span class="s2">&quot;MovingUp&quot;</span><span class="p">),</span>
+            <span class="n">CrospiTask</span><span class="p">(</span><span class="s2">&quot;MovingSpline&quot;</span><span class="p">,</span><span class="s2">&quot;MovingSpline&quot;</span><span class="p">)</span> <span class="p">]</span>
         <span class="p">)</span>
-
-<span class="k">class</span><span class="w"> </span><span class="nc">MyCleanup</span><span class="p">(</span><span class="n">TickingStateMachine</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Cleaning up eTaSL i.e. stop any motion and put the crospi node in a cleaned up state</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">srv_name</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="s2">&quot;/crospi_node&quot;</span><span class="p">,</span><span class="n">timeout</span><span class="p">:</span><span class="n">Duration</span> <span class="o">=</span> <span class="n">Duration</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mf">0.1</span><span class="p">),</span> <span class="n">node</span> <span class="p">:</span> <span class="n">Node</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="c1"># execute in sequence but don&#39;t care about ABORT, only way to fail is TIMEOUT</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;Cleanup&quot;</span><span class="p">,[</span><span class="n">CANCEL</span><span class="p">,</span><span class="n">SUCCEED</span><span class="p">])</span>
-
-        <span class="n">msg</span>        <span class="o">=</span>  <span class="n">Message</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s2">&quot;State machine to cleanup is now running&quot;</span><span class="p">)</span>
-        <span class="n">deactivate</span> <span class="o">=</span>  <span class="n">LifeCycle</span><span class="p">(</span><span class="s2">&quot;DEACTIVATE_ETASL&quot;</span><span class="p">,</span><span class="n">srv_name</span><span class="p">,</span><span class="n">Transition</span><span class="o">.</span><span class="n">DEACTIVATE</span><span class="p">,</span><span class="n">timeout</span><span class="p">,</span><span class="n">node</span><span class="p">)</span>
-        <span class="n">cleanup</span>    <span class="o">=</span>  <span class="n">LifeCycle</span><span class="p">(</span><span class="s2">&quot;CLEANUP_ETASL&quot;</span><span class="p">,</span><span class="n">srv_name</span><span class="p">,</span><span class="n">Transition</span><span class="o">.</span><span class="n">CLEANUP</span><span class="p">,</span><span class="n">timeout</span><span class="p">,</span><span class="n">node</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">transitions</span><span class="o">=</span><span class="p">{</span>
-            <span class="n">SUCCEED</span><span class="p">:</span><span class="n">deactivate</span>
-        <span class="p">})</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">deactivate</span><span class="p">,</span> <span class="n">transitions</span><span class="o">=</span><span class="p">{</span>
-            <span class="n">SUCCEED</span><span class="p">:</span> <span class="n">cleanup</span><span class="p">,</span>
-            <span class="n">ABORT</span><span class="p">:</span>   <span class="n">cleanup</span><span class="p">,</span>
-            <span class="n">TIMEOUT</span><span class="p">:</span> <span class="n">cleanup</span>
-        <span class="p">})</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">cleanup</span><span class="p">,</span> <span class="n">transitions</span><span class="o">=</span><span class="p">{</span>
-            <span class="n">SUCCEED</span><span class="p">:</span>     <span class="n">CANCEL</span><span class="p">,</span>
-            <span class="n">TIMEOUT</span><span class="p">:</span>     <span class="n">CANCEL</span><span class="p">,</span>
-            <span class="n">ABORT</span><span class="p">:</span>       <span class="n">CANCEL</span>
-        <span class="p">})</span>
-
 
 <span class="c1"># main</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -728,13 +624,13 @@ a robot to continue until he is in a safe state before stopping.</p>
     <span class="n">load_task_list</span><span class="p">(</span><span class="s2">&quot;$[crospi_application_template]/skill_specifications/libraries/skill_lib_example/tasks/skill_example.json&quot;</span><span class="p">,</span><span class="n">blackboard</span><span class="p">)</span>
 
 
+    <span class="c1"># running MySequence() and cleaning up when CTRL_C is pressed        </span>
     <span class="n">nominal_sm</span> <span class="o">=</span> <span class="n">MySequence</span><span class="p">()</span>
-    <span class="n">cleanup_sm</span> <span class="o">=</span> <span class="n">MyCleanup</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="n">my_node</span><span class="p">)</span>
+    <span class="n">cleanup_sm</span> <span class="o">=</span> <span class="n">CrospiDeactivate</span><span class="p">(</span><span class="n">force_outcome</span><span class="o">=</span><span class="n">CANCEL</span><span class="p">)</span>
+    <span class="n">sm</span> <span class="o">=</span> <span class="n">EventSequential</span><span class="p">(</span><span class="s2">&quot;check_cancel&quot;</span><span class="p">,</span> <span class="n">Ctrl_C_Condition</span><span class="p">(</span><span class="s2">&quot;CTRL_C&quot;</span><span class="p">,</span><span class="n">repeated</span><span class="o">=</span><span class="mi">3</span><span class="p">),{</span><span class="n">NO_EVENT</span><span class="p">:</span><span class="n">nominal_sm</span><span class="p">,</span> <span class="s2">&quot;CTRL_C&quot;</span><span class="p">:</span><span class="n">cleanup_sm</span><span class="p">})</span>
 
-    <span class="n">sm</span> <span class="o">=</span> <span class="n">EventSequential</span><span class="p">(</span><span class="s2">&quot;check_cancel&quot;</span><span class="p">,</span> <span class="n">ctrl_c_polling_func</span><span class="p">(</span><span class="s2">&quot;CTRL_C&quot;</span><span class="p">,</span><span class="mi">3</span><span class="p">),{</span><span class="n">NO_EVENT</span><span class="p">:</span><span class="n">nominal_sm</span><span class="p">,</span> <span class="s2">&quot;CTRL_C&quot;</span><span class="p">:</span><span class="n">cleanup_sm</span><span class="p">})</span>
-    <span class="c1"># This is now working and recommended, accepts command-line parameters (see --help)</span>
-    <span class="c1"># has many more optional arguments, see API documentation</span>
-    <span class="c1"># checks whether timing exceeds sample period.</span>
+    <span class="c1"># ROSRunner accepts command-line parameters (see --help)</span>
+    <span class="c1"># has many more optional arguments than used below, see API documentation</span>
     <span class="n">runner</span> <span class="o">=</span> <span class="n">ROSRunner</span><span class="p">(</span><span class="n">my_node</span><span class="p">,</span><span class="n">sm</span><span class="p">,</span><span class="n">blackboard</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">publish_frequency</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">display_active</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>

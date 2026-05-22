@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Erwin Aertbelien" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Polling functions - BeTFSM documentation</title>
+    <title>Ctrl_C_Condition - BeTFSM documentation</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -15,8 +15,8 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Polling functions";
-        var mkdocs_page_input_path = "polling_func.md";
+        var mkdocs_page_name = "Ctrl_C_Condition";
+        var mkdocs_page_input_path = "ctrl_c_condition.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -76,7 +76,7 @@
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../api_overview/">Overview of the API</a>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="../event/">Event handling</a>
+                <li class="toctree-l2"><a class="reference internal" href="../event/">Event handling and conditions</a>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../ros2lifecycle/">ROS2 Lifecycle</a>
                 </li>
@@ -124,12 +124,6 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../runner/">Runner</a>
                 </li>
-                <li class="toctree-l3"><a class="reference internal" href="../checkcancel/">CheckCancel</a>
-                </li>
-                <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_handler/">Ctrl C Handler</a>
-                </li>
-                <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_receiver/">Ctrl_C_Receiver</a>
-                </li>
                 <li class="toctree-l3"><a class="reference internal" href="../alwaysoutcome/">AlwaysOutcome</a>
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../eventoutcome/">EventOutcome</a>
@@ -138,8 +132,22 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../eventsequential/">EventSequential</a>
                 </li>
-                <li class="toctree-l3 current"><a class="reference internal current" href="#">Polling functions</a>
+                <li class="toctree-l3"><a class="reference internal" href="../notcondition/">Not</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../orcondition/">OrCondition</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../andcondition/">AndCondition</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../callbackcondition/">Callback_Condition</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../timeout_condition/">Timeout_Condition</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../httpevent_condition/">HTTPEvent_Condition</a>
+                </li>
+                <li class="toctree-l3 current"><a class="reference internal current" href="#">Ctrl_C_Condition</a>
     <ul class="current">
+    <li class="toctree-l4"><a class="reference internal" href="#betfsm.Ctrl_C_Condition.__init__">__init__</a>
+    </li>
     </ul>
                 </li>
     </ul>
@@ -158,7 +166,7 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../timeout/">Timeout</a>
                 </li>
-                <li class="toctree-l3"><a class="reference internal" href="../topiceventreceiver/">TopicEventReciever</a>
+                <li class="toctree-l3"><a class="reference internal" href="../topicevent_condition/">TopicEvent_Condition</a>
                 </li>
     </ul>
                 </li>
@@ -174,11 +182,9 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../etasloutput/">eTaSLOutput</a>
                 </li>
-                <li class="toctree-l3"><a class="reference internal" href="../etaslevent/">eTaSLEvent</a>
+                <li class="toctree-l3"><a class="reference internal" href="../crospi_task/">CrospiTask</a>
                 </li>
-                <li class="toctree-l3"><a class="reference internal" href="../etasl_statemachine/">eTaSL_StateMachine</a>
-                </li>
-                <li class="toctree-l3"><a class="reference internal" href="../crospi_polling_func/">crospi_polling_func</a>
+                <li class="toctree-l3"><a class="reference internal" href="../crospi_deactivate/">CrospiDeactivate</a>
                 </li>
     </ul>
                 </li>
@@ -206,9 +212,9 @@
           <li class="breadcrumb-item">Documentation</li>
           <li class="breadcrumb-item">Technical documentation</li>
           <li class="breadcrumb-item">BeTFSM</li>
-      <li class="breadcrumb-item active">Polling functions</li>
+      <li class="breadcrumb-item active">Ctrl_C_Condition</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/Robotics-Research-Group-KUL/betfsm/edit/main/documentation/docs/polling_func.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/Robotics-Research-Group-KUL/betfsm/edit/main/documentation/docs/ctrl_c_condition.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -216,87 +222,56 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <div class="doc doc-object doc-function">
+                <div class="doc doc-object doc-class">
 
 
-<h2 id="betfsm.blackboard_polling_func" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">betfsm</span><span class="o">.</span><span class="n">blackboard_polling_func</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></code>
+
+<h2 id="betfsm.Ctrl_C_Condition" class="doc doc-heading">
+            <code>betfsm.Ctrl_C_Condition</code>
+
 
 </h2>
 
 
     <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="betfsm.events.Condition">Condition</span></code></p>
 
-        <p>Returns a polling function that checks whether one of the given events
-are present in the blackboard at location <code>path</code>.</p>
 
 
-<table class="field-list">
-  <colgroup>
-    <col class="field-name" />
-    <col class="field-body" />
-  </colgroup>
-  <tbody valign="top">
-    <tr class="field">
-      <th class="field-name">Parameters:</th>
-      <td class="field-body">
-        <ul class="first simple">
-            <li>
-              <b><code>path</code></b>
-                  (<code><span title="str">str</span></code>)
-              –
-              <div class="doc-md-description">
-                <p>location in the blackboard as a '/' separated path.</p>
-              </div>
-            </li>
-        </ul>
-      </td>
-    </tr>
-  </tbody>
-</table>
+        <p>Check whether CTRL_C events come in</p>
 
-<table class="field-list">
-  <colgroup>
-    <col class="field-name" />
-    <col class="field-body" />
-  </colgroup>
-  <tbody valign="top">
-    <tr class="field">
-      <th class="field-name">Returns:</th>
-      <td class="field-body">
-        <ul class="first simple">
-            <li>
-                  <code><span title="typing.Callable">Callable</span>[[<span title="typing.Dict">Dict</span>, <span title="typing.List">List</span>[<span title="str">str</span>]], <span title="str">str</span> | None]</code>
-              –
-              <div class="doc-md-description">
-                <p>polling function</p>
-              </div>
-            </li>
-        </ul>
-      </td>
-    </tr>
-  </tbody>
-</table>
 
-    </div>
 
-</div>
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
 
 <div class="doc doc-object doc-function">
 
 
-<h2 id="betfsm.ctrl_c_polling_func" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">betfsm</span><span class="o">.</span><span class="n">ctrl_c_polling_func</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s1">&#39;CTRL_C&#39;</span><span class="p">,</span> <span class="n">repeated</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span></code>
+<h3 id="betfsm.Ctrl_C_Condition.__init__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">event</span><span class="o">=</span><span class="s1">&#39;CTRL_C&#39;</span><span class="p">,</span> <span class="n">repeated</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">consume</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
 
-</h2>
+</h3>
 
 
-    <div class="doc doc-contents first">
+    <div class="doc doc-contents ">
 
-        <p>Returns a polling function that checks whether one of the given events
-are present in the blackboard at location <code>path</code>.</p>
-<p>Configures the system SIGINT (Ctrl+C) handler to interact with a blackboard, where
-a variable will set to given value if Ctrl-c is pressed</p>
 
 
 <table class="field-list">
@@ -310,46 +285,25 @@ a variable will set to given value if Ctrl-c is pressed</p>
       <td class="field-body">
         <ul class="first simple">
             <li>
-              <b><code>value</code></b>
-                  (<code><span title="str">str</span></code>, default:
-                      <code>&#39;CTRL_C&#39;</code>
-)
+              <b><code>event</code></b>
               –
               <div class="doc-md-description">
-                <p>Value that will be set when ctrl-c is pressed.</p>
+                <p>the name of the event to return if Ctrl-C was pressed</p>
               </div>
             </li>
             <li>
               <b><code>repeated</code></b>
-                  (<code>(<span title="int">int</span>, None)</code>, default:
-                      <code>3</code>
-)
               –
               <div class="doc-md-description">
-                <p>number of times to repeat ctrl-c before KeyboardInterrupt is raised</p>
+                <p>if the users presses <code>repeated</code> times Ctrl-C, the original Ctrl-C handler will be
+called and the program will be interrupted.  </p>
               </div>
             </li>
-        </ul>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-<table class="field-list">
-  <colgroup>
-    <col class="field-name" />
-    <col class="field-body" />
-  </colgroup>
-  <tbody valign="top">
-    <tr class="field">
-      <th class="field-name">Returns:</th>
-      <td class="field-body">
-        <ul class="first simple">
             <li>
-                  <code><span title="typing.Callable">Callable</span>[[<span title="typing.Dict">Dict</span>, <span title="typing.List">List</span>[<span title="str">str</span>]], <span title="str">str</span> | None]</code>
+              <b><code>consume</code></b>
               –
               <div class="doc-md-description">
-                <p>polling function</p>
+                <p>if true, the ctrl-c event will be consumed, i.e. if asked again this object will return None.</p>
               </div>
             </li>
         </ul>
@@ -362,218 +316,19 @@ a variable will set to given value if Ctrl-c is pressed</p>
 
 </div>
 
-<div class="doc doc-object doc-function">
 
 
-<h2 id="betfsm_crospi.crospi_polling_func" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">betfsm_crospi</span><span class="o">.</span><span class="n">crospi_polling_func</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">topic</span><span class="o">=</span><span class="s1">&#39;crospi_node/my_output&#39;</span><span class="p">,</span> <span class="n">queue_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">max_age</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span></code>
-
-</h2>
-
-
-    <div class="doc doc-contents first">
-
-        <p>Returns a callback function to read crospi events suitable for use withy betfsm.Event.
-Uses betfsm_ros.EventQueueSubscriber for the qeueu.  The default
-parameters are suitable for crospi.</p>
-
-
-<table class="field-list">
-  <colgroup>
-    <col class="field-name" />
-    <col class="field-body" />
-  </colgroup>
-  <tbody valign="top">
-    <tr class="field">
-      <th class="field-name">Parameters:</th>
-      <td class="field-body">
-        <ul class="first simple">
-            <li>
-              <b><code>node</code></b>
-                  (<code><span title="rclpy.node.Node">Node</span></code>, default:
-                      <code>None</code>
-)
-              –
-              <div class="doc-md-description">
-                <p>ROS2 node</p>
-              </div>
-            </li>
-            <li>
-              <b><code>topic_name</code></b>
-              –
-              <div class="doc-md-description">
-                <p>name of the topic to subscribe to</p>
-              </div>
-            </li>
-            <li>
-              <b><code>queue_size</code></b>
-                  (<code><span title="int">int</span></code>, default:
-                      <code>10</code>
-)
-              –
-              <div class="doc-md-description">
-                <p>size of the queue related to maximum concurrent events, i.e. sample time in relation
-to the events generated. Because the underlying receiver is a singleton, the maximum
-queue size of everybody who requested an instance of the receiver is taken.</p>
-              </div>
-            </li>
-            <li>
-              <b><code>max_age</code></b>
-                  (<code><span title="float">float</span></code>, default:
-                      <code>0.05</code>
-)
-              –
-              <div class="doc-md-description">
-                <p>maximum age of the events that still will be received.</p>
-              </div>
-            </li>
-        </ul>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-<table class="field-list">
-  <colgroup>
-    <col class="field-name" />
-    <col class="field-body" />
-  </colgroup>
-  <tbody valign="top">
-    <tr class="field">
-      <th class="field-name">Returns:</th>
-      <td class="field-body">
-        <ul class="first simple">
-            <li>
-                  <code><span title="typing.Callable">Callable</span>[[<span title="typing.Dict">Dict</span>, <span title="typing.List">List</span>[<span title="str">str</span>]], <span title="str">str</span> | None]</code>
-              –
-              <div class="doc-md-description">
-                <p>Polling function</p>
-              </div>
-            </li>
-        </ul>
-      </td>
-    </tr>
-  </tbody>
-</table>
+  </div>
 
     </div>
 
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h2 id="betfsm.http_polling_func" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">betfsm</span><span class="o">.</span><span class="n">http_polling_func</span><span class="p">(</span><span class="n">channel_name</span><span class="o">=</span><span class="s1">&#39;betfsm&#39;</span><span class="p">,</span> <span class="n">queue_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">max_age</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span></code>
-
-</h2>
-
-
-    <div class="doc doc-contents first">
-
-        <p>Returns a callback function to read HTTP events suitable for use withy betfsm.Event.</p>
-
-
-<table class="field-list">
-  <colgroup>
-    <col class="field-name" />
-    <col class="field-body" />
-  </colgroup>
-  <tbody valign="top">
-    <tr class="field">
-      <th class="field-name">Parameters:</th>
-      <td class="field-body">
-        <ul class="first simple">
-            <li>
-              <b><code>channel_name</code></b>
-                  (<code><span title="str">str</span></code>, default:
-                      <code>&#39;betfsm&#39;</code>
-)
-              –
-              <div class="doc-md-description">
-                <p>name of the topic to subscribe to</p>
-              </div>
-            </li>
-            <li>
-              <b><code>queue_size</code></b>
-                  (<code><span title="int">int</span></code>, default:
-                      <code>10</code>
-)
-              –
-              <div class="doc-md-description">
-                <p>size of the queue related to maximum concurrent events, i.e. sample time in relation
-to the events generated. Because the underlying receiver is a singleton, the maximum
-queue size of everybody who requested an instance of the receiver is taken.</p>
-              </div>
-            </li>
-            <li>
-              <b><code>max_age</code></b>
-                  (<code><span title="float">float</span></code>, default:
-                      <code>0.5</code>
-)
-              –
-              <div class="doc-md-description">
-                <p>maximum age of the events that still will be received.</p>
-              </div>
-            </li>
-        </ul>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-<table class="field-list">
-  <colgroup>
-    <col class="field-name" />
-    <col class="field-body" />
-  </colgroup>
-  <tbody valign="top">
-    <tr class="field">
-      <th class="field-name">Returns:</th>
-      <td class="field-body">
-        <ul class="first simple">
-            <li>
-                  <code><span title="typing.Callable">Callable</span>[[<span title="typing.Dict">Dict</span>, <span title="typing.List">List</span>[<span title="str">str</span>]], <span title="str">str</span> | None]</code>
-              –
-              <div class="doc-md-description">
-                <p>Polling function</p>
-              </div>
-            </li>
-        </ul>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h2 id="betfsm.combine" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">betfsm</span><span class="o">.</span><span class="n">combine</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span></code>
-
-</h2>
-
-
-    <div class="doc doc-contents first">
-
-        <p>Combines multiple polling callbacks, takes as arguments the functions themselves
-and returns a callback function that combines the polling functions.</p>
-<p>e.g. combine(polling_func1,polling_func2,....)</p>
-<p>The earlier arguments have priority</p>
-
-
-    </div>
 
 </div>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../eventsequential/" class="btn btn-neutral float-left" title="EventSequential"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../httpevent_condition/" class="btn btn-neutral float-left" title="HTTPEvent_Condition"><span class="icon icon-circle-arrow-left"></span> Previous</a>
         <a href="../serviceclient/" class="btn btn-neutral float-right" title="ServiceClient">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
@@ -602,7 +357,7 @@ and returns a callback function that combines the polling functions.</p>
         </span>
     
     
-      <span><a href="../eventsequential/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../httpevent_condition/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
       <span><a href="../serviceclient/" style="color: #fcfcfc">Next &raquo;</a></span>

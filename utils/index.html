@@ -76,7 +76,7 @@
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../api_overview/">Overview of the API</a>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="../event/">Event handling</a>
+                <li class="toctree-l2"><a class="reference internal" href="../event/">Event handling and conditions</a>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../ros2lifecycle/">ROS2 Lifecycle</a>
                 </li>
@@ -84,7 +84,7 @@
     <ul class="current">
     <li class="toctree-l3"><a class="reference internal" href="#logging">Logging</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#utility-functions">Utility functions</a>
+    <li class="toctree-l3"><a class="reference internal" href="#utility-functions-related-to-ros2environment-package-references">Utility functions related to ROS2/environment package references</a>
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#betfsm_ros.expand_package_ref">expand_package_ref</a>
     </li>
@@ -92,11 +92,33 @@
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#betfsm_ros.expand_ref">expand_ref</a>
     </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#logger-related">Logger related:</a>
+        <ul>
     <li class="toctree-l4"><a class="reference internal" href="#betfsm.logger.set_logger">set_logger</a>
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#betfsm.logger.get_logger">get_logger</a>
     </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#making-a-list-of-outcomes-unique">making a list of outcomes unique</a>
+        <ul>
     <li class="toctree-l4"><a class="reference internal" href="#betfsm.cleanup_outcomes">cleanup_outcomes</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#blackboard-related">blackboard related</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#hierarchical-path-syntax-for-blackboard-access">Hierarchical Path Syntax for Blackboard Access</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#basic-rules">Basic rules</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#list-operators">List Operators</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#examples">Examples</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#notes">Notes</a>
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#betfsm.dumps_blackboard">dumps_blackboard</a>
     </li>
@@ -152,12 +174,6 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../runner/">Runner</a>
                 </li>
-                <li class="toctree-l3"><a class="reference internal" href="../checkcancel/">CheckCancel</a>
-                </li>
-                <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_handler/">Ctrl C Handler</a>
-                </li>
-                <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_receiver/">Ctrl_C_Receiver</a>
-                </li>
                 <li class="toctree-l3"><a class="reference internal" href="../alwaysoutcome/">AlwaysOutcome</a>
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../eventoutcome/">EventOutcome</a>
@@ -166,7 +182,19 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../eventsequential/">EventSequential</a>
                 </li>
-                <li class="toctree-l3"><a class="reference internal" href="../polling_func/">Polling functions</a>
+                <li class="toctree-l3"><a class="reference internal" href="../notcondition/">Not</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../orcondition/">OrCondition</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../andcondition/">AndCondition</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../callbackcondition/">Callback_Condition</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../timeout_condition/">Timeout_Condition</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../httpevent_condition/">HTTPEvent_Condition</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_condition/">Ctrl_C_Condition</a>
                 </li>
     </ul>
                 </li>
@@ -184,7 +212,7 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../timeout/">Timeout</a>
                 </li>
-                <li class="toctree-l3"><a class="reference internal" href="../topiceventreceiver/">TopicEventReciever</a>
+                <li class="toctree-l3"><a class="reference internal" href="../topicevent_condition/">TopicEvent_Condition</a>
                 </li>
     </ul>
                 </li>
@@ -200,11 +228,9 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../etasloutput/">eTaSLOutput</a>
                 </li>
-                <li class="toctree-l3"><a class="reference internal" href="../etaslevent/">eTaSLEvent</a>
+                <li class="toctree-l3"><a class="reference internal" href="../crospi_task/">CrospiTask</a>
                 </li>
-                <li class="toctree-l3"><a class="reference internal" href="../etasl_statemachine/">eTaSL_StateMachine</a>
-                </li>
-                <li class="toctree-l3"><a class="reference internal" href="../crospi_polling_func/">crospi_polling_func</a>
+                <li class="toctree-l3"><a class="reference internal" href="../crospi_deactivate/">CrospiDeactivate</a>
                 </li>
     </ul>
                 </li>
@@ -259,7 +285,7 @@ of ROS2.  This allows us to do two things:</p>
 <span class="n">set_logger</span><span class="p">(</span><span class="s2">&quot;state&quot;</span><span class="p">,</span><span class="n">my_node</span><span class="o">.</span><span class="n">get_logger</span><span class="p">())</span>
 </code></pre></div>
 This sets the ROS2 logger for all of the above categories.</p>
-<h2 id="utility-functions">Utility functions</h2>
+<h2 id="utility-functions-related-to-ros2environment-package-references">Utility functions related to ROS2/environment package references</h2>
 
 
 <div class="doc doc-object doc-function">
@@ -364,7 +390,8 @@ Parameters:
 
     </div>
 
-</div>
+</div><h2 id="logger-related">Logger related:</h2>
+
 
 <div class="doc doc-object doc-function">
 
@@ -492,7 +519,8 @@ if not specified, "default" is used.</p>
 
     </div>
 
-</div>
+</div><h2 id="making-a-list-of-outcomes-unique">making a list of outcomes unique</h2>
+
 
 <div class="doc doc-object doc-function">
 
@@ -557,7 +585,88 @@ if not specified, "default" is used.</p>
 
     </div>
 
-</div>
+</div><h2 id="blackboard-related">blackboard related</h2>
+<h3 id="hierarchical-path-syntax-for-blackboard-access">Hierarchical Path Syntax for Blackboard Access</h3>
+<p>The blackboard is a nested structure composed of dictionaries and lists.
+Values inside this structure can be accessed or modified using a path
+string, where components are separated by "/" (e.g. "users/list/0").</p>
+<p>This extended syntax supports:
+- dictionary navigation
+- list indexing
+- list operations (length, append, insert, delete, pop)
+All operators are chosen to be URL‑safe and easy to type directly in a browser.</p>
+<h3 id="basic-rules">Basic rules</h3>
+<ul>
+<li>Each path component is separated by "/".</li>
+<li>Dictionary keys are addressed by name:
+      "config/system/mode"</li>
+<li>List elements are addressed by numeric indices:
+      "users/0/name"</li>
+</ul>
+<h3 id="list-operators">List Operators</h3>
+<p>The following operators apply when the current node is a list:</p>
+<ul>
+<li>
+<p>"~len"
+      Returns the length of the list.
+      Example: "users/~len"</p>
+</li>
+<li>
+<p>"~append"
+      Appends a new value to the list.
+      Example: "users/~append"</p>
+</li>
+<li>
+<p>"~insert:N"
+      Inserts a value at index N.
+      Example: "users/~insert:2"</p>
+</li>
+<li>
+<p>"~del:N"
+      Deletes the element at index N.
+      Example: "users/~del:1"</p>
+</li>
+<li>
+<p>"~pop"
+      Removes the last element
+      Example: "users/~pop"</p>
+</li>
+<li>
+<p>"N"   (digit)
+      Replaces or retrieves the element at index N.
+      Example: "users/3"</p>
+</li>
+</ul>
+<h3 id="examples">Examples</h3>
+<div class="highlight"><pre><span></span><code>    <span class="c1">#  Get a nested dictionary value:</span>
+    <span class="n">get_path_value</span><span class="p">(</span><span class="n">bb</span><span class="p">,</span> <span class="s2">&quot;settings/ui/theme&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Get the third item in a list:</span>
+    <span class="n">get_path_value</span><span class="p">(</span><span class="n">bb</span><span class="p">,</span> <span class="s2">&quot;users/2&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Get the length of a list:</span>
+    <span class="n">get_path_value</span><span class="p">(</span><span class="n">bb</span><span class="p">,</span> <span class="s2">&quot;users/~len&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Append a new user:</span>
+    <span class="n">set_path_value</span><span class="p">(</span><span class="n">bb</span><span class="p">,</span> <span class="s2">&quot;users/~append&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Alice&quot;</span><span class="p">})</span>
+
+    <span class="c1">#Insert at index 1:</span>
+    <span class="n">set_path_value</span><span class="p">(</span><span class="n">bb</span><span class="p">,</span> <span class="s2">&quot;users/~insert:1&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Bob&quot;</span><span class="p">})</span>
+
+    <span class="c1"># Replace element at index 3:</span>
+    <span class="n">set_path_value</span><span class="p">(</span><span class="n">bb</span><span class="p">,</span> <span class="s2">&quot;users/3&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Charlie&quot;</span><span class="p">})</span>
+
+    <span class="c1"># Delete element at index 0:</span>
+    <span class="n">set_path_value</span><span class="p">(</span><span class="n">bb</span><span class="p">,</span> <span class="s2">&quot;users/~del:0&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="notes">Notes</h3>
+<ul>
+<li>All operators are ASCII‑only and require no URL encoding.</li>
+<li>Intermediate dictionaries or lists are created automatically when needed.</li>
+<li>When replacing a list element by index, the list is auto‑extended with
+  None values if the index is beyond the current length.</li>
+</ul>
+
 
 <div class="doc doc-object doc-function">
 
@@ -582,7 +691,7 @@ representing a hierarchical Python data structure.</p>
 
 
 <h3 id="betfsm.get_path_value" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">betfsm</span><span class="o">.</span><span class="n">get_path_value</span><span class="p">(</span><span class="n">blackboard</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">betfsm</span><span class="o">.</span><span class="n">get_path_value</span><span class="p">(</span><span class="n">blackboard</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h3>
 
@@ -604,7 +713,6 @@ representing a hierarchical Python data structure.</p>
         <ul class="first simple">
             <li>
               <b><code>blackboard</code></b>
-                  (<code><span title="typing.Dict">Dict</span></code>)
               –
               <div class="doc-md-description">
                 <p>Blackboard Dict</p>
@@ -612,7 +720,6 @@ representing a hierarchical Python data structure.</p>
             </li>
             <li>
               <b><code>path</code></b>
-                  (<code><span title="str">str</span></code>)
               –
               <div class="doc-md-description">
                 <p>path to get the value of</p>
@@ -627,9 +734,6 @@ representing a hierarchical Python data structure.</p>
             </li>
             <li>
               <b><code>delimiter</code></b>
-                  (<code><span title="str">str</span></code>, default:
-                      <code>&#39;/&#39;</code>
-)
               –
               <div class="doc-md-description">
                 <p>for the path, default='/'</p>
@@ -644,6 +748,11 @@ representing a hierarchical Python data structure.</p>
         the value at the given location</p>
 
 
+<details class="note" open>
+  <summary>Note</summary>
+  <p>See <a href="./">Utilities</a> for a more extensive explanation of the mini-language to specify and manipulate the path.</p>
+</details>
+
     </div>
 
 </div>
@@ -652,7 +761,7 @@ representing a hierarchical Python data structure.</p>
 
 
 <h3 id="betfsm.set_path_value" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">betfsm</span><span class="o">.</span><span class="n">set_path_value</span><span class="p">(</span><span class="n">blackboard</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">betfsm</span><span class="o">.</span><span class="n">set_path_value</span><span class="p">(</span><span class="n">blackboard</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></code>
 
 </h3>
 
@@ -693,13 +802,6 @@ representing a hierarchical Python data structure.</p>
                 <p>value to fill in.</p>
               </div>
             </li>
-            <li>
-              <b><code>delimiter</code></b>
-              –
-              <div class="doc-md-description">
-                <p>for the path, default='/'</p>
-              </div>
-            </li>
         </ul>
       </td>
     </tr>
@@ -711,6 +813,11 @@ representing a hierarchical Python data structure.</p>
   <p>if value is a Dict, only a shallow copy is made! So, if you later
 change an element of value, it will also change the Blackboard.
 you can use copy.deepcopy(subtree) to make a deep copy to avoid this.</p>
+</details>
+
+<details class="note" open>
+  <summary>Note</summary>
+  <p>See <a href="./">Utilities</a> for a more extensive explanation of the mini-language to specify and manipulate the path.</p>
 </details>
 
     </div>

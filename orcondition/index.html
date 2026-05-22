@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Erwin Aertbelien" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Ctrl C Handler - BeTFSM documentation</title>
+    <title>OrCondition - BeTFSM documentation</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -15,8 +15,8 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Ctrl C Handler";
-        var mkdocs_page_input_path = "ctrl_c_handler.md";
+        var mkdocs_page_name = "OrCondition";
+        var mkdocs_page_input_path = "orcondition.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -76,7 +76,7 @@
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../api_overview/">Overview of the API</a>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="../event/">Event handling</a>
+                <li class="toctree-l2"><a class="reference internal" href="../event/">Event handling and conditions</a>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../ros2lifecycle/">ROS2 Lifecycle</a>
                 </li>
@@ -124,16 +124,6 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../runner/">Runner</a>
                 </li>
-                <li class="toctree-l3"><a class="reference internal" href="../checkcancel/">CheckCancel</a>
-                </li>
-                <li class="toctree-l3 current"><a class="reference internal current" href="#">Ctrl C Handler</a>
-    <ul class="current">
-    <li class="toctree-l4"><a class="reference internal" href="#betfsm.Ctrl_C_Handler.__init__">__init__</a>
-    </li>
-    </ul>
-                </li>
-                <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_receiver/">Ctrl_C_Receiver</a>
-                </li>
                 <li class="toctree-l3"><a class="reference internal" href="../alwaysoutcome/">AlwaysOutcome</a>
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../eventoutcome/">EventOutcome</a>
@@ -142,7 +132,21 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../eventsequential/">EventSequential</a>
                 </li>
-                <li class="toctree-l3"><a class="reference internal" href="../polling_func/">Polling functions</a>
+                <li class="toctree-l3"><a class="reference internal" href="../notcondition/">Not</a>
+                </li>
+                <li class="toctree-l3 current"><a class="reference internal current" href="#">OrCondition</a>
+    <ul class="current">
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../andcondition/">AndCondition</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../callbackcondition/">Callback_Condition</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../timeout_condition/">Timeout_Condition</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../httpevent_condition/">HTTPEvent_Condition</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_condition/">Ctrl_C_Condition</a>
                 </li>
     </ul>
                 </li>
@@ -160,7 +164,7 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../timeout/">Timeout</a>
                 </li>
-                <li class="toctree-l3"><a class="reference internal" href="../topiceventreceiver/">TopicEventReciever</a>
+                <li class="toctree-l3"><a class="reference internal" href="../topicevent_condition/">TopicEvent_Condition</a>
                 </li>
     </ul>
                 </li>
@@ -176,11 +180,9 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../etasloutput/">eTaSLOutput</a>
                 </li>
-                <li class="toctree-l3"><a class="reference internal" href="../etaslevent/">eTaSLEvent</a>
+                <li class="toctree-l3"><a class="reference internal" href="../crospi_task/">CrospiTask</a>
                 </li>
-                <li class="toctree-l3"><a class="reference internal" href="../etasl_statemachine/">eTaSL_StateMachine</a>
-                </li>
-                <li class="toctree-l3"><a class="reference internal" href="../crospi_polling_func/">crospi_polling_func</a>
+                <li class="toctree-l3"><a class="reference internal" href="../crospi_deactivate/">CrospiDeactivate</a>
                 </li>
     </ul>
                 </li>
@@ -208,9 +210,9 @@
           <li class="breadcrumb-item">Documentation</li>
           <li class="breadcrumb-item">Technical documentation</li>
           <li class="breadcrumb-item">BeTFSM</li>
-      <li class="breadcrumb-item active">Ctrl C Handler</li>
+      <li class="breadcrumb-item active">OrCondition</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/Robotics-Research-Group-KUL/betfsm/edit/main/documentation/docs/ctrl_c_handler.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/Robotics-Research-Group-KUL/betfsm/edit/main/documentation/docs/orcondition.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -222,16 +224,26 @@
 
 
 
-<h2 id="betfsm.Ctrl_C_Handler" class="doc doc-heading">
-            <code>betfsm.Ctrl_C_Handler</code>
+<h2 id="betfsm.OrCondition" class="doc doc-heading">
+            <code>betfsm.OrCondition</code>
 
 
 </h2>
 
 
     <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="betfsm.events.Condition">Condition</span></code></p>
 
 
+
+        <p>Combines condition1 and condition2 using OR.</p>
+<p>Typically constructoed by applying the operator <code>|</code> to two objects.</p>
+<ul>
+<li>Will not consume if the OR returns None.</li>
+<li>Only one of the conditions is consumed.  </li>
+<li>condition1 is consumed if it returns a string, i.e. condition1 has priority.</li>
+</ul>
 
 
 
@@ -253,78 +265,6 @@
 
 
 
-<div class="doc doc-object doc-function">
-
-
-<h3 id="betfsm.Ctrl_C_Handler.__init__" class="doc doc-heading">
-            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">blackboard</span><span class="p">,</span> <span class="n">pth</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">repeated</span><span class="o">=</span><span class="n">math</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span></code>
-
-</h3>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Configures the system SIGINT (Ctrl+C) handler to interact with a blackboard, where
-a variable will set to True if Ctrl-c is pressed</p>
-
-
-<table class="field-list">
-  <colgroup>
-    <col class="field-name" />
-    <col class="field-body" />
-  </colgroup>
-  <tbody valign="top">
-    <tr class="field">
-      <th class="field-name">Parameters:</th>
-      <td class="field-body">
-        <ul class="first simple">
-            <li>
-              <b><code>blackboard</code></b>
-                  (<code><span title="dict">dict</span></code>)
-              –
-              <div class="doc-md-description">
-                <p>The nested dictionary structure acting as the blackboard.</p>
-              </div>
-            </li>
-            <li>
-              <b><code>pth</code></b>
-                  (<code><span title="str">str</span></code>, default:
-                      <code>None</code>
-)
-              –
-              <div class="doc-md-description">
-                <p>The filesystem-style path (e.g., "/sys/stop_requested")  where the interrupt status 
-is stored. If None, resets to default handler.</p>
-              </div>
-            </li>
-            <li>
-              <b><code>repeated</code></b>
-                  (<code>(<span title="int">int</span>, None)</code>, default:
-                      <code><span title="math.inf">inf</span></code>
-)
-              –
-              <div class="doc-md-description">
-                <p>number of times to repeat ctrl-c before KeyboardInterrupt is raised</p>
-              </div>
-            </li>
-        </ul>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-<details class="example" open>
-  <summary>Example</summary>
-  <p>To start monitoring for Ctrl+C.  If ctrl-c is pressed, at the given path in the blackboard,
-a <code>True</code> value will be written.
-<div class="highlight"><pre><span></span><code>Ctrl_C_Handler(blackboard,&quot;/cancelation/ctrl_c&quot;,repeated=3) 
-</code></pre></div></p>
-</details>
-
-    </div>
-
-</div>
-
 
 
   </div>
@@ -337,8 +277,8 @@ a <code>True</code> value will be written.
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../checkcancel/" class="btn btn-neutral float-left" title="CheckCancel"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../ctrl_c_receiver/" class="btn btn-neutral float-right" title="Ctrl_C_Receiver">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../notcondition/" class="btn btn-neutral float-left" title="Not"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../andcondition/" class="btn btn-neutral float-right" title="AndCondition">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -366,10 +306,10 @@ a <code>True</code> value will be written.
         </span>
     
     
-      <span><a href="../checkcancel/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../notcondition/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../ctrl_c_receiver/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../andcondition/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

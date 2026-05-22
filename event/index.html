@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Erwin Aertbelien" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Event handling - BeTFSM documentation</title>
+    <title>Event handling and conditions - BeTFSM documentation</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -15,7 +15,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Event handling";
+        var mkdocs_page_name = "Event handling and conditions";
         var mkdocs_page_input_path = "event.md";
         var mkdocs_page_url = null;
       </script>
@@ -76,13 +76,15 @@
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../api_overview/">Overview of the API</a>
                 </li>
-                <li class="toctree-l2 current"><a class="reference internal current" href="#">Event handling</a>
+                <li class="toctree-l2 current"><a class="reference internal current" href="#">Event handling and conditions</a>
     <ul class="current">
     <li class="toctree-l3"><a class="reference internal" href="#event-receivers">Event receivers</a>
     </li>
+    <li class="toctree-l3"><a class="reference internal" href="#conditions">Conditions</a>
+    </li>
     <li class="toctree-l3"><a class="reference internal" href="#event-checkers">Event checkers</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#polling-functions">Polling functions</a>
+    <li class="toctree-l3"><a class="reference internal" href="#usage-patterns">Usage patterns</a>
     </li>
     </ul>
                 </li>
@@ -132,12 +134,6 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../runner/">Runner</a>
                 </li>
-                <li class="toctree-l3"><a class="reference internal" href="../checkcancel/">CheckCancel</a>
-                </li>
-                <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_handler/">Ctrl C Handler</a>
-                </li>
-                <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_receiver/">Ctrl_C_Receiver</a>
-                </li>
                 <li class="toctree-l3"><a class="reference internal" href="../alwaysoutcome/">AlwaysOutcome</a>
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../eventoutcome/">EventOutcome</a>
@@ -146,7 +142,19 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../eventsequential/">EventSequential</a>
                 </li>
-                <li class="toctree-l3"><a class="reference internal" href="../polling_func/">Polling functions</a>
+                <li class="toctree-l3"><a class="reference internal" href="../notcondition/">Not</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../orcondition/">OrCondition</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../andcondition/">AndCondition</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../callbackcondition/">Callback_Condition</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../timeout_condition/">Timeout_Condition</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../httpevent_condition/">HTTPEvent_Condition</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../ctrl_c_condition/">Ctrl_C_Condition</a>
                 </li>
     </ul>
                 </li>
@@ -164,7 +172,7 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../timeout/">Timeout</a>
                 </li>
-                <li class="toctree-l3"><a class="reference internal" href="../topiceventreceiver/">TopicEventReciever</a>
+                <li class="toctree-l3"><a class="reference internal" href="../topicevent_condition/">TopicEvent_Condition</a>
                 </li>
     </ul>
                 </li>
@@ -180,11 +188,9 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../etasloutput/">eTaSLOutput</a>
                 </li>
-                <li class="toctree-l3"><a class="reference internal" href="../etaslevent/">eTaSLEvent</a>
+                <li class="toctree-l3"><a class="reference internal" href="../crospi_task/">CrospiTask</a>
                 </li>
-                <li class="toctree-l3"><a class="reference internal" href="../etasl_statemachine/">eTaSL_StateMachine</a>
-                </li>
-                <li class="toctree-l3"><a class="reference internal" href="../crospi_polling_func/">crospi_polling_func</a>
+                <li class="toctree-l3"><a class="reference internal" href="../crospi_deactivate/">CrospiDeactivate</a>
                 </li>
     </ul>
                 </li>
@@ -211,7 +217,7 @@
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
           <li class="breadcrumb-item">Documentation</li>
           <li class="breadcrumb-item">Technical documentation</li>
-      <li class="breadcrumb-item active">Event handling</li>
+      <li class="breadcrumb-item active">Event handling and conditions</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/Robotics-Research-Group-KUL/betfsm/edit/main/documentation/docs/event.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
@@ -251,11 +257,6 @@ different locations, you probably want only to have one check consuming and the 
 <p>The event receiver has to manage its own queue and cannot easily let the middleware handle it.  It needs
   to examine the whole queue for a matching event.</p>
 </details>
-<details class="note">
-<summary><strong>Multiplexing event receivers</strong></summary>
-<p>For particular applications, such as listening to multiple topics, a short, special purpose callback function can
-  be written to call multiple event receivers and fuse them together according to your application specific policies.</p>
-</details>
 <h2 id="event-receivers">Event receivers</h2>
 <table>
 <thead>
@@ -270,7 +271,7 @@ different locations, you probably want only to have one check consuming and the 
 <td>Receives events from a ROS2 topic and uses a FIFO queue to <br/>store the events.</td>
 </tr>
 <tr>
-<td><a class="autorefs autorefs-internal" title="betfsm.Ctrl_C_Receiver" href="../ctrl_c_receiver/#betfsm.Ctrl_C_Receiver">Ctrl_C_Receiver</a></td>
+<td><a class="autorefs autorefs-internal" title="betfsm.events.Ctrl_C_Receiver" href="../ctrl_c_receiver/#betfsm.events.Ctrl_C_Receiver">Ctrl_C_Receiver</a></td>
 <td>Rembers whether ctrl-c has been pressed such that the polling <br/>function can check for that event.</td>
 </tr>
 <tr>
@@ -281,12 +282,72 @@ different locations, you probably want only to have one check consuming and the 
 </table>
 <div class="admonition todo">
 <p class="admonition-title">Todo</p>
-<p>What about timing events?</p>
+<p>Investigate Jobqueue idea:  way to push jobs to a queue together with a piece of blackboard in payload.
+An Event that consumes it and puts the payload in the blackboard. Different types of queues</p>
 </div>
-<div class="admonition todo">
-<p class="admonition-title">Todo</p>
-<p>More structured way besides blackboard with input and output parameters?</p>
-</div>
+<h2 id="conditions">Conditions</h2>
+<p>Conditions are classes that are used for which events to listen.  Conditions can <strong>consume</strong> their
+event, i.e. if immediately called again, they will not return the same event again, or they
+do <strong>not consume</strong> the event.  For a queue related event, this corresponds to taking away
+the event from the queue or to leave it in the queue.</p>
+<p>Conditions <strong>return a string</strong> corresponding to the matching "event". For a condition coming in via HTTP
+or a ROS2 topic, this is the string that is communicated.  For conditions such as Timeout_Condition
+or Callback_Condition, it is a string that is given in the constructor arguments. If there is no event,
+a condition <strong>returns None</strong>.</p>
+<p>Conditions can be composed using operators:  <strong>|</strong> (corresponding to OR) and <strong>&amp;</strong> (corresponding to AND)
+There is a <a class="autorefs autorefs-internal" title="betfsm.Not" href="../notcondition/#betfsm.Not">Not</a> condition, that however requires an additional  string as constructor argument
+since it needs to know what to return if the underlying Condition returns None.</p>
+<p>So, Conditions can form a small expression tree that is evaluated at run time. For debugging purposes
+you can convert it to a string using <code>str(my_condition_obj)</code>.</p>
+<p>The HTTP events are managed by the (asynchronous) webserver that is also dealing with the visualization.
+It has an API documentation using Swagger under <code>0.0.0.0:8000/docs</code> (or the endpoint that you indicated
+in the command line)</p>
+<table>
+<thead>
+<tr>
+<th>Condition</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Condition</td>
+<td>Base class for conditions</td>
+</tr>
+<tr>
+<td><a class="autorefs autorefs-internal" title="betfsm.Not" href="../notcondition/#betfsm.Not">Not</a></td>
+<td>Negation</td>
+</tr>
+<tr>
+<td><a class="autorefs autorefs-internal" title="betfsm.OrCondition" href="../orcondition/#betfsm.OrCondition">OrCondition</a></td>
+<td>OR, typically you use <code>|</code> operator</td>
+</tr>
+<tr>
+<td><a class="autorefs autorefs-internal" title="betfsm.AndCondition" href="../andcondition/#betfsm.AndCondition">AndCondition</a></td>
+<td>AND, typically you use <code>&amp;</code> operator</td>
+</tr>
+<tr>
+<td><a class="autorefs autorefs-internal" title="betfsm.Callback_Condition" href="../callbackcondition/#betfsm.Callback_Condition">Callback_Condition</a></td>
+<td>a condition determined by a callback function</td>
+</tr>
+<tr>
+<td><a class="autorefs autorefs-internal" title="betfsm.Timeout_Condition" href="../timeout_condition/#betfsm.Timeout_Condition">Timeout_Condition</a></td>
+<td>a Timeout condition (can be repeated or one-shot)</td>
+</tr>
+<tr>
+<td><a class="autorefs autorefs-internal" title="betfsm.HTTPEvent_Condition" href="../httpevent_condition/#betfsm.HTTPEvent_Condition">HTTPEvent_Condition</a></td>
+<td>A string is received on an HTTP event channel (see HTTP API of BeTFSM)</td>
+</tr>
+<tr>
+<td><a class="autorefs autorefs-internal" title="betfsm.Ctrl_C_Condition" href="../ctrl_c_condition/#betfsm.Ctrl_C_Condition">Ctrl_C_Condition</a></td>
+<td>Ctrl-C has been pressed</td>
+</tr>
+<tr>
+<td><a class="autorefs autorefs-internal" title="betfsm_ros.TopicEvent_Condition" href="../topicevent_condition/#betfsm_ros.TopicEvent_Condition">TopicEvent_Condition</a></td>
+<td>A string is received on a ROS2 Topic</td>
+</tr>
+</tbody>
+</table>
 <h2 id="event-checkers">Event checkers</h2>
 <table>
 <thead>
@@ -315,73 +376,43 @@ maps an event string to a BETFSM outcome (also a string)( <a class="autorefs aut
 <p><a class="autorefs autorefs-internal" title="betfsm.AlwaysOutcome" href="../alwaysoutcome/#betfsm.AlwaysOutcome">AlwaysOutcome</a> is useful when you want to mix returning directly an outcome and subtrees.</p>
 <p>A typical use case for <a class="autorefs autorefs-internal" title="betfsm.EventConcurrent" href="../eventconcurrent/#betfsm.EventConcurrent">EventConcurrent</a> is handling events that have to run concurrently with the nominal subtree specified using "NO_EVENT" in the event_map, such as "open gripper"
 A typical use case for <a class="autorefs autorefs-internal" title="betfsm.EventSequential" href="../eventsequential/#betfsm.EventSequential">EventSequential</a> is handling a cancel event that directly interrupts the nominal subtree and starts executing a cleanup subtree, such as "soft_emergency_stop"</p>
-<h2 id="polling-functions">Polling functions</h2>
-<p>Polling functions bind event checkers with event receivers.  The following
-functions are factory functions that return polling_func functions,
-they are not polling_func's themselves.</p>
-<table>
-<thead>
-<tr>
-<th>Polling function</th>
-<th>description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><a class="autorefs autorefs-internal" title="betfsm_crospi.crospi_polling_func(node=None, topic='crospi_node/my_output', queue_size=10, max_age=0.05)" href="../crospi_polling_func/#betfsm_crospi.crospi_polling_func">crospi_polling_func</a></td>
-<td>to read out events from a topic (using crospi conventions)</td>
-</tr>
-<tr>
-<td><a class="autorefs autorefs-internal" title="betfsm.blackboard_polling_func(path)" href="../polling_func/#betfsm.blackboard_polling_func">blackboard_polling_func</a></td>
-<td>to read out events from a blackboard location</td>
-</tr>
-<tr>
-<td><a class="autorefs autorefs-internal" title="betfsm.ctrl_c_polling_func(value='CTRL_C', repeated=3)" href="../polling_func/#betfsm.ctrl_c_polling_func">ctrl_c_polling_func</a></td>
-<td>to read out ctrl-c pressed events</td>
-</tr>
-<tr>
-<td><a class="autorefs autorefs-internal" title="betfsm.combine(*args)" href="../polling_func/#betfsm.combine">combine</a></td>
-<td>combines multiple callbacks</td>
-</tr>
-<tr>
-<td><a class="autorefs autorefs-internal" title="betfsm.http_polling_func(channel_name='betfsm', queue_size=10, max_age=0.5)" href="../polling_func/#betfsm.http_polling_func">http_polling_func</a></td>
-<td>to read out events that come from the HTTP server</td>
-</tr>
-<tr>
-<td>## Usage patterns</td>
-<td></td>
-</tr>
-</tbody>
-</table>
+<h2 id="usage-patterns">Usage patterns</h2>
 <ul>
 <li>
 <p>Configure the polling callback function. You pass the function name, you do not call polling_func yourself.
-  <div class="highlight"><pre><span></span><code>  <span class="n">pollingfunc</span> <span class="o">=</span> <span class="n">crospi_polling_func</span><span class="p">()</span>
+  <div class="highlight"><pre><span></span><code>  <span class="n">cond</span> <span class="o">=</span> <span class="n">HTTPEvent_Condition</span><span class="p">(</span><span class="s2">&quot;betfsm&quot;</span><span class="p">)</span>
 </code></pre></div></p>
 </li>
 <li>
 <p>Check whether there is an event, if not immediately returns SUCCEED, if e_finished return "FINISH"
-Probabily you want to call this in a loop, make sure that there is at least one yield TICKING in the loop!.
+Probabily you want to call this in a loop, make sure that there is at least one yield TICKING in the loop! (<strong>does not wait</strong>)
   <div class="highlight"><pre><span></span><code>  <span class="n">EventOutcome</span><span class="p">(</span> <span class="s2">&quot;check_finalized&quot;</span><span class="p">,</span> 
-                  <span class="n">polling_func</span><span class="p">,</span> 
+                  <span class="n">cond</span><span class="p">,</span> 
                   <span class="p">{</span> <span class="n">NO_EVENT</span><span class="p">:</span><span class="n">SUCCEED</span><span class="p">,</span> <span class="s2">&quot;e_finished&quot;</span><span class="p">:</span><span class="s2">&quot;FINISH&quot;</span> <span class="p">}</span>
   <span class="p">)</span>
 </code></pre></div></p>
 </li>
 <li>
-<p>Waits until it receives "e_open" or "e_finished". If "e_open" is received return "OPEN" outcome,
+<p><strong>Waits</strong> until it receives "e_open" or "e_finished". If "e_open" is received return "OPEN" outcome,
 if "e_finished" is received, return SUCCEED outcome.
-  <div class="highlight"><pre><span></span><code>  <span class="n">EventOutcome</span><span class="p">(</span> <span class="s2">&quot;check_finalized&quot;</span><span class="p">,</span>  <span class="n">polling_func</span><span class="p">,</span> <span class="p">{</span> 
+  <div class="highlight"><pre><span></span><code>  <span class="n">EventOutcome</span><span class="p">(</span> <span class="s2">&quot;check_finalized&quot;</span><span class="p">,</span>  <span class="n">cond</span><span class="p">,</span> <span class="p">{</span> 
+                  <span class="s2">&quot;e_open&quot;</span> <span class="p">:</span><span class="s2">&quot;OPEN&quot;</span><span class="p">,</span> 
+                  <span class="s2">&quot;e_finished&quot;</span><span class="p">:</span><span class="n">SUCCEED</span> 
+               <span class="p">})</span>
+</code></pre></div>
+equivalent to:
+  <div class="highlight"><pre><span></span><code>  <span class="n">EventOutcome</span><span class="p">(</span> <span class="s2">&quot;check_finalized&quot;</span><span class="p">,</span>  <span class="n">cond</span><span class="p">,</span> <span class="p">{</span> 
+                  <span class="n">NO_EVENT</span> <span class="p">:</span> <span class="n">TICKING</span><span class="p">,</span>
                   <span class="s2">&quot;e_open&quot;</span> <span class="p">:</span><span class="s2">&quot;OPEN&quot;</span><span class="p">,</span> 
                   <span class="s2">&quot;e_finished&quot;</span><span class="p">:</span><span class="n">SUCCEED</span> 
                <span class="p">})</span>
 </code></pre></div></p>
 </li>
 <li>
-<p>Executes nominal_subtree, if "e_something_is_wrong" is received, directly returns CANCEL.
-If "e_open_gripper" is received executes opengripper_subtree concurrent with nominal_subtree until
+<p>Executes nominal_subtree, if "e_something_is_wrong" is received, interrupts nominal subtree and directly returns CANCEL.
+If "e_open_gripper" is received executes opengripper_subtree concurrently with nominal_subtree until
 both return SUCCEED or one of them returns something else (i.e. ConcurrentSequence behavior).
-  <div class="highlight"><pre><span></span><code>    <span class="n">EventSubtree</span><span class="p">(</span> <span class="s2">&quot;check_finalized&quot;</span><span class="p">,</span>  <span class="n">polling_func</span><span class="p">,</span>  <span class="p">{</span> 
+  <div class="highlight"><pre><span></span><code>    <span class="n">EventConcurrent</span><span class="p">(</span> <span class="s2">&quot;check_finalized&quot;</span><span class="p">,</span>  <span class="n">cond</span><span class="p">,</span>  <span class="p">{</span> 
                       <span class="n">NO_EVENT</span><span class="p">:</span>                <span class="n">nominal_subtree</span><span class="p">,</span> 
                       <span class="s2">&quot;e_something_is_wrong&quot;</span> <span class="p">:</span> <span class="n">AlwaysOutcome</span><span class="p">(</span><span class="n">CANCEL</span><span class="p">),</span> 
                       <span class="s2">&quot;e_open_gripper&quot;</span><span class="p">:</span>        <span class="n">open_grippersubtree</span> 
@@ -392,32 +423,44 @@ both return SUCCEED or one of them returns something else (i.e. ConcurrentSequen
 <p>Executes a <em>nominal_subtree</em> that already checks for the "e_finished" event. We augment
   this behavior from the 'outside' with checking for "e_open_gripper" and "e_something_is_wrong" 
   (as described above). Events can be checked at multiple places.  If the <em>nominal_subtree</em>
-  is finished but <em>open_gripper_subtree</em> is still running, it will wait for <em>open_gripper_subtree</em>  </p>
+  is finished but <em>open_gripper_subtree</em> is still running, it will wait for <em>open_gripper_subtree</em>.</p>
 </li>
 </ul>
-<div class="highlight"><pre><span></span><code>  <span class="n">nominal_subtree</span> <span class="o">=</span> <span class="n">Sequence</span><span class="p">(</span><span class="s2">&quot;crospi_statemachine, [ ... EventOutcome(&quot;</span><span class="n">check_finished</span><span class="s2">&quot;, crospi_polling_func])....])</span>
-  <span class="n">EventSubtree</span><span class="p">(</span> <span class="s2">&quot;add_error_check&quot;</span><span class="p">,</span>  <span class="n">polling_func</span><span class="p">,</span> <span class="p">{</span> 
+<p>The "e_open_gripper" and "e_something_is_wrong" event strings can also come via an HTTP connection.</p>
+<div class="highlight"><pre><span></span><code>  <span class="n">cond_topic</span> <span class="o">=</span> <span class="n">TopicEvent_Condition</span><span class="p">()</span>
+  <span class="n">cond_http</span>  <span class="o">=</span> <span class="n">HTTPEvent_Condition</span><span class="p">()</span>
+
+  <span class="n">nominal_subtree</span> <span class="o">=</span> <span class="n">Sequence</span><span class="p">(</span><span class="s2">&quot;crospi_statemachine, [ ... EventOutcome(&quot;</span><span class="n">check_finished</span><span class="s2">&quot;, cond_topic])....])</span>
+  <span class="n">EventConcurrent</span><span class="p">(</span> <span class="s2">&quot;add_error_check&quot;</span><span class="p">,</span>  <span class="n">cond_topic</span> <span class="o">|</span> <span class="n">cond_http</span><span class="p">,</span> <span class="p">{</span> 
                   <span class="n">NO_EVENT</span><span class="p">:</span> <span class="n">nominal_subtree</span><span class="p">,</span>
                   <span class="s2">&quot;e_something_is_wrong&quot;</span><span class="p">:</span><span class="n">AlwaysOutcome</span><span class="p">(</span><span class="n">CANCEL</span><span class="p">),</span>
                   <span class="s2">&quot;e_open_gripper&quot;</span><span class="p">:</span>      <span class="n">open_gripper_subtree</span>                    
                <span class="p">})</span>
 </code></pre></div>
 <ul>
-<li>Remember the behavior similar to ConcurrentSequence: All children of EventSubtree need to 
-   return SUCCEED (if they are activated), so in the following below, the event "e_nothing_done" 
-   doesn't do anything.  This behavior is deliberately chosen such that you can execute subtrees similar
-   to open_gripper_subtree simultaneously with the nominal_subtree and you have a guarantee that the trees
-   will be finished, except when someone returns something else than SUCCEED. So if nominal_subtree is finished
-   and "e_open_gripper" was called, EventSubtree will wait until open_gripper_subtree is finished.</li>
-</ul>
-<div class="highlight"><pre><span></span><code>  <span class="n">nominal_subtree</span> <span class="o">=</span> <span class="n">Sequence</span><span class="p">(</span><span class="s2">&quot;crospi_statemachine, [ ... EventOutcome(&quot;</span><span class="n">check_finished</span><span class="s2">&quot;, crospi_polling_func])....])</span>
-  <span class="n">EventSubtree</span><span class="p">(</span> <span class="s2">&quot;add_error_check&quot;</span><span class="p">,</span>  <span class="n">polling_func</span><span class="p">,</span> <span class="p">{</span> 
-                  <span class="n">NO_EVENT</span><span class="p">:</span> <span class="n">nominal_subtree</span><span class="p">,</span>
-                  <span class="s2">&quot;e_something_is_wrong&quot;</span><span class="p">:</span><span class="n">AlwaysOutcome</span><span class="p">(</span><span class="n">CANCEL</span><span class="p">),</span>
-                  <span class="s2">&quot;e_open_gripper&quot;</span><span class="p">:</span>      <span class="n">open_gripper_subtree</span>                    
-                  <span class="s2">&quot;e_nothing_done&quot;</span><span class="p">:</span>      <span class="n">AlwaysOutcome</span><span class="p">(</span><span class="n">SUCCEED</span><span class="p">)</span>
-               <span class="p">})</span>
+<li>
+<p>The following executes a nominal state machine <code>nominal_sm</code>.  If a ctrl-c is pressed or a STOP is send over HTTP or after 60 seconds, 
+deactivates Crospi, and interrupt the nominal state machine and return "CANCEL".  </p>
+<p>Every 15 seconds a time-out condition is triggered and the nominal state machine is interrupted and a message is send out.  <br />
+<div class="highlight"><pre><span></span><code>sm = EventSequential(&quot;check&quot;, 
+                     Ctrl_C_Condition(&quot;CTRL_C&quot;) | HTTPEvent_Condition() | Timeout_Condition(&quot;MESSAGE&quot;,15,-1) | Timeout_Condition(&quot;QUIT&quot;,60),
+                     event_map={
+                        NO_EVENT: nominal_sm,
+                        &quot;CTRL_C&quot;: CrospiDeactivate(force_outcome=&quot;CANCEL&quot;),
+                        &quot;STOP&quot;:   CrospiDeactivate(force_outcome=&quot;CANCEL&quot;),
+                        &quot;MESSAGE&quot; : say_message,
+                        &quot;QUIT&quot; :  CrospiDeactivate(force_outcome=&quot;CANCEL&quot;)
+                    }
+)
 </code></pre></div>
+Note that you have to create three times the CrospiDeactivate(...).  Otherwise your BeTFSM graph wouldn't be a <strong>tree</strong> anymore. (This condition is checked).</p>
+<div class="admonition todo">
+<p class="admonition-title">Todo</p>
+<p>In principle, since EventSequential executes all non-NO_EVENT state machines sequentially, an implementation could handle multiple identical
+state machines as values for the event_maps. This is not (yet) done. This is <strong>not</strong> the case for EventConcurrent, where it is really necessary.</p>
+</div>
+</li>
+</ul>
               
             </div>
           </div><footer>
