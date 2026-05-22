@@ -1,4 +1,4 @@
-## Executing a BeTFSM Tree
+## Executing and visualizing a BeTFSM Tree
 
 
 This tutorial goes deeper in how we can **execute**, **configure** the execution of a BeTFSM tree, add additional **debug** information and

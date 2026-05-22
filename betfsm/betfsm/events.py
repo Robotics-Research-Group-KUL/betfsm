@@ -560,14 +560,27 @@ class Ctrl_C_Condition(Condition):
 
 class EventOutcome(Generator):
     """
-
-    Same as Event, but no subtrees in the event_map, only outcomes.
-    Is easier to understand.
+    Checks the given condition, and if it returns a string generates
+    an outcome based upon the event_map.  By default this
+    node will wait until the condition is triggered, i.e. NO_EVENT
+    is mapped to TICKING.  If NO_EVENT is mapped to something else,
+    EventOutcome is a one-time, non-blocking check.
     """
     def __init__(self, 
                  name:str, 
                  event_poller: Condition,
                  event_map=Dict[str, str] ):
+        """ 
+        Parameters:
+            name:
+                name of the node
+            event_poller:
+                evaluates conditions (i.e. subclasses of Condition),
+                conditions can be combined with operators `|` (or), `&` (and) 
+                and Not(...,"event")
+            event_map:
+                maps an event string to an outcome string.
+        """
         assert(isinstance(event_poller,Condition))       
         outcomes          = []  # outcomes of Event()        
         if NO_EVENT not in event_map:

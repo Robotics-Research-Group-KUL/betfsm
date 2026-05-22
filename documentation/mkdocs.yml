@@ -22,7 +22,7 @@ nav:
       - "Handling interruption" : "interruption.md"
 #      - "Up & Down": "upanddown.md"
 #      - "Action servers": "actionserver_ex.md" 
-      - "Executing a BeTFSM tree" : "tutorial_gui.md"
+      - "Executing and visualizing a BeTFSM tree" : "tutorial_gui.md"
       - "BeTFSM with ROS2 and Crospi" : "tutorial_gui_ros.md"
     - "Technical documentation" :
       - "Technical introduction" : "technical_intro.md"
