@@ -64,7 +64,7 @@
     <ul class="current">
     </ul>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="../tutorial_gui/">Executing a BeTFSM tree</a>
+                <li class="toctree-l2"><a class="reference internal" href="../tutorial_gui/">Executing and visualizing a BeTFSM tree</a>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../tutorial_gui_ros/">BeTFSM with ROS2 and Crospi</a>
                 </li>
@@ -224,16 +224,222 @@
             <div class="section" itemprop="articleBody">
               
                 <h2 id="handling-interruption">Handling interruption</h2>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>TODO complete and use correct classes EventSequential / Ctrl_C_Receiver</p>
-</div>
+<p>Especially when dealing with the physical world, such as in robotics, it becomes important
+to deal with unexpected events and interruptions. In BeTFSM, these things are dealt with
+using <a href="../event/">events</a>.  This tutorial gives a basic introduction to one of the more
+basic type of event, a user pressing Ctrl-C.  It is probably not a good idea to
+let the robot continue its current task when the BeTFSM coordinating these robots
+tasks is interrupted by the default Ctrl-C handler of Python.</p>
+<p>In BeTFSM, this is handled by <strong>EventReceiver</strong>, typically singleton classes, that 
+receive events and expose them to BeTFSM.  <strong>Conditions</strong> that check if one of the
+listed events occurred and return the corresponding event string. And <strong>Event checkers</strong>
+that coordinate everything with the behavior tree and handle the event concurrently, sequentially
+or by generating a specific outcome.</p>
+<p>Explanation of the code:
+- From line 13-26, we define a custom node, that at each tick counts down until the
+  counter reaches zero and then returns SUCCEED.</p>
+<ul>
+<li>
+<p>Line 30-37, we define our nominal "application", in this case just a sequence that uses
+  our Countdown node.</p>
+</li>
+<li>
+<p>Line 40-52 defines the cleanup procedure in case of interruption. Instead of the
+  <a class="autorefs autorefs-internal" title="betfsm.betfsm.TimedWait" href="../timedwait/#betfsm.betfsm.TimedWait">TimedWait</a> node, here we use <a class="autorefs autorefs-internal" title="betfsm.EventOutcome" href="../eventoutcome/#betfsm.EventOutcome">EventOutcome</a>
+  to achieve equivalent behavior.  Its second argument is a Timeout_Condition that will
+  fire the event string "DONE" 5 seconds after it is started.  In the event_map we specify
+  what should happen when "DONE" arrives, in this case give out SUCCEED outcome.</p>
+</li>
+<li>
+<p>Line 66-69 define the handling of Ctrl-C events. Here <a class="autorefs autorefs-internal" title="betfsm.EventSequential" href="../eventsequential/#betfsm.EventSequential">EventSequential</a>
+  is used. Its event_map maps event strings to not to outcome strings but whole BeTFSM subtrees.
+  <a class="autorefs autorefs-internal" title="betfsm.EventSequential" href="../eventsequential/#betfsm.EventSequential">EventSequential</a> does interrupt the nominal subtree (specified with NO_EVENT),
+  but the evaluation is switched over to another subtree when an event string comes in. (and in the process
+  pauses the nominal statemachine).  </p>
+<ul>
+<li>When <strong>any</strong> of the subtrees return something different from SUCCEED or TICKING,
+<a class="autorefs autorefs-internal" title="betfsm.EventSequential" href="../eventsequential/#betfsm.EventSequential">EventSequential</a> returns with that outcome. </li>
+<li>It also returns when<strong>all</strong> subtrees returned SUCCEED.  In other words, if the nominal 
+subtree finishes with SUCCEED, <a class="autorefs autorefs-internal" title="betfsm.EventSequential" href="../eventsequential/#betfsm.EventSequential">EventSequential</a>
+will still wait until the cleanup subtree is finished.  </li>
+<li>The cleanup subtree can also decide to  will continue running the paused nominal 
+subtree by returning SUCCEED.</li>
+</ul>
+</li>
+</ul>
+<p>Running of the code:</p>
+<ul>
+<li>When you run the code, you can click on the link that is printed in the console, this gives you a 
+   graphical visualization of what going on.</li>
+<li>See what happens when you press Ctrl-C</li>
+<li>Try to press Ctrl-C within 5 seconds of the end, can you predict what happens?</li>
+<li>Change <a class="autorefs autorefs-internal" title="betfsm.EventSequential" href="../eventsequential/#betfsm.EventSequential">EventSequential</a> to <a class="autorefs autorefs-internal" title="betfsm.EventConcurrent" href="../eventconcurrent/#betfsm.EventConcurrent">EventConcurrent</a>, and press
+   Ctrl-C, can you predict what happens?</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="ch">#!/usr/bin/env python3</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">betfsm</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">TICKING</span><span class="p">,</span><span class="n">SUCCEED</span><span class="p">,</span><span class="n">CANCEL</span><span class="p">,</span><span class="n">NO_EVENT</span><span class="p">,</span>
+    <span class="n">Runner</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span>  
+    <span class="n">EventOutcome</span><span class="p">,</span> <span class="n">EventSequential</span><span class="p">,</span> <span class="n">EventConcurrent</span><span class="p">,</span>
+    <span class="n">Ctrl_C_Condition</span><span class="p">,</span> <span class="n">Timeout_Condition</span><span class="p">,</span>
+    <span class="n">Message</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">get_logger</span><span class="p">,</span> <span class="n">AlwaysOutcome</span>
+<span class="p">)</span>
+
+<span class="c1"># A user defined TickingState:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CountDown</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A simple generator state that counts down from a given number.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">count</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="p">[</span><span class="n">SUCCEED</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">count</span> <span class="o">=</span> <span class="n">count</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">co_execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">blackboard</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">count</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">yield</span> <span class="n">TICKING</span>
+        <span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: Finished counting down!&quot;</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">SUCCEED</span>
+
+<span class="c1"># The sequence defined as a class:</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MySequence</span><span class="p">(</span><span class="n">Sequence</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">count</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;MySequence&quot;</span><span class="p">)</span> <span class="c1"># do not forget to initialize the super class</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">count</span> <span class="o">=</span> <span class="n">count</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span> <span class="n">Message</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s2">&quot;--- Starting Sequence Phase ---&quot;</span><span class="p">)</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span> <span class="n">CountDown</span><span class="p">(</span><span class="s2">&quot;seq_counter_1&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">count</span><span class="p">)</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span> <span class="n">Message</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s2">&quot;--- Sequence Phase Finished --- (message 1 of 2)&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span> <span class="n">Message</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s2">&quot;--- Sequence Phase Finished --- (message 2 of 2)&quot;</span><span class="p">))</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">CleanupSeq</span><span class="p">():</span>
+    <span class="n">seq</span> <span class="o">=</span> <span class="n">Sequence</span><span class="p">(</span><span class="s2">&quot;cleanup&quot;</span><span class="p">)</span>
+    <span class="n">seq</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">Message</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s2">&quot;--Now cleaning up, takes 5 seconds --&quot;</span><span class="p">))</span>
+    <span class="c1"># as an alternative to TimedWait, we can use the event mechanism </span>
+    <span class="c1"># with a timer event, this blocks until DONE is received:</span>
+    <span class="n">waiting</span> <span class="o">=</span> <span class="n">EventOutcome</span><span class="p">(</span><span class="s2">&quot;Waiting&quot;</span><span class="p">,</span><span class="n">Timeout_Condition</span><span class="p">(</span><span class="s2">&quot;DONE&quot;</span><span class="p">,</span><span class="mf">5.0</span><span class="p">),</span>
+                           <span class="n">event_map</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;DONE&quot;</span><span class="p">:</span><span class="n">SUCCEED</span><span class="p">})</span>
+    <span class="n">seq</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">waiting</span><span class="p">)</span>
+    <span class="n">seq</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">Message</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s2">&quot;---Done cleaning up ---&quot;</span><span class="p">))</span>
+    <span class="c1"># make sure that the sequence will generate outcome CANCEL, such that </span>
+    <span class="c1"># the nominal_sm is interrupted and stopped.</span>
+    <span class="n">seq</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">AlwaysOutcome</span><span class="p">(</span><span class="n">CANCEL</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">seq</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="c1"># Create a blackboard</span>
+    <span class="n">bb</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># 1. Example Sequence, defined as a custom class:</span>
+    <span class="n">nominal_sm</span> <span class="o">=</span> <span class="n">MySequence</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">cleanup_sm</span> <span class="o">=</span> <span class="n">CleanupSeq</span><span class="p">()</span>
+
+
+    <span class="c1"># 2. nominal_sm will be paused when handling CTRL_C</span>
+    <span class="c1"># This ends when nominal_sm returns with outcome != TICKING or</span>
+    <span class="c1"># cleanup_sm returns with outcome !=TICKING or != SUCCEED</span>
+    <span class="n">sm</span> <span class="o">=</span> <span class="n">EventSequential</span><span class="p">(</span><span class="s2">&quot;ctrl-c-check&quot;</span><span class="p">,</span><span class="n">Ctrl_C_Condition</span><span class="p">(</span><span class="s2">&quot;CTRL_C&quot;</span><span class="p">),{</span>
+        <span class="n">NO_EVENT</span><span class="p">:</span>  <span class="n">nominal_sm</span><span class="p">,</span>
+        <span class="s2">&quot;CTRL_C&quot;</span> <span class="p">:</span> <span class="n">cleanup_sm</span>
+    <span class="p">})</span>
+
+    <span class="c1"># 2. Run it using BeTFSMRunner at 2 Hz</span>
+    <span class="n">runner</span> <span class="o">=</span> <span class="n">Runner</span><span class="p">(</span><span class="n">sm</span><span class="p">,</span> <span class="n">bb</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="c1"># Hz</span>
+    <span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Running State Machine... (explicitly logged in main)&quot;</span><span class="p">)</span>
+    <span class="n">outcome</span> <span class="o">=</span> <span class="n">runner</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+    <span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;State Machine Finished with outcome: </span><span class="si">{</span><span class="n">outcome</span><span class="si">}</span><span class="s2"> (explicitly logged in main)&quot;</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
         <a href="../tutorial_common_nodes/" class="btn btn-neutral float-left" title="Example with common nodes"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../tutorial_gui/" class="btn btn-neutral float-right" title="Executing a BeTFSM tree">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../tutorial_gui/" class="btn btn-neutral float-right" title="Executing and visualizing a BeTFSM tree">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
