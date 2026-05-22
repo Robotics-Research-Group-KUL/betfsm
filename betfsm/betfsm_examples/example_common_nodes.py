@@ -81,10 +81,6 @@ def main():
         CountDownWithDelay("Concurrent_Counter_4", 3, 4.0),
     ])
 
-
-
-
-
     # 4. Example Repeat
     # Repeats the underlying state N times.
     rep = Repeat("repeat_phase", 3, Sequence("repseq",[Message(msg="--- Repeating Message (3 times) ---"), TimedWait("delay",1.0)]))
@@ -115,8 +111,6 @@ def main():
     # Alternative to the state machine (much shorter):
     #sm = Sequence("application",[seq, conc_seq, conc, rep, fallback])
     
-    to_graphviz_dotfile("example_runner_gui.dot", sm)
-
     # 7. Run it using BeTFSMRunner at 100 Hz
     # display_active == True if you'd like to log all active states
     runner = Runner(sm, bb, frequency=100.0,publish_frequency=5,display_active=False, serve=False) # Hz

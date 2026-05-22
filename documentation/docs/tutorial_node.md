@@ -38,5 +38,14 @@ the main implementation of functionality is in the method `co_execute` (the 'co'
 Each BeTFSM node needs to have a **name**, this name identifies the node and should be different for all instances of the node.
 Typically the name is either passed to the constructor or is auto-generated, e.g. with some sequence number.  To guard against programmatic errors or misspelling of outcomes, a BeTFSM node also **declares it possible outcomes** and checks these. There is no need to declare the outcome TICKING.
 
-The ```co_execute`` method also gets passed a ```blackboard``` parameter.  This is a (hierarchical) python dictionary that nodes can use to exchange information.
+
+### Blackboard
+
+The ```co_execute`` method also gets passed a `blackboard` parameter.  This is a (hierarchical) python dictionary that nodes can use to exchange information.
+
+
+### Logging
+
+BeTFSM provides an overall logging mechanism. It is called using a call to [get_logger().info](logger.md).
+
 

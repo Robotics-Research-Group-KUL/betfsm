@@ -1,6 +1,10 @@
 ## Your first BeTFSM behaviour tree
 
-This tutorial builds your first very simple BeTFSM behaviour tree. This tree will display a start message, countdown from 4 and displays an end message.  You can find the code of the example in ```betfsm_examples``` in the files ```example_sequence1.py```, ```example_sequence2.py``` and ```example_sequence3.py```.  This tutorial uses the BeTFSM node defined in the [My first BetTFSm node](tutorial_node.md) tutorial.
+This tutorial builds your first very simple BeTFSM behaviour tree. This tree will display a start message, countdown from 4 and displays an end message.  You can find the code of the example in 
+[betfsm_examples](https://github.com/Robotics-Research-Group-KUL/betfsm/blob/main/betfsm/betfsm_examples) in the file
+[example_sequence1.py](https://github.com/Robotics-Research-Group-KUL/betfsm/blob/main/betfsm/betfsm_examples/example_sequence1.py).
+
+ This tutorial uses the BeTFSM node defined in the [Defining your own BeTFSM node](tutorial_node.md) tutorial.
 
 ### Putting your BeTFSM tree together
 
@@ -11,7 +15,7 @@ As said before, this tutorial builds your first very simple BeTFSM behaviour tre
 
 For this example, we will use the node [Message][betfsm.betfsm.Message] from the BeTFSM library. This nodes prints a given message to the log.
 
-We will use a [Sequence][betfsm.betfsm.Sequence] to execute first the start message, then the count down and then the end message.  A [Sequence][betfsm.betfsm.Sequence] executes the first element in the sequence and continues with this element as long as it returns TICKING, and the sequence itself also returns TICKING.  If the elements returns SUCCEED, it continues with the second element in the sequence (and the sequence does not yet return anything). If the element returns another outcome, the sequence returns that outcome.
+We will use a [Sequence][betfsm.betfsm.Sequence] to execute first the start message, then the count down and then the end message.  A [Sequence][betfsm.betfsm.Sequence] executes the first element in the sequence and continues with this element as long as it returns TICKING, and the sequence itself also returns TICKING.  If the elements returns SUCCEED, it continues with the second element in the sequence (and the sequence does not yet return anything). If the element returns another outcome, the sequence returns that outcome.  **For many BeTFSM nodes, the API documentation contains a useful diagram to exactly explain the semantics.**
 
 ``` py
     sm = Sequence("sequence_phase", [
@@ -31,7 +35,7 @@ method calls:
 ```
 
 Another alternative is to encapsulate the sequence as a separate class. This is useful when
-the sequence itself needs to be reusable, with some additional parameters passed in the constructor:
+the sequence itself needs to be reusable, with some additional parameters passed in the constructor. Another advantage is that the base node has type `MySequence` instead of `Sequence`. You could use this type for filtering when generating a visualization.
 
 ``` py
 class MySequence(Sequence):
@@ -46,12 +50,13 @@ class MySequence(Sequence):
 
 ```
 
-These alternative ways to define a subtree are very useful.  The **first** approach, an all inclusive call to the constructror, gives a one statement quick definition of a whole tree. The **second**, a gradual built-up of the subtrree, allows to write code that constructs the tree (e.g. from a 
+These alternative ways to define a subtree are very useful.  The **first** approach, an all inclusive call to the constructor, gives a one statement quick definition of a whole tree. The **second**, a gradual built-up of the subtrree, allows to write code that constructs the tree (e.g. from a 
 higher-level plan).  The **third** approach defines a new class, and allows to encapsulate the tree and further parameterize it by adding parameters to the constructor; from then on the class can be used as
 just another BeTFSM node.
 
-All of these alternatives result in the same BeTFSM tree.
+All of these alternatives result in the same BeTFSM tree:
 
+![fg](static/example_sequence1.svg)
 
 
 

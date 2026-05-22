@@ -11,25 +11,27 @@ theme:
 
 nav:
   - "Documentation":
-    - "Introduction": 
-      - "Start page" : 'index.md'
-      - "Installation" : "installation.md"      
+    - "Start page" : 'index.md'
+    - "Installation" : "installation.md"      
     - "Tutorials":
       - "Introduction" : "tutorials.md"
       - "Defining your own BeTFSM node" : "tutorial_node.md"
-      - "My first BeTFSM tree" : "tutorial_sequence1.md"
-      - "Executing a BeTFSM tree" : "tutorial_gui.md"
+      - "My first BeTFSM tree" : "tutorial_sequence1.md" 
       - "Defining state machines" : "tutorial_statemachine.md"
       - "Example with common nodes" : "tutorial_common_nodes.md"
       - "Handling interruption" : "interruption.md"
 #      - "Up & Down": "upanddown.md"
 #      - "Action servers": "actionserver_ex.md" 
+      - "Executing a BeTFSM tree" : "tutorial_gui.md"
+      - "BeTFSM with ROS2 and Crospi" : "tutorial_gui_ros.md"
     - "Technical documentation" :
       - "Technical introduction" : "technical_intro.md"
       - "Overview of the API" : "api_overview.md"
       - "Event handling and conditions": "event.md"
       - "ROS2 Lifecycle" : "ros2lifecycle.md"
       - "Utilities" : 'utils.md'
+      - "Logging" : "logger.md"
+    - "API" :
       - "BeTFSM":
         - "TickingState" : "tickingstate.md"
         - "TickingStateMachine" : "tickingstatemachine.md"
@@ -125,7 +127,7 @@ plugins:
           paths: [../betfsm, ../betfsm_demos, ../betfsm_ros, ../betfsm_crospi,..]
           options: 
             show_source: false
-            show_root_heading: true 
+            show_root_heading: true
             docstring_style: google
 
 

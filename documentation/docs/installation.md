@@ -63,3 +63,7 @@ The examples can also be run directly from their source directory:
 ```
 your-workspace/src/betfsm/betfsm/betfsm_examples
 ```
+
+## installation in ROS2 together with Crospi
+
+See [the cROSpi website](https://rob.pages.gitlab.kuleuven.be/crospi/)

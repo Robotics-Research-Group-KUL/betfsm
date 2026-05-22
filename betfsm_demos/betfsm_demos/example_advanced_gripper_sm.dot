@@ -1,0 +1,103 @@
+
+    digraph StateMachine {
+        rankdir=TB;
+        splines=true;
+        nodesep=0.7;
+        ranksep=0.4;
+
+        {
+            rank=sink;
+            annotation [shape=none, fontname="Helvetica",fontsize=12,label="ABORT and TICKING outcomes exit the state machine unless specified explicitly"];
+        }
+
+        // --- Default node style ---
+
+        edge [
+            fontname="Helvetica",
+            fontsize=9,
+            color="#333333",
+            arrowsize=0.8
+        ];
+
+        // --- Pseudo-state style (black filled circle) ---
+        node [shape=circle, width=0.2, height=0.2, label="", style=filled, fillcolor=black] entry;
+        node [
+            shape=rectangle,
+            style="rounded,filled",
+            fillcolor="#f7f7ff",
+            color="#4a4a8a",
+            fontname="Helvetica",
+            fontsize=10,
+            penwidth=1.2
+        ];
+
+
+
+
+    
+        "ac460002-e92f-4a61-bb67-4869ef7cbc8c" [
+            label=<
+                <table border="0" cellborder="0" cellspacing="0" align="left">
+                    <tr><td><b>check_for_close</b></td></tr>
+                    <tr><td align="left">Type: EventOutcome</td></tr>
+                </table>
+            >
+        ];
+        
+        "870e8d7c-3227-48a4-a3d8-941166f9bf3e" [
+            label=<
+                <table border="0" cellborder="0" cellspacing="0" align="left">
+                    <tr><td><b>closing_gripper</b></td></tr>
+                    <tr><td align="left">Type: Sequence</td></tr>
+                </table>
+            >
+        ];
+        
+        "5ce01837-5576-45ce-bb04-1456875299bb" [
+            label=<
+                <table border="0" cellborder="0" cellspacing="0" align="left">
+                    <tr><td><b>check_for_open</b></td></tr>
+                    <tr><td align="left">Type: EventOutcome</td></tr>
+                </table>
+            >
+        ];
+        
+        "b102798a-9c05-417b-9a8b-e0b60a291f85" [
+            label=<
+                <table border="0" cellborder="0" cellspacing="0" align="left">
+                    <tr><td><b>opening_gripper</b></td></tr>
+                    <tr><td align="left">Type: Sequence</td></tr>
+                </table>
+            >
+        ];
+        
+        "ac460002-e92f-4a61-bb67-4869ef7cbc8c" -> "870e8d7c-3227-48a4-a3d8-941166f9bf3e" [
+            label=<   close_outcome   >
+        ];
+        
+        "870e8d7c-3227-48a4-a3d8-941166f9bf3e" -> "b102798a-9c05-417b-9a8b-e0b60a291f85" [
+            label=<   CANCEL   >
+        ];
+        
+        "870e8d7c-3227-48a4-a3d8-941166f9bf3e" -> "5ce01837-5576-45ce-bb04-1456875299bb" [
+            label=<   SUCCEED   >
+        ];
+        
+        "5ce01837-5576-45ce-bb04-1456875299bb" -> "b102798a-9c05-417b-9a8b-e0b60a291f85" [
+            label=<   open_outcome   >
+        ];
+        
+        "b102798a-9c05-417b-9a8b-e0b60a291f85" -> "870e8d7c-3227-48a4-a3d8-941166f9bf3e" [
+            label=<   CANCEL   >
+        ];
+        
+        "b102798a-9c05-417b-9a8b-e0b60a291f85" -> "ac460002-e92f-4a61-bb67-4869ef7cbc8c" [
+            label=<   SUCCEED   >
+        ];
+        
+        "entry" -> "ac460002-e92f-4a61-bb67-4869ef7cbc8c" [
+            label=<      >
+        ];
+        
+    }
+    

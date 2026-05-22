@@ -46,31 +46,70 @@ from .betfsm import *
 import re
 import hashlib
 
-def make_identifier(s: str, prefix: str = "id") -> str:
-    """
-    Convert an arbitrary string into a safe identifier.
+graphviz_prefix = """
+digraph StateMachine {
+    rankdir=LR;
+    splines=true;
+    nodesep=0.7;
+    ranksep=0.4;
+
+    edge [
+        fontname="Helvetica",
+        fontsize=9,
+        color="#333333",
+        arrowsize=0.8
+    ];
+
     
-    - Lowercases the string
-    - Replaces non-alphanumeric characters with underscores
-    - Ensures it starts with a letter (prefix added if needed)
-    - Appends a short hash to guarantee uniqueness
-    """
-    # Normalize: lowercase and replace non-alphanumeric with underscores
-    safe = re.sub(r'[^0-9a-zA-Z]+', '_', s).lower()
-    
-    # Ensure it doesn't start with a digit
-    if safe and safe[0].isdigit():
-        safe = prefix + "_" + safe
-    
-    # Trim leading/trailing underscores
-    safe = safe.strip("_")
-    
-    # Add a short hash for uniqueness
-    short_hash = hashlib.sha1(s.encode()).hexdigest()[:8]
-    
-    return f"{safe}_{short_hash}"
+    node [
+        shape=rectangle,
+        style="rounded,filled",
+        fillcolor="#f7f7ff",
+        color="#4a4a8a",
+        fontname="Helvetica",
+        fontsize=10,
+        penwidth=1.2
+    ];
 
 
+"""
+graphviz_postfix = """
+}
+"""
+
+
+def graphviz_node(state):
+    return f"""
+    "{state.uid}" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>{state.name}</b></td></tr>
+                <tr><td align="left">Type: {state.__class__.__name__}</td></tr>
+            </table>
+        >
+    ];
+    """
+
+def graphviz_arrow_between_nodes(from_uid, to_uid):
+    return f"""
+    "{from_uid}" -> "{to_uid}" [];
+    """
+
+def parse_filter(filter_str: str) -> List[str]:
+    """
+    Parse a colon-separated string of types
+    """
+    if not filter_str:
+        return []
+
+    parts = [p.strip() for p in filter_str.split(":") if p.strip()]
+    return parts
+
+def id(state:TickingState_Status):
+    return state.uid.replace('-','_')
+
+def typeid(state):
+    return state.__class__.__name__ 
 
 
 
@@ -79,76 +118,60 @@ class GraphViz_Visitor(Visitor):
     Todo:
         - All names should be identifiers! is not checked!
     """
-    def __init__(self, do_not_expand_types:List[type]=[], do_not_expand_instances:List[str]=[]):
+
+    
+    def __init__(self,  type_filter:List[str]=[],start: str = None):
         """
         Visitor to generate a graphviz representation.
 
         Parameters:
-            do_not_expand_types:
-                list of types that you don't want to expand (go in detail).
-                The names correspond to `type(class).__name__` (i.e. without module)
-            do_not_expand_instances
-                list of instance names that you don't want to expand (go in detail)
+            type_filter
+                a colon-separated list of types you do not want to go in detail (with module specification, just the type),   
+            start:
+                where to start with the visitor. If None, start from the base
+
         """        
-        self.stack = ["base"]
-        self.childnr = [0]
-        self.preamble = """
-
-digraph G {
-    rankdir=LR
-    base[label="", shape=point];
-    node [shape=rectangle style="filled,rounded" fillcolor=lightblue ];
-"""
-        self.postamble = """
-}
-
-"""
         self.doc = ""
-        self.clustercount=0
-        self.indent = 2
-        self.tab = 2
-        self.activecolor = "#eb5f5f" 
-        self.inactivecolor = "#9395c2" 
-        self.do_not_expand_types = do_not_expand_types
-        self.do_not_expand_instances = do_not_expand_instances        
+        self.type_filter = parse_filter(type_filter)
+        if start =='':
+            start = None
+        self.start = start
+        self.from_level=1E9
+        self.depth = 0
+        #print("==================================")
+        #print(f"{self.start=}\t\t{self.type_filter=}")
+        #print("==================================")
+
         return 
 
-    def check_expand(self,shortname,statetype):
-        return shortname not in self.do_not_expand_instances and statetype not in self.do_not_expand_types
+    def should_descend(self, state):
+        """Return True if we should NOT  descend into this node."""
+        # Check type filter
+        for ftype in self.type_filter:
+            if typeid(state) == ftype:
+                return False         
+        return True
 
-    def add_to_stack(self, state):
-        # self.stack is never empty:
-        self.childnr.append(0)
-        self.childnr[-2] += 1
-        self.stack.append(f"{self.stack[-1]}_{make_identifier(state.name)}_{self.childnr[-2]}")
-        return self.stack[-1], self.stack[-2]
-        
+    def pre(self,state) -> bool:
+        self.depth = self.depth + 1
+        #print(f"{self.depth=} '{state.name=}' '{self.start=}' {self.from_level=}")
+        if state.name == self.start:
+            self.from_level = self.depth
+            self.doc = self.doc + graphviz_node(state)    
+        if (self.depth > self.from_level) or self.start is None:
+            self.doc = self.doc + graphviz_node(state)
+            if state.parent is not None:
+                self.doc = self.doc + graphviz_arrow_between_nodes(state.parent.uid,state.uid)                
+        return self.should_descend(state)
 
-    def pre(self, state) -> bool:
-        fullname, previousname = self.add_to_stack(state)        
-        self.indent += self.tab
-        shortname = state.name
-        typename = type(state).__name__
-        if state.status == TickingState_Status.DOO:
-            color = self.activecolor
-        else:
-            color = self.inactivecolor
-        indentation = f'{" ":{self.indent}}'
-    
-        self.doc = self.doc + indentation + f'{fullname} [shape=rectangle style="filled,rounded" fillcolor="{color}" label="{shortname}\\n<{typename}>" ];\n'
-        self.doc = self.doc + indentation + f"{previousname} -> {fullname};\n"
-            
-        return self.check_expand(shortname,type(state))
-        
-    
-    
-    def post(self, state):
-        self.stack.pop()
-        self.childnr.pop()
-        self.indent -= self.tab
+    def post(self,state) -> bool:
+        if self.depth<= self.from_level:        
+            self.from_level = 1E9
+        self.depth = self.depth - 1
+
     
     def print(self):
-        dotstring = self.preamble + self.doc + self.postamble
+        dotstring = graphviz_prefix + self.doc + graphviz_postfix
         print(dotstring)                
 
     def graphviz(self):
@@ -156,90 +179,10 @@ digraph G {
         returns a string corresponding to the Graphviz representation of the state machine that was visited
         ( using statemachine.accept(visitor) ).
         """
-        return self.preamble + self.doc + self.postamble
+        return graphviz_prefix + self.doc + graphviz_postfix
 
 
-
-class GraphViz_Visitor2(Visitor):
-    """
-    Todo:
-        - All names should be identifiers!
-    """
-    def __init__(self):
-        self.stack = ["base"]
-        self.childnr = [0]
-        self.active = [0]
-        self.preamble = """
-
-digraph G {
-    rankdir=LR
-    base[label="", shape=point];
-    node [shape=rectangle style="filled,rounded" fillcolor=lightblue ];
-"""
-        self.postamble = """
-}
-
-"""
-        self.doc = ""
-        self.clustercount=0
-        self.indent = 2
-        self.tab = 2
-        self.activecolor = "#eb5f5f" 
-        self.inactivecolor = "#9395c2" 
-        return 
-
-    def add_to_stack(self, state):
-        # self.stack is never empty:
-        self.childnr.append(0)
-        self.childnr[-2] += 1
-        self.stack.append(f"{self.stack[-1]}_{state.name}_{self.childnr[-2]}")
-        if state.status==TickingState_Status.DOO:
-            self.active[-1] = self.active[-1] + 1
-        self.active.append(0)            
-        return self.stack[-1], self.stack[-2]
-        
-
-
-    def generate_graph_state(self,fullname, previousname,state):
-        shortname = state.name
-        typename = type(state).__name__
-        if state.status == TickingState_Status.DOO:
-            color = self.activecolor
-        else:
-            color = self.inactivecolor
-        indentation = f'{" ":{self.indent}}'
-        
-        self.doc = self.doc + indentation + f'{fullname} [shape=rectangle style="filled,rounded" fillcolor="{color}" label="{shortname}\\n<{typename}>" ];\n'
-        self.doc = self.doc + indentation + f"{previousname} -> {fullname};\n"
-
-
-    def pre(self, state) -> bool:
-        fullname, previousname = self.add_to_stack(state)        
-        self.indent += self.tab
-        return True
-        
-    
-    
-    def post(self, state):
-        fullname = self.stack[-1]
-        previousname = self.stack[-2]
-        if (self.active[-2]>0) or (state.status == TickingState_Status.DOO):
-            self.generate_graph_state(fullname,previousname,state)
-        self.active.pop()
-        self.stack.pop()
-        self.childnr.pop()
-        self.indent -= self.tab
-    
-    def print(self):
-        dotstring = self.preamble + self.doc + self.postamble
-        print(dotstring)                
-
-    def graphviz(self):
-        return self.preamble + self.doc + self.postamble
-
-
-
-def to_graphviz_dotfile(filename, sm):
+def to_graphviz_dotfile(filename, sm, type_filter=[], start=None):
     """
     Prints a graphviz dot representation of a statemachine-tree to a file with
     the given filename.  Use the xdot tool to visualize or the dot tool from 
@@ -251,7 +194,7 @@ def to_graphviz_dotfile(filename, sm):
         sm:
             TickingState that is the root of a tree of statemachines/behavior-tree nodes.
     """
-    viz = GraphViz_Visitor()
+    viz = GraphViz_Visitor(type_filter, start)
     sm.accept(viz)
     with open(filename,"w") as f:
         print(viz.graphviz(),file=f)

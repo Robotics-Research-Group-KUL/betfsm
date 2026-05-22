@@ -1,0 +1,170 @@
+
+digraph StateMachine {
+    rankdir=LR;
+    splines=true;
+    nodesep=0.7;
+    ranksep=0.4;
+
+    edge [
+        fontname="Helvetica",
+        fontsize=9,
+        color="#333333",
+        arrowsize=0.8
+    ];
+
+    
+    node [
+        shape=rectangle,
+        style="rounded,filled",
+        fillcolor="#f7f7ff",
+        color="#4a4a8a",
+        fontname="Helvetica",
+        fontsize=10,
+        penwidth=1.2
+    ];
+
+
+
+    "706f30a8-ce5d-48d8-9f7b-b1b273a3d656" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>gripper</b></td></tr>
+                <tr><td align="left">Type: TickingStateMachine</td></tr>
+            </table>
+        >
+    ];
+    
+    "66239cbe-085f-4382-b753-7b03afecd341" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>check_for_close</b></td></tr>
+                <tr><td align="left">Type: EventOutcome</td></tr>
+            </table>
+        >
+    ];
+    
+    "706f30a8-ce5d-48d8-9f7b-b1b273a3d656" -> "66239cbe-085f-4382-b753-7b03afecd341" [];
+    
+    "ddbf8211-0b8e-44ae-a76e-e99e13747be9" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>closing_gripper</b></td></tr>
+                <tr><td align="left">Type: Sequence</td></tr>
+            </table>
+        >
+    ];
+    
+    "706f30a8-ce5d-48d8-9f7b-b1b273a3d656" -> "ddbf8211-0b8e-44ae-a76e-e99e13747be9" [];
+    
+    "78ee77c0-831c-40a1-8e8e-3b4d690d0b9d" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>message_3</b></td></tr>
+                <tr><td align="left">Type: Message</td></tr>
+            </table>
+        >
+    ];
+    
+    "ddbf8211-0b8e-44ae-a76e-e99e13747be9" -> "78ee77c0-831c-40a1-8e8e-3b4d690d0b9d" [];
+    
+    "bb28f8db-9e55-4ebc-a063-3e9dadcb21e9" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>waiting</b></td></tr>
+                <tr><td align="left">Type: TimedWait</td></tr>
+            </table>
+        >
+    ];
+    
+    "ddbf8211-0b8e-44ae-a76e-e99e13747be9" -> "bb28f8db-9e55-4ebc-a063-3e9dadcb21e9" [];
+    
+    "baa4a73f-9681-4c55-bfc3-dce4ba065fe7" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>check_random_failure</b></td></tr>
+                <tr><td align="left">Type: EventOutcome</td></tr>
+            </table>
+        >
+    ];
+    
+    "ddbf8211-0b8e-44ae-a76e-e99e13747be9" -> "baa4a73f-9681-4c55-bfc3-dce4ba065fe7" [];
+    
+    "50d84409-a837-4d25-af25-fad17373248b" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>message_4</b></td></tr>
+                <tr><td align="left">Type: Message</td></tr>
+            </table>
+        >
+    ];
+    
+    "ddbf8211-0b8e-44ae-a76e-e99e13747be9" -> "50d84409-a837-4d25-af25-fad17373248b" [];
+    
+    "9941b9d2-1492-440e-9be0-1eac951430bd" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>check_for_open</b></td></tr>
+                <tr><td align="left">Type: EventOutcome</td></tr>
+            </table>
+        >
+    ];
+    
+    "706f30a8-ce5d-48d8-9f7b-b1b273a3d656" -> "9941b9d2-1492-440e-9be0-1eac951430bd" [];
+    
+    "b90905b3-a50b-4e6c-aa87-123a60b1beed" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>opening_gripper</b></td></tr>
+                <tr><td align="left">Type: Sequence</td></tr>
+            </table>
+        >
+    ];
+    
+    "706f30a8-ce5d-48d8-9f7b-b1b273a3d656" -> "b90905b3-a50b-4e6c-aa87-123a60b1beed" [];
+    
+    "b18f4818-69bc-4bac-9247-427d8533762a" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>message_1</b></td></tr>
+                <tr><td align="left">Type: Message</td></tr>
+            </table>
+        >
+    ];
+    
+    "b90905b3-a50b-4e6c-aa87-123a60b1beed" -> "b18f4818-69bc-4bac-9247-427d8533762a" [];
+    
+    "dd7c079a-3559-4aa8-ae68-b6954ad778b3" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>waiting</b></td></tr>
+                <tr><td align="left">Type: TimedWait</td></tr>
+            </table>
+        >
+    ];
+    
+    "b90905b3-a50b-4e6c-aa87-123a60b1beed" -> "dd7c079a-3559-4aa8-ae68-b6954ad778b3" [];
+    
+    "eba1447a-2a99-4235-9b37-b8a692b38e78" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>check_random_failure</b></td></tr>
+                <tr><td align="left">Type: EventOutcome</td></tr>
+            </table>
+        >
+    ];
+    
+    "b90905b3-a50b-4e6c-aa87-123a60b1beed" -> "eba1447a-2a99-4235-9b37-b8a692b38e78" [];
+    
+    "4dc92755-38e8-4fa5-9819-87eb0248842a" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>message_2</b></td></tr>
+                <tr><td align="left">Type: Message</td></tr>
+            </table>
+        >
+    ];
+    
+    "b90905b3-a50b-4e6c-aa87-123a60b1beed" -> "4dc92755-38e8-4fa5-9819-87eb0248842a" [];
+    
+}
+

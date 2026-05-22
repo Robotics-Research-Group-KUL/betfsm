@@ -8,7 +8,7 @@ import time
 from betfsm import (
     Runner,   TickingStateMachine,
     TimedWait, Message,
-    SUCCEED, TICKING, CANCEL, Generator, to_graphviz_dotfile, get_logger
+    SUCCEED, TICKING, CANCEL, Generator, get_logger
 )
 import random
 
@@ -67,18 +67,8 @@ class MyStateMachine(TickingStateMachine):
 def main():
     # Create a blackboard
     bb = {}
-
-    # 1. Example Sequence
-    # This will execute its children one after another.
-
     sm = MyStateMachine("my_state_machine")
-
-    # 2. visualize in a dot file
-    to_graphviz_dotfile("example_statemachine.dot", sm)
-
-    # 3. Run it using BeTFSMRunner at 100 Hz
     runner = Runner(sm, bb, frequency=100.0) # Hz
-    get_logger().info("Running State Machine...")
     outcome = runner.run()
     get_logger().info(f"State Machine Finished with outcome: {outcome}")
     

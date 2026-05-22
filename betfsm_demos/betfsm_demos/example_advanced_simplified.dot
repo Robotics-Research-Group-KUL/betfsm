@@ -1,0 +1,445 @@
+
+digraph StateMachine {
+    rankdir=LR;
+    splines=true;
+    nodesep=0.7;
+    ranksep=0.4;
+
+    edge [
+        fontname="Helvetica",
+        fontsize=9,
+        color="#333333",
+        arrowsize=0.8
+    ];
+
+    
+    node [
+        shape=rectangle,
+        style="rounded,filled",
+        fillcolor="#f7f7ff",
+        color="#4a4a8a",
+        fontname="Helvetica",
+        fontsize=10,
+        penwidth=1.2
+    ];
+
+
+
+    "1c0776a6-274b-4605-9d51-c8287cb9fd26" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>check</b></td></tr>
+                <tr><td align="left">Type: EventSequential</td></tr>
+            </table>
+        >
+    ];
+    
+    "ae6ffdb5-a87f-4cb1-873f-41b37dcb2236" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>concurrentseq</b></td></tr>
+                <tr><td align="left">Type: ConcurrentSequence</td></tr>
+            </table>
+        >
+    ];
+    
+    "1c0776a6-274b-4605-9d51-c8287cb9fd26" -> "ae6ffdb5-a87f-4cb1-873f-41b37dcb2236" [];
+    
+    "45cbbab5-bd9c-44f9-8d8a-f5967d09a1c4" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>My_Task</b></td></tr>
+                <tr><td align="left">Type: Repeat</td></tr>
+            </table>
+        >
+    ];
+    
+    "ae6ffdb5-a87f-4cb1-873f-41b37dcb2236" -> "45cbbab5-bd9c-44f9-8d8a-f5967d09a1c4" [];
+    
+    "f1aaf5f9-81c6-4da1-93cc-e46f2f5bd647" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>cycle</b></td></tr>
+                <tr><td align="left">Type: Sequence</td></tr>
+            </table>
+        >
+    ];
+    
+    "45cbbab5-bd9c-44f9-8d8a-f5967d09a1c4" -> "f1aaf5f9-81c6-4da1-93cc-e46f2f5bd647" [];
+    
+    "ba27a127-a52f-43a9-8862-4f6f03e65eb1" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>MovingHome_fallback</b></td></tr>
+                <tr><td align="left">Type: CrospiTask</td></tr>
+            </table>
+        >
+    ];
+    
+    "f1aaf5f9-81c6-4da1-93cc-e46f2f5bd647" -> "ba27a127-a52f-43a9-8862-4f6f03e65eb1" [];
+    
+    "d8bdaf8d-a38e-4fde-a93b-e57e77848ac5" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>MovingDown_fallback</b></td></tr>
+                <tr><td align="left">Type: CrospiTask</td></tr>
+            </table>
+        >
+    ];
+    
+    "f1aaf5f9-81c6-4da1-93cc-e46f2f5bd647" -> "d8bdaf8d-a38e-4fde-a93b-e57e77848ac5" [];
+    
+    "f8ea0c82-3f6a-4287-834c-724ae0e627d6" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>MovingUp_fallback</b></td></tr>
+                <tr><td align="left">Type: CrospiTask</td></tr>
+            </table>
+        >
+    ];
+    
+    "f1aaf5f9-81c6-4da1-93cc-e46f2f5bd647" -> "f8ea0c82-3f6a-4287-834c-724ae0e627d6" [];
+    
+    "3275a11d-c173-415e-b812-999d198efab2" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>MovingSpline_fallback</b></td></tr>
+                <tr><td align="left">Type: CrospiTask</td></tr>
+            </table>
+        >
+    ];
+    
+    "f1aaf5f9-81c6-4da1-93cc-e46f2f5bd647" -> "3275a11d-c173-415e-b812-999d198efab2" [];
+    
+    "94b857d5-4a1f-4b56-bc7b-32b254755b5f" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>gripper</b></td></tr>
+                <tr><td align="left">Type: TickingStateMachine</td></tr>
+            </table>
+        >
+    ];
+    
+    "ae6ffdb5-a87f-4cb1-873f-41b37dcb2236" -> "94b857d5-4a1f-4b56-bc7b-32b254755b5f" [];
+    
+    "ed76cfef-4812-4f1e-9169-c73e291ecfd4" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>check_for_close</b></td></tr>
+                <tr><td align="left">Type: EventOutcome</td></tr>
+            </table>
+        >
+    ];
+    
+    "94b857d5-4a1f-4b56-bc7b-32b254755b5f" -> "ed76cfef-4812-4f1e-9169-c73e291ecfd4" [];
+    
+    "0791b81d-d415-4f93-8002-929b1446b3c3" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>closing_gripper</b></td></tr>
+                <tr><td align="left">Type: Sequence</td></tr>
+            </table>
+        >
+    ];
+    
+    "94b857d5-4a1f-4b56-bc7b-32b254755b5f" -> "0791b81d-d415-4f93-8002-929b1446b3c3" [];
+    
+    "bd873ff5-9d40-4e95-9d41-66de31de5f07" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>message_3</b></td></tr>
+                <tr><td align="left">Type: Message</td></tr>
+            </table>
+        >
+    ];
+    
+    "0791b81d-d415-4f93-8002-929b1446b3c3" -> "bd873ff5-9d40-4e95-9d41-66de31de5f07" [];
+    
+    "882f7ad7-5b88-4a75-8511-d87818c53887" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>waiting</b></td></tr>
+                <tr><td align="left">Type: TimedWait</td></tr>
+            </table>
+        >
+    ];
+    
+    "0791b81d-d415-4f93-8002-929b1446b3c3" -> "882f7ad7-5b88-4a75-8511-d87818c53887" [];
+    
+    "89252f49-1b47-4e07-b229-838259b4353e" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>check_random_failure</b></td></tr>
+                <tr><td align="left">Type: EventOutcome</td></tr>
+            </table>
+        >
+    ];
+    
+    "0791b81d-d415-4f93-8002-929b1446b3c3" -> "89252f49-1b47-4e07-b229-838259b4353e" [];
+    
+    "e973b089-5a8d-4f50-a599-dea2a246daaa" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>message_4</b></td></tr>
+                <tr><td align="left">Type: Message</td></tr>
+            </table>
+        >
+    ];
+    
+    "0791b81d-d415-4f93-8002-929b1446b3c3" -> "e973b089-5a8d-4f50-a599-dea2a246daaa" [];
+    
+    "eb2e34fe-8431-4121-8682-9307b31d71e8" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>check_for_open</b></td></tr>
+                <tr><td align="left">Type: EventOutcome</td></tr>
+            </table>
+        >
+    ];
+    
+    "94b857d5-4a1f-4b56-bc7b-32b254755b5f" -> "eb2e34fe-8431-4121-8682-9307b31d71e8" [];
+    
+    "a09c6d97-17fa-4c3a-8cf7-4ce4eb45e61e" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>opening_gripper</b></td></tr>
+                <tr><td align="left">Type: Sequence</td></tr>
+            </table>
+        >
+    ];
+    
+    "94b857d5-4a1f-4b56-bc7b-32b254755b5f" -> "a09c6d97-17fa-4c3a-8cf7-4ce4eb45e61e" [];
+    
+    "7ad3407f-ee93-41ff-9378-243fd5903c2e" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>message_1</b></td></tr>
+                <tr><td align="left">Type: Message</td></tr>
+            </table>
+        >
+    ];
+    
+    "a09c6d97-17fa-4c3a-8cf7-4ce4eb45e61e" -> "7ad3407f-ee93-41ff-9378-243fd5903c2e" [];
+    
+    "151ef2da-a399-439c-870a-bcd01b763e1b" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>waiting</b></td></tr>
+                <tr><td align="left">Type: TimedWait</td></tr>
+            </table>
+        >
+    ];
+    
+    "a09c6d97-17fa-4c3a-8cf7-4ce4eb45e61e" -> "151ef2da-a399-439c-870a-bcd01b763e1b" [];
+    
+    "13182cad-6ff1-4950-8e36-e5fae87a765f" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>check_random_failure</b></td></tr>
+                <tr><td align="left">Type: EventOutcome</td></tr>
+            </table>
+        >
+    ];
+    
+    "a09c6d97-17fa-4c3a-8cf7-4ce4eb45e61e" -> "13182cad-6ff1-4950-8e36-e5fae87a765f" [];
+    
+    "6cdd35ee-3441-4c13-aa25-a015bb5cad84" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>message_2</b></td></tr>
+                <tr><td align="left">Type: Message</td></tr>
+            </table>
+        >
+    ];
+    
+    "a09c6d97-17fa-4c3a-8cf7-4ce4eb45e61e" -> "6cdd35ee-3441-4c13-aa25-a015bb5cad84" [];
+    
+    "03b2505e-89b5-44a3-821a-5d87bc5f9a44" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>check_play_sound</b></td></tr>
+                <tr><td align="left">Type: EventSequential</td></tr>
+            </table>
+        >
+    ];
+    
+    "ae6ffdb5-a87f-4cb1-873f-41b37dcb2236" -> "03b2505e-89b5-44a3-821a-5d87bc5f9a44" [];
+    
+    "657b457b-7676-40dc-83ab-fe75cd9a37b3" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>play_sound</b></td></tr>
+                <tr><td align="left">Type: Sequence</td></tr>
+            </table>
+        >
+    ];
+    
+    "03b2505e-89b5-44a3-821a-5d87bc5f9a44" -> "657b457b-7676-40dc-83ab-fe75cd9a37b3" [];
+    
+    "0198d59a-6ca9-48b4-ac8e-7a891a976dbe" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>message_5</b></td></tr>
+                <tr><td align="left">Type: Message</td></tr>
+            </table>
+        >
+    ];
+    
+    "657b457b-7676-40dc-83ab-fe75cd9a37b3" -> "0198d59a-6ca9-48b4-ac8e-7a891a976dbe" [];
+    
+    "50a1032c-8e02-4858-a98a-aa0970342a90" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>waiting</b></td></tr>
+                <tr><td align="left">Type: TimedWait</td></tr>
+            </table>
+        >
+    ];
+    
+    "657b457b-7676-40dc-83ab-fe75cd9a37b3" -> "50a1032c-8e02-4858-a98a-aa0970342a90" [];
+    
+    "f3236283-dbd0-44b5-be19-496620d7a55f" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>message_6</b></td></tr>
+                <tr><td align="left">Type: Message</td></tr>
+            </table>
+        >
+    ];
+    
+    "657b457b-7676-40dc-83ab-fe75cd9a37b3" -> "f3236283-dbd0-44b5-be19-496620d7a55f" [];
+    
+    "5627462b-08d4-41d7-8cac-429207895656" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>crospi_deactivate</b></td></tr>
+                <tr><td align="left">Type: CrospiDeactivate</td></tr>
+            </table>
+        >
+    ];
+    
+    "1c0776a6-274b-4605-9d51-c8287cb9fd26" -> "5627462b-08d4-41d7-8cac-429207895656" [];
+    
+    "c63e2ad2-a076-48de-9c75-ccbecbfbd8eb" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>DEACTIVATE_CROSPI</b></td></tr>
+                <tr><td align="left">Type: LifeCycle</td></tr>
+            </table>
+        >
+    ];
+    
+    "5627462b-08d4-41d7-8cac-429207895656" -> "c63e2ad2-a076-48de-9c75-ccbecbfbd8eb" [];
+    
+    "6ae75c57-229b-4dcb-a6bd-b88082d51e5a" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>CLEANUP_CROSPI</b></td></tr>
+                <tr><td align="left">Type: LifeCycle</td></tr>
+            </table>
+        >
+    ];
+    
+    "5627462b-08d4-41d7-8cac-429207895656" -> "6ae75c57-229b-4dcb-a6bd-b88082d51e5a" [];
+    
+    "fd20106f-926b-4e96-b075-748db0dc0a39" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>AlwaysOutcome_5</b></td></tr>
+                <tr><td align="left">Type: AlwaysOutcome</td></tr>
+            </table>
+        >
+    ];
+    
+    "5627462b-08d4-41d7-8cac-429207895656" -> "fd20106f-926b-4e96-b075-748db0dc0a39" [];
+    
+    "efc108a1-0055-4a3a-89f6-6d5398b12372" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>crospi_deactivate</b></td></tr>
+                <tr><td align="left">Type: CrospiDeactivate</td></tr>
+            </table>
+        >
+    ];
+    
+    "1c0776a6-274b-4605-9d51-c8287cb9fd26" -> "efc108a1-0055-4a3a-89f6-6d5398b12372" [];
+    
+    "39e8f14b-b273-40ab-a8cd-697035e6dca1" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>DEACTIVATE_CROSPI</b></td></tr>
+                <tr><td align="left">Type: LifeCycle</td></tr>
+            </table>
+        >
+    ];
+    
+    "efc108a1-0055-4a3a-89f6-6d5398b12372" -> "39e8f14b-b273-40ab-a8cd-697035e6dca1" [];
+    
+    "d220f0fb-285d-48ee-8cb5-a063da210854" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>CLEANUP_CROSPI</b></td></tr>
+                <tr><td align="left">Type: LifeCycle</td></tr>
+            </table>
+        >
+    ];
+    
+    "efc108a1-0055-4a3a-89f6-6d5398b12372" -> "d220f0fb-285d-48ee-8cb5-a063da210854" [];
+    
+    "3cf985d8-2382-4e3f-a342-5a6e057201f4" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>AlwaysOutcome_6</b></td></tr>
+                <tr><td align="left">Type: AlwaysOutcome</td></tr>
+            </table>
+        >
+    ];
+    
+    "efc108a1-0055-4a3a-89f6-6d5398b12372" -> "3cf985d8-2382-4e3f-a342-5a6e057201f4" [];
+    
+    "0a3df7c2-00b4-4b2c-9987-1e35e141be95" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>message_7</b></td></tr>
+                <tr><td align="left">Type: Message</td></tr>
+            </table>
+        >
+    ];
+    
+    "1c0776a6-274b-4605-9d51-c8287cb9fd26" -> "0a3df7c2-00b4-4b2c-9987-1e35e141be95" [];
+    
+    "d61a45cf-ad21-41e1-af4e-9d571aaedb36" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>Sequence_1</b></td></tr>
+                <tr><td align="left">Type: Sequence</td></tr>
+            </table>
+        >
+    ];
+    
+    "1c0776a6-274b-4605-9d51-c8287cb9fd26" -> "d61a45cf-ad21-41e1-af4e-9d571aaedb36" [];
+    
+    "8fed915e-544f-415c-bb8e-12cafc5be97c" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>message_8</b></td></tr>
+                <tr><td align="left">Type: Message</td></tr>
+            </table>
+        >
+    ];
+    
+    "d61a45cf-ad21-41e1-af4e-9d571aaedb36" -> "8fed915e-544f-415c-bb8e-12cafc5be97c" [];
+    
+    "fe8d0ee7-5208-41a0-a3a3-f491e22c4052" [
+        label=<
+            <table border="0" cellborder="0" cellspacing="0" align="left">
+                <tr><td><b>AlwaysOutcome_7</b></td></tr>
+                <tr><td align="left">Type: AlwaysOutcome</td></tr>
+            </table>
+        >
+    ];
+    
+    "d61a45cf-ad21-41e1-af4e-9d571aaedb36" -> "fe8d0ee7-5208-41a0-a3a3-f491e22c4052" [];
+    
+}
+

@@ -100,7 +100,7 @@ class RunnerBase:
     # __init__() ensures that parsed arguments are available at self.args
     #
     def __init__(self, statemachine: TickingState, blackboard: Blackboard, frequency: float=100.0, publish_frequency : float=10,debug: bool = False, 
-                 display_active:bool =False, betfsm_log:str=None, name_filter:str="", type_filter:str="",  
+                 display_active:bool =False, betfsm_log:str=None, select_name:str="", type_filter:str="",  
                  allow_generate_dot:bool=True, allow_generate_sm_dot:bool=True,
                  allow_generate_json:bool=True,serve:bool=True,
                  host:str="0.0.0.0", port:int=8000, workers:int=1, log_level:str="info"):
@@ -127,12 +127,12 @@ class RunnerBase:
             betfsm_log:
                 A list of categories, separated by ':' that will be logged, known categories
                 are default, state, service,... But users and libraries can add their own.
-            name_filter:
-                comma-separated list of names of nodes that are not descended into in
-                the graphical user interface
+            select_name:
+                specifies the name to start with while using generate-dot or generate-sm-dot.
+                Ignored for generate-json or the graphical visualization.
             type_filter:
                 comma-separated list of typrs of nodes that are not descended into in
-                the graphical user interface                
+                the graphical user interface or generate-dot                
             allow_generate_dot:
                 adds the generate_dot command-line parameter. [default: True]
             allow_generate_sm_dot:
@@ -165,22 +165,22 @@ class RunnerBase:
         adding : "--ros-args --log-level debug" to your arguments
         """        
         # define command line arguments in two groups: application and webserver (unvicorn)
-        parser = argparse.ArgumentParser(description="BeTFSMRunnerGUI command line options",epilog=epilog)
+        parser = argparse.ArgumentParser(description="Runner command line options",epilog=epilog)
         
-        group_app = parser.add_argument_group("BeTFSMRunnerGUI Options")
+        group_app = parser.add_argument_group("Runner Options")
         group_app.add_argument("--frequency",type=float, default=frequency, help=f"frequency at which BeTFSM runs [default:{frequency}]")
-        group_app.add_argument("--publish_frequency",type=float, default=publish_frequency, help=f"publishing frequency for GUI [default:{publish_frequency} ]")
+        group_app.add_argument("--publish-frequency",type=float, default=publish_frequency, help=f"publishing frequency for GUI [default:{publish_frequency} ]")
         group_app.add_argument("--debug", action=argparse.BooleanOptionalAction, default=debug,help=f"Log statistics of the timing of each tick at publish_frequency [default: {debug}]")
         group_app.add_argument("--display_active",action=argparse.BooleanOptionalAction,default=display_active, help=f"Log the active nodes at rate equal to publish_frequency, only logs changes to activity[default: {display_active}] ")
-        group_app.add_argument("--betfsm_log",type=str,default=betfsm_log, help=f"BeTFSM Log specification string, i.e. a colon separated list of categories. Known categories are {get_logger_categories()} but there can be user-defined categories   [default: '{betfsm_log}'] ")
-        group_app.add_argument("--name-filter",type=str,default=name_filter, help=f"specifies a colon-separated list of names (can be regular expressions) to filter out.[default: '{name_filter}'")
-        group_app.add_argument("--type-filter",type=str,default=name_filter, help=f"specifies a colon-separated list of types not to descent into.[default: '{type_filter}'")
+        group_app.add_argument("--betfsm-log",type=str,default=betfsm_log, help=f"BeTFSM Log specification string, i.e. a colon separated list of categories. Known categories are {get_logger_categories()} but there can be user-defined categories   [default: '{betfsm_log}'] ")
+        group_app.add_argument("--select-name",type=str,default=select_name, help=f"specifies the name to start with while using generate-dot or generate-sm-dot [default: '{select_name}'")
+        group_app.add_argument("--type-filter",type=str,default=type_filter, help=f"specifies a colon-separated list of types not to descent into.[default: '{type_filter}'")
         if allow_generate_dot:
-            group_app.add_argument("--generate_dot",type=str, default="", help="generate a graphviz .dot file from the state machine and store in the specified file (and quit the program without running)")
+            group_app.add_argument("--generate-dot",type=str, default="", help="generate a graphviz .dot file from the state machine and store in the specified file (and quit the program without running)")
         if allow_generate_dot:
-            group_app.add_argument("--generate_sm_dot",type=str, default="", help="generate a graphviz .dot file for the state machine named in --name-filter, and stored it in the given file (and quit program without running)")
+            group_app.add_argument("--generate-sm-dot",type=str, default="", help="generate a graphviz .dot file for the state machine named in --name-filter, and stored it in the given file (and quit program without running)")
         if allow_generate_json:
-            group_app.add_argument("--generate_json",type=str, default="", help="generate a json file from the state machine and store in the specified file (and quit the program without running)")
+            group_app.add_argument("--generate-json",type=str, default="", help="generate a json file from the state machine and store in the specified file (and quit the program without running)")
  
         group_app.add_argument("--serve",action=argparse.BooleanOptionalAction,default=serve,help=f"Start-up server with graphical user interface [default:{serve}]")
         # We use the exact names uvicorn.run() expects as kwargs
@@ -197,23 +197,26 @@ class RunnerBase:
         # get parser arguments 
         args              = self.parse_arguments(parser,group_app, group_uvr)       
         
-        get_logger().info(f"BeTFSMRunnerGUI parameters: {args}")        
+        argdoc = str.join("\n",[f"\t{e.replace('_','-')} = {v}" for e,v in args.__dict__.items()])
+        get_logger().info(f"Runner parameters:\n{argdoc}")        
 
         # store arguments in class:
         self.args = args        
         self.serve          = args.serve
         self.debug          = args.debug
         self.display_active = args.display_active                
+        self.select_name    = args.select_name
+        self.type_filter = args.type_filter
 
         # handle commands to generate files:
         if allow_generate_dot:
             if args.generate_dot:
-                to_graphviz_dotfile(args.generate_dot, statemachine)
+                to_graphviz_dotfile(args.generate_dot, statemachine,self.type_filter,self.select_name)
                 print(f"graphviz file '{args.generate_dot}' is generated, and program will be terminated")
                 sys.exit()
         if allow_generate_json:
             if args.generate_json:
-                visitor = JsonVisitor()
+                visitor = JsonVisitor(self.select_name,self.type_filter)
                 statemachine.accept(visitor)
                 with open(args.generate_json,"w") as f:
                     json.dump(visitor.result(), f, indent=4)
@@ -221,17 +224,14 @@ class RunnerBase:
                 sys.exit()
         if allow_generate_sm_dot:
             if args.generate_sm_dot:
-                if args.name_filter=="":
-                    print("when using --generate_sm_dot you should also specify a single name with --name-filter")                    
+                if self.select_name=="":
+                    print("when using --generate_sm_dot you should also specify a single name with --select-name")                    
                     sys.exit(1)
-                if ":" in args.name_filter:
-                    print("when using with --generate_sm_dot you should only specify a single name using --name-filter")                    
-                    sys.exit(1)                    
-                visitor = StateMachineVisitor(args.name_filter)
+                visitor = StateMachineVisitor(self.select_name)
                 statemachine.accept(visitor)
                 with open(args.generate_sm_dot,"w") as f:
                     f.write( visitor.result() )
-                print(f"graphviz file '{args.generate_sm_dot}' for state machine {args.name_filter} is generated, and program will be terminated")
+                print(f"graphviz file '{args.generate_sm_dot}' for state machine {args.select_name} is generated, and program will be terminated")
                 sys.exit()
         # call uvicorn.run()        
         uvicorn_kwargs = {
@@ -241,9 +241,8 @@ class RunnerBase:
             "log_level": args.log_level,
         }
         if self.serve:
-            self.name_filter = args.name_filter
-            self.type_filter = args.type_filter
-            set_webserver_param(statemachine,self.blackboard,self.name_filter,self.type_filter)  # set parameters for web-app
+
+            set_webserver_param(statemachine,self.blackboard,self.select_name,self.type_filter)  # set parameters for web-app
             threading.Thread(
                 target=lambda: uvicorn.run(app, **uvicorn_kwargs),
                 daemon=True
@@ -303,11 +302,11 @@ class Runner(RunnerBase):
     This is multi-threaded, only access member variables using the methods designed for this. (i.e. set_outcome, get_outcome)
     """    
     def __init__(self, statemachine: TickingState, blackboard: Blackboard, frequency: float=100.0, publish_frequency=5,debug: bool = False, 
-                 display_active=False, betfsm_log=None,logger=LogPrinter(),name_filter:str="",type_filter:str="", 
+                 display_active=False, betfsm_log=None,logger=LogPrinter(),select_name:str="",type_filter:str="", 
                  allow_generate_dot=True, allow_generate_sm_dot:bool=True,allow_generate_json=True,serve=True,
                  host="0.0.0.0", port=8000, workers=1, log_level="info"):
    
-        super().__init__(statemachine, blackboard, frequency, publish_frequency, debug, display_active, betfsm_log,name_filter,type_filter,
+        super().__init__(statemachine, blackboard, frequency, publish_frequency, debug, display_active, betfsm_log,select_name,type_filter,
                          allow_generate_dot,allow_generate_sm_dot,allow_generate_json,serve,host, port, workers, log_level)
         args = self.args
 
@@ -349,7 +348,7 @@ class Runner(RunnerBase):
         next_publish = now                                   # ensure publishing at start
         self.initialize()
         if self.debug:
-            get_logger().info(f"ROSRunner: started at {now/1.0E9:10.4f} s started (frequency:{self.frequency})")        
+            get_logger().info(f"Runner: started at {now/1.0E9:10.4f} s started (frequency:{self.frequency})")        
         while True:
             outcome = self.statemachine(self.blackboard)            
             jitter = (now - previous_run) - self.interval_sec

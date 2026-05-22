@@ -32,14 +32,19 @@ class DummyLogPrinter(Logger):
     Can be used with set_logger for a do-nothing logger.
     """
     def debug(self,*args):
+        """ """
         pass
     def info(self,*args):
+        """ """
         pass
     def warn(self,*args):
+        """ """
         pass
     def error(self,*args):        
+        """ """
         pass
     def fatal(self,*args):
+        """ """
         pass
 
 class LogPrinter(Logger):
@@ -48,18 +53,23 @@ class LogPrinter(Logger):
     Is the default if not overridden by a call to set_logger()
     """
     def debug(self,*args):
+        """ """
         print(Style.DIM    +Fore.WHITE+"DEBUG : " + str(*args) +Style.RESET_ALL)              
 
     def info(self,*args):
+        """ """
         print(Style.NORMAL +Fore.WHITE+"INFO : " + str(*args) +Style.RESET_ALL)              
 
     def warn(self,*args):
+        """ """
         print(Style.NORMAL +Fore.YELLOW+"WARN : " + str(*args) +Style.RESET_ALL)              
 
     def error(self,*args):
+        """ """
         print(Style.NORMAL +Fore.RED+"ERROR : " + str(*args) +Style.RESET_ALL)              
 
     def fatal(self,*args):
+        """ """
         print(Style.NORMAL+Fore.RED+"FATAL : " + str(*args) +Style.RESET_ALL)              
 
 
@@ -122,12 +132,7 @@ def get_logger(category:str="default"):
             arbitrary name. You can associate a specific LogPrinter to a name,
             if not specified, "default" is used.
 
-    Note:
-      Known categories used in betfsm_crospi:
-
-        - unknown (used when the category is not known or specified)
-        - default
-        - state (entering/exiting states, with outcome)            
+         
     """
     global default_loggers
     if category in default_loggers:
@@ -147,23 +152,7 @@ def set_logger(category:str,logger: Logger):
         logger:
             Logger to associate with this category.
 
-    
-    Note:
-      Known categories used in betfsm_etasl:
-
-        - unknown (used when the category is not known or specified)
-        - default
-        - state (entering/exiting states, with outcome)   
-      
-        `default_loggers={"default":LogPrinter(),"unknown":DummyLogPrinter()}`
-        
-    Note:
-      Loggers:
-
-        - `ROS2 logger`, i.e. node.get_logger()
-        - `Logprinter()`, i.e. prints to console
-        - `DummyLogPrinter`(), i.e. does nothing
-
+ 
     """
     global default_loggers
     default_loggers[category]=logger

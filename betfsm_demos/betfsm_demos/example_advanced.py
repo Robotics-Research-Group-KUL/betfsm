@@ -27,7 +27,7 @@ import random
 
 def my_task():
     return Repeat("My_Task",-1, Sequence("cycle",[
-                        CrospiTask("movingHome","MovingHome"),
+                        CrospiTask("MovingHome","MovingHome"),
                         CrospiTask("MovingDown","MovingDown"),
                         CrospiTask("MovingUp","MovingUp"),
                         CrospiTask("MovingSpline","MovingSpline")
