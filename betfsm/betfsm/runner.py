@@ -171,7 +171,7 @@ class RunnerBase:
         group_app.add_argument("--frequency",type=float, default=frequency, help=f"frequency at which BeTFSM runs [default:{frequency}]")
         group_app.add_argument("--publish-frequency",type=float, default=publish_frequency, help=f"publishing frequency for GUI [default:{publish_frequency} ]")
         group_app.add_argument("--debug", action=argparse.BooleanOptionalAction, default=debug,help=f"Log statistics of the timing of each tick at publish_frequency [default: {debug}]")
-        group_app.add_argument("--display_active",action=argparse.BooleanOptionalAction,default=display_active, help=f"Log the active nodes at rate equal to publish_frequency, only logs changes to activity[default: {display_active}] ")
+        group_app.add_argument("--display-active",action=argparse.BooleanOptionalAction,default=display_active, help=f"Log the active nodes at rate equal to publish_frequency, only logs changes to activity[default: {display_active}] ")
         group_app.add_argument("--betfsm-log",type=str,default=betfsm_log, help=f"BeTFSM Log specification string, i.e. a colon separated list of categories. Known categories are {get_logger_categories()} but there can be user-defined categories   [default: '{betfsm_log}'] ")
         group_app.add_argument("--select-name",type=str,default=select_name, help=f"specifies the name to start with while using generate-dot or generate-sm-dot [default: '{select_name}'")
         group_app.add_argument("--type-filter",type=str,default=type_filter, help=f"specifies a colon-separated list of types not to descent into.[default: '{type_filter}'")
