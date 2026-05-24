@@ -37,7 +37,7 @@ from betfsm_ros import BeTFSMNode,ROSRunner
 
 class MyStateMachine(TickingStateMachine):
     def __init__(self):
-        super().__init__("my_state_machine",[SUCCEED, ABORT,TIMEOUT])
+        super().__init__("my_state_machine",[SUCCEED, CANCEL])
 
         # you can also use the names of the states in the transitions, but using the variables
         # avoids issues with spelling errors in the name and is "cleaner"
