@@ -39,8 +39,20 @@ h1 {
     padding:0px;
     margin:0px;
 }
+h2 {
+    background-color: white;
+    color: #00407a;
+    margin-left:20px
+}
+.subtitle {
+    background-color: white;
+    color: #00407a;
+    margin-left:20px;
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 10;
+    font-weight: 100
+}
 body {
-  margin: 0;
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -72,13 +84,18 @@ footer {
     justify-content: space-between;
     align-items: center;
 }
-main {
+main{
   flex: 1 1 auto;
   overflow: auto; /* adds scroll bar if needed */
   display: flex;
   justify-content: center;
   align-items: center;
 }
+
+.panel {
+    margin-left:20px
+}
+
 .area {
   max-width: 100%;
   /*max-height: inherit;*/
@@ -135,12 +152,15 @@ input:checked + .slider:before {
 
 /* Button styling */
 .btn {
+
   border: none;
-  padding: 10px 18px;
+  padding: 10px 20px;
   margin: 5px;
   border-radius: 10px;
   cursor: pointer;
   font-size: 14px;
+  color:#52bdec
+  background-color: #00407a;
   transition: background-color 0.3s, transform 0.2s;
 }
 
@@ -172,3 +192,77 @@ input:checked + .slider:before {
 .headertxt :visited{
     color: white;
 }
+
+
+/* Styling of Dashboard */
+    .status {
+      margin-top: 0.5rem;
+      font-size: 0.85rem;
+      color: #555;
+    }
+
+    .status.error {
+      color: #b00020;
+    }
+
+    .tree-container {
+      font-family: "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      overflow: auto;
+      max-height: 70vh;
+    }
+
+    .node {
+      margin-left: 1rem;
+      position: relative;
+    }
+
+    .node-key {
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .node-key .toggle {
+      display: inline-block;
+      width: 1rem;
+      text-align: center;
+      margin-right: 0.2rem;
+      color: #888;
+    }
+
+    .node-key .toggle.leaf {
+      visibility: hidden;
+    }
+
+    .node-children {
+      margin-left: 0.2rem;
+      border-left: 1px dotted #ddd;
+      padding-left: 0.3rem;
+    }
+
+    .value-primitive {
+      color: #0070f3;
+    }
+
+    .value-type {
+      color: #999;
+      font-style: italic;
+      margin-left: 0.25rem;
+    }
+
+    .path-display {
+      font-family: monospace;
+      font-size: 0.85rem;
+      color: #555;
+      margin-top: 0.25rem;
+    }
+
+    .path-segment {
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    .path-separator {
+      margin: 0 0.15rem;
+    }

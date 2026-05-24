@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>BeTFSM Blackboard Inspector</title>
+   <link rel="stylesheet" href="/static/style.css">
+  <style>
+  </style>
+</head>
+<body>
+    <header class="splitline">
+    <span>
+        <h1>
+        <a href="https://robotics-research-group-kul.github.io/betfsm" target="_blank"><img src="/static/logo.png" alt="BeTFSM Logo" class="logo"/></a> Dashboard</h1>
+       </a>
+    </span>
+    <span>
+        <a class="headertxt" href="/">Visualizer</a> &nbsp;
+        <a class="headertxt" href="/dashboard">Dashboard</a> &nbsp;
+        <a class="headertxt" href="/events">Events</a> &nbsp;
+        <a class="headertxt" href="/docs" target="_blank">HTTP API</a> &nbsp;
+        <a class="headertxt" href="https://robotics-research-group-kul.github.io/betfsm/" target="_blank">Help</a>
+        <a href="https://www.kuleuven.be/english/kuleuven/" target="_blank">
+            <img src="/static/logo_kuleuven.png" alt="KU Leuven Logo" class="logokul" />
+        </a>
+        <a href="https://www.mech.kuleuven.be/en/research/ram" target="_blank">
+            <img src="/static/logo_RAM_B.png" alt="RAM Logo" class="logokul" />
+        </a>
+    </span>
+    </header>  
+  
+
+  <div class="panel">
+    <h2>BeTFSM Blackboard Inspector</h2>
+    <!-- <label for="baseUrl">Server base URL</label> -->
+    <!-- <input id="baseUrl" type="text" value="http://localhost:8000" /> 
+    <small style="font-size:0.8rem;color:#666;">Without trailing slash, e.g. <code>http://localhost:8000</code></small> -->
+
+    <div style="margin-top:0.75rem;">
+      <label for="pathInput"class="subtitle">Blackboard path</label>
+      <input id="pathInput" type="text" placeholder="/ (root), /output, /output/0/name, /output/~len, ..." />
+      <p/>
+      <div class="controlsdd">
+        <button id="loadBtn" class="btn success">Load subtree</button>
+        <button id="rootBtn" class="btn success">Go to root (/)</button>
+      </div>
+      <div id="status" class="status"></div>
+      <div id="currentPath" class="path-display"></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <!-- <h2 style="margin-top:0;">Blackboard subtree</h2>-->
+    <div id="tree" class="tree-container">
+      <em style="color:#777;">No data loaded yet. Enter a path and click “Load subtree”.</em>
+    </div>
+  </div>
+    <footer class="splitline">
+        <span class="logoai">
+        <!--<a href="https://aiprism.eu/"><img src="/static/Ai-Prism_Logo_Horizontal.png" alt="AI-PRISM Logo" width="150" target="_blank"/></a>
+        agreement No. <a href="https://cordis.europa.eu/project/id/101058589">101058589</a> -->
+        </span>
+        <span/>
+        <span style="color:white">
+        &copy; 2025 KU Leuven - ROB research group
+       </span>
+    </footer>
+  <script>
+    const baseUrlInput = document.getElementById('baseUrl');
+    const pathInput = document.getElementById('pathInput');
+    const loadBtn = document.getElementById('loadBtn');
+    const rootBtn = document.getElementById('rootBtn');
+    const statusEl = document.getElementById('status');
+    const treeEl = document.getElementById('tree');
+    const currentPathEl = document.getElementById('currentPath');
+
+    function setStatus(message, isError = false) {
+      statusEl.textContent = message || '';
+      statusEl.classList.toggle('error', !!isError);
+    }
+
+    function setLoading(isLoading) {
+      loadBtn.disabled = isLoading;
+      rootBtn.disabled = isLoading;
+      if (isLoading) {
+        setStatus('Loading...');
+      }
+    }
+
+    function normalizePath(path) {
+      if (!path || path.trim() === '' || path.trim() === '/') {
+        return ''; // represent root as empty path segment in URL
+      }
+      if (!path.startsWith('/')) {
+        path = '/' + path;
+      }
+      return path;
+    }
+
+    function renderPathBreadcrumb(path) {
+      currentPathEl.innerHTML = '';
+      const normalized = normalizePath(path);
+      const displayPath = normalized === '' ? '/' : normalized;
+
+      const segments = displayPath.split('/').filter((s, idx) => !(idx === 0 && s === ''));
+      const container = document.createDocumentFragment();
+
+      const rootSpan = document.createElement('span');
+      rootSpan.textContent = '/';
+      rootSpan.className = 'path-segment';
+      rootSpan.addEventListener('click', () => {
+        pathInput.value = '/';
+        loadBlackboard('/');
+      });
+      container.appendChild(rootSpan);
+
+      let current = '';
+      segments.forEach(seg => {
+        const sep = document.createElement('span');
+        sep.textContent = '/';
+        sep.className = 'path-separator';
+        container.appendChild(sep);
+
+        current += '/' + seg;
+        const segSpan = document.createElement('span');
+        segSpan.textContent = seg;
+        segSpan.className = 'path-segment';
+        segSpan.addEventListener('click', () => {
+          pathInput.value = current;
+          loadBlackboard(current);
+        });
+        container.appendChild(segSpan);
+      });
+
+      currentPathEl.textContent = 'Current path: ';
+      currentPathEl.appendChild(container);
+    }
+
+    function createNode(key, value) {
+      const nodeEl = document.createElement('div');
+      nodeEl.className = 'node';
+
+      const keyEl = document.createElement('div');
+      keyEl.className = 'node-key';
+
+      const toggleEl = document.createElement('span');
+      toggleEl.className = 'toggle';
+      keyEl.appendChild(toggleEl);
+
+      const keyText = document.createElement('span');
+      keyText.textContent = key !== null ? key + ': ' : '';
+      keyEl.appendChild(keyText);
+
+      const isObject = value && typeof value === 'object';
+      const isArray = Array.isArray(value);
+
+      if (!isObject) {
+        toggleEl.textContent = ' ';
+        toggleEl.classList.add('leaf');
+
+        const valSpan = document.createElement('span');
+        valSpan.className = 'value-primitive';
+        valSpan.textContent = JSON.stringify(value);
+        keyEl.appendChild(valSpan);
+
+        const typeSpan = document.createElement('span');
+        typeSpan.className = 'value-type';
+        typeSpan.textContent = `(${typeof value})`;
+        keyEl.appendChild(typeSpan);
+      } else {
+        toggleEl.textContent = '▾';
+
+        const typeSpan = document.createElement('span');
+        typeSpan.className = 'value-type';
+        typeSpan.textContent = isArray ? '(array)' : '(object)';
+        keyEl.appendChild(typeSpan);
+
+        const childrenEl = document.createElement('div');
+        childrenEl.className = 'node-children';
+
+        const entries = isArray ? value.map((v, i) => [i, v]) : Object.entries(value);
+        if (entries.length === 0) {
+          const emptyEl = document.createElement('div');
+          emptyEl.className = 'node';
+          emptyEl.textContent = isArray ? '[empty array]' : '{empty object}';
+          emptyEl.style.color = '#999';
+          childrenEl.appendChild(emptyEl);
+        } else {
+          for (const [childKey, childVal] of entries) {
+            childrenEl.appendChild(createNode(childKey, childVal));
+          }
+        }
+
+        let collapsed = false;
+        keyEl.addEventListener('click', () => {
+          collapsed = !collapsed;
+          childrenEl.style.display = collapsed ? 'none' : 'block';
+          toggleEl.textContent = collapsed ? '▸' : '▾';
+        });
+
+        nodeEl.appendChild(childrenEl);
+      }
+
+      nodeEl.insertBefore(keyEl, nodeEl.firstChild);
+      return nodeEl;
+    }
+
+    async function loadBlackboard(path) {
+      // const baseUrl = baseUrlInput.value.trim().replace(/\/+$/, '');
+      // if (!baseUrl) {
+      //   setStatus('Please provide a server base URL.', true);
+      //   return;
+      // }
+      const baseUrl = ""
+
+      const normalizedPath = normalizePath(path);
+      const encodedPath = encodeURIComponent(normalizedPath === '' ? '' : normalizedPath.slice(1));
+      const url = normalizedPath === ''
+        ? `${baseUrl}/api/blackboard/%2F` // represent root as "/"
+        : `${baseUrl}/api/blackboard/${encodedPath}`;
+
+      setLoading(true);
+      try {
+        const resp = await fetch(url, { method: 'GET' });
+        if (!resp.ok) {
+          const text = await resp.text();
+          throw new Error(`HTTP ${resp.status}: ${text || resp.statusText}`);
+        }
+        const data = await resp.json();
+        treeEl.innerHTML = '';
+        const rootNode = createNode(null, data.value);
+        treeEl.appendChild(rootNode);
+        renderPathBreadcrumb(path);
+        setStatus('Loaded successfully.');
+      } catch (err) {
+        console.error(err);
+        treeEl.innerHTML = '<span style="color:#b00020;">Failed to load blackboard value.</span>';
+        setStatus(err.message || 'Error while loading.', true);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadBtn.addEventListener('click', () => {
+      loadBlackboard(pathInput.value);
+    });
+
+    rootBtn.addEventListener('click', () => {
+      pathInput.value = '/';
+      loadBlackboard('/');
+    });
+
+    pathInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        loadBlackboard(pathInput.value);
+      }
+    });
+
+    // Optional: try to load root on first open
+    // loadBlackboard('/');
+  </script>
+</body>
+</html>

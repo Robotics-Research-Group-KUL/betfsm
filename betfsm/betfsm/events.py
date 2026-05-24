@@ -268,6 +268,10 @@ class Condition(ABC):
       next tick it will return again the event, unless something changed.
       - . ...Event, a version where the events are read from some queue
     """
+    
+    # a global registry of events that were used in a condition somewhere
+    registry = dict()
+    
 
     @abstractmethod
     def poll(self,bb,events) -> str:
@@ -282,6 +286,9 @@ class Condition(ABC):
     @abstractmethod
     def reset(self,bb,events):
         """ called at the beginning of EventOutcome, EventConcurrent, EventSequential """
+        pass
+
+    def register_events(self,events):        
         pass
 
     def __str__(self) -> str:
@@ -324,6 +331,10 @@ class OrCondition(Condition):
         self.cond1.reset(bb,events)
         self.cond2.reset(bb,events)
 
+    def register_events(self,events):
+        self.cond1.register_events(events)
+        self.cond2.register_events(events)
+
     def __str__(self) -> str:
         return "(" + str(self.cond1) + " or " + str(self.cond2) + ")"
 
@@ -358,6 +369,11 @@ class AndCondition(Condition):
         self.cond1.reset(bb,events)
         self.cond2.reset(bb,events)
 
+    def register_events(self,events):
+        self.cond1.register_events(events)
+        self.cond2.register_events(events)
+        
+
     def __str__(self) -> str:
         return "(" + str(self.cond1) + " and " + str(self.cond2) + ")"
 
@@ -384,6 +400,10 @@ class Not(Condition):
         
     def reset(self,bb,events):
         self.event.reset(bb,events)
+
+    def register_events(self,events):
+        self.cond.register_events(events)        
+        
 
     def __str__(self) -> str:
         return "Not('{self.event}',{str(self.cond)} )";
@@ -416,7 +436,10 @@ class Callback_Condition(Condition):
         if (self.event in events) and self.cb(bb):
             return self.event
         return None
-            
+    
+    def register_events(self,events):
+        Condition.registry["callback"] = Condition.registry.get("callback",set()) | set(events)
+
     def reset(self,bb,events):
         pass
 
@@ -466,6 +489,9 @@ class Timeout_Condition(Condition):
         return None
 
     
+    def register_events(self,events):
+        Condition.registry["timeout"] = Condition.registry.get("timeout",set()) | set(events)
+
     def reset(self,bb,events):
         self.trigger          = time.monotonic() + self.sec
         self.times_left       = self.repeat
@@ -509,6 +535,10 @@ class HTTPEvent_Condition(Condition):
     
     def reset(self,bb,events):
         pass
+
+    def register_events(self,events):
+        Condition.registry["httpevent"] = Condition.registry.get("httpevent",set()) | set(events)
+
     def __str__(self) -> str:
         return f"HTTP_Condition({self.channel_name}, {self.queue_size}, {self.max_age}, {self.triggered_once} )"
 
@@ -542,6 +572,9 @@ class Ctrl_C_Condition(Condition):
     
     def reset(self,bb,events):
         pass
+
+    def register_events(self,events):
+        Condition.registry["ctrl_c"] = Condition.registry.get("ctrl_c",set()) | set(events)
 
     def __str__(self) -> str:
         return f"Ctrl_C_Condition({self.event}, {self.repeated}, {self.consume} )"
@@ -588,9 +621,9 @@ class EventOutcome(Generator):
         for k,v in event_map.items():
             outcomes.append(v)
         self.event_map    = event_map
-        self.events       = [e for e,v in self.event_map.items()]
+        self.events       = [e for e,_ in self.event_map.items()]
         self.event_poller = event_poller
-        
+        event_poller.register_events(self.events)
         super().__init__(name, outcomes) # duplicate outcomes are taken care of by super()
 
     
@@ -689,6 +722,7 @@ class EventConcurrent(GeneratorWithList):
         self.add_state_safeguard = False
         super().__init__(name, [], children)
         self.add_state_safeguard = True
+        event_poller.register_events([  k for k,_ in self.event_to_state_ndx.items()  ])
 
 
     def add_state(self, state:TickingState):
@@ -815,6 +849,7 @@ class EventSequential(GeneratorWithList):
         self.add_state_safeguard = False
         super().__init__(name, [], children)
         self.add_state_safeguard = True
+        event_poller.register_events([  k for k,_ in self.event_to_state_ndx.items()  ])
 
 
     def add_state(self, state:TickingState):

@@ -1,6 +1,6 @@
 # betfsm.py
 #
-# Copyright (C) Erwin Aertbeliën, 2024
+# Copyright (C) Erwin Aertbeliën, 2024-2026
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -463,8 +463,8 @@ class TickingState:
             if outc==CONTINUE:
                 raise ValueError(f"{name} state:  outcome {CONTINUE} is reserved for internal use!")
         self.name = self.expand_name(name)
-        self.parent = None
-        self.uid = str(uuid.uuid4())
+        self.parent:TickingState|None = None
+        self.uid      = str(uuid.uuid4())
         self.typename = self.__class__.__name__
         self.fqn      = f"{self.__class__.__module__}.{self.__class__.__name__}"
         self.status = TickingState_Status.ENTRY

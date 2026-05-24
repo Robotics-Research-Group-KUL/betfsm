@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BeTFSM Event Controller</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+     /*   :root {
+            --bg-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --border-color: #e5e7eb;
+            --success-color: #10b981;
+            --error-color: #ef4444;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+            color: #111827;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }*/
+
+        #status-panel {
+            padding: 1rem;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background-color: #f9fafb;
+            font-family: monospace;
+            font-size: 0.85rem;
+            white-space: pre-wrap;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .status-success {
+            border-color: var(--success-color) !important;
+            background-color: #ecfdf5 !important;
+            color: #065f46;
+        }
+
+        .status-error {
+            border-color: var(--error-color) !important;
+            background-color: #fef2f2 !important;
+            color: #991b1b;
+        }
+    </style>
+</head>
+<body>
+    <header class="splitline">
+        <span>
+            <h1>
+            <a href="https://robotics-research-group-kul.github.io/betfsm" target="_blank"><img src="/static/logo.png" alt="BeTFSM Logo" class="logo"/></a> Dashboard</h1>
+        </a>
+        </span>
+        <span>
+            <a class="headertxt" href="/">Visualizer</a> &nbsp;
+            <a class="headertxt" href="/dashboard">Dashboard</a> &nbsp;
+            <a class="headertxt" href="/events">Events</a> &nbsp;
+            <a class="headertxt" href="/docs" target="_blank">HTTP API</a> &nbsp;
+            <a class="headertxt" href="https://robotics-research-group-kul.github.io/betfsm/" target="_blank">Help</a>
+            <a href="https://www.kuleuven.be/english/kuleuven/" target="_blank">
+                <img src="/static/logo_kuleuven.png" alt="KU Leuven Logo" class="logokul" />
+            </a>
+            <a href="https://www.mech.kuleuven.be/en/research/ram" target="_blank">
+                <img src="/static/logo_RAM_B.png" alt="RAM Logo" class="logokul" />
+            </a>
+        </span>
+    </header> 
+    <div class="panel">
+        <h2>BeTFSM Event Trigger</h2>
+        <p class="subtitle">posts events to the HTTPEventReceiver via <code>/api/event</code></p>
+        
+        <div id="buttons-container" class="button-grid">
+            <!-- Buttons will be dynamically inserted here -->
+            <p style="color: #6b7280; grid-column: 1/-1;">Loading HTTP events...</p>
+        </div>
+
+        <p class="subtitle">Console Output</p>
+        <div id="status-panel">System ready. Awaiting event trigger...</div>
+    </div>
+    <footer class="splitline">
+        <span class="logoai">
+        <!--<a href="https://aiprism.eu/"><img src="/static/Ai-Prism_Logo_Horizontal.png" alt="AI-PRISM Logo" width="150" target="_blank"/></a>
+        agreement No. <a href="https://cordis.europa.eu/project/id/101058589">101058589</a> -->
+        </span>
+        <span/>
+        <span style="color:white">
+        &copy; 2025 KU Leuven - ROB research group
+        </span>
+    </footer>
+<script>
+    // Adjust this base URL if your FastAPI backend runs on a different port/host
+    const BASE_URL = window.location.origin === 'null' ? 'http://localhost:8000' : window.location.origin;
+    
+    const buttonsContainer = document.getElementById('buttons-container');
+    const statusPanel = document.getElementById('status-panel');
+
+    // Helper to log state to our custom window console
+    function logStatus(message, type = '') {
+        statusPanel.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+        statusPanel.className = ''; // reset classes
+        if (type === 'success') statusPanel.classList.add('status-success');
+        if (type === 'error') statusPanel.classList.add('status-error');
+    }
+
+    // Function to POST the specific event back to the server
+    async function triggerEvent(eventName, buttonElement) {
+        buttonElement.disabled = true;
+        logStatus(`Sending event: ${eventName}...`);
+
+        const payload = {
+            channel: "betfsm", // Matches FastAPI schema default
+            event: eventName
+        };
+
+        try {
+            const response = await fetch(`${BASE_URL}/api/event`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                logStatus(`Success! Event "${eventName}" delivered.`, 'success');
+            } else {
+                const errData = await response.json().catch(() => ({}));
+                logStatus(`Error ${response.status}: ${JSON.stringify(errData.detail || 'Unknown validation error')}`, 'error');
+            }
+        } catch (error) {
+            logStatus(`Network error: Could not reach backend at ${BASE_URL}`, 'error');
+            console.error(error);
+        } finally {
+            buttonElement.disabled = false;
+        }
+    }
+
+    // Fetch the list of allowed events and build out the control UI dynamically
+    async function initializeUI() {
+        try {
+            const response = await fetch(`${BASE_URL}/api/event_list`);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            
+            const data = await response.json();
+            const httpEvents = data.httpevent || [];
+
+            if (httpEvents.length === 0) {
+                buttonsContainer.innerHTML = '<p style="color: var(--error-color);">No events found under "httpevent".</p>';
+                return;
+            }
+
+            // Wipe out loading indicator
+            buttonsContainer.innerHTML = '';
+
+            // Generate a button element for every event in the array
+            httpEvents.forEach(eventName => {
+                const btn = document.createElement('button');
+                btn.className = 'btn success';
+                btn.textContent = eventName.replace('_', ' '); // pretty printing clean labels
+                btn.addEventListener('click', () => triggerEvent(eventName, btn));
+                buttonsContainer.appendChild(btn);
+            });
+
+            logStatus("Event dashboard populated successfully.");
+
+        } catch (error) {
+            logStatus(`Initialization Failed: Failed to pull event mapping from /api/event_list.`, 'error');
+            buttonsContainer.innerHTML = '<p style="color: var(--error-color);">Could not fetch schema items. Make sure your FastAPI server is active.</p>';
+            console.error(error);
+        }
+    }
+
+    // Fire off initialization routine on window DOM build
+    window.addEventListener('DOMContentLoaded', initializeUI);
+</script>
+
+</body>
+</html>

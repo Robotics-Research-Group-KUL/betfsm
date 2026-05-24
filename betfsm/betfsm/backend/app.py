@@ -22,7 +22,7 @@ from typing import Any
 
 import importlib.resources
 from fastapi import FastAPI, WebSocket, HTTPException
-from fastapi.responses import JSONResponse, FileResponse
+from fastapi.responses import JSONResponse, FileResponse,HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.websockets import WebSocketDisconnect
 import asyncio, json, time
@@ -58,7 +58,7 @@ Documentation of BeTFSM can be found [here](https://robotics-research-group-kul.
 
 Published under the GNU LESSER GENERAL PUBLIC LICENSE Version 3, 29 June 2007.
 
-(c) 2024-2026, Erwin Aertbeliën, contributions of Federico Ulloa Rios and Santiago Iregui Rincon
+(c) 2024-2026, Erwin Aertbeliën
 
  KU Leuven, Department of Mechanical Engineering, ROB-Group. The ROB Group is part of core labs M&A and MPRO of Flanders Make.
 
@@ -221,8 +221,35 @@ def main_page():
     return FileResponse(str(index_file))
 
 
+@app.get("/dashboard")
+async def get_dashboard():
+    index_file = frontend_path / "dashboard.html"
+    return FileResponse(str(index_file))
 
 
+@app.get("/events")
+async def get_dashboard():
+    index_file = frontend_path / "events.html"
+    return FileResponse(str(index_file))
+
+
+@app.get("/favicon.ico")
+async def get_dashboard():
+    index_file = frontend_path / "favicon.ico"
+    return FileResponse(str(index_file))
+
+
+@app.get('/api/event_list',
+         summary="returns lists of events used by BeTFSM",
+         description="""
+A dictionary that maps a type of condition list of events used *somewhere* by that condition.  This is a static 
+description, generated during construction.  This are lists of events **accessible** by the condition, not only
+the events that this type of condition actually generates.
+""",
+response_description="a dictionary that maps BeTFSM Condition Classes to a list of events.")
+async def send_event_list():
+    get_logger().info("Received request for a list of events used in BeTFSM")
+    return betfsm.Condition.registry
 
 @app.post(
     "/api/event",
