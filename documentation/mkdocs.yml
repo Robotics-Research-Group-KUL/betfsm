@@ -31,6 +31,7 @@ nav:
       - "ROS2 Lifecycle" : "ros2lifecycle.md"
       - "Utilities" : 'utils.md'
       - "Logging" : "logger.md"
+      - "Other references": "references.md"
     - "API" :
       - "BeTFSM":
         - "TickingState" : "tickingstate.md"
@@ -85,7 +86,7 @@ nav:
         #- "eTaSL_StateMachine" : "etasl_statemachine.md"
         - "CrospiTask" : "crospi_task.md"
         - "CrospiDeactivate" : "crospi_deactivate.md"
-    - "TODO": "todo.md"    
+#    - "TODO": "todo.md"    
     - "About & Acknowledgements": 'about.md'
 
 
