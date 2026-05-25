@@ -801,14 +801,15 @@ you can use copy.deepcopy(subtree) to make a deep copy to avoid this.</p>
 
 
 <h3 id="betfsm.get_path_location" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">betfsm</span><span class="o">.</span><span class="n">get_path_location</span><span class="p">(</span><span class="n">blackboard</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">create_if_needed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">betfsm</span><span class="o">.</span><span class="n">get_path_location</span><span class="p">(</span><span class="n">blackboard</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">create_missing</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">)</span></code>
 
 </h3>
 
 
     <div class="doc doc-contents first">
 
-        <p>gets a location in the blackboard at the given path</p>
+        <p>Finds the parent container and key/index for a given path in the blackboard.
+Optionally creates missing dictionaries (not lists!) along the way.</p>
 
 
 <table class="field-list">
@@ -823,31 +824,62 @@ you can use copy.deepcopy(subtree) to make a deep copy to avoid this.</p>
         <ul class="first simple">
             <li>
               <b><code>blackboard</code></b>
+                  (<code><span title="dict">dict</span> / <span title="list">list</span></code>)
               –
               <div class="doc-md-description">
-                <p>Blackboard Dict</p>
+                <p>The root blackboard structure.</p>
               </div>
             </li>
             <li>
               <b><code>path</code></b>
+                  (<code><span title="str">str</span></code>)
               –
               <div class="doc-md-description">
-                <p>path to get the value of</p>
+                <p>The delimiter-separated path string.</p>
               </div>
             </li>
             <li>
-              <b><code>create_if_needed</code></b>
+              <b><code>create_missing</code></b>
+                  (<code><span title="bool">bool</span></code>, default:
+                      <code>True</code>
+)
               –
               <div class="doc-md-description">
-                <p>path will be created if needed, overwriting
-any values if needed.</p>
+                <p>If True, missing intermediate dicts are created.</p>
               </div>
             </li>
             <li>
               <b><code>delimiter</code></b>
+                  (<code><span title="str">str</span></code>, default:
+                      <code>&#39;/&#39;</code>
+)
               –
               <div class="doc-md-description">
-                <p>for the path, default='/'</p>
+                <p>The path separator (default: '/').</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+<b><code>tuple</code></b>              –
+              <div class="doc-md-description">
+                <p>(parent_container, final_key_or_index) if found/created successfully.
+  (None,None) if the path is inconsistent, an index is out of bounds, 
+  or if it encounters a special syntax like '~len' as the target.</p>
               </div>
             </li>
         </ul>
