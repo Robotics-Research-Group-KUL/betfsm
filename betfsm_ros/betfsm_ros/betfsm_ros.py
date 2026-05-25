@@ -199,6 +199,9 @@ class TimedRepeat(GeneratorWithState):
 class Timeout(GeneratorWithState):
     """
     Timeout
+    
+    warning:
+        obsolete, EventOutcome with Timeout_Condition recommended.
     """
     def __init__(
             self,
@@ -400,7 +403,7 @@ class ServiceClient(Generator):
 class ActionClientBTFSM(Generator):
 
     def __init__(self, name:str, action_name:str, action_type: Type, outcomes:List[str], timeout:Duration = Duration(seconds=1.0), 
-                 node:Node = None) -> None:
+                 node:Node|None = None) -> None:
         """
         Creates a TickingState that calls an action and generates an outcome when the action returns back.
         While waiting, it gets the response of the action to the blackboard and returns TICKING.

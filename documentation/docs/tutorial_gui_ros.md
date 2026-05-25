@@ -1,8 +1,23 @@
 ## Executing a BeTFSM Tree under ROS2 with cROSpi
 
-
 !!! warning
-    This Section and the later ones still needs to be elaborated
+    This Section and the later tutorials have to be elaborated
+
+
+### CrospiNode
+
+### TopicEvents and interruptions
+
+### CrospiOutput
+
+
+### Parameters
+
+
+### CrospiInput
+
+- different ways of running
+
 
 Besides using the **ROSRunner** class, there is some ROS2 boiler-plate needed to 
 initialize **rclpy** ROS2 interface, start-up and destroy the ROS2 node, and to shut **rclply** down afterwards.

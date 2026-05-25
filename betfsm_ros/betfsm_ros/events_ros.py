@@ -70,8 +70,10 @@ class TopicEventReceiver:
 
 
     def __init__( self, node: Node,  topic_name: str,  queue_size: int):
-
-        self.node = node
+        if node==None:
+            self.node = BeTFSMNode.get_instance()
+        else:
+            self.node = node
         self.topic_name = topic_name
         self.queue = deque(maxlen=queue_size)
         self.lock = Lock()
@@ -243,6 +245,9 @@ class TopicEvent_Condition(Condition):
     
     def reset(self,bb,events):
         pass
+
+    def register(self,events):
+        Condition.registry["topicevent"] = Condition.registry.get("topicevent",set()) | set(events)
 
     def __str__(self) -> str:
         return f"TopicEvent(node, {self.topic_name}, {self.queue_size}, {self.max_age}, {self.consume} )"
