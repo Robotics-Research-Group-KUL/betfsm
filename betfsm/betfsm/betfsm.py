@@ -261,72 +261,88 @@ def set_path_value(blackboard, path, value):
     current[last] = value
 
 
-
-
-def get_path_location(blackboard, path, create_if_needed = True, delimiter='/'):
+def get_path_location(blackboard, path, create_missing=True, delimiter="/"):
     """
-    gets a location in the blackboard at the given path
+    Finds the parent container and key/index for a given path in the blackboard.
+    Optionally creates missing dictionaries (not lists!) along the way.
 
     Parameters:
-        blackboard:
-            Blackboard Dict
-        path:
-            path to get the value of
-        create_if_needed:
-            path will be created if needed, overwriting
-            any values if needed.
-        delimiter:
-            for the path, default='/'
+        blackboard (dict/list): The root blackboard structure.
+        path (str): The delimiter-separated path string.
+        create_missing (bool): If True, missing intermediate dicts are created.
+        delimiter (str): The path separator (default: '/').
+
+    Returns:
+        tuple: (parent_container, final_key_or_index) if found/created successfully.
+              (None,None) if the path is inconsistent, an index is out of bounds, 
+              or if it encounters a special syntax like '~len' as the target.
     """
-    keys = [k for k in path.split(delimiter) if k]   
+    keys = [k for k in path.split(delimiter) if k]
+    if not keys:
+        return None,None
     current = blackboard
-    for i, key in enumerate(keys[:-1]):
-        if key not in current or not isinstance(current[key], dict):
-            current[key] = {}
-        current = current[key]
-    if keys:
-        if key[-1] not in current  or not isinstance(current[key], dict):
-            current[keys[-1]] = {}
-        return current[keys[-1]]
-    else:
-        return blackboard
+    
+    # Iterate through all keys EXCEPT the very last one
+    for i in range(len(keys) - 1):
+        key = keys[i]
 
+        # 1. SPECIAL SYNTAX (~len cannot be navigated *through*)
+        if key == "~len":
+            return None,None
 
+        # 2. NAVIGATING THROUGH A LIST
+        # no adding elements to a list when in the middle of the path
+        if isinstance(current, list):
+            if not key.isdigit():
+                return None,None  # Inconsistent: Trying to use a string key on a list
+            idx = int(key)
+            if 0 <= idx < len(current):
+                current = current[idx]
+            else:
+                return None,None  # Out of bounds (we don't implicitly pad lists)
+            continue
 
+        # 3. NAVIGATING THROUGH A DICT
+        if isinstance(current, dict):
+            if key in current:
+                current = current[key]
+            elif create_missing:
+                if key.isdigit():
+                    return None,None
+                # Create a missing nested dictionary safely
+                current[key] = {}
+                current = current[key]
+            else:
+                return None,None  # Missing path and create_missing is False
+            continue
 
+        # 4. INCONSISTENT: 'current' is a primitive (str, int) but we have more keys to process
+        return None,None
 
+    # --- PROCESS THE FINAL KEY ---
+    final_key = keys[-1]
 
+    # Special syntax check for final target
+    if final_key == "~len":
+        return None,None # Special keywords represent values, not a assignable location
 
+    # Final parent is a List
+    if isinstance(current, list):
+        if final_key.isdigit():
+            idx = int(final_key)
+            if 0 <= idx <= len(current): # Allow index == len(current) for appending
+                return current, idx
+        return None,None
 
+    # Final parent is a Dict
+    if isinstance(current, dict):
+        if final_key in current or create_missing:
+            return current, final_key
+        return None,None
 
+    # Final parent is a primitive data type, meaning we can't index into it
+    return None,None
 
-
-# """
-#     ```graphviz
-
-#         digraph monitoringstate{
-#             //node [shape=point] start;      
-#             //node [shape=point] end;
-#             node [shape=point] start
-#             node [shape=box, style=rounded];
-        
-
-#             node [label= "  entry()\n if TICK return TICK\n if exception return ABORT"] Entry;
-
-#             node [label= "  doo()\n if TICK return TICK\n if exception return ABORT"] Doo;
-#             node [label= "  exit()\n return outcome \n if exception return ABORT"] Exit;
-#             start->Entry
-
-#             Entry -> Doo [label="CONTINUE\nor TICK"]
-
-#             Entry -> Exit [label="≠TICK and\n ≠CONTINUE\nor ABORT"]
-#             Doo -> Exit [label="≠TICK\nor ABORT"]
-#             Doo -> Doo [label="TICK"]
-#             Exit -> Entry 
-        
-#         }
-#     ```
-# """
 
 class Visitor(ABC):
     """
@@ -602,8 +618,8 @@ class TickingState:
         visitor.post(self)
 
 
-    def __str__(self) -> str:
-        return f"{self.name}<{self.__class__.__name__}>"
+#    def __str__(self) -> str:
+#        return f"{self.name}<{self.__class__.__name__}>"
 
     def get_outcomes(self) -> List[str]:
         return self.outcomes
