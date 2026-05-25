@@ -20,19 +20,24 @@
 """
 BeTFSM states related to eTaSL
 """
-from abc import abstractmethod
 from typing import Dict, Callable
-from functools import reduce
-from operator import and_
 import json
+from collections import deque
 from jsonschema import validate, exceptions
+
+from rclpy.qos import QoSProfile,QoSDurabilityPolicy,QoSHistoryPolicy,QoSReliabilityPolicy,QoSLivelinessPolicy
+
+from crospi_interfaces.srv import TaskSpecificationFile
+from crospi_interfaces.srv import TaskSpecificationString
+from crospi_interfaces.msg import Output
+from std_msgs.msg import String
 
 
 from betfsm import (
     SUCCEED,CANCEL,TIMEOUT, TICKING,ABORT,NO_EVENT,
     add_logger_category, get_logger,get_path_value,get_path_location,set_path_value,
     Blackboard, TickingState,Message,ConcurrentFallback, TickingStateMachine,
-    Fallback,Sequence, AlwaysOutcome,
+    Fallback,Sequence, AlwaysOutcome,GeneratorWithState,
     EventOutcome,
     deprecated_msg
 )
@@ -45,10 +50,6 @@ from betfsm_ros import (
 )
 
 
-from crospi_interfaces.srv import TaskSpecificationFile
-from crospi_interfaces.srv import TaskSpecificationString
-from crospi_interfaces.msg import Output
-from std_msgs.msg import String
 
 # Output:
 #  - msg.names
@@ -273,6 +274,7 @@ class eTaSLOutput(TickingState):
         warning:
             will only store messages where for all variables in the message is_declared is true.
         """
+        deprecated_msg("Use CrospiOutput instead")
         if node==None:
             self.node = BeTFSMNode.get_instance()
         else:
@@ -652,4 +654,80 @@ class CrospiTask(Fallback):
         cleanup_seq = CrospiDeactivate(srv_name,timeout,node,force_outcome=CANCEL)        
         # if the seq ends with ABORT or TIMEOUT, fallback to cleanup_seq
         super().__init__(name+"_fallback",[seq,cleanup_seq],lambda bb,oc: oc==ABORT or oc==TIMEOUT)
+
+class CrospiOutput(GeneratorWithState):
+    """
+    Record output of Crospi in a topic while executing subtree
+    """
+    def __init__(
+            self,
+            name:str,
+            topic: str,
+            subtree: TickingState = None,
+            queue_size: int = 1_000_000,
+            path: str = "/output",            
+            node: Node = None,
+        ) -> None:
+        """Record output of Crospi in a topic while executing subtree
+
+        Parameters:
+            name : str
+                name of the node
+            topic : str
+                ROS2 topic to subscribe to, should be of message type Output
+            subtree : TickingState, optional
+                subtree to execute, None will be converted into AlwaysOutcome(SUCCEED), by default None            
+            queue_size : int, optional
+                maximum length of the buffer to record the data, by default 1_000_000
+            path : str, optional
+                path inside the blackboard, by default "/output"
+            node : Node, optional
+                ROS2 node, if None, BeTFSMNode.get_instance() will be used. by default None
+        """
+        if subtree==None:
+            subtree = AlwaysOutcome(SUCCEED)
+        super().__init__("eTaSLOutput",[SUCCEED, CANCEL],subtree)
+        if node==None:
+            self.node = BeTFSMNode.get_instance()
+        else:
+            self.node = node
+        self.topic = topic
+        self.qos = QoSProfile(
+            history     = QoSHistoryPolicy.KEEP_LAST,
+            depth       = 5,
+            reliability = QoSReliabilityPolicy.RELIABLE,
+            durability  = QoSDurabilityPolicy.VOLATILE
+        )
+        self.path       = path
+        self.queue_size = queue_size
+
+    def cb_msg(self,msg) -> None:
+        if len(msg.is_declared)>0 and all(msg.is_declared):
+            if self.first_time:
+                self.header.append([n for n in msg.names ])
+                self.first_time = False
+            self.queue.append( [d for d in msg.data ])
+            
+
+    def co_execute(self,blackboard):
+        path_base, path_key           = get_path_location(blackboard,self.path)
+        self.queue                    = deque(maxlen=self.queue_size)
+        self.header                   = []        
+        path_base[path_key]           = dict()
+        path_base[path_key]["data"]   = self.queue
+        path_base[path_key]["header"] = self.header
+        self.first_time               = True
+        if path_base==None:
+            get_logger("crospi").warn("CrospiOutput: blackboard path is not valid")
+            return CANCEL
+        subscription = self.node.create_subscription(Output,self.topic,self.cb_msg,self.qos)
+        while True:
+            outcome = self.state(blackboard)
+            if outcome!=TICKING:
+                break
+            yield TICKING        
+        self.node.destroy_subscription(subscription)
+        #self.queue = list(self.queue)
+        yield outcome
+
 

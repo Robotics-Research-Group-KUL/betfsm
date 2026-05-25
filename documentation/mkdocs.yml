@@ -87,7 +87,7 @@ nav:
         #- "eTaSL_StateMachine" : "etasl_statemachine.md"
         - "CrospiTask" : "crospi_task.md"
         - "CrospiDeactivate" : "crospi_deactivate.md"
-#    - "TODO": "todo.md"    
+        - "CrospiOutput": "crospioutput.md"
     - "About & Acknowledgements": 'about.md'
 
 
