@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Erwin Aertbelien" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>TODO List - BeTFSM documentation</title>
+    <title>Other references - BeTFSM documentation</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -15,8 +15,8 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "TODO List";
-        var mkdocs_page_input_path = "todo.md";
+        var mkdocs_page_name = "Other references";
+        var mkdocs_page_input_path = "references.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -43,7 +43,7 @@
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption"><span class="caption-text">Documentation</span></p>
-              <ul>
+              <ul class="current">
                   <li class="toctree-l1"><a class="reference internal" href="..">Start page</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../installation/">Installation</a>
@@ -68,8 +68,8 @@
                 </li>
     </ul>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" >Technical documentation</a>
-    <ul>
+                  <li class="toctree-l1 current"><a class="reference internal current" >Technical documentation</a>
+    <ul class="current">
                 <li class="toctree-l2"><a class="reference internal" href="../technical_intro/">Technical introduction</a>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../api_overview/">Overview of the API</a>
@@ -84,7 +84,13 @@
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../logger/">Logging</a>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="../references/">Other references</a>
+                <li class="toctree-l2 current"><a class="reference internal current" href="#">Other references</a>
+    <ul class="current">
+    <li class="toctree-l3"><a class="reference internal" href="#for-developers-under-ros2">For developers under ROS2</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#tooling">Tooling</a>
+    </li>
+    </ul>
                 </li>
     </ul>
                   </li>
@@ -213,9 +219,11 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">TODO List</li>
+          <li class="breadcrumb-item">Documentation</li>
+          <li class="breadcrumb-item">Technical documentation</li>
+      <li class="breadcrumb-item active">Other references</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/Robotics-Research-Group-KUL/betfsm/edit/main/documentation/docs/todo.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/Robotics-Research-Group-KUL/betfsm/edit/main/documentation/docs/references.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -223,24 +231,35 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="todo-list">TODO List</h1>
+                <h1 id="other-references">Other references</h1>
+<h2 id="for-developers-under-ros2">For developers under ROS2</h2>
 <ul>
-<li>Overview presentation of Finite statemachine, Behavior tree theory and the additions of BeTFSM.
-   Comparison with SMACH and BehaviorTree.CPP.</li>
+<li><a href="https://ros2-tutorial.readthedocs.io/en/latest/python_node_explained.html">ros2-tutorial</a></li>
+<li><a href="https://github.com/ros2/exampleshttps://github.com/ros2/examples">ros2 github examples</a></li>
+<li><a href="https://github.com/ros2/demos/tree/ea3661152a87bc48e3f277ca8131c85a1a23d661">ros2 demos</a></li>
+<li><a href="https://mkdocstrings.github.io/griffe/reference/docstrings/">mkdocstrings</a></li>
+<li><a href="https://arxiv.org/pdf/2208.04211">useful paper on behavior trees</a></li>
+</ul>
+<h2 id="tooling">Tooling</h2>
+<ul>
 <li>
-<p>LifeCycle: add constructor option to ignore all error conditions such that
-  we can simplify the design of the etasl/crospi state machines.</p>
+<p><a href="https://code.visualstudio.com/">Microsoft Visual Code</a>, and extensions:</p>
+<ul>
+<li><a href="https://marketplace.visualstudio.com/items?itemName=njpwerner.autodocstring">autoDocString</a></li>
+<li><a href="https://marketplace.visualstudio.com/items?itemName=AlessandroSofia.ros2-topic-viewer">ROS2 Topic Viewer</a></li>
+</ul>
 </li>
 <li>
-<p>make it possible to add twice the same subtree when handling events. (internally refer to the same for the different events)</p>
-</li>
-<li>
-<p>More structured way besides blackboard with input and output parameters?</p>
+<p><a href="https://github.com/PlotJuggler/PlotJuggler">PlotJuggler</a></p>
 </li>
 </ul>
               
             </div>
           </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../logger/" class="btn btn-neutral float-left" title="Logging"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../tickingstate/" class="btn btn-neutral float-right" title="TickingState">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
 
   <hr/>
 
@@ -267,6 +286,10 @@
         </span>
     
     
+      <span><a href="../logger/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../tickingstate/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

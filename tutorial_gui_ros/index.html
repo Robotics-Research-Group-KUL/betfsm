@@ -66,17 +66,17 @@
                 </li>
                 <li class="toctree-l2 current"><a class="reference internal current" href="#">BeTFSM with ROS2 and Crospi</a>
     <ul class="current">
+    <li class="toctree-l3"><a class="reference internal" href="#install-crospi">Install Crospi</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#run-crospi">Run Crospi</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#ros2-setup-and-rosrunner">ROS2 setup and RosRunner</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#ctrl-c-handling">Ctrl-C handling</a>
+    </li>
     <li class="toctree-l3"><a class="reference internal" href="#crospinode">CrospiNode</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#topicevents-and-interruptions">TopicEvents and interruptions</a>
-    </li>
     <li class="toctree-l3"><a class="reference internal" href="#crospioutput">CrospiOutput</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#parameters">Parameters</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#crospiinput">CrospiInput</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#handling-interruptions">Handling interruptions</a>
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#directly-interrupting-and-cleaning-up">Directly interrupting and cleaning-up</a>
     </li>
@@ -94,6 +94,8 @@
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../api_overview/">Overview of the API</a>
                 </li>
+                <li class="toctree-l2"><a class="reference internal" href="../runner/">Running BeTFSM</a>
+                </li>
                 <li class="toctree-l2"><a class="reference internal" href="../event/">Event handling and conditions</a>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../ros2lifecycle/">ROS2 Lifecycle</a>
@@ -101,6 +103,8 @@
                 <li class="toctree-l2"><a class="reference internal" href="../utils/">Utilities</a>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../logger/">Logging</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../references/">Other references</a>
                 </li>
     </ul>
                   </li>
@@ -146,7 +150,7 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../adapt/">Adapt</a>
                 </li>
-                <li class="toctree-l3"><a class="reference internal" href="../runner/">Runner</a>
+                <li class="toctree-l3"><a class="reference internal" href="../runner/">Running BeTFSM</a>
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../alwaysoutcome/">AlwaysOutcome</a>
                 </li>
@@ -206,11 +210,11 @@
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../crospi_deactivate/">CrospiDeactivate</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../crospioutput/">CrospiOutput</a>
+                </li>
     </ul>
                 </li>
     </ul>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../todo/">TODO</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../about/">About & Acknowledgements</a>
                   </li>
@@ -242,22 +246,20 @@
             <div class="section" itemprop="articleBody">
               
                 <h2 id="executing-a-betfsm-tree-under-ros2-with-crospi">Executing a BeTFSM Tree under ROS2 with cROSpi</h2>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>This Section and the later tutorials have to be elaborated</p>
-</div>
-<h3 id="crospinode">CrospiNode</h3>
-<h3 id="topicevents-and-interruptions">TopicEvents and interruptions</h3>
-<h3 id="crospioutput">CrospiOutput</h3>
-<h3 id="parameters">Parameters</h3>
-<h3 id="crospiinput">CrospiInput</h3>
+<h3 id="install-crospi">Install Crospi</h3>
+<p>For the installation of Crospi, see the following <a href="https://rob.pages.gitlab.kuleuven.be/crospi/">documentation site</a></p>
+<h3 id="run-crospi">Run Crospi</h3>
+<p>Once installed, it is recommended to install the <code>crospi_application_template</code> in your workspace and:</p>
 <ul>
-<li>different ways of running</li>
-</ul>
-<p>Besides using the <strong>ROSRunner</strong> class, there is some ROS2 boiler-plate needed to 
-initialize <strong>rclpy</strong> ROS2 interface, start-up and destroy the ROS2 node, and to shut <strong>rclply</strong> down afterwards.
-<strong>load_task_list</strong> loads a list of task specifications, specified in a configuration file.  The <strong>eTaSL_StateMachine</strong>
-node communicates with cROSpi to execute the task with the given name:</p>
+<li>Run RVIZ and Robotstate publisher:
+<div class="highlight"><pre><span></span><code>https://github.com/Robotics-Research-Group-KUL/betfsm
+</code></pre></div></li>
+<li>Run the Crospi Node:
+<div class="highlight"><pre><span></span><code>ros2 run crospi_core crospi_node --ros-args -p config_file:=&#39;$[crospi_application_template]/applications/application_example_tutorials/application_example_tutorials.setup.json&#39; -p simulation:=true
+</code></pre></div></li>
+<li>Run your BeTFSM.
+The examples can be found in the <a href="https://github.com/Robotics-Research-Group-KUL/betfsm/tree/main/betfsm_demos/betfsm_demos">betfsm_demos</a> directory.
+Below you find a typical setup:
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
 <span class="normal"> 2</span>
 <span class="normal"> 3</span>
@@ -296,14 +298,29 @@ node communicates with cROSpi to execute the task with the given name:</p>
 <span class="normal">36</span>
 <span class="normal">37</span>
 <span class="normal">38</span>
-<span class="normal">39</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">rclpy</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">rclpy</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">betfsm</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">Sequence</span><span class="p">,</span>  <span class="n">Message</span><span class="p">,</span> <span class="n">SUCCEED</span><span class="p">,</span> <span class="n">TICKING</span><span class="p">,</span> <span class="n">CANCEL</span><span class="p">,</span> <span class="n">ABORT</span><span class="p">,</span> <span class="n">get_logger</span><span class="p">,</span><span class="n">set_logger</span>
+    <span class="n">Sequence</span><span class="p">,</span>  <span class="n">Message</span><span class="p">,</span> <span class="n">Repeat</span><span class="p">,</span>
+    <span class="n">SUCCEED</span><span class="p">,</span> <span class="n">TICKING</span><span class="p">,</span> <span class="n">CANCEL</span><span class="p">,</span> <span class="n">ABORT</span><span class="p">,</span> <span class="n">TIMEOUT</span><span class="p">,</span> <span class="n">NO_EVENT</span><span class="p">,</span>
+    <span class="n">TickingStateMachine</span><span class="p">,</span><span class="n">get_logger</span><span class="p">,</span><span class="n">set_logger</span><span class="p">,</span>
+    <span class="n">EventSequential</span><span class="p">,</span> <span class="n">Ctrl_C_Condition</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">betfsm_crospi</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_task_list</span><span class="p">,</span> <span class="n">CrospiTask</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">betfsm_ros</span><span class="w"> </span><span class="kn">import</span> <span class="n">BeTFSMNode</span><span class="p">,</span><span class="n">ROSRunner</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">betfsm_crospi</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_task_list</span><span class="p">,</span> <span class="n">CrospiTask</span><span class="p">,</span> <span class="n">CrospiDeactivate</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">betfsm_ros</span><span class="w"> </span><span class="kn">import</span> <span class="n">BeTFSMNode</span><span class="p">,</span><span class="n">ROSRunner</span><span class="p">,</span><span class="n">Node</span><span class="p">,</span><span class="n">Duration</span><span class="p">,</span><span class="n">LifeCycle</span><span class="p">,</span><span class="n">Transition</span>
+
 
 <span class="k">class</span><span class="w"> </span><span class="nc">MySequence</span><span class="p">(</span><span class="n">Sequence</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -314,31 +331,77 @@ node communicates with cROSpi to execute the task with the given name:</p>
             <span class="n">CrospiTask</span><span class="p">(</span><span class="s2">&quot;MovingSpline&quot;</span><span class="p">,</span><span class="s2">&quot;MovingSpline&quot;</span><span class="p">)</span> <span class="p">]</span>
         <span class="p">)</span>
 
+<span class="c1"># main</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="n">rclpy</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">)</span>    
     <span class="n">my_node</span> <span class="o">=</span> <span class="n">BeTFSMNode</span><span class="o">.</span><span class="n">get_instance</span><span class="p">(</span><span class="s2">&quot;skill_example&quot;</span><span class="p">)</span>
+
     <span class="n">set_logger</span><span class="p">(</span><span class="s2">&quot;default&quot;</span><span class="p">,</span><span class="n">my_node</span><span class="o">.</span><span class="n">get_logger</span><span class="p">())</span>
     <span class="n">set_logger</span><span class="p">(</span><span class="s2">&quot;crospi&quot;</span><span class="p">,</span><span class="n">my_node</span><span class="o">.</span><span class="n">get_logger</span><span class="p">())</span>
-    <span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;skill_example_2 started&quot;</span><span class="p">)</span>
+
     <span class="n">blackboard</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">load_task_list</span><span class="p">(</span><span class="s2">&quot;$[crospi_application_template]/skill_specifications/libraries/skill_lib_example/tasks/skill_example.json&quot;</span><span class="p">,</span><span class="n">blackboard</span><span class="p">)</span>
-    <span class="n">sm</span> <span class="o">=</span> <span class="n">MySequence</span><span class="p">()</span>
-    <span class="n">runner</span> <span class="o">=</span> <span class="n">ROSRunner</span><span class="p">(</span><span class="n">my_node</span><span class="p">,</span><span class="n">sm</span><span class="p">,</span><span class="n">blackboard</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">publish_frequency</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">display_active</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># running MySequence() and cleaning up when CTRL_C is pressed        </span>
+    <span class="n">nominal_sm</span> <span class="o">=</span> <span class="n">Repeat</span><span class="p">(</span><span class="s2">&quot;repeat&quot;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">MySequence</span><span class="p">())</span>
+    <span class="n">cleanup_sm</span> <span class="o">=</span> <span class="n">CrospiDeactivate</span><span class="p">(</span><span class="n">force_outcome</span><span class="o">=</span><span class="n">CANCEL</span><span class="p">)</span>
+    <span class="n">sm</span> <span class="o">=</span> <span class="n">EventSequential</span><span class="p">(</span><span class="s2">&quot;check_cancel&quot;</span><span class="p">,</span> <span class="n">Ctrl_C_Condition</span><span class="p">(</span><span class="s2">&quot;CTRL_C&quot;</span><span class="p">,</span><span class="n">repeated</span><span class="o">=</span><span class="mi">3</span><span class="p">),{</span><span class="n">NO_EVENT</span><span class="p">:</span><span class="n">nominal_sm</span><span class="p">,</span> <span class="s2">&quot;CTRL_C&quot;</span><span class="p">:</span><span class="n">cleanup_sm</span><span class="p">})</span>
+
+    <span class="c1"># ROSRunner accepts command-line parameters (see --help)</span>
+    <span class="c1"># has many more optional arguments than used below, see API documentation</span>
+    <span class="n">runner</span> <span class="o">=</span> <span class="n">ROSRunner</span><span class="p">(</span><span class="n">my_node</span><span class="p">,</span><span class="n">sm</span><span class="p">,</span><span class="n">blackboard</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">publish_frequency</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">display_active</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">runner</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+    <span class="k">finally</span><span class="p">:</span>
         <span class="n">my_node</span><span class="o">.</span><span class="n">destroy_node</span><span class="p">()</span>
-        <span class="k">return</span>   
-    <span class="n">my_node</span><span class="o">.</span><span class="n">destroy_node</span><span class="p">()</span>
-    <span class="n">rclpy</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
+        <span class="n">rclpy</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;shutdown&quot;</span><span class="p">)</span>
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">main</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">))</span>
-</code></pre></div></td></tr></table></div>
-<h3 id="handling-interruptions">Handling interruptions</h3>
-<p>In a real-life robot execution, one needs to be careful to handle all exceptional situations
-such that the robot system always ends up in a predictable state.</p>
+</code></pre></div></td></tr></table></div></li>
+</ul>
+<h3 id="ros2-setup-and-rosrunner">ROS2 setup and RosRunner</h3>
+<p>The following happens in the above code:</p>
+<ul>
+<li>line 25 is necessary to start/initialize ROS2</li>
+<li>line 26 creates a ROS2 node by using BeTFSM's singleton class: it only creates a node once,
+  and whenever a default node is required, it will get this singleton node.</li>
+<li>line 41-46, with run the full BeTFSM tree <code>sm</code> using ROSRunner and ensure that when something happens the ROS node is properly cleaned up. In a ROS2 environment, you run  your BeTFSM tree using <a class="autorefs autorefs-internal" title="betfsm_ros.ROSRunner" href="../runner/#betfsm_ros.ROSRunner">RosRunner</a>.  This ensures that ROS2 can simulatneously react to topics and other ROS2 interactions <strong>and</strong> run the BeTFSM tree.</li>
+</ul>
+<h3 id="ctrl-c-handling">Ctrl-C handling</h3>
+<ul>
+<li>
+<p>line 15-24, with run the full BeTFSM tree <code>sm</code> using ROSRunner and ensure that when something
+  happens the ROS node is properly cleaned up. ()</p>
+</li>
+<li>
+<p>line 35-37, we create our BeTFSM tree (in this case, generated by a function MySequence() ) The <code>cleanup_sm</code> subtree is defined to cleanup if a Ctrl-C events happen, we use these two subtrees to define the final BeTFSM tree <code>sm</code> that checks Ctrl-C and calls cleanup to stop the robot moving. See the <strong>eventhandling</strong> described in <a href="events.md">events</a></p>
+</li>
+<li>line 41-46, Uses <a class="autorefs autorefs-internal" title="betfsm_ros.ROSRunner" href="../runner/#betfsm_ros.ROSRunner">ROSRunner</a> to run the full BeTFSM tree and at the
+  same time checks for ROS2 events such as incomming topics. </li>
+</ul>
+<h3 id="crospinode">CrospiNode</h3>
+<ul>
+<li>line 31-32 creates a blackboard and fills it with a list of tasks.  These tasks bring together eTaSL lua specifications of a constraint-based task,  and a set of parameters for these lua-specifications. See <a href="https://rob.pages.gitlab.kuleuven.be/crospi/">Crospi</a></li>
+<li>line 14-21 defines a simple application as a Sequence of robot motions.
+   <a class="autorefs autorefs-internal" title="betfsm_crospi.CrospiTask" href="../crospi_task/#betfsm_crospi.CrospiTask">CrospiTask</a> is used to execute an eTaSL task using Crospi. This BeTFSM node has many optional parameters, but only two obligatory: the name of the BeTFSM node and the task_name, i.e. the name in the laoded task list. [CrospiTask][betfsm_cropsi.CrospiTask] checks for the <code>e_finished</code> event from
+   Crospi and when finished cleans up and deactivates Crospi, if an error occurs, CrospiTask will take care that Crospi is deactivated and cleaned up.  You can
+   manually deactivate and cleanup Crospy by using <a class="autorefs autorefs-internal" title="betfsm_crospi.CrospiDeactivate" href="../crospi_deactivate/#betfsm_crospi.CrospiDeactivate">CrospiDeactivate</a>, we used this to cleanup after the Ctrl-C event.</li>
+<li>Crospi can send more events related to a task (eTaSL's monitor).  You can handle these in two ways:<ul>
+<li>Call [CrospiTask][betfsm_cropsi.CrospiTask] with the <code>event_check</code> parameter False. This will keep Crospi running after CrospiTask is finised, such
+  that you can do some custom checking and use <a class="autorefs autorefs-internal" title="betfsm_crospi.CrospiDeactivate" href="../crospi_deactivate/#betfsm_crospi.CrospiDeactivate">CrospiDeactivate</a> to stop Crospi.</li>
+<li>You do an event check concurrently with the running CrospiTask by using <a class="autorefs autorefs-internal" title="betfsm.EventOutcome" href="../eventoutcome/#betfsm.EventOutcome">EventOutcome</a>, <a class="autorefs autorefs-internal" title="betfsm.EventSequential" href="../eventsequential/#betfsm.EventSequential">EventSequential</a> or
+  <a class="autorefs autorefs-internal" title="betfsm.EventConcurrent" href="../eventconcurrent/#betfsm.EventConcurrent">EventConcurrent</a>, together with <a class="autorefs autorefs-internal" title="betfsm_ros.TopicEvent_Condition" href="../topicevent_condition/#betfsm_ros.TopicEvent_Condition">TopicEvent_Condition</a>.  It is no problem to run these checks
+  concurrently.  For each topic <a class="autorefs autorefs-internal" title="betfsm_ros.TopicEvent_Condition" href="../topicevent_condition/#betfsm_ros.TopicEvent_Condition">TopicEvent_Condition</a> will maintain a single queue for all instances.</li>
+</ul>
+</li>
+</ul>
+<h3 id="crospioutput">CrospiOutput</h3>
+<div class="admonition todo">
+<p class="admonition-title">Todo</p>
+<p>This subqection and the following still have to be elaborated.</p>
+</div>
 <h4 id="directly-interrupting-and-cleaning-up">Directly interrupting and cleaning-up</h4>
 <p>A first solution is to directly interrupting the running state machines
 and <em>cleaning up</em> afterwards by calling the appropriate service calls
@@ -392,18 +455,11 @@ to stop the robot.</p>
 <span class="normal">47</span>
 <span class="normal">48</span>
 <span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">rclpy</span>
+<span class="normal">50</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">rclpy</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">betfsm</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">Sequence</span><span class="p">,</span>  <span class="n">Message</span><span class="p">,</span> 
+    <span class="n">Sequence</span><span class="p">,</span>  <span class="n">Message</span><span class="p">,</span> <span class="n">Repeat</span><span class="p">,</span>
     <span class="n">SUCCEED</span><span class="p">,</span> <span class="n">TICKING</span><span class="p">,</span> <span class="n">CANCEL</span><span class="p">,</span> <span class="n">ABORT</span><span class="p">,</span> <span class="n">TIMEOUT</span><span class="p">,</span> <span class="n">NO_EVENT</span><span class="p">,</span>
     <span class="n">TickingStateMachine</span><span class="p">,</span><span class="n">get_logger</span><span class="p">,</span><span class="n">set_logger</span><span class="p">,</span>
     <span class="n">EventSequential</span><span class="p">,</span> <span class="n">Ctrl_C_Condition</span>
@@ -429,29 +485,22 @@ to stop the robot.</p>
     <span class="n">set_logger</span><span class="p">(</span><span class="s2">&quot;default&quot;</span><span class="p">,</span><span class="n">my_node</span><span class="o">.</span><span class="n">get_logger</span><span class="p">())</span>
     <span class="n">set_logger</span><span class="p">(</span><span class="s2">&quot;crospi&quot;</span><span class="p">,</span><span class="n">my_node</span><span class="o">.</span><span class="n">get_logger</span><span class="p">())</span>
 
-    <span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;skill_example_3 started&quot;</span><span class="p">)</span>
-    <span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;This example cleans up after a ctrl-c using a cleanup state machine&quot;</span><span class="p">)</span>
-
     <span class="n">blackboard</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">load_task_list</span><span class="p">(</span><span class="s2">&quot;$[crospi_application_template]/skill_specifications/libraries/skill_lib_example/tasks/skill_example.json&quot;</span><span class="p">,</span><span class="n">blackboard</span><span class="p">)</span>
 
-
     <span class="c1"># running MySequence() and cleaning up when CTRL_C is pressed        </span>
-    <span class="n">nominal_sm</span> <span class="o">=</span> <span class="n">MySequence</span><span class="p">()</span>
+    <span class="n">nominal_sm</span> <span class="o">=</span> <span class="n">Repeat</span><span class="p">(</span><span class="s2">&quot;repeat&quot;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">MySequence</span><span class="p">())</span>
     <span class="n">cleanup_sm</span> <span class="o">=</span> <span class="n">CrospiDeactivate</span><span class="p">(</span><span class="n">force_outcome</span><span class="o">=</span><span class="n">CANCEL</span><span class="p">)</span>
     <span class="n">sm</span> <span class="o">=</span> <span class="n">EventSequential</span><span class="p">(</span><span class="s2">&quot;check_cancel&quot;</span><span class="p">,</span> <span class="n">Ctrl_C_Condition</span><span class="p">(</span><span class="s2">&quot;CTRL_C&quot;</span><span class="p">,</span><span class="n">repeated</span><span class="o">=</span><span class="mi">3</span><span class="p">),{</span><span class="n">NO_EVENT</span><span class="p">:</span><span class="n">nominal_sm</span><span class="p">,</span> <span class="s2">&quot;CTRL_C&quot;</span><span class="p">:</span><span class="n">cleanup_sm</span><span class="p">})</span>
 
     <span class="c1"># ROSRunner accepts command-line parameters (see --help)</span>
     <span class="c1"># has many more optional arguments than used below, see API documentation</span>
     <span class="n">runner</span> <span class="o">=</span> <span class="n">ROSRunner</span><span class="p">(</span><span class="n">my_node</span><span class="p">,</span><span class="n">sm</span><span class="p">,</span><span class="n">blackboard</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">publish_frequency</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">display_active</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-
     <span class="k">try</span><span class="p">:</span>
         <span class="n">runner</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+    <span class="k">finally</span><span class="p">:</span>
         <span class="n">my_node</span><span class="o">.</span><span class="n">destroy_node</span><span class="p">()</span>
-        <span class="k">return</span>   
-    <span class="n">my_node</span><span class="o">.</span><span class="n">destroy_node</span><span class="p">()</span>
-    <span class="n">rclpy</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
+        <span class="n">rclpy</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;shutdown&quot;</span><span class="p">)</span>
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
@@ -510,18 +559,11 @@ a robot to continue until he is in a safe state before stopping.</p>
 <span class="normal">47</span>
 <span class="normal">48</span>
 <span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">rclpy</span>
+<span class="normal">50</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">rclpy</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">betfsm</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">Sequence</span><span class="p">,</span>  <span class="n">Message</span><span class="p">,</span> 
+    <span class="n">Sequence</span><span class="p">,</span>  <span class="n">Message</span><span class="p">,</span> <span class="n">Repeat</span><span class="p">,</span>
     <span class="n">SUCCEED</span><span class="p">,</span> <span class="n">TICKING</span><span class="p">,</span> <span class="n">CANCEL</span><span class="p">,</span> <span class="n">ABORT</span><span class="p">,</span> <span class="n">TIMEOUT</span><span class="p">,</span> <span class="n">NO_EVENT</span><span class="p">,</span>
     <span class="n">TickingStateMachine</span><span class="p">,</span><span class="n">get_logger</span><span class="p">,</span><span class="n">set_logger</span><span class="p">,</span>
     <span class="n">EventSequential</span><span class="p">,</span> <span class="n">Ctrl_C_Condition</span>
@@ -547,29 +589,22 @@ a robot to continue until he is in a safe state before stopping.</p>
     <span class="n">set_logger</span><span class="p">(</span><span class="s2">&quot;default&quot;</span><span class="p">,</span><span class="n">my_node</span><span class="o">.</span><span class="n">get_logger</span><span class="p">())</span>
     <span class="n">set_logger</span><span class="p">(</span><span class="s2">&quot;crospi&quot;</span><span class="p">,</span><span class="n">my_node</span><span class="o">.</span><span class="n">get_logger</span><span class="p">())</span>
 
-    <span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;skill_example_3 started&quot;</span><span class="p">)</span>
-    <span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;This example cleans up after a ctrl-c using a cleanup state machine&quot;</span><span class="p">)</span>
-
     <span class="n">blackboard</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">load_task_list</span><span class="p">(</span><span class="s2">&quot;$[crospi_application_template]/skill_specifications/libraries/skill_lib_example/tasks/skill_example.json&quot;</span><span class="p">,</span><span class="n">blackboard</span><span class="p">)</span>
 
-
     <span class="c1"># running MySequence() and cleaning up when CTRL_C is pressed        </span>
-    <span class="n">nominal_sm</span> <span class="o">=</span> <span class="n">MySequence</span><span class="p">()</span>
+    <span class="n">nominal_sm</span> <span class="o">=</span> <span class="n">Repeat</span><span class="p">(</span><span class="s2">&quot;repeat&quot;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">MySequence</span><span class="p">())</span>
     <span class="n">cleanup_sm</span> <span class="o">=</span> <span class="n">CrospiDeactivate</span><span class="p">(</span><span class="n">force_outcome</span><span class="o">=</span><span class="n">CANCEL</span><span class="p">)</span>
     <span class="n">sm</span> <span class="o">=</span> <span class="n">EventSequential</span><span class="p">(</span><span class="s2">&quot;check_cancel&quot;</span><span class="p">,</span> <span class="n">Ctrl_C_Condition</span><span class="p">(</span><span class="s2">&quot;CTRL_C&quot;</span><span class="p">,</span><span class="n">repeated</span><span class="o">=</span><span class="mi">3</span><span class="p">),{</span><span class="n">NO_EVENT</span><span class="p">:</span><span class="n">nominal_sm</span><span class="p">,</span> <span class="s2">&quot;CTRL_C&quot;</span><span class="p">:</span><span class="n">cleanup_sm</span><span class="p">})</span>
 
     <span class="c1"># ROSRunner accepts command-line parameters (see --help)</span>
     <span class="c1"># has many more optional arguments than used below, see API documentation</span>
     <span class="n">runner</span> <span class="o">=</span> <span class="n">ROSRunner</span><span class="p">(</span><span class="n">my_node</span><span class="p">,</span><span class="n">sm</span><span class="p">,</span><span class="n">blackboard</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">publish_frequency</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">display_active</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-
     <span class="k">try</span><span class="p">:</span>
         <span class="n">runner</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+    <span class="k">finally</span><span class="p">:</span>
         <span class="n">my_node</span><span class="o">.</span><span class="n">destroy_node</span><span class="p">()</span>
-        <span class="k">return</span>   
-    <span class="n">my_node</span><span class="o">.</span><span class="n">destroy_node</span><span class="p">()</span>
-    <span class="n">rclpy</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
+        <span class="n">rclpy</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;shutdown&quot;</span><span class="p">)</span>
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
