@@ -27,6 +27,7 @@ nav:
     - "Technical documentation" :
       - "Technical introduction" : "technical_intro.md"
       - "Overview of the API" : "api_overview.md"
+      - "Running BeTFSM" : "runner.md"
       - "Event handling and conditions": "event.md"
       - "ROS2 Lifecycle" : "ros2lifecycle.md"
       - "Utilities" : 'utils.md'

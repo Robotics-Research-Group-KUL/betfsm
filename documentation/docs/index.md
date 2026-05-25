@@ -34,6 +34,9 @@ In this documentation, you will find the following:
   - A [**technical introduction**](technical_intro.md) to BeTFSM
   - [**API**](api_overview.md) documentation, this includes facilities to work with [ROS2](https://docs.ros.org/en/humble/index.html) and [cROSpi](https://rob.pages.gitlab.kuleuven.be/crospi)
 
+
+The source of BeTFSM can be found at the following [github side](https://github.com/Robotics-Research-Group-KUL/betfsm).
+
 ## Copyright
 <p/>
 <p/>
