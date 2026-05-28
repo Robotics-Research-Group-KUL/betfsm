@@ -1,6 +1,6 @@
 {
-    "$schema": "task_library.schema.json",
-    "name": "betfsm_demo",
+    "$schema": "../task_library.schema.json",
+    "name": "betfsm_demo_lib",
     "description": "Library with specific tasks for betfsm_demo.",
     "license": "GNU GPLv3",
     "version": "0.1.0",

@@ -1,0 +1,48 @@
+{
+    "$schema":"tasks-schema.json",
+    "tasks": [
+        {
+            "name": "follow",
+            "task_specification":{
+                "from-betfsm_demo_lib-version-0.1.0": true,
+                "is-follow_taskspace_input": true,
+                "file_path": "$[betfsm_demos]/tasks/betfsm_demos_lib/follow_taskspace_input.etasl.lua",
+                "parameters": {
+                    "angular_weight": 1.0,
+                    "translational_weight": 1.0,
+                    "task_frame": "tcp_frame"
+
+                }
+            }
+        },
+        {
+            "name": "sine",
+            "task_specification":{
+                "from-betfsm_demo_lib-version-0.1.0": true,
+                "is-sinewave": true,
+                "file_path": "$[betfsm_demos]/tasks/betfsm_demos_lib/sinewave.etasl.lua",
+                "parameters": {
+                    "amplitude": 0.15,
+                    "frequency": 0.3,
+                    "direction": [0,0,1],
+                    "execution_time": -10,
+                    "task_frame": "tcp_frame"
+                }
+            }
+        },
+        {
+            "name" :"MoveHome",
+            "task_specification":{
+                "from-core_task_lib-version-0.1.0": true,
+                "is-move_jointspace_trap": true,
+                "file_path": "$[crospi_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_jointspace_trap.etasl.lua",
+                "parameters": {
+                    "maxacc": 0.5,
+                    "maxvel": 0.5,                   
+                    "target_joints": [1.5708, -1.5708, 2.0944, -2.0944, -1.5708, 0],
+                    "units": "radians"
+                }
+            }
+        }
+    ]
+}

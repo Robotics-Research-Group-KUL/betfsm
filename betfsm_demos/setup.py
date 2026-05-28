@@ -14,16 +14,41 @@ import os
 #             data.append((  os.path.normpath(os.path.join(install_base,path,"..")), os.path.normpath(os.path.join(path,filename)) ) )
 #     return data
 
+
+
+# Function to dynamically build the data_files list for a whole tree
+def generate_data_files(source_dir, target_base):
+    data_files = []
+    for root, dirs, files in os.walk(source_dir):
+        if files:
+            # Determine the relative path to maintain the nested structure
+            rel_path = os.path.relpath(root, source_dir)
+            # Define the target installation directory in 'share'
+            if rel_path == '.':
+                target_dir = os.path.join(target_base, source_dir)
+            else:
+                target_dir = os.path.join(target_base, source_dir, rel_path)
+            
+            # Get full paths of all files in the current directory
+            file_paths = [os.path.join(root, f) for f in files]
+            data_files.append((target_dir, file_paths))
+    return data_files
+
+
+data_files = [
+    ('share/ament_index/resource_index/packages',
+        ['resource/' + package_name]),
+    ('share/' + package_name, ['package.xml']),
+]
+data_files.extend(generate_data_files('tasks', os.path.join('share', package_name)))
+
+
+
 setup(
     name=package_name,
     version='0.0.0',
     packages=find_packages(exclude=['test']),
-    data_files=[
-        ('share/ament_index/resource_index/packages',
-            ['resource/' + package_name]),
-        ('share/' + package_name, ['package.xml']),
-        ('share/' + package_name + "/tasks", ['./tasks/my_tasks.json'])
-        ],
+    data_files=data_files,
     install_requires=['setuptools'],
     zip_safe=True,
     maintainer='Erwin Aertbeliën',

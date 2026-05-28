@@ -56,40 +56,10 @@ class Libraries:
     task_libraries:  list[Library] = None  # list of Library
     task_schema_loc: Path          = None  # location of task-schema.json **file**
 
-def generate_json_schema_task(filepath_task_lua, filepath_task_schema_json, uri_task_lua, filepath_task_library_json):
-    """Generate a schema for the specified etasl task specification
 
-    Parameters
-    ----------
-    filepath_task_lua : string
-        path to the task description (*.etasl.lua file)
-    filepath_task_schema_json : string
-        path to write the the json schema to that describes the task's parameters
-    uri_task_lua : string
-        the URI to refer to the original task description file (can contain $[...] references)
-    filepath_task_library_json : string
-        the task library json file where the name and version number of the library can be found
 
-    Returns
-    -------
-    number
-        returns error code, 0 means everything ok.
-    """
-    arg=f"require('task_requirements2');\
-        _GENERATE=true; \
-        _FILEPATH_TASK_SCHEMA_JSON='{filepath_task_schema_json}';\
-        _URI_TASK_LUA='{uri_task_lua}';\
-        _FILEPATH_TASK_LIBRARY_JSON='{filepath_task_library_json}'; \
-        dofile('{filepath_task_lua}');\
-        print('finished generating {filepath_task_schema_json}') "
-    result = subprocess.run(["lua","-e", arg],check=False, capture_output=True,text=True)
-    print("return code : ",result.returncode)
-    print(result.stdout)
-    print(result.stderr)
-    return result.returncode
-
-def get_libraries_and_tasks(location:Path|str):
-    """get all task libraries and tasks in a directory subtree
+def create_Libraries(location:Path|str):
+    """create the Libraries data structure from the directory tree at given location.
 
     Parameters
     ----------
@@ -124,8 +94,9 @@ def get_libraries_and_tasks(location:Path|str):
 
 
 
+
 def use_flat_layout(libs:Libraries, task_schema_loc: Path|str):    
-    """determines location using the flat layout strategy
+    """determines location of task schemas using the flat layout strategy
 
     Parameters
     ----------
@@ -137,7 +108,7 @@ def use_flat_layout(libs:Libraries, task_schema_loc: Path|str):
     Returns
     -------
     Libraries
-        Updated libs data-structure
+        Updated Libraries data-structure
     """
     for lib in libs.task_libraries:
         lib.tasks_schema = []
@@ -148,8 +119,9 @@ def use_flat_layout(libs:Libraries, task_schema_loc: Path|str):
 
 
 def use_hierarchal_layout( libs:Libraries, task_schema_loc:Path):
-    """determines location using the hierarchical layout strategy
-
+    """determines location of task schemas using the hierarchical layout strategy
+      
+    
     Parameters
     ----------
     libs : Libraries
@@ -159,6 +131,7 @@ def use_hierarchal_layout( libs:Libraries, task_schema_loc:Path):
 
     Returns
     -------
+
     Libraries
         Updated libs data-structure
     """    
@@ -170,9 +143,39 @@ def use_hierarchal_layout( libs:Libraries, task_schema_loc:Path):
     libs.task_schema_loc = Path(task_schema_loc).resolve()
     return libs
 
+def generate_json_schema_for_task(filepath_task_lua, filepath_task_schema_json, uri_task_lua, filepath_task_library_json):
+    """Generate a schema for the specified etasl task specification
 
+    Parameters
+    ----------
+    filepath_task_lua : string
+        path to the task description (*.etasl.lua file)
+    filepath_task_schema_json : string
+        path to write the the json schema to that describes the task's parameters
+    uri_task_lua : string
+        the URI to refer to the original task description file (can contain $[...] references)
+    filepath_task_library_json : string
+        the task library json file where the name and version number of the library can be found
 
-def generate_task_schemas(libs:Libraries) -> list[str]:
+    Returns
+    -------
+    number
+        returns error code, 0 means everything ok.
+    """
+    arg=f"require('task_requirements2');\
+        _GENERATE=true; \
+        _FILEPATH_TASK_SCHEMA_JSON='{filepath_task_schema_json}';\
+        _URI_TASK_LUA='{uri_task_lua}';\
+        _FILEPATH_TASK_LIBRARY_JSON='{filepath_task_library_json}'; \
+        dofile('{filepath_task_lua}');\
+        print('finished generating {filepath_task_schema_json}') "
+    result = subprocess.run(["lua","-e", arg],check=False, capture_output=True,text=True)
+    print("return code : ",result.returncode)
+    print(result.stdout)
+    print(result.stderr)
+    return result.returncode
+
+def generate_json_schema_for_tasks(libs:Libraries) -> list[str]:
     """call lua to generate the individual json schema's to verify the arguments to the
        eTaSL tasks
 
@@ -194,7 +197,7 @@ def generate_task_schemas(libs:Libraries) -> list[str]:
         for i in range(len(lib.tasks_lua)):                        
             filepath_task_schema_json  = lib.tasks_schema[i]
             filepath_task_schema_json.parent.mkdir(parents=True,exist_ok=True) # ensure dir exists
-            generate_json_schema_task(
+            generate_json_schema_for_task(
                 filepath_task_lua          = lib.tasks_lua[i].as_posix(), 
                 filepath_task_schema_json  = filepath_task_schema_json.as_posix(),
                 uri_task_lua               = lib.tasks_lua_ref[i],
@@ -202,6 +205,36 @@ def generate_task_schemas(libs:Libraries) -> list[str]:
             # use relative path w.r.t. the tasks-schema.json file.
             #task_specs.append(  filepath_task_schema_json.relative_to(base).as_posix() )
     return task_specs             
+
+def deduce_task_schemas(package:str, relative_path:Path|str, task_schema_loc: Path|str) -> list[str]:
+    """get a list of task schema's, relative to the location of tasks-schema.json for a task library at package + relative path
+
+    Parameters
+    ----------
+    package : str
+        package name
+    relative_path : Path | str
+        relative path of the subtree in the package
+    task_schema_loc : Path | str
+        location where you want the `tasks_schema.json` file to be.
+
+    Returns
+    -------
+    list[str]
+        list of `$ref` schema references to the task schemas.
+    """
+    location = aip.get_package_share_path(package) / Path(relative_path)
+
+    #task_schema_root          = find_ros2_package_root(task_schema_loc)
+    #task_schema_relative_path = task_schema_loc.relative_to(task_schema_root)
+    #task_schema_package       = get_ros2_package_name(task_schema_root)
+
+    #task_schema_location = aip.get_package_share_path(task_schema_package) / task_schema_relative_path
+
+    return [ {"$ref": (location / json).as_posix()}     for json in location.rglob("*.etasl.json")     ]
+
+
+
 
 
 def get_task_schemas(libs:Libraries) -> list[str]:
@@ -220,9 +253,14 @@ def get_task_schemas(libs:Libraries) -> list[str]:
     task_specs=[]
     base = libs.task_schema_loc.parent 
     for lib in libs.task_libraries:
-        for i in range(len(lib.tasks_lua)):
+        for i in range(len(lib.tasks_schema)):
+#            print("schema : ",lib.tasks_schema[i])
+#            print("base   : ",base)
+#            print("crospi_application_template : ",aip.get_package_share_directory("crospi_application_template"))
+#            print("betfsm_demos : ",aip.get_package_share_directory("betfsm_demos"))
             task_specs.append( {"$ref":lib.tasks_schema[i].relative_to(base).as_posix()} )
     return task_specs
+
 
 def get_robot_specifications_from_source(robot_spec_dir:Path|str) -> list[str]:
     """find a list of robot specifications
@@ -332,12 +370,19 @@ from pprint import pprint
 
 tasks_schema_loc = Path("./tasks-schema.json")
 
-libs = get_libraries_and_tasks('betfsm_demos_lib')
+libs = create_Libraries('betfsm_demos_lib')
 libs = use_flat_layout(libs,"./tasks_schema.json")
-generate_task_schemas(libs)
+pprint(libs)
+generate_json_schema_for_tasks(libs)
 list_of_tasks = get_task_schemas(libs)
-# list_of_robot_refs = get_robot_specifications_from_source("../../../crospi_application_template/robot_models/robot_specifications")
 list_of_robot_refs = get_robot_specifications_from_package("crospi_application_template", 'robot_models/robot_specifications')
+
+
+# add libraries from crospi_application_template
+list_of_tasks += deduce_task_schemas("crospi_application_template","task_specifications/libraries","./tasks_schema.json")  
+
+
+
 generate_tasks_schema(tasks_schema_loc,list_of_tasks, list_of_robot_refs)
 
 

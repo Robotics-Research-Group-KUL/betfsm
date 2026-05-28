@@ -463,33 +463,32 @@ local function parameters(task_description, param_tab)
     --- @param task_description (string) A string containing a description of the task specification.
     --- @param param_tab (table) A table containing a partial JSON Schema specification of all individual parameters.
     --- @return schema (table) A table containing the full generated JSON Schema
-    --- 
-    --- Global variables:
-    ---    _GENERATE                   : generate schema instead of executing complete task description.
-    ---    _FILEPATH_TASK_SCHEMA_JSON  : to be written with schema for parameters of this task
-    ---    _URI_TASK_LUA               : to refer to lua task specification in the schema and files using the schema (can use $[..] directives)
-    ---    _FILEPATH_TASK_LIBRARY_JSON : describes the name and version number of the task library, needed for the task schema.
     local function write_json_schema(task_description, param_tab)
 
         local task_library_json = {name="",version="",description="", authors={}} --During execution (and not generation of schemas) this is not relevant
-        -- local lib_directory_name = "" --During execution (and not generation of schemas) this is not relevant. This is not necessarily the same as lib_name
+        local lib_directory_name = "" --During execution (and not generation of schemas) this is not relevant. This is not necessarily the same as lib_name
+        local application_name = _APPLICATION_NAME or "application_name_not_defined"
 
+        if _LUA_FILEPATH_TO_GENERATE_JSON_SCHEMA then -- _LUA_FILEPATH_TO_GENERATE_JSON_SCHEMA is only defined during generation of schemas and NOT during execution of tasks
+            task_library_json = load_json_file(_LUA_FILEPATH_TO_GENERATE_JSON_SCHEMA .. "../task_library.json")
+            lib_directory_name = _LUA_FILEPATH_TO_GENERATE_JSON_SCHEMA:match("([^/]+)/task_json_schemas/$")
 
-        if _GENERATE then            
-            assert( _FILEPATH_TASK_SCHEMA_JSON )
-            print( "_FILEPATH_TASK_SCHEMA_JSON  = ".._FILEPATH_TASK_SCHEMA_JSON )
-            assert( _URI_TASK_LUA )
-            print( "_URI_TASK_LUA               = " .. _URI_TASK_LUA )
-            assert( _FILEPATH_TASK_LIBRARY_JSON )
-            print( "_FILEPATH_TASK_LIBRARY_JSON = " .. _FILEPATH_TASK_LIBRARY_JSON )
-            task_library_json  = load_json_file( _FILEPATH_TASK_LIBRARY_JSON )
+            if lib_directory_name == nil then
+                error("The file structure for the task specification libraries is not being followed. " .. _LUA_FILEPATH_TO_GENERATE_JSON_SCHEMA)
+            end
         end
-        local filepath_lua = _URI_TASK_LUA or ""
-
 
         local lib_name = task_library_json["name"]
         local lib_version = task_library_json["version"]
         local lib_description = task_library_json["description"]
+
+        -- local filename_lua = "dummy_name.etasl.lua"
+        -- if _LUA_FILEPATH_TO_GENERATE_JSON_SCHEMA then
+        --     filename_lua = _LUA_FILEPATH_TO_GENERATE_JSON_SCHEMA:match("^.+/(.+)$") --obtains the filename from a full path
+        -- end
+
+        -- local filename_json = filename_lua:gsub("%.lua$", "") ..".json" --removes the .lua extension and adds the .json for the generated schema
+        -- local filename_no_ext = filename_json:gsub("%.json$", ""):gsub("%.etasl$", "")--removes extensions .etasl and .json
 
         local descript = "Parameters needed to the corresponding task specification in eTaSL"
         if next(param_tab) == nil then --Checks if table is empty
@@ -534,8 +533,7 @@ local function parameters(task_description, param_tab)
         }
 
 
-        --local filepath_lua =  "$["..  application_name .. "]/task_specifications/libraries/" .. lib_directory_name .. "/task_specifications/" .. filename_lua
-        
+        local filepath_lua =  "$["..  application_name .. "]/task_specifications/libraries/" .. lib_directory_name .. "/task_specifications/" .. filename_lua
         schema.dependencies[task_identifier].properties["file_path"] = {description="File path of the corresponding task specification", type="string", const=filepath_lua}
         schema.dependencies[task_identifier].properties["parameters"] = {type="object", description= "List of parameters needed to define an instance of the task specification",required=required_parameters,additionalProperties=false, properties={}}
 
@@ -543,13 +541,16 @@ local function parameters(task_description, param_tab)
             local key_name = next(param_tab[k])
             schema.dependencies[task_identifier].properties.parameters.properties[key_name] = param_tab[k][key_name]
         end
+        -- schema.dependencies[task_identifier].required = required_parameters
+        -- table.insert(schema.dependencies[task_identifier].required, "file_path")
 
-        if _GENERATE then
+
+        if _LUA_FILEPATH_TO_GENERATE_JSON_SCHEMA then 
             local dkjson = require("dkjson") -- Ensure you have a JSON library like json, dkjson or cjson. In this case dkjson is used
-            local file = assert(io.open(_FILEPATH_TASK_SCHEMA_JSON, "w"))
+            local file = assert(io.open(_LUA_FILEPATH_TO_GENERATE_JSON_SCHEMA .. filename_json, "w"))
             file:write(dkjson.encode(schema, { indent = true }))
             file:close()
-            print("JSON Schema file generated, no further execution of task.")
+            print("Code was exited after generating the JSON Schema file, since this should not be done during execution but only in the generation phase.")
             os.exit(0)
         end
 
