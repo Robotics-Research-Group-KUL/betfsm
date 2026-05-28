@@ -1,0 +1,23 @@
+{
+    "$schema": "task_library.schema.json",
+    "name": "betfsm_demo",
+    "description": "Library with specific tasks for betfsm_demo.",
+    "license": "GNU GPLv3",
+    "version": "0.1.0",
+    "authors": [
+        {
+            "name": "Erwin Aertbeliën",
+            "affiliation": "KU Leuven",
+            "email": "erwin.aertbelien@kuleuven.be"
+        }
+    ],
+    "maintainers": [
+        {
+            "name": "Erwin Aertbeliën",
+            "affiliation": "KU Leuven",
+            "email": "erwin.aertbelien@kuleuven.be"
+        }
+    ],
+    "acknowledgements": "The authors acknowledge the financial support of the Au2Wire Flanders Make IRVA project"
+
+}

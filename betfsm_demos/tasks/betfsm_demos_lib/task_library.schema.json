@@ -1,0 +1,112 @@
+{
+    "$schema":"http://json-schema.org/draft-06/schema",
+    "$id":"task_library.json",
+    "title":"eTaSL task specifications libraries",
+    "type":"object",
+    "description":"Libraries containing etasl task specifications",
+    "required": ["name", "version","description","authors","maintainers"],
+    "properties": {
+        "$schema" : {
+            "type":"string"
+        },
+        "name":{
+            "description": "Name of the library",
+            "type":"string",
+            "pattern": "^[a-zA-Z0-9_]+$"
+        },
+        "version":{
+            "description": "Version of library",
+            "type":"string",
+            "pattern": "^(\\d+\\.){2}\\d+(-[a-zA-Z]+)?$",
+            "default": "0.0.0",
+            "examples": [
+                "1.0.0-beta"
+            ]
+        },
+        "description":{
+            "description": "Text describing the purpose of the library",
+            "type":"string"
+        },
+        "license":{
+            "description": "",
+            "type":"string",
+            "examples":[
+                "GNU GPLv3",
+                "Apache License 2.0"
+            ]
+        },
+        "authors": {
+            "title":"List of authors",
+            "description":"List of authors that participated on the development of the library",
+            "type" : "array",
+            "items" : {
+                "$ref" : "#/$defs/author" 
+            }
+        },
+        "maintainers": {
+            "title":"List of maintainers",
+            "description":"List of maintainers that currently maintain the library",
+            "type" : "array",
+            "items" : {
+                "$ref" : "#/$defs/maintainer" 
+            }
+        },
+        "acknowledgements":{
+            "description": "acknowledgements to people who made contributions or to project funding",
+            "type":"string"
+        }
+    },
+    "$defs": {
+        "author": { 
+            "title":"Author",
+            "type":"object",
+            "description":"Data of an author",
+            "required": ["name", "affiliation","email"],
+            "properties": {
+                "name":{
+                    "description": "Name of the author",
+                    "type":"string"
+                },
+                "affiliation":{
+                    "description": "Affiliation of the author",
+                    "type":"string",
+                    "default": "KU Leuven"
+                },
+                "email":{
+                    "description": "Email of the author",
+                    "type":"string",
+                    "pattern": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+                    "examples": [
+                        "author_mail@gmail.com"
+                    ]
+                }
+            }
+        },
+        "maintainer": { 
+            "title":"Maintainer",
+            "type":"object",
+            "description":"Data of an maintainer",
+            "required": ["name", "affiliation","email"],
+            "properties": {
+                "name":{
+                    "description": "Name of the maintainer",
+                    "type":"string"
+                },
+                "affiliation":{
+                    "description": "Affiliation of the maintainer",
+                    "type":"string",
+                    "default": "KU Leuven"
+                },
+                "email":{
+                    "description": "Email of the maintainer",
+                    "type":"string",
+                    "pattern": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+                    "examples": [
+                        "maintainer_mail@gmail.com"
+                    ]
+                }
+            }
+        }
+    },
+    "additionalProperties":false
+}
