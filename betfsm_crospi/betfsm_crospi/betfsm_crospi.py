@@ -89,7 +89,7 @@ class SetTaskParameters(ServiceClient):
                  name:str,
                  task_name:str,
                  srv_name:str = "/crospi_node",
-                 cb: Callable = default_parameter_setter,
+                 cb: Callable[[dict],dict] = default_parameter_setter,
                  timeout:Duration = Duration(seconds=1.0), 
                  node:Node = None):
         """
@@ -105,7 +105,8 @@ class SetTaskParameters(ServiceClient):
                 name of the etasl node, by default `/crospi_node`
             cb:
                 callback that sets the parameters, with signature `def param_setters(blackboard) ->param`
-                where param is a Dict with the parameters of the task.
+                where param is a Dict with the parameters of the task.  Every key in this dict will
+                override the default parameters defined in the loaded json file with tasks.
             timeout:
                 returns TIMEOUT if timeout is exceeded.
             node:
@@ -137,7 +138,6 @@ class SetTaskParameters(ServiceClient):
         #         raise ValueError(f"parameter declared 'external' is not set by callback ('external' is obsolete)")          
 
         param = etasl_params.get_task_parameters_filled(blackboard,self.task_name)
-
         # calling callback
         if self.cb is not None:
             param.update( self.cb(blackboard)  )
@@ -554,7 +554,7 @@ class CrospiDeactivate(Sequence):
                 duration of timeout
             node:
                 ROS2 node that BeTFSM uses (None: will get singleton instance)
-            outcome:
+            force_outcome:
                 the outcome of this statemachine (in all circumstances)
         """
         super().__init__("crospi_deactivate")
@@ -609,7 +609,7 @@ class CrospiTask(Fallback):
                 Uses a duration of 1 second otherwise.
             node:
                 [optional] ROS2 node to be used. Uses BeTFSMNode.get_instance() otherwise.
-            eventqeueu_size:
+            eventqueue_size:
                 minimum size of the event queue that receives crospi events.
             max_age:
                 maximum age in seconds that is allowed to be received.
@@ -653,7 +653,7 @@ class CrospiTask(Fallback):
         
         cleanup_seq = CrospiDeactivate(srv_name,timeout,node,force_outcome=CANCEL)        
         # if the seq ends with ABORT or TIMEOUT, fallback to cleanup_seq
-        super().__init__(name+"_fallback",[seq,cleanup_seq],lambda bb,oc: oc==ABORT or oc==TIMEOUT)
+        super().__init__(name,[seq,cleanup_seq],lambda bb,oc: oc==ABORT or oc==TIMEOUT)
 
 class CrospiOutput(GeneratorWithState):
     """
@@ -668,7 +668,9 @@ class CrospiOutput(GeneratorWithState):
             path: str = "/output",            
             node: Node = None,
         ) -> None:
-        """Record output of Crospi in a topic while executing subtree
+        """Record output of Crospi for a topic in a queue while executing subtree
+           This queue is put in a specified location in the blackboard under two children "header" and "data".  The header is
+           taken from the labels of the first message that arrives.
 
         Parameters:
             name : str
@@ -676,7 +678,7 @@ class CrospiOutput(GeneratorWithState):
             topic : str
                 ROS2 topic to subscribe to, should be of message type Output
             subtree : TickingState, optional
-                subtree to execute, None will be converted into AlwaysOutcome(SUCCEED), by default None            
+                subtree to execute, None will be converted into AlwaysOutcome(TICKING), by default None            
             queue_size : int, optional
                 maximum length of the buffer to record the data, by default 1_000_000
             path : str, optional
@@ -685,7 +687,7 @@ class CrospiOutput(GeneratorWithState):
                 ROS2 node, if None, BeTFSMNode.get_instance() will be used. by default None
         """
         if subtree==None:
-            subtree = AlwaysOutcome(SUCCEED)
+            subtree = AlwaysOutcome(TICKING)
         super().__init__("eTaSLOutput",[SUCCEED, CANCEL],subtree)
         if node==None:
             self.node = BeTFSMNode.get_instance()
@@ -720,14 +722,17 @@ class CrospiOutput(GeneratorWithState):
         if path_base==None:
             get_logger("crospi").warn("CrospiOutput: blackboard path is not valid")
             return CANCEL
-        subscription = self.node.create_subscription(Output,self.topic,self.cb_msg,self.qos)
+        self.subscription = self.node.create_subscription(Output,self.topic,self.cb_msg,self.qos)
         while True:
             outcome = self.state(blackboard)
             if outcome!=TICKING:
                 break
             yield TICKING        
-        self.node.destroy_subscription(subscription)
         #self.queue = list(self.queue)
         yield outcome
 
+    def exit(self):
+        # this is also called when its externally reset or naturally finishes by itself
+        self.node.destroy_subscription(self.subscription)
+        return super().exit()
 
