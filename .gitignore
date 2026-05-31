@@ -7,3 +7,6 @@ betfsm/older
 *.egg-info/
 __pycache__
 documentation/site
+obsolete
+.ilua_history
+*.swp
