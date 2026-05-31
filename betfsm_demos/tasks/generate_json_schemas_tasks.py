@@ -4,6 +4,7 @@ import subprocess
 import ament_index_python as aip
 from dataclasses import dataclass,field
 import json
+import sys
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 
@@ -118,7 +119,7 @@ def use_flat_layout(libs:Libraries, task_schema_loc: Path|str):
     return libs
 
 
-def use_hierarchal_layout( libs:Libraries, task_schema_loc:Path):
+def use_hierarchical_layout( libs:Libraries, task_schema_loc:Path):
     """determines location of task schemas using the hierarchical layout strategy
       
     
@@ -143,7 +144,7 @@ def use_hierarchal_layout( libs:Libraries, task_schema_loc:Path):
     libs.task_schema_loc = Path(task_schema_loc).resolve()
     return libs
 
-def generate_json_schema_for_task(filepath_task_lua, filepath_task_schema_json, uri_task_lua, filepath_task_library_json):
+def generate_json_schema_for_task(filepath_task_lua, filepath_task_schema_json, uri_task_lua, filepath_task_library_json,verbose=False):
     """Generate a schema for the specified etasl task specification
 
     Parameters
@@ -170,12 +171,15 @@ def generate_json_schema_for_task(filepath_task_lua, filepath_task_schema_json, 
         dofile('{filepath_task_lua}');\
         print('finished generating {filepath_task_schema_json}') "
     result = subprocess.run(["lua","-e", arg],check=False, capture_output=True,text=True)
-    print("return code : ",result.returncode)
-    print(result.stdout)
-    print(result.stderr)
+    if verbose:        
+        print("\t\t",result.stdout.replace("\n","\n\t\t"))
+        print("\t\treturn code : ",result.returncode)
+    if result.returncode!=0:
+        print(result.stderr)
+        print("\t\treturn code : ",result.returncode)
     return result.returncode
 
-def generate_json_schema_for_tasks(libs:Libraries) -> list[str]:
+def generate_json_schema_for_tasks(libs:Libraries,verbose=False) -> list[str]:
     """call lua to generate the individual json schema's to verify the arguments to the
        eTaSL tasks
 
@@ -194,6 +198,8 @@ def generate_json_schema_for_tasks(libs:Libraries) -> list[str]:
     #base = libs.task_schema_loc.parent 
     for lib in libs.task_libraries:
         filepath_task_library_json = lib.task_library.as_posix()
+        if verbose:
+            print("\tFound library at: ",filepath_task_library_json)
         for i in range(len(lib.tasks_lua)):                        
             filepath_task_schema_json  = lib.tasks_schema[i]
             filepath_task_schema_json.parent.mkdir(parents=True,exist_ok=True) # ensure dir exists
@@ -201,12 +207,13 @@ def generate_json_schema_for_tasks(libs:Libraries) -> list[str]:
                 filepath_task_lua          = lib.tasks_lua[i].as_posix(), 
                 filepath_task_schema_json  = filepath_task_schema_json.as_posix(),
                 uri_task_lua               = lib.tasks_lua_ref[i],
-                filepath_task_library_json = filepath_task_library_json)            
+                filepath_task_library_json = filepath_task_library_json,
+                verbose=verbose)            
             # use relative path w.r.t. the tasks-schema.json file.
             #task_specs.append(  filepath_task_schema_json.relative_to(base).as_posix() )
     return task_specs             
 
-def deduce_task_schemas(package:str, relative_path:Path|str, task_schema_loc: Path|str) -> list[str]:
+def deduce_task_schemas(package:str, relative_path:Path|str, task_schema_loc: Path|str, verbose=False) -> list[str]:
     """get a list of task schema's, relative to the location of tasks-schema.json for a task library at package + relative path
 
     Parameters
@@ -223,15 +230,19 @@ def deduce_task_schemas(package:str, relative_path:Path|str, task_schema_loc: Pa
     list[str]
         list of `$ref` schema references to the task schemas.
     """
-    location = aip.get_package_share_path(package) / Path(relative_path)
-
-    #task_schema_root          = find_ros2_package_root(task_schema_loc)
-    #task_schema_relative_path = task_schema_loc.relative_to(task_schema_root)
-    #task_schema_package       = get_ros2_package_name(task_schema_root)
-
-    #task_schema_location = aip.get_package_share_path(task_schema_package) / task_schema_relative_path
-
-    return [ {"$ref": (location / json).as_posix()}     for json in location.rglob("*.etasl.json")     ]
+    package_loc = aip.get_package_share_path(package) 
+    location = package_loc / Path(relative_path)
+    if verbose:
+        lst = [ json.relative_to(package_loc).as_posix()     for json in location.rglob("*.etasl.json")     ]
+        if len(lst)>0:
+            print(f"Found tasks in ROS2 package {package}:")
+            for tsk in lst:
+                print(f"\t{tsk}")
+        else:
+            print("No tasks found")
+        return [ {"$ref": (location / json).as_posix()}     for json in location.rglob("*.etasl.json")     ]
+    else:
+        return [ {"$ref": (location / json).as_posix()}     for json in location.rglob("*.etasl.json")     ]
 
 
 
@@ -254,10 +265,6 @@ def get_task_schemas(libs:Libraries) -> list[str]:
     base = libs.task_schema_loc.parent 
     for lib in libs.task_libraries:
         for i in range(len(lib.tasks_schema)):
-#            print("schema : ",lib.tasks_schema[i])
-#            print("base   : ",base)
-#            print("crospi_application_template : ",aip.get_package_share_directory("crospi_application_template"))
-#            print("betfsm_demos : ",aip.get_package_share_directory("betfsm_demos"))
             task_specs.append( {"$ref":lib.tasks_schema[i].relative_to(base).as_posix()} )
     return task_specs
 
@@ -341,11 +348,15 @@ def generate_tasks_schema(tasks_schema_loc:Path|str,list_of_tasks:list[str], lis
                                 "description":"Name of the task (unique to the task instance)",
                                 "type":"string"
                             },
+                           "description" : {
+                                "description":"Description of the instantiated skill (optional)",
+                                "type": "string"
+                           },
                             "robot_specification_file":{
                                 "description":"(optional) If overriding the default_robot_specification, provide the name of the etasl lua file containing the robot specification.",
                                 "type": "string",
                                 "pattern": ".*\\\.lua$",
-                                "examples":  ["$[crospi_application_template]/robot_models/robot_specifications/kuka_iiwa.etasl.lua", "$[crospi_application_template]/robot_models/robot_specifications/ur10.etasl.lua", "$[crospi_application_template]/robot_models/robot_specifications/ur10e.etasl.lua" ] 
+                                "examples":  [] 
                             },
                             "task_specification":{
                                 "oneOf": []
@@ -366,25 +377,92 @@ def generate_tasks_schema(tasks_schema_loc:Path|str,list_of_tasks:list[str], lis
 
 
 
-from pprint import pprint
+def old_main():
 
-tasks_schema_loc = Path("./tasks-schema.json")
+    from pprint import pprint
 
-libs = create_Libraries('betfsm_demos_lib')
-libs = use_flat_layout(libs,"./tasks_schema.json")
-pprint(libs)
-generate_json_schema_for_tasks(libs)
-list_of_tasks = get_task_schemas(libs)
-list_of_robot_refs = get_robot_specifications_from_package("crospi_application_template", 'robot_models/robot_specifications')
+    tasks_schema_loc = Path("./tasks-schema.json")
 
 
-# add libraries from crospi_application_template
-list_of_tasks += deduce_task_schemas("crospi_application_template","task_specifications/libraries","./tasks_schema.json")  
+    print("TODO: delete existing .etasl.json files before generating in the library")
+
+    print("----------------------------------------------------------")
+    print("until integrated with crospi: ")
+    print("adapt LUA_PATH such that task_requirements2.lua can be found")
+    print('e.g. export LUA_PATH="$LUA_PATH;/home/eaertbel/Temp/crospi-erwin/crospi_ws/src/betfsm/betfsm_demos/tasks/?.lua')
+    print("----------------------------------------------------------")
+
+    libs = create_Libraries('betfsm_demos_lib')
+    libs = use_flat_layout(libs,"./tasks_schema.json")
+    #pprint(libs)
+    generate_json_schema_for_tasks(libs)
+    list_of_tasks = get_task_schemas(libs)
+    list_of_robot_refs = get_robot_specifications_from_package("crospi_application_template", 'robot_models/robot_specifications')
+
+
+    # add libraries from crospi_application_template
+    list_of_tasks += deduce_task_schemas("crospi_application_template","task_specifications/libraries","./tasks_schema.json")  
 
 
 
-generate_tasks_schema(tasks_schema_loc,list_of_tasks, list_of_robot_refs)
+    generate_tasks_schema(tasks_schema_loc,list_of_tasks, list_of_robot_refs)
 
 
 
+import argparse
+def main(args=None):
+    parser = argparse.ArgumentParser(description="Tool to create and manipulate tasks_schema.json files and *.etasl.lua files that describe task parameters")   
+    subparsers = parser.add_subparsers(dest="command", required=True, help="Available commands")
+
+    # Create the parser for the "create" command
+    parser_create = subparsers.add_parser("create", 
+        help="Create a new stasks-schema.json file from a directory with task libraries and *.etasl.lua task specifications",
+        description="Create a new tasks-schema.json file from a directory with task libraries and *.etasl.lua task specifications"
+    )
+    layout_group = parser_create.add_mutually_exclusive_group(required=True)
+    layout_group.add_argument("--flat", action="store_true", help="Generate *.etasl.json files for a flat directory structure")
+    layout_group.add_argument("--hierarchical", action="store_true", help="Generate *.etasl.json files for an hierarchical directory structure")
+
+    parser_create.add_argument("tasks_schema", type=str, help="File path for the tasks-schema.json file")
+    parser_create.add_argument("search_path", type=str, help="Directory to (recursively) search for task libraries and task specifications")
+    parser_create.add_argument("package", type=str, help="ROS2 package name for the package that contains robot descriptions")
+    parser_create.add_argument("localpath", type=str, help="local path inside the ROS2 package that contains the robot descriptions")
+    parser_create.add_argument("--verbose","-v", action="store_true",help="Increas verbosity")
+    # Create the parser for the "add" command
+    parser_add = subparsers.add_parser("add", 
+        help="Adds external references to task libraries and *.etal.json parameter schemas ",
+        description="Adds external references to task libraries and *.etal.json parameter schemas "
+    )
+    parser_add.add_argument("tasks_schema", type=str, help="File path to an existing tasks-schema.json file")
+    parser_add.add_argument("package", type=str, help="ROS2 package name for the additional task libraries and task specifications")
+    parser_add.add_argument("localpath", type=str, help="local path inside the ROS2 package")
+    parser_add.add_argument("--verbose","-v", action="store_true",help="Increas verbosity")
+    
+    args = parser.parse_args()
+    
+    if args.command == "create":
+        libs = create_Libraries(args.search_path)
+        if args.flat:
+            libs = use_flat_layout(libs,args.tasks_schema)
+        if args.hierarchical:
+            libs = use_hierarchical_layout(libs,args.tasks_schema)        
+        generate_json_schema_for_tasks(libs,verbose=args.verbose)
+        list_of_tasks      = get_task_schemas(libs)
+        list_of_robot_refs = get_robot_specifications_from_package("crospi_application_template", 'robot_models/robot_specifications')
+        generate_tasks_schema(args.tasks_schema,list_of_tasks, list_of_robot_refs)
+        print(f"{args.tasks_schema} created")
+    elif args.command == "add":
+        with open(args.tasks_schema,"r") as fp:
+            data = json.load(fp)
+        # add libraries from crospi_application_template
+        list_of_tasks = deduce_task_schemas(args.package,args.localpath,args.tasks_schema,args.verbose)  
+        lst = data["properties"]["tasks"]["items"]["properties"]["task_specification"]["oneOf"]
+        lst += list_of_tasks
+        with open(args.tasks_schema,"w") as fp:
+            json.dump(data,fp,indent=4)
+
+    return 0
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv))
 
