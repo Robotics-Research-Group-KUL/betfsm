@@ -1,6 +1,6 @@
 # betfsm.py
 #
-# Copyright (C) Erwin Aertbeliën, 2024-2026
+#region Copyright (C) Erwin Aertbeliën, 2024-2026
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-
+#endregion
 
 
 from typing import Dict, List, Union, Callable,Type, TypeAlias,Iterable,Optional
@@ -33,6 +33,10 @@ import math
 from collections import deque
 from dataclasses import dataclass
 
+from colorama import Fore, Back, Style
+import inspect
+
+
 add_logger_category("state")
 add_logger_category("service")
 add_logger_category("constructor")
@@ -40,12 +44,9 @@ add_logger_category("constructor")
 
 
 
+
+
 # Track which classes have already shown their deprecation notice
-from colorama import Fore, Back, Style
-import inspect
-
-
-
 __shown_deprecation_for_class = {}
 
 def deprecated_msg(msg):
@@ -74,10 +75,6 @@ def deprecated_msg(msg):
         __shown_deprecation_for_class[cls] = True
 
 
-
-Blackboard: TypeAlias = Dict[str, Dict|any]
-
-
 def cleanup_outcomes(outcomes:List[str])->List[str]:
     """
     cleans up a list of outcomes by elliminating duplicates.
@@ -95,7 +92,9 @@ def cleanup_outcomes(outcomes:List[str])->List[str]:
 #
 # outcomes with some special meaning for some TickingStates
 # just to allow a more systematic definition of states
-#
+#region constants
+
+Blackboard: TypeAlias = Dict[str, Dict|any]
 
 SUCCEED  = "SUCCEED"    
 """ outcome to indicate that everything is fine, continue as normal"""
@@ -122,6 +121,7 @@ NO_EVENT = "NO_EVENT"
 
 TickingState_Status = Enum("TickingState_Status",["ENTRY","DOO","EXIT"])
 
+#endregion
 
 
 def get_path_value(blackboard, path, default=None):
@@ -375,11 +375,6 @@ class Visitor(ABC):
         """
         raise NotImplementedError("Visitor.pre() method not implemented")
 
-
-
-
-
-
 class TickingState:
     """
     Implements a 'ticking' state, i.e. a state that takes a longer time, but cooperatively yields
@@ -606,6 +601,9 @@ class TickingState:
         # returns by default the outcome of entry or doo method.
         return self.outcome
 
+    def children(self):
+        return []
+
     def accept(self, visitor:Visitor):
         """
         calls the visitor with itself and possibly iterates over its children.
@@ -728,6 +726,8 @@ class GeneratorWithList(Generator):
                 raise ValueError(f"{self.name}.reset() : state {s['name']} is not a TickingState, but is of type {type(s['state'])} ")
         super().reset()  
 
+    def children(self):
+        return [s["state"] for s in self.states]
     
     def accept(self, visitor:Visitor):
         if visitor.pre(self):
@@ -1260,6 +1260,8 @@ class GeneratorWithState(Generator):
         super().__init__(name,outcomes)
         self.state=state
 
+    def children(self):
+        return [self.state]
 
     def accept(self, visitor:Visitor):
         if visitor.pre(self):
@@ -1450,51 +1452,6 @@ def dumps_blackboard(blackboard, indent_spaces: int = 4) -> str:
     """
     return json.dumps(blackboard,indent=indent_spaces,skipkeys=True,check_circular=True,default=lambda ob: ob.__repr__())
 
-# def dumps_blackboard(blackboard:Blackboard,indent:int=0):
-#     """
-#     returns a string-dump of a (piece of the ) blackboard
-    
-#     Parameters:
-#         blackboard:
-#             Blackboard to be dumped
-#         indent:
-#             determines the indentation for printing.
-#     """
-#     s = ""
-#     indent += 4
-#     space = f'{" ":{indent}}'
-#     if isinstance(blackboard,bool):
-#         s = f'{blackboard}\n'
-#     elif isinstance(blackboard,int):
-#         s = f'{blackboard}\n'
-#     elif isinstance(blackboard,float):
-#         s = f'{blackboard}\n'    
-#     elif isinstance(blackboard,dict):
-#         s = s + "\n"
-#         for k,v in blackboard.items():
-#             s+= space + k + " : " + dumps_blackboard(v,indent)
-#     elif isinstance(blackboard, list):
-#         listofnumbers=True
-#         first = True
-#         for item in blackboard:
-#             if isinstance(item,int) or isinstance(item,float):
-#                 listofnumbers=True
-#                 break
-#             if first:
-#                 s = s + "\n"
-#                 first=False
-#             s+= space + dumps_blackboard(item,indent)
-#         if listofnumbers:
-#             s = f'{blackboard}\n'                 
-#     elif isinstance(blackboard,str):
-#         s = f'"{blackboard}"\n'       
-#     elif isinstance(blackboard,list):
-#         s = f'{blackboard}\n'             
-#     else:
-#         s = f'{type(blackboard)}'
-#     return s
-
-
 class LogBlackboard(Generator):
     """
     Logs blackboard or part of blackboard
@@ -1597,28 +1554,6 @@ class AlwaysOutcome(TickingState):
         self.outcome = outcome
     def entry(self, blackboard):
         return self.outcome
-
-
-# class AlwaysOutcome(Generator):
-#     def __init__(self,name:str,outcome:str=None) -> None:
-#         """
-#         Returns a TickingState that always returns the same outcome.
-
-#         Parameters:
-#             name(str): 
-#                 name of the Ticking state
-#             outcome(str):
-#                 outcome that will be returned (typically, but not necessarily: SUCCEED, CANCEL)
-#         """
-#         if outcome is None:
-#             outcome = name
-#             name = "always_outcome"
-#         super().__init__(name,[outcome,])
-#         assert(outcome != TICKING)
-#         self.outcome = outcome
-#     def co_execute(self,blackboard):
-#         while True:
-#             yield self.outcome
 
 
 class TimedWait(Generator):
@@ -1764,56 +1699,6 @@ class TimedRepeat(GeneratorWithState):
         yield SUCCEED
     
 
-
-# class StateMachineElement:
-#     """
-#     Just to have a type that a visitor could recognize
-#     """
-#     def __init__(self,name,state,transitions):
-#         self.name = name
-#         self.state = state
-#         self.transitions = transitions
-
-#     def accept(self, visitor: Visitor) :
-#         if visitor.pre(self):
-#             self.state.accept(visitor)
-#         visitor.post(self)
-
-
-# def default_transitioncb(statemachine,blackboard,source,outcome):
-#     """
-#     Callback for use in cbStateMachine
-
-#     Parameters:
-#         statemachine: 
-#             statemachine in which this callback is called
-#         blackboard: 
-#             the blackboard wich was used to execute this statemachine
-#         source: 
-#             the source state of the transition
-#         outcome: 
-#             the name of the transition
-
-#     Returns:
-#         outcome or an override of the outcome
-#     """
-#     return outcome
-
-# def default_statecb(statemachine,blackboard,state):
-#     """
-#     Default callback used in TickingStateMachine.
-
-#     Parameters:
-#         statemachine:
-#             statemachine in which this callback is called
-#         blackboard:
-#             the blackboard wich was used to execute this statemachine
-#         state:
-#             state that will be entered
-#     """
-#     pass
-
-
 # may 2026: removed transition_cb and statecb:
 class TickingStateMachine(TickingState):
     """
@@ -1828,7 +1713,6 @@ class TickingStateMachine(TickingState):
         
     """ 
 
-    #, transitioncb=default_transitioncb, statecb=default_statecb) -> None:   
     def __init__(self, name:str, outcomes: List[str]) -> None:         
         """
         TickintStatemachine is a statemachine that can maintain TickingStates.
@@ -1965,6 +1849,10 @@ class TickingStateMachine(TickingState):
             for k,v in self.states.items():
                 v["state"].accept(visitor)
         visitor.post(self)
+
+
+    def children(self):
+        return self.states_ordered
 
     def entry(self, blackboard: Blackboard) -> str:
         self.current_state = self.start_state

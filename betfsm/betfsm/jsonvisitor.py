@@ -70,7 +70,7 @@ class JsonVisitor:
 
 
 
-    def should_descend(self, state):
+    def should_descend(self, state:TickingState):
         """Return True if we should NOT descend into this node."""
         # Check type filter
         for ftype in self.type_filter:
@@ -81,7 +81,7 @@ class JsonVisitor:
                 return False            
         return True
 
-    def pre(self, state) -> bool:
+    def pre(self, state:TickingState) -> bool:
         # Build node info
         node = {
             "id": state.uid,
@@ -104,18 +104,12 @@ class JsonVisitor:
 
         # Return False to stop descending
         if self.should_descend(state):
-            # Children extraction
-            if isinstance(state, GeneratorWithList):
-                node["children"] = [s["state"].uid for s in state.states]
-            if isinstance(state,TickingStateMachine):
-                node["children"] = [s.uid for s in state.states_ordered]
-            if isinstance(state, GeneratorWithState):
-                node["children"] = [state.state.uid]
+            node["children"] = [s.uid for s in state.children()]
             return True
         else:
             return False
         
-    def post(self, state):
+    def post(self, state:TickingState):
         pass
 
     def result(self):
