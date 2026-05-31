@@ -1,7 +1,6 @@
 # jsonvisitor.py 
 #
-# Copyright (C) Erwin Aertbeliën, 2025
-#
+#region  Copyright (C) Erwin Aertbeliën, 2025
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation; either
@@ -15,6 +14,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+#endregion
 
 
 
@@ -36,36 +36,29 @@ def parse_filter(filter_str: str) -> List[re.Pattern]:
     parts = [p.strip() for p in filter_str.split(":") if p.strip()]
     return parts
 
+def id(state:TickingState):
+    return state.uid.replace('-','_')
 
+def typeid(state):
+    return state.__class__.__name__ 
 
-# return [re.compile(p) for p in parts]
-# def _compile_name_filters(self, filters):
-#     if not filters:
-#         return []
-#     compiled = []
-#     for f in filters:
-#         if isinstance(f, str):
-#             compiled.append(re.compile(f))
-#         else:
-#             compiled.append(f)  # assume already a compiled regex
-#     return compiled
-# Check name regex filters
-# for pattern in self.name_filter:
-#     if pattern.search(state.name):
-#         return True
 
 
 class JsonVisitor:
-    def __init__(self, name_filter=None, type_filter=None):
+    def __init__(self, start:str=None, type_filter=None):
         """
-        name_filter: string with :-separated list of names
+        start: string with a name of a node to start with 
         type_filter: string with :-separated list of types
         """
         self.nodes = {}
         self.root_id = None
 
         # Normalize filters
-        self.name_filter = parse_filter(name_filter)
+        if start=='':
+            start = None
+        self.start = start
+        self.from_level = 1E9
+        self.depth = 0
         self.type_filter =  parse_filter(type_filter)
 
 
@@ -74,42 +67,46 @@ class JsonVisitor:
         """Return True if we should NOT descend into this node."""
         # Check type filter
         for ftype in self.type_filter:
-            if state.__class__.__name__ == ftype:
+            if typeid(state) == ftype:
                 return False
-        for fname in self.name_filter:
-            if state.name == fname:
-                return False            
         return True
 
     def pre(self, state:TickingState) -> bool:
-        # Build node info
-        node = {
-            "id": state.uid,
-            "name": state.name,
-            "type": state.typename,
-            "fqn" : state.fqn,
-            "status": state.status.name,
-            "available_outcomes": list(state.get_outcomes()),
-            "children": [],
-            "parentId": state.parent.uid if state.parent is not None else None,
-            "collapsible": isinstance(state, GeneratorWithList)
-        }
-
-
-
-        self.nodes[state.uid] = node
-
-        if state.parent is None:
+        self.depth = self.depth + 1
+        if state.name == self.start:
+            self.from_level = self.depth
             self.root_id = state.uid
+        if (self.depth >= self.from_level) or self.start is None:
+            # Build node info
+            node = {
+                "id": state.uid,
+                "name": state.name,
+                "type": state.typename,
+                "fqn" : state.fqn,
+                "status": state.status.name,
+                "available_outcomes": list(state.get_outcomes()),
+                "children": [],
+                "parentId": state.parent.uid if state.parent is not None else None,
+                "collapsible": isinstance(state, GeneratorWithList)
+            }
+            if state.name==self.start:
+                node["parentId"] = None
+            self.nodes[state.uid] = node
 
-        # Return False to stop descending
-        if self.should_descend(state):
-            node["children"] = [s.uid for s in state.children()]
-            return True
-        else:
-            return False
-        
+            if state.parent is None:
+                self.root_id = state.uid
+
+            # Return False to stop descending
+            if self.should_descend(state):
+                node["children"] = [s.uid for s in state.children()]
+                return True
+            else:
+                return False
+        return self.should_descend(state) 
     def post(self, state:TickingState):
+        if self.depth <= self.from_level:
+            self.from_level = 1E9
+        self.depth = self.depth - 1
         pass
 
     def result(self):

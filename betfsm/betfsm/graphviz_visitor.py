@@ -1,7 +1,7 @@
 # graphviz_visitor.py
 # part of BeTFSM
 #
-# Copyright (C) Erwin Aertbeliën,  2024
+#region Copyright (C) Erwin Aertbeliën,  2024
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -16,35 +16,12 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+#endregion
 
 
-
-from .betfsm import *
-# from .betfsm_ros import *
-#from .betfsm_etasl import *
-
-
-
-#   sm = ConcurrentSequence("parallel", children=[
-#             ("task1", Sequence("my_sequence", children=[
-#                         ("movinghome",eTaSL_StateMachine("MovingHome") ),
-#                         ("movingup",eTaSL_StateMachine("MovingUp") ),
-#                         ("movingdown",eTaSL_StateMachine("MovingDown") ),            
-#                         ("movingup",eTaSL_StateMachine("MovingUp")),
-#                         ("my_message",MyMessage("Hello world"))
-#                       ]) 
-#             ),
-#             ("task2",Sequence("timer", children=[
-#                         ("timer",TimedWait(Duration(seconds=3.0) ) ),
-#                         ("hello",MyMessage("Timer went off!"))
-#                     ])
-#             )
-#     ])
-
-
-
-import re
-import hashlib
+from .betfsm import TickingState, Visitor
+from typing import List
+from pathlib import Path
 
 graphviz_prefix = """
 digraph StateMachine {
@@ -78,7 +55,7 @@ graphviz_postfix = """
 """
 
 
-def graphviz_node(state):
+def graphviz_node(state:TickingState):
     return f"""
     "{state.uid}" [
         label=<
@@ -90,7 +67,7 @@ def graphviz_node(state):
     ];
     """
 
-def graphviz_arrow_between_nodes(from_uid, to_uid):
+def graphviz_arrow_between_nodes(from_uid:str, to_uid:str):
     return f"""
     "{from_uid}" -> "{to_uid}" [];
     """
@@ -105,7 +82,7 @@ def parse_filter(filter_str: str) -> List[str]:
     parts = [p.strip() for p in filter_str.split(":") if p.strip()]
     return parts
 
-def id(state:TickingState_Status):
+def id(state:TickingState):
     return state.uid.replace('-','_')
 
 def typeid(state):
@@ -120,7 +97,7 @@ class GraphViz_Visitor(Visitor):
     """
 
     
-    def __init__(self,  type_filter:List[str]=[],start: str = None):
+    def __init__(self,  type_filter:str="",start: str = None):
         """
         Visitor to generate a graphviz representation.
 
@@ -144,7 +121,7 @@ class GraphViz_Visitor(Visitor):
 
         return 
 
-    def should_descend(self, state):
+    def should_descend(self, state:TickingState):
         """Return True if we should NOT  descend into this node."""
         # Check type filter
         for ftype in self.type_filter:
@@ -152,7 +129,7 @@ class GraphViz_Visitor(Visitor):
                 return False         
         return True
 
-    def pre(self,state) -> bool:
+    def pre(self,state:TickingState) -> bool:
         self.depth = self.depth + 1
         #print(f"{self.depth=} '{state.name=}' '{self.start=}' {self.from_level=}")
         if state.name == self.start:
@@ -164,7 +141,7 @@ class GraphViz_Visitor(Visitor):
                 self.doc = self.doc + graphviz_arrow_between_nodes(state.parent.uid,state.uid)                
         return self.should_descend(state)
 
-    def post(self,state) -> bool:
+    def post(self,state:TickingState) -> bool:
         if self.depth<= self.from_level:        
             self.from_level = 1E9
         self.depth = self.depth - 1
@@ -182,7 +159,7 @@ class GraphViz_Visitor(Visitor):
         return graphviz_prefix + self.doc + graphviz_postfix
 
 
-def to_graphviz_dotfile(filename, sm, type_filter=[], start=None):
+def to_graphviz_dotfile(filename:Path, sm:TickingState, type_filter:str="", start=None):
     """
     Prints a graphviz dot representation of a statemachine-tree to a file with
     the given filename.  Use the xdot tool to visualize or the dot tool from 
