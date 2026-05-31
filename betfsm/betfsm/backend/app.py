@@ -214,21 +214,21 @@ broadcaster = Broadcaster()
 
 
 
-@app.get("/")
+@app.get("/",summary="Get main page of visualisation GUI")
 def main_page():
     # Point to your frontend index.html inside the betfsm/frontend directory
     index_file = frontend_path / "index.html"
     return FileResponse(str(index_file))
 
 
-@app.get("/dashboard")
+@app.get("/dashboard",summary="Get GUI panel to examine the blackboard")
 async def get_dashboard():
     index_file = frontend_path / "dashboard.html"
     return FileResponse(str(index_file))
 
 
-@app.get("/events")
-async def get_dashboard():
+@app.get("/events",summary="get GUI panel to send out HTTP events")
+async def get_events():
     index_file = frontend_path / "events.html"
     return FileResponse(str(index_file))
 
