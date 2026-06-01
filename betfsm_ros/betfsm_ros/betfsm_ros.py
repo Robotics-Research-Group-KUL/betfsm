@@ -1,6 +1,6 @@
 # betfsm_ros.py
 #
-# Copyright (C) Erwin Aertbeliën, 2024
+# region Copyright (C) Erwin Aertbeliën, 2024
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -15,17 +15,16 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+# endregion
 
 import re
 from abc import abstractmethod
 from typing import Dict, List, Union, Callable,Type, TypeAlias, Iterable, Optional
-
-
+import os    
 import time
 
 from rclpy.node import Node
 import ament_index_python as aip
-
 from std_msgs.msg import String
 from lifecycle_msgs.srv import ChangeState
 from rclpy.qos import QoSHistoryPolicy, QoSProfile, QoSReliabilityPolicy, QoSDurabilityPolicy
@@ -96,7 +95,6 @@ class TimedWait(Generator):
             yield TICKING
         get_logger().info(f"{self.name} : finished waiting")
         yield SUCCEED
-
 
 
 class TimedRepeat(GeneratorWithState):
@@ -529,15 +527,15 @@ class ActionClientBTFSM(Generator):
         pass
 
 
-# states:
-# - unconfigured
-# - inactive
-# - active
-# - finalized
-
 from enum import Enum
 
+
 class Transition(Enum):
+    """Transitions of a ROS2 lifecycle.
+
+        The states are: unconfigured; inactive; active; finalized
+        See doc. LifeCycle for a state diagram.
+    """
     CONFIGURE=1
     CLEANUP=2
     ACTIVATE=3
@@ -633,9 +631,9 @@ class LifeCycle(ServiceClient):
         else:
             return ABORT
 
-
-
-
+################################################################################
+#       Utility functions:
+################################################################################
 
 def expand_package_ref( pth:str ) -> str:
     """
@@ -653,7 +651,6 @@ def expand_package_ref( pth:str ) -> str:
         return pkg_pth
     return re.sub(r"\$\[(\w+)\]",lookup, pth)
 
-import os    
 
 def expand_env_ref( pth: str ) -> str:
     """

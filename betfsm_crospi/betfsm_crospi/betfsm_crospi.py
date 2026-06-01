@@ -1,6 +1,6 @@
 # betfsm_etasl.py
 #
-# Copyright (C) Erwin Aertbeliën, Santiago Iregui, 2024
+# region Copyright (C) Erwin Aertbeliën, Santiago Iregui, 2024
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-
+# endregion
 
 """
 BeTFSM states related to eTaSL
@@ -63,9 +63,8 @@ from crospi_py import etasl_params
 from rclpy.qos import QoSProfile
 
 
-
-
 add_logger_category("crospi")
+
 
 def load_task_list( json_file_name: str, blackboard: Blackboard) -> None:
     """
@@ -83,6 +82,7 @@ def load_task_list( json_file_name: str, blackboard: Blackboard) -> None:
 
 def default_parameter_setter(blackboard):
     return {}
+
 
 class SetTaskParameters(ServiceClient):
     def __init__(self,
@@ -151,8 +151,6 @@ class SetTaskParameters(ServiceClient):
             return SUCCEED
         else: 
             return ABORT
-
-
 
 
 class ReadRobotSpecification(ServiceClient):
@@ -243,7 +241,6 @@ class ReadTaskSpecification(ServiceClient):
             return ABORT
 
 
-
 class eTaSLOutput(TickingState):
     def __init__(
             self,
@@ -306,45 +303,6 @@ class eTaSLOutput(TickingState):
     def exit(self) -> str:
         self.node.destroy_subscription(self.subscription)
         return self.outcome
-
-
-# def crospi_polling_func(
-#         node:Node=None,
-#         topic:str="crospi_node/my_output",
-#         queue_size:int=10, 
-#         max_age:float=0.05
-#     ) -> Callable[[Dict, List[str]],str|None]:       
-#     """ 
-#     Returns a callback function to read crospi events suitable for use withy betfsm.Event.
-#     Uses betfsm_ros.EventQueueSubscriber for the qeueu.  The default
-#     parameters are suitable for crospi.
-
-#     Parameters:
-#         node:
-#             ROS2 node
-            
-#         topic:
-#             name of the topic to subscribe to
-
-#         queue_size:
-#             size of the queue related to maximum concurrent events, i.e. sample time in relation
-#             to the events generated. Because the underlying receiver is a singleton, the maximum
-#             queue size of everybody who requested an instance of the receiver is taken.
-
-#         max_age:
-#             maximum age of the events that still will be received.
-            
-#     Returns:
-#         Polling function
-#     """     
-#     if node==None:
-#         node = BeTFSMNode.get_instance()
-#     sub = TopicEventReceiver.get_instance(node,topic,queue_size)
-#     sub.set_minimum_queue_size(queue_size)
-#     def polling(bb, events):
-#         return sub.poll_recent_for(events,max_age)
-#     return polling
-
 
 
 class eTaSLEvent(TickingState):
@@ -426,10 +384,6 @@ class eTaSLEvent(TickingState):
         return self.outcome
 
 
-# def nested_etasl_state(name: str, file_path: str, robot_path: str, display_in_viewer: bool= False):
-# ,                                                           This parameters are removed.
-# transitioncb:Callable=default_transitioncb, 
-# statecb:Callable=default_statecb
 class eTaSL_StateMachine(TickingStateMachine):
     """
 
@@ -531,9 +485,6 @@ class eTaSL_StateMachine(TickingStateMachine):
                     transitions={SUCCEED: SUCCEED,
                                  ABORT: ABORT,
                                  TIMEOUT: ABORT}) 
-
-
-
 
 
 class CrospiDeactivate(Sequence):    
@@ -654,6 +605,7 @@ class CrospiTask(Fallback):
         cleanup_seq = CrospiDeactivate(srv_name,timeout,node,force_outcome=CANCEL)        
         # if the seq ends with ABORT or TIMEOUT, fallback to cleanup_seq
         super().__init__(name,[seq,cleanup_seq],lambda bb,oc: oc==ABORT or oc==TIMEOUT)
+
 
 class CrospiOutput(GeneratorWithState):
     """

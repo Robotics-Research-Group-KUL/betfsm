@@ -1,6 +1,6 @@
 # betfsm.py
 #
-#region Copyright (C) Erwin Aertbeliën, 2024-2026
+# region Copyright (C) Erwin Aertbeliën, 2024-2026
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-#endregion
+# endregion
 
 from __future__ import annotations
 from typing import Dict, List, Union, Callable,Type, TypeAlias,Iterable,Optional
@@ -40,10 +40,6 @@ import inspect
 add_logger_category("state")
 add_logger_category("service")
 add_logger_category("constructor")
-
-
-
-
 
 
 # Track which classes have already shown their deprecation notice
@@ -174,7 +170,6 @@ def get_path_value(blackboard, path, default=None):
         return default
 
     return current
-
 
 
 def set_path_value(blackboard, path, value):
@@ -374,6 +369,7 @@ class Visitor(ABC):
         returns nothing.
         """
         raise NotImplementedError("Visitor.pre() method not implemented")
+
 
 class Select_Node(Visitor):
     def __init__(self, select_name:str):
@@ -640,7 +636,6 @@ class TickingState:
         return self.outcomes
 
 
-
 class Generator(TickingState):
     """
     Uses a python generator to define a TickingState. It implements methods `entry`, `doo`, and `exit` of TickingState using
@@ -687,8 +682,6 @@ class Generator(TickingState):
     @abstractmethod
     def co_execute(self,blackboard:Blackboard) -> str:
         raise NotImplementedError("Subclasses deriving from Generator need to implement `co_execute(self,blackboard)`")
-
-        
 
 
 class GeneratorWithList(Generator):
@@ -822,7 +815,6 @@ class Sequence(GeneratorWithList):
             if outcome!=SUCCEED:
                 yield outcome                
         yield SUCCEED
-
 
 
 class ConcurrentSequence(GeneratorWithList):
@@ -998,10 +990,6 @@ class Concurrent(GeneratorWithList):
             yield TICKING
 
 
-
-
-
-
 class Fallback(GeneratorWithList):
     """    
     Implements a behaviortree-like Fallback node:
@@ -1084,6 +1072,7 @@ class Fallback(GeneratorWithList):
                         self.reset()    # we are done and will not be comming back.                 
                     yield outcome    # none failure outcome or TICKING
         yield CANCEL
+
 
 class ConcurrentFallback(GeneratorWithList):
     """
@@ -1228,9 +1217,6 @@ class WaitFor(Generator):
         while not self.condition_cb(blackboard):
             yield TICKING
         yield SUCCEED
-
-
-
 
 
 class WaitForever(Generator):
@@ -1469,6 +1455,7 @@ def dumps_blackboard(blackboard, indent_spaces: int = 4) -> str:
     """
     return json.dumps(blackboard,indent=indent_spaces,skipkeys=True,check_circular=True,default=lambda ob: ob.__repr__())
 
+
 class LogBlackboard(Generator):
     """
     Logs blackboard or part of blackboard
@@ -1494,8 +1481,6 @@ class LogBlackboard(Generator):
         
         get_logger().info("Blackboard:\n"+dumps_blackboard(bb) )
         yield SUCCEED
-
-
 
 
 class Compute(Generator):
@@ -1716,7 +1701,6 @@ class TimedRepeat(GeneratorWithState):
         yield SUCCEED
     
 
-# may 2026: removed transition_cb and statecb:
 class TickingStateMachine(TickingState):
     """
     A StateMachine that calls a callback function before entering a state and/or at each transition.
@@ -1902,5 +1886,4 @@ class TickingStateMachine(TickingState):
         self.current_state = self.start_state
         return super().exit()
  
-
 
