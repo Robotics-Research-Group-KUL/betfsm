@@ -32,7 +32,7 @@ from betfsm import (
     get_logger_categories,LogPrinter
 )
 from .statemachine_visitor import StateMachineVisitor
-from .jsonvisitor import JsonVisitor
+from .jsonvisitor import to_json
 from .graphviz_visitor import to_graphviz_dotfile
 from betfsm.backend.app import app,publish_tick,set_webserver_param
 
@@ -216,10 +216,9 @@ class RunnerBase:
                 sys.exit()
         if allow_generate_json:
             if args.generate_json:
-                visitor = JsonVisitor(self.select_name,self.type_filter)
-                statemachine.accept(visitor)
+                jsondict = to_json(statemachine,self.type_filter,self.select_name)
                 with open(args.generate_json,"w") as f:
-                    json.dump(visitor.result(), f, indent=4)
+                    json.dump(jsondict, f, indent=4)
                 print(f"json file '{args.generate_json}' is generated, and program will be terminated")                    
                 sys.exit()
         if allow_generate_sm_dot:

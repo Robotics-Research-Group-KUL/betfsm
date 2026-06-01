@@ -17,7 +17,7 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #endregion
 
-
+from __future__ import annotations
 from typing import Dict, List, Union, Callable,Type, TypeAlias,Iterable,Optional
 from enum import Enum
 import copy
@@ -359,7 +359,7 @@ class Visitor(ABC):
 
     """
     @abstractmethod
-    def pre(self,state) -> bool:
+    def pre(self,state:TickingState) -> bool:
         """
         Processing done by visitor before visiting the children of the state.
 
@@ -367,13 +367,30 @@ class Visitor(ABC):
         """
         raise NotImplementedError("Visitor.pre() method not implemented")
     
-    def post(self,state):
+    def post(self,state:TickingState):
         """
         Processing done by the visitor after visiting the children.
 
         returns nothing.
         """
         raise NotImplementedError("Visitor.pre() method not implemented")
+
+class Select_Node(Visitor):
+    def __init__(self, select_name:str):
+        self.select_name = select_name
+        self.node_found  = None
+
+    def pre(self, state:TickingState) -> bool:
+        return True 
+    
+    def post(self,state:TickingState):
+        if state.name==self.select_name:
+            self.node_found = state
+        pass
+
+    def get_node(self):
+        return self.node_found
+
 
 class TickingState:
     """

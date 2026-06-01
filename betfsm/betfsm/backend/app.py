@@ -1,6 +1,6 @@
-# app.py 
+# app.py - backend server for visualization and debugging using HTTP
 #
-# Copyright (C) Erwin Aertbeliën, 2025
+#region Copyright (C) Erwin Aertbeliën, 2025
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -15,7 +15,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-
+#
+#endregion
 
 from typing import Any
 
@@ -26,11 +27,12 @@ from fastapi.responses import JSONResponse, FileResponse,HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.websockets import WebSocketDisconnect
 import asyncio, json, time
+from fastapi.middleware.cors import CORSMiddleware
 
 import betfsm
 from betfsm.betfsm import TickingState
 from betfsm.events import HTTPEventReceiver
-from betfsm.jsonvisitor import JsonVisitor
+from betfsm.jsonvisitor import to_json
 from betfsm.logger import get_logger
 from collections import deque
 import time
@@ -38,6 +40,7 @@ import time
 from pathlib import Path
 from pydantic import BaseModel, Field
 
+#region FastAPI description
 description="""
 This is the **API** documentationfor **BeTFSM**
 
@@ -86,12 +89,10 @@ app = FastAPI(
         "url": "https://www.gnu.org/licenses/lgpl-3.0.en.html",
     },    
 )
-
+#endregion
 
 # To deal with browser CORS protocol and being able to send
 # from all origins:
-from fastapi.middleware.cors import CORSMiddleware
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],        # allow all origins (or restrict later)
@@ -102,7 +103,7 @@ app.add_middleware(
 
 
 
-# Models for the API:
+#region Models for the API:
 
 class Event(BaseModel):
     channel: str = Field("betfsm", 
@@ -117,32 +118,22 @@ class SetValueRequest(BaseModel):
         ...,
         description="The value to store at the given path. Can be any valid JSON type."
     )
+#endregion
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Serve files from the "static" directory at the URL path "/static"
-frontend_path = importlib.resources.files(betfsm) / Path("frontend")
-# get_logger().info(f"frontend_path={frontend_path}")
-app.mount("/static", StaticFiles(directory=str(frontend_path),html=True), name="static")
-
-
+#region GLOBAL VARIABLES   (not valid if multiple workers)
 clients = set()
 root = None   # root state machine to display. (set from outside)
 blackboard = None
 name_filter = None
 type_filter = None
+tree_version = 1
+frontend_path = importlib.resources.files(betfsm) / Path("frontend") # Serve files from the "static" directory at the URL path "/static"
+# get_logger().info(f"frontend_path={frontend_path}")
+#endregion
+
+
+app.mount("/static", StaticFiles(directory=str(frontend_path),html=True), name="static")
+
 
 def set_webserver_param(sm:TickingState, bb:dict,my_name_filter:str|None = None, my_type_filter:str|None = None):
     """
@@ -165,6 +156,7 @@ def set_webserver_param(sm:TickingState, bb:dict,my_name_filter:str|None = None,
     name_filter = my_name_filter
     type_filter = my_type_filter
 
+
 class HistoryBuffer:
     def __init__(self, seconds=300):
         self.seconds = seconds
@@ -180,18 +172,20 @@ class HistoryBuffer:
     def slice(self, start_ts, end_ts):
         return [(ts, ids) for ts, ids in self.buffer if start_ts <= ts <= end_ts]
 
-history = HistoryBuffer(seconds=300)
 
+history = HistoryBuffer(seconds=300)
 
 
 # Capture the main loop once the app starts
 main_loop: asyncio.AbstractEventLoop | None = None
 
+
 @app.on_event("startup")
 async def on_startup():
     global main_loop
     main_loop = asyncio.get_running_loop()
-    
+
+
 class Broadcaster:
     def broadcast(self, message: dict):
         if main_loop is None:
@@ -210,8 +204,6 @@ class Broadcaster:
             
             
 broadcaster = Broadcaster()
-
-
 
 
 @app.get("/",summary="Get main page of visualisation GUI")
@@ -239,6 +231,43 @@ async def get_dashboard():
     return FileResponse(str(index_file))
 
 
+@app.post("/api/set_root_name",
+         summary="sets the root of the tree that /api/get_tree returns"
+         )
+async def set_root_name(root_name:str):
+    global name_filter,tree_version
+    name_filter = root_name    
+    tree_version += 1
+    return {"message": "Value updated", "current_value": name_filter}
+
+
+@app.get("/api/get_root_name",
+         summary="gets the root of the tree that /api/get_tree returns"
+         )
+async def get_root_name():
+    global name_filter
+    return {"root_name":name_filter}
+
+
+@app.post("/api/set_type_filter",
+         summary="defines which types not to descend into when /api/get_tree is called, the filter is specified using a ':' separated list of types"
+         )
+async def set_type_filter(filter:str):
+    global type_filter,tree_version
+    type_filter = filter 
+    tree_version += 1
+    return {"message": "Value updated", "current_value": type_filter}
+    pass
+
+
+@app.get("/api/get_type_filter",
+         summary="gets the ':'-separated list of types that determins which nodes not to descend into when /api/get_tree is called."
+         )
+async def get_type_filter():
+    global type_filter
+    return type_filter
+
+
 @app.get('/api/event_list',
          summary="returns lists of events used by BeTFSM",
          description="""
@@ -262,7 +291,6 @@ async def receive_event(event: Event):
     if instance is not None:
         instance.push(event.event)
     return {"status":"ok"}
-
 
 
 @app.get(
@@ -309,21 +337,21 @@ async def set_blackboard_value(path: str, req: SetValueRequest):
 
 @app.get("/api/alive", summary="Ping server to see if it is alive")
 def alive():
-    return JSONResponse({"alive":1}) 
+    global tree_version
+    return JSONResponse({"alive":1,"tree_version":tree_version}) 
+
 
 @app.get("/api/tree", summary="Get the BeTFSM tree in JSON")
 def get_tree():
-    get_logger().info("/api/tree called")
     global root
-    visitor = JsonVisitor(name_filter,type_filter)
-    if root is not None:
-       root.accept(visitor)
-    else:
-        get_logger().warn("No state machine is set to display (root==None)")
-    return JSONResponse(visitor.result())
+    get_logger().info("/api/tree called")
+    jsondict = to_json(root,type_filter,name_filter)
+    return JSONResponse(jsondict)
+
 
 @app.websocket("/ws/stream")
 async def ws_stream(ws: WebSocket):
+    global tree_version
     await ws.accept()
     clients.add(ws)
     try:
@@ -332,7 +360,7 @@ async def ws_stream(ws: WebSocket):
                 await asyncio.sleep(1)
                 # Send current active states periodically to keep connection alive
                 active_ids = list(TickingState.global_publish_log.keys())
-                msg = {"type": "tick", "tick": int(time.time()*1000), "active": active_ids}
+                msg = {"type": "tick", "tick": int(time.time()*1000), "active": active_ids, "tree_version":tree_version}
                 await ws.send_text(json.dumps(msg))
             except (RuntimeError, WebSocketDisconnect):
                 # Client disconnected, break the loop
@@ -342,6 +370,7 @@ async def ws_stream(ws: WebSocket):
     finally:
         clients.discard(ws)
 
+
 @app.get("/api/history",summary="work in progress")
 def get_history(from_ts: float, to_ts: float):
     get_logger().warn("/api/history called")
@@ -349,6 +378,7 @@ def get_history(from_ts: float, to_ts: float):
     resp =  JSONResponse([{"timestamp": ts, "active": ids} for ts, ids in frames])
     get_logger().info(f"/api/history response = {resp}")
     return resp
+
 
 def publish_tick():
     active_ids = list(TickingState.global_publish_log.keys())

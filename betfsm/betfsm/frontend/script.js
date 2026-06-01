@@ -25,7 +25,8 @@ const svg = d3.select("#tree");
 const activeIds = new Set();
 let replayFrames = [], replayIndex = 0, playing = false;
 let isTransitioning = false;
-let timeoutWebServer = 3000;
+let currentTreeVersion = -1;
+let timeoutWebServer = 2000;
 
 function loadDisconnectedTree() {
     data = {
@@ -351,6 +352,13 @@ function handleTick(msg) {
     if (msg.active) {
         msg.active.forEach(id => activeIds.add(id));
     }
+    if (msg.tree_version) {
+        if (currentTreeVersion!= msg.tree_version) {
+            currentTreeVersion = msg.tree_version
+            loadTree()
+            renderTree(window.root);
+        }
+    }
     if (autoExpand) {
         expandActiveBranches(window.root);
         renderTree(window.root);
@@ -423,6 +431,31 @@ function scheduleReconnect() {
 //     replayIndex = (replayIndex + 1) % replayFrames.length;
 //     setTimeout(stepReplay, 33);
 // }
+
+// POST to /api/set_root_name
+function updateRootAndFilter() {
+    const rootName = document.getElementById('rootNameInput').value.trim();
+
+    fetch(`/api/set_root_name?root_name=${encodeURIComponent(rootName)}`, {
+        method: 'POST',
+        headers: { 'Accept': 'application/json' }
+    })
+    const filterStr = document.getElementById('typeFilterInput').value.trim();
+
+    fetch(`/api/set_type_filter?filter=${encodeURIComponent(filterStr)}`, {
+        method: 'POST',
+        headers: { 'Accept': 'application/json' }
+    })
+
+    // .then(response => {
+    //     if (!response.ok) throw new Error(`Server responded with status ${response.status}`);
+    //     showStatus('Root name updated successfully!', true);
+    // })
+    // .catch(error => {
+    //     showStatus(`Error updating root name: ${error.message}`, false);
+    // });
+}
+
 
 let autoExpand = false;
 document.getElementById("autoExpand").onchange = ev => {

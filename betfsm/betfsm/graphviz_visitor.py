@@ -19,7 +19,7 @@
 #endregion
 
 
-from .betfsm import TickingState, Visitor
+from .betfsm import TickingState, Visitor, get_logger,Select_Node
 from typing import List
 from pathlib import Path
 
@@ -89,15 +89,13 @@ def typeid(state):
     return state.__class__.__name__ 
 
 
-
 class GraphViz_Visitor(Visitor):
     """
     Todo:
         - All names should be identifiers! is not checked!
     """
-
     
-    def __init__(self,  type_filter:str="",start: str = None):
+    def __init__(self,  type_filter:str=""):
         """
         Visitor to generate a graphviz representation.
 
@@ -110,47 +108,24 @@ class GraphViz_Visitor(Visitor):
         """        
         self.doc = ""
         self.type_filter = parse_filter(type_filter)
-        if start =='':
-            start = None
-        self.start = start
-        self.from_level=1E9
-        self.depth = 0
-        #print("==================================")
-        #print(f"{self.start=}\t\t{self.type_filter=}")
-        #print("==================================")
-
+        self.first_time = True
         return 
 
     def should_descend(self, state:TickingState):
         """Return True if we should NOT  descend into this node."""
-        # Check type filter
-        for ftype in self.type_filter:
-            if typeid(state) == ftype:
-                return False         
-        return True
+        return typeid(state) not in self.type_filter
 
     def pre(self,state:TickingState) -> bool:
-        self.depth = self.depth + 1
-        #print(f"{self.depth=} '{state.name=}' '{self.start=}' {self.from_level=}")
-        if state.name == self.start:
-            self.from_level = self.depth
-            self.doc = self.doc + graphviz_node(state)    
-        if (self.depth > self.from_level) or self.start is None:
-            self.doc = self.doc + graphviz_node(state)
-            if state.parent is not None:
-                self.doc = self.doc + graphviz_arrow_between_nodes(state.parent.uid,state.uid)                
+        self.doc = self.doc + graphviz_node(state)
+        if not self.first_time:
+            # don't attempt to draw an arrow for the root of this subtree 
+            self.doc = self.doc + graphviz_arrow_between_nodes(state.parent.uid,state.uid)                
+        self.first_time=False
         return self.should_descend(state)
 
     def post(self,state:TickingState) -> bool:
-        if self.depth<= self.from_level:        
-            self.from_level = 1E9
-        self.depth = self.depth - 1
-
+        pass
     
-    def print(self):
-        dotstring = graphviz_prefix + self.doc + graphviz_postfix
-        print(dotstring)                
-
     def graphviz(self):
         """
         returns a string corresponding to the Graphviz representation of the state machine that was visited
@@ -159,7 +134,7 @@ class GraphViz_Visitor(Visitor):
         return graphviz_prefix + self.doc + graphviz_postfix
 
 
-def to_graphviz_dotfile(filename:Path, sm:TickingState, type_filter:str="", start=None):
+def to_graphviz_dotfile(filename:Path, sm:TickingState, type_filter:str="", select_name:str=None):
     """
     Prints a graphviz dot representation of a statemachine-tree to a file with
     the given filename.  Use the xdot tool to visualize or the dot tool from 
@@ -171,8 +146,20 @@ def to_graphviz_dotfile(filename:Path, sm:TickingState, type_filter:str="", star
         sm:
             TickingState that is the root of a tree of statemachines/behavior-tree nodes.
     """
-    viz = GraphViz_Visitor(type_filter, start)
-    sm.accept(viz)
+    if select_name is None:
+        select_name=""
+    select_name = select_name.strip()
+    if (select_name !=""): 
+        selector = Select_Node(select_name) 
+        sm.accept(selector)
+        node =  selector.get_node()
+        if node is None:
+            get_logger().warning("select-name:  name was not found") 
+            return;
+    else:
+        node = sm
+    viz = GraphViz_Visitor(type_filter)
+    node.accept(viz)
     with open(filename,"w") as f:
         print(viz.graphviz(),file=f)
 
