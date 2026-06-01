@@ -1,4 +1,26 @@
 #!/bin/env python3
+#
+# program to generate schema's for .etasl.lua constraint-based task
+# specifications and to refer to external libraries.
+# Also generates the tasks-schema.json
+#
+# region Copyright (C) Erwin Aertbeliën, 2024-2026
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program; if not, write to the Free Software Foundation,
+# Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+# endregion
+
 from pathlib import Path
 import subprocess
 import ament_index_python as aip
@@ -7,6 +29,7 @@ import json
 import sys
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
+import argparse
 
 
 def find_ros2_package_root(start_file_path: str | Path) -> Path | None:
@@ -26,6 +49,7 @@ def find_ros2_package_root(start_file_path: str | Path) -> Path | None:
         current_path = current_path.parent
     return None
 
+
 def get_ros2_package_name(package_root: str | Path) -> str | None:
     """Reads the package.xml at the given root directory and extracts
     the official ROS 2 package name.
@@ -44,7 +68,6 @@ def get_ros2_package_name(package_root: str | Path) -> str | None:
         return None
     return None
 
-
 @dataclass
 class Library:
     task_library:   Path                # (resolved) location of task_library.json file describing name and version of library
@@ -56,7 +79,6 @@ class Library:
 class Libraries:
     task_libraries:  list[Library] = None  # list of Library
     task_schema_loc: Path          = None  # location of task-schema.json **file**
-
 
 
 def create_Libraries(location:Path|str):
@@ -92,8 +114,6 @@ def create_Libraries(location:Path|str):
             )
         )    
     return Libraries(task_libraries=libs)
-
-
 
 
 def use_flat_layout(libs:Libraries, task_schema_loc: Path|str):    
@@ -144,6 +164,7 @@ def use_hierarchical_layout( libs:Libraries, task_schema_loc:Path):
     libs.task_schema_loc = Path(task_schema_loc).resolve()
     return libs
 
+
 def generate_json_schema_for_task(filepath_task_lua, filepath_task_schema_json, uri_task_lua, filepath_task_library_json,verbose=False):
     """Generate a schema for the specified etasl task specification
 
@@ -179,6 +200,7 @@ def generate_json_schema_for_task(filepath_task_lua, filepath_task_schema_json, 
         print("\t\treturn code : ",result.returncode)
     return result.returncode
 
+
 def generate_json_schema_for_tasks(libs:Libraries,verbose=False) -> list[str]:
     """call lua to generate the individual json schema's to verify the arguments to the
        eTaSL tasks
@@ -213,6 +235,7 @@ def generate_json_schema_for_tasks(libs:Libraries,verbose=False) -> list[str]:
             #task_specs.append(  filepath_task_schema_json.relative_to(base).as_posix() )
     return task_specs             
 
+
 def deduce_task_schemas(package:str, relative_path:Path|str, task_schema_loc: Path|str, verbose=False) -> list[str]:
     """get a list of task schema's, relative to the location of tasks-schema.json for a task library at package + relative path
 
@@ -243,9 +266,6 @@ def deduce_task_schemas(package:str, relative_path:Path|str, task_schema_loc: Pa
         return [ {"$ref": (location / json).as_posix()}     for json in location.rglob("*.etasl.json")     ]
     else:
         return [ {"$ref": (location / json).as_posix()}     for json in location.rglob("*.etasl.json")     ]
-
-
-
 
 
 def get_task_schemas(libs:Libraries) -> list[str]:
@@ -377,6 +397,127 @@ def generate_tasks_schema(tasks_schema_loc:Path|str,list_of_tasks:list[str], lis
 
 
 
+def generate_task_library_schema(pth:Path):
+    task_library_schema = r""" 
+{
+    "$schema":"http://json-schema.org/draft-06/schema",
+    "$id":"task_library.json",
+    "title":"eTaSL task specifications libraries",
+    "type":"object",
+    "description":"Libraries containing etasl task specifications",
+    "required": ["name", "version","description","authors","maintainers"],
+    "properties": {
+        "$schema" : {
+            "type":"string"
+        },
+        "name":{
+            "description": "Name of the library",
+            "type":"string",
+            "pattern": "^[a-zA-Z0-9_]+$"
+        },
+        "version":{
+            "description": "Version of library",
+            "type":"string",
+            "pattern": "^(\\d+\\.){2}\\d+(-[a-zA-Z]+)?$",
+            "default": "0.0.0",
+            "examples": [
+                "1.0.0-beta"
+            ]
+        },
+        "description":{
+            "description": "Text describing the purpose of the library",
+            "type":"string"
+        },
+        "license":{
+            "description": "",
+            "type":"string",
+            "examples":[
+                "GNU GPLv3",
+                "Apache License 2.0"
+            ]
+        },
+        "authors": {
+            "title":"List of authors",
+            "description":"List of authors that participated on the development of the library",
+            "type" : "array",
+            "items" : {
+                "$ref" : "#/$defs/author" 
+            }
+        },
+        "maintainers": {
+            "title":"List of maintainers",
+            "description":"List of maintainers that currently maintain the library",
+            "type" : "array",
+            "items" : {
+                "$ref" : "#/$defs/maintainer" 
+            }
+        },
+        "acknowledgements":{
+            "description": "acknowledgements to people who made contributions or to project funding",
+            "type":"string"
+        }
+    },
+    "$defs": {
+        "author": { 
+            "title":"Author",
+            "type":"object",
+            "description":"Data of an author",
+            "required": ["name", "affiliation","email"],
+            "properties": {
+                "name":{
+                    "description": "Name of the author",
+                    "type":"string"
+                },
+                "affiliation":{
+                    "description": "Affiliation of the author",
+                    "type":"string",
+                    "default": "KU Leuven"
+                },
+                "email":{
+                    "description": "Email of the author",
+                    "type":"string",
+                    "pattern": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+                    "examples": [
+                        "author_mail@gmail.com"
+                    ]
+                }
+            }
+        },
+        "maintainer": { 
+            "title":"Maintainer",
+            "type":"object",
+            "description":"Data of an maintainer",
+            "required": ["name", "affiliation","email"],
+            "properties": {
+                "name":{
+                    "description": "Name of the maintainer",
+                    "type":"string"
+                },
+                "affiliation":{
+                    "description": "Affiliation of the maintainer",
+                    "type":"string",
+                    "default": "KU Leuven"
+                },
+                "email":{
+                    "description": "Email of the maintainer",
+                    "type":"string",
+                    "pattern": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+                    "examples": [
+                        "maintainer_mail@gmail.com"
+                    ]
+                }
+            }
+        }
+    },
+    "additionalProperties":false
+}
+
+"""
+    with open(pth,"w") as f:
+        f.write(task_library_schema)
+    return
+
+
 def old_main():
 
     from pprint import pprint
@@ -408,10 +549,8 @@ def old_main():
     generate_tasks_schema(tasks_schema_loc,list_of_tasks, list_of_robot_refs)
 
 
-
-import argparse
 def main(args=None):
-    parser = argparse.ArgumentParser(description="Tool to create and manipulate tasks_schema.json files and *.etasl.lua files that describe task parameters")   
+    parser = argparse.ArgumentParser(description= "Tool to create and manipulate tasks_schema.json files and *.etasl.lua files that describe task parameters.")   
     subparsers = parser.add_subparsers(dest="command", required=True, help="Available commands")
 
     # Create the parser for the "create" command
@@ -437,7 +576,14 @@ def main(args=None):
     parser_add.add_argument("package", type=str, help="ROS2 package name for the additional task libraries and task specifications")
     parser_add.add_argument("localpath", type=str, help="local path inside the ROS2 package")
     parser_add.add_argument("--verbose","-v", action="store_true",help="Increas verbosity")
-    
+ 
+    parser_writelib = subparsers.add_parser("writelib", 
+        help="Write the standard task_library.schema.json to the given location",
+        description="Write the standard task_library.schema.json to the given location"
+    )
+    parser_writelib.add_argument("task_library_schema", type=str, nargs="?",help="File path for the task_library.schema file",default="task_library.schema.json")
+
+    parser_explain = subparsers.add_parser("explain", help="Explains the file-structore for cROSpi task specifications") 
     args = parser.parse_args()
     
     if args.command == "create":
@@ -460,8 +606,48 @@ def main(args=None):
         lst += list_of_tasks
         with open(args.tasks_schema,"w") as fp:
             json.dump(data,fp,indent=4)
+    elif args.command == "writelib":
+        print("writing the schema for a task library to ", args.task_library_schema)
+        generate_task_library_schema(args.task_library_schema)
+    elif args.command == "explain":
+        txt="""
+Crospi/etasl constraint-based task specifications are specified in libraries.
+Each library is defined by a subdirectory with a task_library.json file that
+specifies name, version and authors of the library.
 
+All *.etasl.lua files in this subdirectory and below belong to the library. For
+each *.etasl.lua file a *.etasl.json file is generated that describe the
+parameters of this task specifications.
+
+All these tasks with their argument specifications are bundled in a
+tasks-schema.json file that defines all available tasks together
+with robot definitions.
+
+You can then instantiate tasks in your own .json file: add a first line that
+refers to the tasks-schema.json file, i.e.  "$schema":"tasks-schema.json" and
+use auto-complete to fill in the task instantiations.  You can then use
+load_task_lists from betfsm_crospi to load these definitions in your BeTFSM
+tree.   If needed, you can further override the parameters with dynamically
+determined parameters in BeTFSM.
+
+Using the "create" command, you can generate your *.etasl.lua files
+hierarchically, i.e. you put them in a task_specifications subdirectory of the
+library and use the "--hierarchical" option to generate *.etasl.json files in
+the task_json_schemas subdirectory.
+
+You can also use the "--flat" option to generate *.etasl.json in the same
+directory as the *.etasl.lua files.
+
+Using the "add" command, you can add externally defined task libraries to your
+collection of task definitions in tasks-schema.json
+
+The "writelib" command writes a task_library.schema.json for the task_library.json 
+that describes your library or libraries.
+        """   
+        print(txt)
+ 
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv))

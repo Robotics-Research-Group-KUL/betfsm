@@ -23,6 +23,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            "generate_schemas  = betfsm_crospi.generate_schemas:main",
         ],
     },
 )
