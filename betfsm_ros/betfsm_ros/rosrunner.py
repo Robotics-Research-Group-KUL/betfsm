@@ -44,11 +44,11 @@ class ROSRunner(RunnerBase):
     def __init__(self, node:Node, statemachine: TickingState, blackboard: Blackboard, frequency: float=100.0, publish_frequency:float=5,debug:bool=False, 
                  display_active:bool=False, betfsm_log:str=None,select_name:str="", type_filter:str="",
                  allow_generate_dot:bool=True, allow_generate_sm_dot:bool=True,allow_generate_json:bool=True,serve:bool=True,
-                 host:str="0.0.0.0", port:str=8000, workers:int=1, log_level:str="info"):
+                 host:str="0.0.0.0", port:str=8000, workers:int=1, log_level:str="info",branding=True):
    
         super().__init__(statemachine, blackboard, frequency, publish_frequency, debug, display_active, betfsm_log,
                          select_name,type_filter,allow_generate_dot,allow_generate_sm_dot,allow_generate_json,serve,
-                         host, port, workers, log_level)
+                         host, port, workers, log_level,branding)
         args = self.args
 
         # ROS dependend: everything timer related, logger, node, clocks, synchronization primitives:

@@ -126,6 +126,7 @@ root = None   # root state machine to display. (set from outside)
 blackboard = None
 name_filter = None
 type_filter = None
+branding    = True
 tree_version = 1
 frontend_path = importlib.resources.files(betfsm) / Path("frontend") # Serve files from the "static" directory at the URL path "/static"
 # get_logger().info(f"frontend_path={frontend_path}")
@@ -135,7 +136,7 @@ frontend_path = importlib.resources.files(betfsm) / Path("frontend") # Serve fil
 app.mount("/static", StaticFiles(directory=str(frontend_path),html=True), name="static")
 
 
-def set_webserver_param(sm:TickingState, bb:dict,my_name_filter:str|None = None, my_type_filter:str|None = None):
+def set_webserver_param(sm:TickingState, bb:dict,my_name_filter:str|None, my_type_filter:str|None, my_branding):
     """
     Sets parameters for the webserver:
 
@@ -150,11 +151,12 @@ def set_webserver_param(sm:TickingState, bb:dict,my_name_filter:str|None = None,
         my_type_filter:
             do not descend further into nodes that are an instance of the types in this list.
     """
-    global root, name_filter, type_filter,blackboard
+    global root, name_filter, type_filter,blackboard,branding
     root = sm
     blackboard = bb
     name_filter = my_name_filter
     type_filter = my_type_filter
+    branding    = my_branding
 
 
 class HistoryBuffer:
@@ -208,8 +210,12 @@ broadcaster = Broadcaster()
 
 @app.get("/",summary="Get main page of visualisation GUI")
 def main_page():
-    # Point to your frontend index.html inside the betfsm/frontend directory
-    index_file = frontend_path / "index.html"
+    global branding
+    if branding:
+        # Point to your frontend index.html inside the betfsm/frontend directory
+        index_file = frontend_path / "index.html"
+    else:
+        index_file = frontend_path / "index_nb.html"
     return FileResponse(str(index_file))
 
 

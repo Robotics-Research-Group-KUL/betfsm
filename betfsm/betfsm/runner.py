@@ -103,7 +103,7 @@ class RunnerBase:
                  display_active:bool =False, betfsm_log:str=None, select_name:str="", type_filter:str="",  
                  allow_generate_dot:bool=True, allow_generate_sm_dot:bool=True,
                  allow_generate_json:bool=True,serve:bool=True,
-                 host:str="0.0.0.0", port:int=8000, workers:int=1, log_level:str="info"):
+                 host:str="0.0.0.0", port:int=8000, workers:int=1, log_level:str="info", branding:bool=True):
         """
         Initializes the BeTFSMRunner.  This BeTFSMRunner has no other dependencies and
         runs in the main thread.  The parameters frequency, publish_frequency, debug, display_active,
@@ -139,7 +139,7 @@ class RunnerBase:
                 adds the generate_sm_dot command-line parameter. [default: True]                
             allow_generate_json:
                 adds the generate_json command-line parameter. [default: True]
-            serve:A : {active}
+            serve:
                 starts webserver if True [default: True]
             host:
                 the host IP of the network interface to bind to.  Default=0.0.0.0. 
@@ -155,7 +155,8 @@ class RunnerBase:
             log_level:
                 log-level of the web-server (not BeTFSM), default = "info"
                 choices are "critical", "error", "warning", "info", "debug", "trace"
-
+            branding:
+                if True uses KULEUVEN/RAM branding, if not only copyright in footer.
         """
         self.statemachine = statemachine
         self.blackboard   = blackboard      
@@ -181,7 +182,8 @@ class RunnerBase:
             group_app.add_argument("--generate-sm-dot",type=str, default="", help="generate a graphviz .dot file for the state machine named in --name-filter, and stored it in the given file (and quit program without running)")
         if allow_generate_json:
             group_app.add_argument("--generate-json",type=str, default="", help="generate a json file from the state machine and store in the specified file (and quit the program without running)")
- 
+        group_app.add_argument("--branding", action=argparse.BooleanOptionalAction, default=branding,help=f"run with KULeuven/RAM branding")
+
         group_app.add_argument("--serve",action=argparse.BooleanOptionalAction,default=serve,help=f"Start-up server with graphical user interface [default:{serve}]")
         # We use the exact names uvicorn.run() expects as kwargs
         group_uvr = parser.add_argument_group("Uvicorn Web Server Options")
@@ -197,7 +199,7 @@ class RunnerBase:
         # get parser arguments 
         args              = self.parse_arguments(parser,group_app, group_uvr)       
         
-        argdoc = str.join("\n",[f"\t{e.replace('_','-')} = {v}" for e,v in args.__dict__.items()])
+        argdoc = str.join("\n",[f"\t{e.replace('_','-')} = {v}" for e,v in args.__dict__.items() if v!=""])
         get_logger().info(f"Runner parameters:\n{argdoc}")        
 
         # store arguments in class:
@@ -240,8 +242,11 @@ class RunnerBase:
             "log_level": args.log_level,
         }
         if self.serve:
-
-            set_webserver_param(statemachine,self.blackboard,self.select_name,self.type_filter)  # set parameters for web-app
+            if args.branding:
+                get_logger().info("Running with KULeuven/RAM branding")
+            else:
+                get_logger().info("Running without KULeuven/RAM branding")
+            set_webserver_param(statemachine,self.blackboard,self.select_name,self.type_filter,args.branding)  # set parameters for web-app
             threading.Thread(
                 target=lambda: uvicorn.run(app, **uvicorn_kwargs),
                 daemon=True
@@ -303,10 +308,10 @@ class Runner(RunnerBase):
     def __init__(self, statemachine: TickingState, blackboard: Blackboard, frequency: float=100.0, publish_frequency=5,debug: bool = False, 
                  display_active=False, betfsm_log=None,logger=LogPrinter(),select_name:str="",type_filter:str="", 
                  allow_generate_dot=True, allow_generate_sm_dot:bool=True,allow_generate_json=True,serve=True,
-                 host="0.0.0.0", port=8000, workers=1, log_level="info"):
+                 host="0.0.0.0", port=8000, workers=1, log_level="info",branding=True):
    
         super().__init__(statemachine, blackboard, frequency, publish_frequency, debug, display_active, betfsm_log,select_name,type_filter,
-                         allow_generate_dot,allow_generate_sm_dot,allow_generate_json,serve,host, port, workers, log_level)
+                         allow_generate_dot,allow_generate_sm_dot,allow_generate_json,serve,host, port, workers, log_level,branding)
         args = self.args
 
         # ROS dependend: everything timer related, logger, node, clocks, synchronization primitives:

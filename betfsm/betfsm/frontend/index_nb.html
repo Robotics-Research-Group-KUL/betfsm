@@ -1,0 +1,77 @@
+
+<!DOCTYPE html>
+<!-- no branding version -->
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Behavior Tree Visualizer</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <header class="splitline">
+    <span>
+        <h1>
+        <a href="https://robotics-research-group-kul.github.io/betfsm" target="_blank"><img src="/static/logo.png" alt="BeTFSM Logo" class="logo"/></a> Visualizer</h1>
+       </a>
+    </span>
+    <span>
+        <a class="headertxt" href="/">Visualizer</a> &nbsp;
+        <a class="headertxt" href="/dashboard">Dashboard</a> &nbsp;
+        <a class="headertxt" href="/events">Events</a> &nbsp;
+        <a class="headertxt" href="/docs" target="_blank">HTTP API</a> &nbsp;
+        <a class="headertxt" href="https://robotics-research-group-kul.github.io/betfsm/" target="_blank">Help</a>
+        &nbsp;
+        &nbsp;
+    </span>
+    </header>
+    <div id="toolbar">
+        <button id="collapseAll" class="btn success">Collapse All</button>
+        <button id="expandAll" class="btn success">Expand All</button>
+        AutoExpand
+        <label class="switch">
+          <input type="checkbox" id="autoExpand">
+          <span class="slider"></span>
+        </label>
+        &nbsp;
+        &nbsp;
+        &nbsp;
+        <label for="rootNameInput">Root Node</label>
+        <input type="text" id="rootNameInput" placeholder="e.g., MainRobotTree">
+        <label for="typeFilterInput">Type Filter</label>
+        <input type="text" id="typeFilterInput" placeholder="e.g., Sequence:CrospiTask">
+        <button class="btn success" onclick="updateRootAndFilter()">Update</button>
+
+        <!--<button id="play" class="btn success">Play</button>
+        <input type="range" id="slider" min="0" max="100" value="0">-->
+    </div>
+        <!--svg id="tree" width="1200" height="800"></svg-->
+        <div class="area" id="tree-area" >
+          <!--svg id="tree" width="1200" height="800"></svg-->
+          <svg id="tree"></svg>
+        </div>
+    <footer class="splitline">
+        <span class="logoai">
+        <!--<a href="https://aiprism.eu/"><img src="/static/Ai-Prism_Logo_Horizontal.png" alt="AI-PRISM Logo" width="150" target="_blank"/></a>
+        agreement No. <a href="https://cordis.europa.eu/project/id/101058589">101058589</a> -->
+        </span>
+        <span/>
+        <span style="color:white">
+        BeTFSM &copy; 2025  
+        <a href="https://www.kuleuven.be/english/kuleuven/" target="_blank" style="color:white">
+            KU Leuven 
+        </a>
+         -
+        <a href="https://www.mech.kuleuven.be/en/research/ram" target="_blank" style="color:white">
+        ROB research group
+        </a>
+        &nbsp;
+        &nbsp;
+       </span>
+    </div>
+
+        </p>
+  </footer>
+  <script src="/static/script.js"></script>
+</body>
+</html>
