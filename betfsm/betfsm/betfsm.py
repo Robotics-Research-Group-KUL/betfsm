@@ -35,7 +35,8 @@ from dataclasses import dataclass
 
 from colorama import Fore, Back, Style
 import inspect
-
+import numpy as np
+from collections import deque
 
 add_logger_category("state")
 add_logger_category("service")
@@ -69,6 +70,21 @@ def deprecated_msg(msg):
             f"{module}.{cls_name} is deprecated and will be removed in the future.\n{Fore.RED}{Style.BRIGHT}{msg}{Style.RESET_ALL}"
         )
         __shown_deprecation_for_class[cls] = True
+
+
+def numpy_json_serializer(obj):
+    """Fallback function for data types that standard json cannot serialize."""
+    if isinstance(obj, deque):
+        return list(obj)
+    if isinstance(obj, np.ndarray):
+        return obj.tolist()  # Converts matrices/arrays to nested lists
+    if isinstance(obj, (np.integer, np.int64, np.int32)):
+        return int(obj)
+    if isinstance(obj, (np.floating, np.float64, np.float32)):
+        return float(obj)
+    
+    raise TypeError(f"Type {type(obj)} not serializable")
+
 
 
 def cleanup_outcomes(outcomes:List[str])->List[str]:

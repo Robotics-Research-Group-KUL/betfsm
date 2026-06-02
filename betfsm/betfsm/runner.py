@@ -29,6 +29,7 @@ import time
 
 from betfsm import (
     TickingState,Blackboard,TICKING,get_logger, set_loggers_from_specification_string, 
+    numpy_json_serializer,
     get_logger_categories,LogPrinter
 )
 from .statemachine_visitor import StateMachineVisitor
@@ -220,7 +221,7 @@ class RunnerBase:
             if args.generate_json:
                 jsondict = to_json(statemachine,self.type_filter,self.select_name)
                 with open(args.generate_json,"w") as f:
-                    json.dump(jsondict, f, indent=4)
+                    json.dump(jsondict, f, default=numpy_json_serializer, indent=4)
                 print(f"json file '{args.generate_json}' is generated, and program will be terminated")                    
                 sys.exit()
         if allow_generate_sm_dot:

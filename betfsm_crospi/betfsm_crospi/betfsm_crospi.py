@@ -38,7 +38,7 @@ from betfsm import (
     add_logger_category, get_logger,get_path_value,get_path_location,set_path_value,
     Blackboard, TickingState,Message,ConcurrentFallback, TickingStateMachine,
     Fallback,Sequence, AlwaysOutcome,GeneratorWithState,
-    EventOutcome,
+    EventOutcome, numpy_json_serializer,
     deprecated_msg
 )
 
@@ -142,7 +142,7 @@ class SetTaskParameters(ServiceClient):
         if self.cb is not None:
             param.update( self.cb(blackboard)  )
 
-        request.str = json.dumps(param)
+        request.str = json.dumps(param,default=numpy_json_serializer)
         get_logger("crospi").info(f"Set parameters for cROSpi task {self.task_name}\n{request.str}")
         return request    
     

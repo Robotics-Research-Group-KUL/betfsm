@@ -22,7 +22,7 @@ from typing import Any
 
 
 import importlib.resources
-from fastapi import FastAPI, WebSocket, HTTPException
+from fastapi import FastAPI, Response, WebSocket, HTTPException
 from fastapi.responses import JSONResponse, FileResponse,HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.websockets import WebSocketDisconnect
@@ -30,7 +30,7 @@ import asyncio, json, time
 from fastapi.middleware.cors import CORSMiddleware
 
 import betfsm
-from betfsm.betfsm import TickingState
+from betfsm.betfsm import TickingState,numpy_json_serializer
 from betfsm.events import HTTPEventReceiver
 from betfsm.jsonvisitor import to_json
 from betfsm.logger import get_logger
@@ -244,6 +244,7 @@ async def set_root_name(root_name:str):
     global name_filter,tree_version
     name_filter = root_name    
     tree_version += 1
+    get_logger().info(f"root_name set to '{root_name}'")
     return {"message": "Value updated", "current_value": name_filter}
 
 
@@ -262,8 +263,8 @@ async def set_type_filter(filter:str):
     global type_filter,tree_version
     type_filter = filter 
     tree_version += 1
+    get_logger().info(f"type_filter set to '{filter}'")
     return {"message": "Value updated", "current_value": type_filter}
-    pass
 
 
 @app.get("/api/get_type_filter",
@@ -316,7 +317,11 @@ async def get_blackboard_value(path: str):
     value = betfsm.get_path_value(blackboard, path)
     if value is None:
         raise HTTPException(status_code=404, detail="Path not found")
-    return {"path": path, "value": value}
+    result = {"path": path, "value": value}
+    json_string = json.dumps(result, default=numpy_json_serializer)
+    return Response(content=json_string, media_type="application/json")
+
+
 
 
 @app.put(
@@ -367,7 +372,7 @@ async def ws_stream(ws: WebSocket):
                 # Send current active states periodically to keep connection alive
                 active_ids = list(TickingState.global_publish_log.keys())
                 msg = {"type": "tick", "tick": int(time.time()*1000), "active": active_ids, "tree_version":tree_version}
-                await ws.send_text(json.dumps(msg))
+                await ws.send_text(json.dumps(msg,default=numpy_json_serializer))
             except (RuntimeError, WebSocketDisconnect):
                 # Client disconnected, break the loop
                 break
