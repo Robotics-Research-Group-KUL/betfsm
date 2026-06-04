@@ -30,7 +30,7 @@ import asyncio, json, time
 from fastapi.middleware.cors import CORSMiddleware
 
 import betfsm
-from betfsm.betfsm import TickingState,numpy_json_serializer
+from betfsm.betfsm import TickingState,json_serializer
 from betfsm.events import HTTPEventReceiver
 from betfsm.jsonvisitor import to_json
 from betfsm.logger import get_logger
@@ -318,7 +318,7 @@ async def get_blackboard_value(path: str):
     if value is None:
         raise HTTPException(status_code=404, detail="Path not found")
     result = {"path": path, "value": value}
-    json_string = json.dumps(result, default=numpy_json_serializer)
+    json_string = json.dumps(result, default=json_serializer)
     return Response(content=json_string, media_type="application/json")
 
 
