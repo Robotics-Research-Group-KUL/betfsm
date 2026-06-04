@@ -80,7 +80,7 @@ def load_task_list( json_file_name: str, blackboard: Blackboard) -> None:
     etasl_params.load_task_list(json_file_name,blackboard)
 
 
-def default_parameter_setter(blackboard):
+def default_parameter_setter(state:TickingState,blackboard:Blackboard) -> dict:
     return {}
 
 
@@ -89,7 +89,7 @@ class SetTaskParameters(ServiceClient):
                  name:str,
                  task_name:str,
                  srv_name:str = "/crospi_node",
-                 cb: Callable[[dict],dict] = default_parameter_setter,
+                 cb: Callable[[TickingState,dict],dict] = default_parameter_setter,
                  timeout:Duration = Duration(seconds=1.0), 
                  node:Node = None):
         """
@@ -104,7 +104,7 @@ class SetTaskParameters(ServiceClient):
             srv_name:
                 name of the etasl node, by default `/crospi_node`
             cb:
-                callback that sets the parameters, with signature `def param_setters(blackboard) ->param`
+                callback that sets the parameters, with signature `def param_setters(TickingState,Blackboard) ->param`
                 where param is a Dict with the parameters of the task.  Every key in this dict will
                 override the default parameters defined in the loaded json file with tasks.
             timeout:
@@ -140,7 +140,7 @@ class SetTaskParameters(ServiceClient):
         param = etasl_params.get_task_parameters_filled(blackboard,self.task_name)
         # calling callback
         if self.cb is not None:
-            param.update( self.cb(blackboard)  )
+            param.update( self.cb(self,blackboard)  )
 
         request.str = json.dumps(param,default=json_serializer)
         get_logger("crospi").info(f"Set parameters for cROSpi task {self.task_name}\n{request.str}")
@@ -524,7 +524,7 @@ class CrospiTask(Fallback):
                  name : str,
                  task_name: str,
                  srv_name: str = "/crospi_node",
-                 cb:Callable=default_parameter_setter,
+                 cb:Callable[[TickingState,dict],dict]=default_parameter_setter,
                  event_topic: str = "crospi_node/events",
                  timeout:Duration = Duration(seconds=1.0),
                  node : Node = None,
@@ -550,7 +550,7 @@ class CrospiTask(Fallback):
             srv_name:
                 name of the eTaSL node, by default /crospi_node
             cb:
-                callback that sets the parameters, with signature `def cb(blackboard) ->param`
+                callback that sets the parameters, with signature `def cb(TickingState,Blackboard) ->param`
                 where param is a Dict with the parameters of the task that will be used to update
                 the default parameters.
             event_topic:

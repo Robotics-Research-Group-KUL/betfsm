@@ -33,7 +33,7 @@ from betfsm import (
     to_graphviz_dotfile,
     dumps_blackboard
 )
-from betfsm.circularbuffer import CircularNumpyBuffer,numpy_json_serializer
+from betfsm.circularbuffer import CircularNumpyBuffer,json_serializer
 
 
 from betfsm_crospi import load_task_list, CrospiTask, CrospiDeactivate,CrospiOutput,deque,Output,QoSDurabilityPolicy,QoSLivelinessPolicy,QoSHistoryPolicy,QoSReliabilityPolicy,QoSProfile
@@ -41,6 +41,7 @@ from betfsm_ros import BeTFSMNode,ROSRunner,Node
 from rclpy.time import Duration,Time
 from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Point
+from std_msgs.msg import ColorRGBA 
 from typing import Callable,List,Dict
 from itertools import islice
 from geometry_msgs.msg import TransformStamped
@@ -50,69 +51,9 @@ from typing import Any, Dict
 from dataclasses import dataclass,Field
 from scipy.spatial.transform import Rotation as spR 
 import numpy as np
-
+1
 from numpy.typing import NDArray
-
-
-
-# def points_from_table(state:TickingState, path:str,lbl_x:str,lbl_y:str,lbl_z:str,length:int) -> Callable[[dict], tuple[float,float,float]]:
-#     first_time = True
-#     loc = []
-#     ix = 0
-#     iy = 1
-#     iz = 2
-#     error_encountered = False
-#     def getter(blackboard:dict)->tuple[float,float,float]:
-#         nonlocal loc,ix,iy,iz,first_time, path,lbl_x,lbl_y,lbl_z,length, state, error_encountered
-#         if first_time:
-#             base = get_path(state,blackboard,path)
-#             loc      = base.get("data",None)
-#             header   = base.get("header", None)
-#             if loc is None:
-#                 if not error_encountered:
-#                     get_logger().error(f"points_from_table: cannot find location {path+'/data'} in blackboard")
-#                 error_encountered = True 
-#                 return None
-#             if len(loc)==0:
-#                 return None
-#             if header is None:
-#                 if not error_encountered:
-#                     get_logger().error(f"points_from_table: cannot find location {path+'/header'} in blackboard")
-#                 error_encountered = True 
-#                 return None
-#             if lbl_x not in header:
-#                 if not error_encountered:
-#                     get_logger().error(f"points_from_table: cannot find {lbl_x} in {header}")
-#                 error_encountered = True 
-#                 return None
-#             ix = header.index(lbl_x)
-#             if lbl_y not in header:
-#                 if not error_encountered:
-#                     get_logger().error(f"points_from_table: cannot find {lbl_y} in {header}")
-#                 error_encountered = True 
-#                 return None
-#             iy = header.index(lbl_y)
-#             if lbl_z not in header:
-#                 if not error_encountered:
-#                     get_logger().error(f"points_from_table: cannot find {lbl_z} in {header}")
-#                 error_encountered = True 
-#                 return None
-#             iz = header.index(lbl_z)
-#             if error_encountered:
-#                 error_encoutered = False
-#                 get_logger().error(f"points_from_table: error restored")
-#             first_time=False
-#         L = len(loc) 
-#         start = max(L - length,0)
-#         return [ Point(x=loc[i][ix], y=loc[i][iy], z= loc[i][iz]) for i in range(start,L)  ]
-#     return getter
-
-# def points_from_list(lst) -> Callable[[dict], tuple[float,float,float]]:
-#     def getter(blackboard:dict)->tuple[float,float,float]:
-#         return [ Point(x=lst[0][i], y=lst[1][i], z=lst[2][i]) for i in range(len(lst[0]))]
-#     return getter
-
-
+from pprint import pprint
 
 def from_bb_table(path:str,lbls:List[str],nrows:int) -> Callable[[TickingState,dict], NDArray[Any]]:
     """
@@ -161,6 +102,7 @@ def from_bb_table(path:str,lbls:List[str],nrows:int) -> Callable[[TickingState,d
             return data[-min(nrows,data.shape[0]):,idx].copy()
     return getter
 
+
 def consume_from_bb_table(path:str,lbls:List[str],nrows:int) -> Callable[[TickingState,dict], NDArray[Any]]:
     """
     Factory function that creates a callback that select from a table structure with heading, path points to a dict with:
@@ -205,6 +147,7 @@ def consume_from_bb_table(path:str,lbls:List[str],nrows:int) -> Callable[[Tickin
         return data.consume_oldest_n(nrows)[:,idx]
     return getter
 
+
 def from_bb_array(path:str,idx=None) -> Callable[[TickingState,dict], NDArray[Any]]:
     """
     Factory function that creates a callback that select from a numpy array:
@@ -235,6 +178,7 @@ def from_bb_array(path:str,idx=None) -> Callable[[TickingState,dict], NDArray[An
         return data[:,idx].copy()
     return getter
 
+
 def from_array(arr:NDArray[Any]) -> Callable[[TickingState,dict], NDArray[Any]]:
     """
     Factory function that creates a callback that select from the given numpy array reference.
@@ -253,10 +197,11 @@ def from_array(arr:NDArray[Any]) -> Callable[[TickingState,dict], NDArray[Any]]:
         return arr 
     return getter
 
-
-
-
-
+def param_from_bb(path: str):
+    def getter(state:TickingState, blackboard:dict)->Dict[str,Any]:
+        nonlocal path
+        return get_path(state,blackboard,path)
+    return getter
 
 class MarkerPublisher(Generator):
     def __init__(self, name:str, 
@@ -266,9 +211,11 @@ class MarkerPublisher(Generator):
                  array_type: bool = True,   #an array type of marker such as LINE_STRIP or POINTS
                  marker_id:int=0,
                  frame_id:str="world",
+                 lifetime_s:  int=0,
+                 color : ColorRGBA = None,
                  node:Node=None
                  ):
-        """_summary_
+        """
 
         Accepts getters from_bb_table, consume_form_bb_table, from_bb_array and from_array callback factories
 
@@ -307,7 +254,7 @@ class MarkerPublisher(Generator):
             marker.color.a = 1.0  # Opacity (1.0 = completely solid)
             marker.id      = 0
             marker.ns     = "betfsm"
-            marker.lifetime = Duration(seconds=0).to_msg()
+            marker.lifetime = Duration(seconds=lifetime_s).to_msg()
             marker.header.frame_id = "world"
         if marker is None or marker == Marker.SPHERE_LIST:
             marker = Marker()
@@ -322,9 +269,11 @@ class MarkerPublisher(Generator):
             marker.color.a = 1.0  # Opacity (1.0 = completely solid)
             marker.id      = 0
             marker.ns     = "betfsm"
-            marker.lifetime = Duration(seconds=0).to_msg()
+            marker.lifetime = Duration(seconds=lifetime_s).to_msg()
             marker.header.frame_id = "world"
- 
+        if color is not None:
+            marker.color = color
+        pprint(marker)
         self.marker       = marker
         if marker_id is not None:
             self.marker.id = marker_id
@@ -338,7 +287,6 @@ class MarkerPublisher(Generator):
         sample_time = 0
         now         = self.node.get_clock().now()
         previous    = now
-        count=0
         warnings=[]
         while True:
             now = self.node.get_clock().now()
@@ -351,16 +299,15 @@ class MarkerPublisher(Generator):
                     self.publisher.publish(self.marker)
                     previous = now
                 else:
-                    if not 1 in warnings:
-                        get_logger("crospi").error(f"MarkerPublisher: could not get marker points from getter callback")
-                        warnings.append(1)
+                    if (not 1 in warnings):
+                        get_logger("crospi").error(f"MarkerPublisher({self.name}): could not get marker points from getter callback")
+                        #warnings.append(1)
             yield TICKING
 
     def exit(self):
         # this is also called when its externally reset or naturally finishes by itself
         self.node.destroy_subscription(self.publisher)
         return super().exit()
-
 
 
 def get_path(state: TickingState, blackboard: Blackboard, path: str,default: Any = {},force=False) -> Dict[str, Any]:
@@ -458,7 +405,6 @@ def get_path(state: TickingState, blackboard: Blackboard, path: str,default: Any
     return ns 
 
 
-
 class CrospiOutput_v2(Generator):
     """
     Record output of Crospi in a topic while executing subtree
@@ -537,22 +483,6 @@ class CrospiOutput_v2(Generator):
             for lbl,val in zip(self.header, last):
                 loc[lbl] = val
         return super().exit()
-
-
-
-# def compute_example(state:TickingState, bb:Blackboard):
-#     target = get_path(state.parent,bb,"./target")
-#     meas   = get_path(state.parent,bb,"./meas")
-#     local  = get_path(state,".")
-
-#     local["sum"] = local.get("sum",0.0) + meas["force"]
-#     local['N']   = local.get("N",0.0)   + 1
-
-#     target["force"] = meas["force"] + 5
-#     if abs( meas["force"]) > 10:
-#         return CANCEL
-#     return SUCCEED
-
 
 
 class Compute_v2(Generator):
@@ -652,8 +582,8 @@ class TF2Listener(Generator):
         self.desired_outcome = desired_outcome
 
     def co_execute(self, blackboard):
-        default_quat = np.array([0,0,0,1,0,0,0])
-        default_mat  = np.eye(4)
+        default_quat = np.array([0,0,0,1,0,0,0],dtype=np.float64)
+        default_mat  = np.eye(4,dtype=np.float64)
         tf_bb = []
         for spec in self.tf_list:
             # if does not exist we choose default==[], such that we can assign a list to it without
@@ -671,7 +601,6 @@ class TF2Listener(Generator):
                     loc[:3,3]  = [  T.transform.translation.x, T.transform.translation.y, T.transform.translation.z]
                 else:
                     # this still accesses the blackboard due to [:]
-                    print(loc)
                     loc[:] = [  T.transform.translation.x, T.transform.translation.y, T.transform.translation.z,
                                         T.transform.rotation.w, T.transform.rotation.x, T.transform.rotation.y, T.transform.rotation.z]
             if self.desired_outcome!=TICKING:
@@ -680,7 +609,7 @@ class TF2Listener(Generator):
         yield self.desired_outcome
 
 
-# class TF2Publisher(Generator):
+class TF2Publisher(Generator):
 #     def __init__(self, name:str, 
 #                  frame_id:str,
 #                  child_frame_id:str,
@@ -728,9 +657,10 @@ class TF2Listener(Generator):
 #     def exit(self):
 #         # this is also called when its externally reset or naturally finishes by itself
 #         return super().exit()
+    pass
 
 
-class TF2Broadcaster_v2(Generator):
+class TF2Broadcaster(Generator):
     def __init__(self, name:str, 
                  tf_list:List[TFSpec],
                  frequency=10,
@@ -831,7 +761,7 @@ class MyApplication(Repeat):
             loc["posquat"] = [ 0.6,0.6,0.6, 1.0, 0, 0, 0]
             return SUCCEED
 
-        def set_spline_param(bb):
+        def set_spline_param(self,bb):
             #    len(knots) = len(cp) + degree - 1
             #    multiplicity of degree at beginning and end
             #    only the parameters that you want to override
@@ -849,10 +779,11 @@ class MyApplication(Repeat):
             TF2Listener("listen",[ TFSpec("base_link","tool0","../initial_tool0",is_matrix=False) ],SUCCEED),
             Concurrent("concurrent",[
                 CrospiTask("MoveBSpline","MoveBSpline",cb=set_spline_param),
-                CrospiOutput_v2("output","/my_topic", queue_size=6000, path='../output'),
-                TF2Broadcaster_v2("tfbroadcaster",[TFSpec("initial","base_link","../../initial_tool0",is_matrix=False)],frequency=10),
-                MarkerPublisher("marker",from_bb_table("../../output",["x_tf","y_tf","z_tf"],600), marker=Marker.LINE_STRIP, frequency=10, marker_id=1),
-                MarkerPublisher("marker",from_array(cp.T),marker=Marker.SPHERE_LIST,marker_id=2,frequency=10,frame_id="initial_tool0"),
+                CrospiOutput_v2("output","/my_topic", queue_size=300, path='../../output'),
+                MarkerPublisher("marker",from_bb_table("../../output",["x_tf","y_tf","z_tf"],600), marker=Marker.LINE_STRIP, frequency=10, marker_id=1,lifetime_s=10),
+                TF2Broadcaster("tfbroadcaster",[TFSpec("base_link","initial_tool0","../../initial_tool0",is_matrix=False)],frequency=10),
+                MarkerPublisher("marker",from_array(cp.T),marker=Marker.SPHERE_LIST,marker_id=2,frequency=10,frame_id="initial_tool0",lifetime_s=3),
+                MarkerPublisher("marker",from_array(cp.T),marker=Marker.LINE_STRIP,marker_id=3,frequency=10,frame_id="initial_tool0",lifetime_s=3,color=ColorRGBA(r=1.,g=1.,b=0.,a=1.)),
             ])
         ]))
 
@@ -881,22 +812,38 @@ class MyApplication_v2(GeneratorWithList):
 
     def __init__(self):
         super().__init__("My_application_v2",[SUCCEED, CANCEL])
-
-        self.move_home = CrospiTask("MoveHome","MoveHome");
-        self.listen_tf = TF2Listener("listen",[ TFSpec("base_link","tool0","../initial_tool0",is_matrix=False) ],SUCCEED) # once
-        self.spline_motion = Concurrent("concurrent",[
-                CrospiTask("MoveBSpline","MoveBSpline",cb= lambda bb: get_path(self,bb,"./spline") ),
-                CrospiOutput_v2("output","/my_topic", queue_size=6000, path='../../output'),
-                MarkerPublisher("marker", from_bb_table("../../output",[],200),  marker=Marker.LINE_STRIP,frequency=10,marker_id=0),
-                TF2Broadcaster_v2("tfbroadcaster",[TFSpec("base_link","initial_tool0","../../initial_tool0",is_matrix=False)],frequency=10)
-#                MarkerPublisher("marker",points_from_list(cp),
-#                                marker=Marker.SPHERE_LIST,marker_id=1,frequency=10,frame_id="initial_tool0"),
+       
+        self.move_home =  CrospiTask("MoveHome","MoveHome")
+        self.listen_tf = TF2Listener("listen",[ TFSpec("base_link","tool0","../initial_tool0",is_matrix=False) ],SUCCEED),
+        self.spline_motion =    Concurrent("concurrent",[
+                CrospiTask("MoveBSpline","MoveBSpline",cb=xxxxxx ),
+                CrospiOutput_v2("output","/my_topic", queue_size=300, path='../../output'),
+                MarkerPublisher("marker",from_bb_table("../../output",["x_tf","y_tf","z_tf"],600), marker=Marker.LINE_STRIP, frequency=10, marker_id=1,lifetime_s=10),
+                TF2Broadcaster("tfbroadcaster",[TFSpec("base_link","initial_tool0","../../initial_tool0",is_matrix=False)],frequency=10),
+                MarkerPublisher("marker",from_array(cp.T),marker=Marker.SPHERE_LIST,marker_id=2,frequency=10,frame_id="initial_tool0",lifetime_s=3),
+                MarkerPublisher("marker",from_array(cp.T),marker=Marker.LINE_STRIP,marker_id=3,frequency=10,frame_id="initial_tool0",lifetime_s=3,color=ColorRGBA(r=1.,g=1.,b=0.,a=1.)),
             ])
+
         self.add_state(self.move_home)
         self.add_state(self.listen_tf)
         self.add_state(self.spline_motion)
 
     def co_execute(self, blackboard):
+        cp = np.array([
+            [ 0., 0.05, 0.1, 0.15, 0.2, 0.25, 0.3],
+            [ 0., 0.0, 0.2, 0.2, 0.2, 0.0, 0.0],
+            [ 0., 0.0, 0.0, 0.0, 0.15, 0.15, 0.15]
+        ])
+        degree = 3
+        knots = linspace_knots(7,3)
+        p={}
+        p["degree"] = degree
+        p["knots"]  = knots 
+        p["cp_x"] = cp[0] 
+        p["cp_y"] = cp[1] 
+        p["cp_z"] = cp[2] 
+
+
         loc=get_path(self,blackboard,"./spline")
         loc["cp_x"] = [ 0., 0.05, 0.1, 0.15, 0.2,  0.25, 0.3]
         loc["cp_y"] = [ 0., 0.0, 0.2,  0.2,  0.2,  0.0,  0.0]
