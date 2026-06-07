@@ -34,7 +34,7 @@ nav:
       - "Logging" : "logger.md"
       - "Other references": "references.md"
     - "API" :
-      - "BeTFSM":
+      - "BeTFSM":      
         - "TickingState" : "tickingstate.md"
         - "TickingStateMachine" : "tickingstatemachine.md"
         - "Visitor" : "visitor.md"
@@ -88,6 +88,7 @@ nav:
         - "CrospiTask" : "crospi_task.md"
         - "CrospiDeactivate" : "crospi_deactivate.md"
         - "CrospiOutput": "crospioutput.md"
+      - "HTTP API": "openapi.md"
     - "About & Acknowledgements": 'about.md'
 
 

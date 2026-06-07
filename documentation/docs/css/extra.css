@@ -2,3 +2,15 @@
 .wy-nav-content {
     max-width: 1000px !important;   /* or any width you prefer */
 }
+
+
+/* Target all direct children of the parent block, and hide them */
+footer {
+    visibility:hidden
+}
+
+
+/* Force the specific div to stay visible */
+footer .rst-footer-buttons {
+    visibility:visible
+}
