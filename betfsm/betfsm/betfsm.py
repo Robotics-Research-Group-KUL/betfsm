@@ -122,6 +122,108 @@ TickingState_Status = Enum("TickingState_Status",["ENTRY","DOO","EXIT"])
 
 #endregion
 
+#################################################################
+#  get_path and the local blackboard: 
+#
+#################################################################
+
+def get_path(state: TickingState, blackboard: Blackboard, path: str,default: Any = {},force=False) -> Dict[str, Any]:
+    """ Gets a reference to a dict inside the blackboard, following strict path rules.
+
+    Path rules:
+
+    - Must start with ".", "..", or "/".
+    - "." refers to this state's local context (created lazily).
+    - "./x/y" refers to nested dicts inside this state's local context.
+    - "/some_name" refers to a global dict in the blackboard root.
+    - ".." moves to parent state and its local context (created lazily).
+      Can be repeated: "../../meas" is valid.
+    - Any path starting with a bare name, e.g. "output/...", "foo/bar" is illegal.
+    - Missing dicts along the path are created on the fly.
+    - If a path component exists but is not a dict, it is overwritten with a dict.
+    - the last path component will get the value default if it does not exist
+    - if force==True, the last value will be forced to default.
+
+    The options default and force make it possible to use get_path to be used also for
+    changing the blackboard.  For scalar types such as int,number and str , you
+    can pass the value in default.  For other types dict, list, NDArray, you have
+    a reference to the location in the dashboard, and with careful assignment you
+    can make sure that the blackboard is adapted (use "[:]" to change the content instead
+    of the reference )
+
+    local context to a state are stored in blackboard["local"][state.uid]
+
+    Parameters
+    ----------
+    state : TickingState
+       if it is a local path, this is the state to take as reference. 
+    blackboard : Blackboard
+        global blackboard 
+    path : str
+        path inside the local blackboard can be absolute for global variables and relative for local variables. 
+    default : Any, optional
+        default value that is returned (and put in the blackboard), if there is no value present.
+    force : bool, optional
+        force default to be used, even if there is a value.
+
+    Returns
+    -------
+    Dict[str, Any]
+        _description_
+    """
+
+    def local_namespace(state,blackboard):
+        if "local" not in blackboard:
+            locals = {}
+            blackboard["local"] = locals
+        else:
+            locals = blackboard["local"]
+        if state.uid not in locals:
+            local = {"name":state.name}  # for now, for debugging
+            locals[state.uid] = local
+        else:
+            local = locals[state.uid]
+        return local
+
+    path = path.strip()
+    ns    = blackboard
+    phase = 1     
+
+    parts = path.split("/")
+    for i,part in enumerate(parts):
+        if not part:
+            continue
+        if (phase==1):
+            # phase 1: is looking for "." local namespace 
+            if part==".":
+                phase = 3
+                ns    = local_namespace(state,blackboard)
+                continue
+            phase = 2
+        if (phase==2):
+            # phase 2: navigating to parents of state to find local namespace 
+            if part=="..":
+                state = state.parent
+                if state is None:
+                    get_logger().error("get_path: '..' can't go beyond root node (too many '..'? node not added to BeTFSM tree?) ")
+                    return None 
+                ns    = local_namespace(state,blackboard)
+                continue
+            if part==".":
+                raise ValueError("illegal path, '.' in the middle of path not allowed")
+            phase = 3
+        if (phase==3):
+            # phase 3: navigating inside namespace
+            if i < len(parts)-1:
+                if part not in ns or not isinstance(ns[part], dict):
+                    ns[part] = {}
+            else: # last part is not necessarily dict.
+                if part not in ns:
+                    ns[part] = copy.deepcopy(default )  # dangerous bug: if no deepcopy the defaults are shared!  deepcopy necessary
+            ns = ns[part]
+    return ns 
+
+
 
 def get_path_value(blackboard, path, default=None):
     """
@@ -340,6 +442,7 @@ def get_path_location(blackboard, path, create_missing=True, delimiter="/"):
 
     # Final parent is a primitive data type, meaning we can't index into it
     return None,None
+
 
 
 class Visitor(ABC):
