@@ -1993,3 +1993,208 @@ class TickingStateMachine(TickingState):
         return super().exit()
  
 
+
+#################################################################
+#   ConfigCallback
+#################################################################
+
+
+class ConfigCallback:
+    """Class to provide run-time configuration information to BeTFSM nodes
+
+       Since these callbacks can fail until some data is ready, they should
+       preferably be "silent" and not pollute the log when they are called
+       repeatedly.
+    """
+    def __init__(self):
+        pass
+
+    def reset(self, state:TickingState, blackboard:dict) -> bool:
+        """
+        Reset, to be called at the start of the BeTFSM node that uses this callback.
+        (at the start of _execution_, not in the constructor!)
+
+        Returns True if there are no configuration errors.
+        """
+        return True 
+
+    def __call__(self, state:TickingState, blackboard:dict):
+        """Called by the BeTFSM node that wants to get the information
+
+        Parameters
+        ----------
+        state : TickingState
+            The calling BeTFSM node 
+        blackboard : dict
+            The blackboard 
+        """
+        return None 
+
+
+class CC_SetState(ConfigCallback):
+    """Overrides the state argument in __call__
+
+       the state argument in __call__ is often used for a reference to a local
+       context.  This makes sure that the user does not need to know about the inner workings
+       of a subtree. This makes sure that the local context is the node that the users calls, although
+       the callback function is passed further to some child nodes. 
+
+       If a class passes the callback argument to one of the children, you want to use CC_SetState. 
+    """
+    def __init__(self, state:TickingState,cc:ConfigCallback):
+        self.cc = cc
+        self.state = state 
+
+    def reset(self, state:TickingState, blackboard:dict):
+        return self.cc.reset(self.state,blackboard)
+    
+    def __call__(self, state:TickingState, blackboard:dict):
+        return self.cc.__call__(self.state,blackboard)
+
+
+class CC_bb_table(ConfigCallback):
+    """
+    Factory function that creates a callback that select from a table structure with heading, path points to a dict with:
+    
+        "heading" key : [ "name1","name2",...]
+        "data" key :    CircularNumpyBuffer or NDArray of numpy
+
+    __call__ will return a COPIED array 
+    """        
+    def __init__(self, path:str, lbls:List[str], nrows:int):
+        """
+        Look at the newest values and do NOT consume. (default: True).
+
+        Parameters
+        ----------
+        path : str
+            path (can be relative w.r.t. the calling BeTFSM node)
+        lbls : List[str]
+            labels  you want to return
+        nrows : int
+            maximum number of rows to return (can be less if not available)
+        """
+        self.path  = path
+        self.lbls  = lbls
+        self.nrows = nrows
+    
+    def reset(self, state, blackboard):
+        self.base               = get_path(state, blackboard, self.path)
+        if self.base is None:
+            return False 
+        self.data               = self.base.get("data",None)
+        if self.data is None:
+            return False 
+        self.header             = self.base.get("header", None)
+        if self.header is None:
+            return False 
+        self.idx = [ self.header.index(lbl) for lbl in self.lbls ]
+        return True
+
+    def __call__(self, state, blackboard):
+        if isinstance(self.data,CircularNumpyBuffer):
+            return self.data.peek_newest_n(self.nrows)[:,self.idx]
+        else:
+            return self.data[ -min(self.nrows,self.data.shape[0]): , self.idx ].copy()
+
+
+class CC_bb_table_consume(ConfigCallback):
+    """
+    Factory function that creates a callback that select from a table structure with heading, path points to a dict with:
+    
+        "heading" key : [ "name1","name2",...]
+        "data" key :    CircularNumpyBuffer
+    
+    Looks at OLDEST values and CONSUMES.  
+    Only works with an underlying CicularNumpyBuffer (no direct NDArray allowed for the data key, in contrast to from_bb_table).
+    __call__ will return a COPIED array 
+    """        
+    def __init__(self, path:str, lbls:List[str], nrows:int):
+        """
+        Look at the newest values and do NOT consume. (default: True).
+
+        Parameters
+        ----------
+        path : str
+            path (can be relative w.r.t. the calling BeTFSM node)
+        lbls : List[str]
+            labels  you want to return
+        nrows : int
+            maximum number of rows to return (can be less if not available)
+        """
+        self.path  = path
+        self.lbls  = lbls
+        self.nrows = nrows
+    
+    def reset(self, state, blackboard):
+        self.base               = get_path(state, blackboard, self.path)
+        if self.base is None:
+            return False 
+        self.data               = self.base.get("data",None)
+        if self.data is None:
+            return False 
+        self.header             = self.base.get("header", None)
+        if self.header is None:
+            return False 
+        self.idx = [ self.header.index(lbl) for lbl in self.lbls ]
+        return True
+
+    def __call__(self, state, blackboard):
+        return self.data.consume_oldest_n(self.nrows)[:,self.idx]
+
+
+class CC_bb_array(ConfigCallback):
+    """
+    ConfigCallback class that creates a callback that select from a numpy array
+    in the blackboard.  The path refers to the array (for table with heading,
+    see select_from_bb_table)    
+
+    __call__ returns a COPIED array 
+    """
+    def __init__(self,path:str,idx:List[int]=None):
+        """ 
+        Parameters
+        ----------
+        path : str
+            path (can be relative w.r.t. the calling BeTFSM node)
+        idx : List[int]
+            column indices you want to return, can by None for all columns.(default=None)
+        """
+        self.path = path
+        self.idx  = idx
+
+    def reset(self, state, blackboard):
+        self.data = get_path(state, blackboard, self.path)
+        if self.data is None:
+            return False
+        if self.idx is None:
+            self.idx = np.arange(0,self.data.shape[1]);
+        return True 
+
+    def __call__(self, state, blackboard)->NDArray[Any]:
+        return self.data[:,self.idx].copy()
+
+class CC_array(ConfigCallback):
+    """ConfigCallback class that creates a callback that 
+    """
+    def __init__(self, arr:NDArray[Any]):
+        self.arr = arr
+
+    def __call__(self, state, blackboard):
+        return self.arr
+
+
+class CC_bb_dict(ConfigCallback):
+    def __init__(self, path:str):
+        self.path = path
+
+    def reset(self, state, blackboard):
+        self.result = get_path(state,blackboard,self.path)
+        if self.result is None:
+            return False
+        else:
+            return True
+
+    def __call__(self, state, blackboard):
+        return self.result 
+
