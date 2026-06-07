@@ -26,7 +26,8 @@ import time
 from rclpy.node import Node
 import ament_index_python as aip
 from std_msgs.msg import String
-from lifecycle_msgs.srv import ChangeState
+from lifecycle_msgs.srv import ChangeState,GetState
+#from lifecycle_msgs.msg import Transition
 from rclpy.qos import QoSHistoryPolicy, QoSProfile, QoSReliabilityPolicy, QoSDurabilityPolicy
 from rclpy.time import Duration
 from rclpy.action import ActionClient
@@ -321,7 +322,7 @@ class ServiceClient(Generator):
         self.srv_name  = srv_name
         # check if self.node has a get_client method
         if not hasattr(self.node, 'get_client'):
-            get_logger("service").info(f"Not get_client found in node creating service client for {self.srv_name} ({self.srv_type.__name__})")
+            get_logger("service").info(f"No get_client found in node creating service client for {self.srv_name} ({self.srv_type.__name__}), creating a service client")
             self.srvclient = self.node.create_client(srv_type,srv_name)
         else:
             self.srvclient = self.node.get_client(srv_type,srv_name)
@@ -336,7 +337,7 @@ class ServiceClient(Generator):
         while not self.srvclient.service_is_ready():
             if self.timeout!=Duration():
                 if self.clock.now() - starttime > self.timeout:
-                    get_logger().error(f"could not find service {self.srv_type.__name__} from {self.srv_name} in time")
+                    get_logger().warning(f"could not find service {self.srv_type.__name__} from {self.srv_name} in time")
                     if self.always_succeed:
                         yield SUCCEED
                     else:
@@ -347,7 +348,7 @@ class ServiceClient(Generator):
         while not future.done():
             if self.timeout!=Duration():
                 if self.clock.now() - starttime > self.timeout:
-                    get_logger().error(f"service {self.srv_type} from {self.srv_name} did not answer in time")
+                    get_logger().warning(f"service {self.srv_type} from {self.srv_name} did not answer in time")
                     if self.always_succeed:
                         yield SUCCEED
                     else:
@@ -544,92 +545,264 @@ class Transition(Enum):
     INACTIVE_SHUTDOWN = 6
     ACTIVE_SHUTDOWN = 7    
 
-class LifeCycle(ServiceClient):
-    """
-    ROS2 lifecycle (simplified):
-    ```mermaid
-        stateDiagram-v2
-            direction LR
-            classDef successClass  fill:darkgreen,color:white
-            classDef tickingClass  fill:yellow,color:black
-            classDef otherClass  fill:darkorange,color:white
-            classDef abortClass  fill:darkred,color:white
+# class LifeCycle(ServiceClient):
+#     """
+#     ROS2 lifecycle (simplified):
+#     ```mermaid
+#         stateDiagram-v2
+#             direction LR
+#             classDef successClass  fill:darkgreen,color:white
+#             classDef tickingClass  fill:yellow,color:black
+#             classDef otherClass  fill:darkorange,color:white
+#             classDef abortClass  fill:darkred,color:white
 
             
-            [*] --> unconfigured
-            unconfigured --> inactive : CONFIGURE
-            inactive --> active : ACTIVATE
-            inactive --> unconfigured : CLEANUP
-            inactive --> finalized : INACTIVE_SHUTDOWN
-            active --> inactive : DEACTIVATE
-            active --> finalized : ACTIVE_SHUTDOWN
-            unconfigured --> finalized : UNCONFIGURED_SHUTDOWN
-    ```
+#             [*] --> unconfigured
+#             unconfigured --> inactive : CONFIGURE
+#             inactive --> active : ACTIVATE
+#             inactive --> unconfigured : CLEANUP
+#             inactive --> finalized : INACTIVE_SHUTDOWN
+#             active --> inactive : DEACTIVATE
+#             active --> finalized : ACTIVE_SHUTDOWN
+#             unconfigured --> finalized : UNCONFIGURED_SHUTDOWN
+#     ```
 
-    ```python
-        class Transition(Enum):
-            CONFIGURE              = 1
-            CLEANUP                = 2
-            ACTIVATE               = 3
-            DEACTIVATE             = 4
-            UNCONFIGURED_SHUTDOWN  = 5
-            INACTIVE_SHUTDOWN      = 6
-            ACTIVE_SHUTDOWN        = 7    
-    ```
-    A ROS 2 node can take a while before reaching the desired state.  These transitional states are
-    not depicted here. Documentation of the full state machine can be found [here](https://design.ros2.org/articles/node_lifecycle.html)
-    """
-    def __init__(self, 
-                name:str,
-                srv_name:str = "/etasl_node", 
-                transition: Transition=Transition.ACTIVATE, 
-                timeout:Duration = Duration(seconds=1.0), 
-                node:Node = None,
-                always_succeed = False):
-        """
-        Parameters:
-            name:
-                instance name of the lifecycle action
-            srv_name:
-                name of the node whose lifecycle to control
-            transition:
-                indicates which transition
-            timeout: 
-                duration that indicates the timeout, 0 is forever
-            node:
-                if None, singleton BeTFSMNode.get_instance() will be used.
-            always_succeed:
-                if True, will always return SUCCEED or TICKING
+#     ```python
+#         class Transition(Enum):
+#             CONFIGURE              = 1
+#             CLEANUP                = 2
+#             ACTIVATE               = 3
+#             DEACTIVATE             = 4
+#             UNCONFIGURED_SHUTDOWN  = 5
+#             INACTIVE_SHUTDOWN      = 6
+#             ACTIVE_SHUTDOWN        = 7    
+#     ```
+#     A ROS 2 node can take a while before reaching the desired state.  These transitional states are
+#     not depicted here. Documentation of the full state machine can be found [here](https://design.ros2.org/articles/node_lifecycle.html)
+#     """
+#     def __init__(self, 
+#                 name:str,
+#                 srv_name:str = "/etasl_node", 
+#                 transition: Transition=Transition.ACTIVATE, 
+#                 timeout:Duration = Duration(seconds=1.0), 
+#                 node:Node = None,
+#                 always_succeed = False):
+#         """
+#         Parameters:
+#             name:
+#                 instance name of the lifecycle action
+#             srv_name:
+#                 name of the node whose lifecycle to control
+#             transition:
+#                 indicates which transition
+#             timeout: 
+#                 duration that indicates the timeout, 0 is forever
+#             node:
+#                 if None, singleton BeTFSMNode.get_instance() will be used.
+#             always_succeed:
+#                 if True, will always return SUCCEED or TICKING
+#         """
+#         if node is None:
+#             self.node = BeTFSMNode.get_instance()
+#         else:
+#             self.node = node
+#         outcomes = [SUCCEED,ABORT] # TIMEOUT added by ServiceClient, TICKING added by TickingState
+#         super().__init__(name,srv_name=srv_name+"/change_state",srv_type=ChangeState,outcomes=outcomes,timeout=timeout,node=node,always_succeed=always_succeed)
+#         self.transition = transition
+#         self.node_name = srv_name
+#     def fill_in_request(self, blackboard: Blackboard,request) -> None:
+#         #get_logger().info(f"Set lifecycle of {self.node_name} to {self.name}")
+#         request.transition.id = self.transition.value
+#         if self.transition.value == Transition.CONFIGURE.value:
+#             request.transition.label='configure'
+#         elif self.transition.value == Transition.CLEANUP.value:
+#             request.transition.label='cleanup'
+#         elif self.transition.value == Transition.ACTIVATE.value:
+#             request.transition.label='activate'
+#         elif self.transition.value == Transition.DEACTIVATE.value:
+#             request.transition.label='deactivate'
+#         else:
+#             request.transition.label='shutdown'
+#         return request
+#
+#     def process_result(self, blackboard: Blackboard, result) -> str:
+#         if result.success:
+#             return SUCCEED
+#         else:
+#             return ABORT
+
+class LifeCycleTransition(Generator):
+    def __init__(self,  name:str, srv_node:str, transition:Transition, timeout:Duration=Duration(seconds=1.0), node:BeTFSMNode=None):
+        """Performs a transition on a ROS2 managed node
+
+        Parameters
+        ----------
+        name : str
+            _description_
+        srv_node : str
+            node that offers the service, service will be e.g. "{srv_node}/get_state"
+        transition:
+            indicates which transition
+        timeout : Duration, optional
+            _description_, by default Duration(seconds=1.0)
+        node : BeTFSMNode, optional
+            BeTFSMNode, if not specified the singleton instance, by default None
         """
         if node is None:
             self.node = BeTFSMNode.get_instance()
         else:
             self.node = node
-        outcomes = [SUCCEED,ABORT] # TIMEOUT added by ServiceClient, TICKING added by TickingState
-        super().__init__(name,srv_name=srv_name+"/change_state",srv_type=ChangeState,outcomes=outcomes,timeout=timeout,node=node,always_succeed=always_succeed)
-        self.transition = transition
-        self.node_name = srv_name
+        super().__init__(name,[SUCCEED,TIMEOUT,CANCEL])
+        self.srv_node = srv_node
+        self.change_state_srv_name = f"{srv_node}/change_state"
+        self.change_state_client = self.node.get_client(ChangeState,self.change_state_srv_name)
+        self.timeout=timeout
+        self.transition=transition
 
-    def fill_in_request(self, blackboard: Blackboard,request) -> None:
-        #get_logger().info(f"Set lifecycle of {self.node_name} to {self.name}")
-        request.transition.id = self.transition.value
-        if self.transition.value == Transition.CONFIGURE.value:
-            request.transition.label='configure'
-        elif self.transition.value == Transition.CLEANUP.value:
-            request.transition.label='cleanup'
-        elif self.transition.value == Transition.ACTIVATE.value:
-            request.transition.label='activate'
-        elif self.transition.value == Transition.DEACTIVATE.value:
-            request.transition.label='deactivate'
+    def set_start_time(self):
+        self.starttime = self.node.get_clock().now()
+
+    def wait_with_timeout(self, description:str, cb):
+        while not cb():
+            if self.node.get_clock().now() - self.starttime > self.timeout:
+                get_logger().warning(f"LifeCycleTransition {self.name}: timout occurred  in {description}")
+                yield TIMEOUT
+            yield TICKING
+        return SUCCEED # ensures that yield from ends
+
+    def co_execute(self, blackboard):
+        self.set_start_time()
+        try:
+            # waiting for service is ready:
+            yield from self.wait_with_timeout(
+                f"{self.change_state_srv_name} service_is_ready",
+                self.change_state_client.service_is_ready)
+            
+            req = ChangeState.Request()
+            req.transition.id = self.transition.value 
+            current_future = self.change_state_client.call_async( req)
+            yield from self.wait_with_timeout( f"ChangeState request of '{self.srv_node}' with transition {self.transition.name} ", current_future.done)
+            response = current_future.result()
+            if response.success:
+                get_logger("service").info(f"LifeCycleTransition: target {self.srv_node} performed transition {self.transition.name}"  )
+                yield SUCCEED
+                return 
+            else:
+                get_logger().error(f"LifeCycleTransition: Transition request to '{self.srv_node}' with transtion {self.transition.name} was rejected")
+                yield CANCEL
+                return 
+        except Exception as e:
+            get_logger().error( f"LifeCycleTransition: request to {self.srv_node} failed: {str(e)}")
+            yield CANCEL
+        return
+
+
+
+
+
+
+
+
+class ResetLifeCycleState(Generator):
+    def __init__(self,  name:str, srv_node:str, timeout:Duration=Duration(seconds=1.0), node:BeTFSMNode=None):
+        """_summary_
+
+        Parameters
+        ----------
+        name : str
+            _description_
+        srv_node : str
+            node that offers the service, service will be e.g. "{srv_node}/get_state"
+        timeout : Duration, optional
+            _description_, by default Duration(seconds=1.0)
+        node : BeTFSMNode, optional
+            BeTFSMNode, if not specified the singleton instance, by default None
+        """
+        if node is None:
+            self.node = BeTFSMNode.get_instance()
         else:
-            request.transition.label='shutdown'
-        return request
-    
-    def process_result(self, blackboard: Blackboard, result) -> str:
-        if result.success:
-            return SUCCEED
-        else:
-            return ABORT
+            self.node = node
+        super().__init__(name,[SUCCEED,TIMEOUT,CANCEL])
+        self.srv_node = srv_node
+        self.get_state_srv_name = f"{srv_node}/get_state"
+        self.change_state_srv_name = f"{srv_node}/change_state"
+        self.get_state_client = self.node.get_client(GetState,self.get_state_srv_name)
+        self.change_state_client = self.node.get_client(ChangeState,self.change_state_srv_name)
+        self.timeout=timeout
+
+
+
+    def set_start_time(self):
+        self.starttime = self.node.get_clock().now()
+
+
+    def wait_with_timeout(self, description:str, cb):
+        while not cb():
+            if self.node.get_clock().now() - self.starttime > self.timeout:
+                get_logger().warning(f"ToLifeCycleState {self.name}: timout occurred  in {description}")
+                yield TIMEOUT
+            yield TICKING
+        return SUCCEED # ensures that yield from ends
+
+    def co_execute(self, blackboard):
+        self.set_start_time()
+        try:
+            while True:
+                # waiting for service is ready:
+                yield from self.wait_with_timeout(
+                    f"{self.get_state_srv_name}.service_is_ready",
+                    self.get_state_client.service_is_ready)
+                
+                # wating for get_state()
+                current_future = self.get_state_client.call_async( GetState.Request())
+                yield from self.wait_with_timeout( f"GetState request to {self.srv_node}", current_future.done)
+                response = current_future.result() 
+                current_label = response.current_state.label 
+                get_logger("service").info(f"ResetLifeCycleState: target {self.srv_node} is currently in state '{current_label}'")
+
+                # deciding next transition:
+                req = ChangeState.Request()
+                lbl = ""
+                if current_label=="unconfigured":
+                    yield SUCCEED
+                    break
+                elif current_label=="active":
+                    lbl="TRANSITION_DEACTIVATE"
+                    req.transition.id = Transition.DEACTIVATE.value
+                    current_future = self.change_state_client.call_async( req)
+                elif current_label=="inactive":
+                    lbl="TRANSITION_CLEANUP"
+                    req.transition.id = Transition.CLEANUP.value
+                    current_future = self.change_state_client.call_async( req)
+                else:
+                    get_logger().error(f"Cannot reset from state: {current_label}")
+                    yield CANCEL
+                    break 
+                # processing respone of transition request:
+                yield from self.wait_with_timeout( f"ChangeState request of '{self.srv_node}' with transition {lbl} ", current_future.done)
+                response = current_future.result()
+                if response.success:
+                    continue 
+                else:
+                    get_logger().error(f"Transition request ({lbl}) rejected by {self.srv_node}")
+                    yield CANCEL
+                    break
+        except Exception as e:
+            get_logger().error( f"ResetLifeCycleState: transition servie {self.srv_node} failed: {str(e)}")
+            yield CANCEL
+        return
+
+
+
+
+
+
+
+
+
+
+
+
 
 ################################################################################
 #       Utility functions:

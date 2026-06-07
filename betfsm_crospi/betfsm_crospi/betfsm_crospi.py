@@ -24,6 +24,7 @@ from typing import Dict, Callable
 import json
 from collections import deque
 from jsonschema import validate, exceptions
+import copy
 
 from rclpy.qos import QoSProfile,QoSDurabilityPolicy,QoSHistoryPolicy,QoSReliabilityPolicy,QoSLivelinessPolicy
 
@@ -45,8 +46,8 @@ from betfsm import (
 from betfsm_ros import (
     Node,Duration,
     BeTFSMNode,
-    ServiceClient, LifeCycle, Transition,
-    TopicEvent_Condition
+    ServiceClient, Transition,ResetLifeCycleState,
+    TopicEvent_Condition, LifeCycleTransition
 )
 
 
@@ -137,19 +138,23 @@ class SetTaskParameters(ServiceClient):
         #     if value == "external":
         #         raise ValueError(f"parameter declared 'external' is not set by callback ('external' is obsolete)")          
 
-        param = etasl_params.get_task_parameters_filled(blackboard,self.task_name)
+        param = copy.deepcopy(etasl_params.get_task_parameters_filled(blackboard,self.task_name))
+
         # calling callback
         if self.cb is not None:
-            param.update( self.cb(self,blackboard)  )
+            cbparam= self.cb(self,blackboard)
+            for k,v in cbparam.items():
+                param[k] = v
 
         request.str = json.dumps(param,default=json_serializer)
-        get_logger("crospi").info(f"Set parameters for cROSpi task {self.task_name}\n{request.str}")
+        get_logger("crospi").info(f"Set parameters for cROSpi task {self.task_name}: {request.str}")
         return request    
     
     def process_result(self, blackboard: Blackboard, response) -> str:
         if response.success:
             return SUCCEED
         else: 
+            get_logger("crospi").error(f"SetTaskParameters failed for cROSpi task {self.task_name}")
             return ABORT
 
 
@@ -241,256 +246,292 @@ class ReadTaskSpecification(ServiceClient):
             return ABORT
 
 
-class eTaSLOutput(TickingState):
-    def __init__(
-            self,
-            name:str,
-            topic: str,
-            qos:QoSProfile=30,
-            bb_location: str = "/output_param",
-            node: Node = None,
-        ) -> None:
-        """
-        At every tick processes the latest message from the topic and puts it 
-        on a predetermined location in the blackboard.
+# region old eTaSLStateMachine code:
+# class eTaSLOutput(TickingState):
+#     def __init__(
+#             self,
+#             name:str,
+#             topic: str,
+#             qos:QoSProfile=30,
+#             bb_location: str = "/output_param",
+#             node: Node = None,
+#         ) -> None:
+#         """
+#         At every tick processes the latest message from the topic and puts it 
+#         on a predetermined location in the blackboard.
 
-        Parameters:
-            name:
-                instance name
-            topic:
-                topic to listen to, topics with interfacev `crospi_interfaces/msg/Output`
-                are expected
-            qos:
-                specification of the topic quality of service profile (QOSProfile)
-            bb_location:
-                a location in the blackboard, written as a path, e.g. '/output_param'.
-                The location has to exist when eTaSLOutput is first executed as a BeTFSM node
-            node:
-                ROS2 node where the subscription will run.  if None, BeTFSMNode.get_instance() is used.
+#         Parameters:
+#             name:
+#                 instance name
+#             topic:
+#                 topic to listen to, topics with interfacev `crospi_interfaces/msg/Output`
+#                 are expected
+#             qos:
+#                 specification of the topic quality of service profile (QOSProfile)
+#             bb_location:
+#                 a location in the blackboard, written as a path, e.g. '/output_param'.
+#                 The location has to exist when eTaSLOutput is first executed as a BeTFSM node
+#             node:
+#                 ROS2 node where the subscription will run.  if None, BeTFSMNode.get_instance() is used.
 
-        warning:
-            will only store messages where for all variables in the message is_declared is true.
-        """
-        deprecated_msg("Use CrospiOutput instead")
-        if node==None:
-            self.node = BeTFSMNode.get_instance()
-        else:
-            self.node = node
-        super().__init__("eTaSLOutput",[SUCCEED])
-        self.topic = topic
-        self.qos = qos
-        self.bb_location = bb_location
-        self.bb_loc = None
+#         warning:
+#             will only store messages where for all variables in the message is_declared is true.
+#         """
+#         deprecated_msg("Use CrospiOutput instead")
+#         if node==None:
+#             self.node = BeTFSMNode.get_instance()
+#         else:
+#             self.node = node
+#         super().__init__("eTaSLOutput",[SUCCEED])
+#         self.topic = topic
+#         self.qos = qos
+#         self.bb_location = bb_location
+#         self.bb_loc = None
 
-    def cb_msg(self,msg) -> None:
-        # if reduce(and_,msg.is_declared):
-        # if reduce(and_,msg.is_declared, True): #TODO: Should this be used instead? (Santiago and Federico)
-        if all(msg.is_declared):
-            self.msgbuffer = msg
+#     def cb_msg(self,msg) -> None:
+#         # if reduce(and_,msg.is_declared):
+#         # if reduce(and_,msg.is_declared, True): #TODO: Should this be used instead? (Santiago and Federico)
+#         if all(msg.is_declared):
+#             self.msgbuffer = msg
 
-    def entry(self,blackboard:Blackboard):
-        get_logger("crospi").info(f"eTaSLOutput: subscribing to topic {self.topic}")
-        self.bb_loc =  get_path_location(blackboard,self.bb_location)
-        self.msgbuffer=None
-        self.subscription = self.node.create_subscription(Output,self.topic,self.cb_msg,self.qos)
-        return TICKING
+#     def entry(self,blackboard:Blackboard):
+#         get_logger("crospi").info(f"eTaSLOutput: subscribing to topic {self.topic}")
+#         self.bb_loc =  get_path_location(blackboard,self.bb_location)
+#         self.msgbuffer=None
+#         self.subscription = self.node.create_subscription(Output,self.topic,self.cb_msg,self.qos)
+#         return TICKING
         
-    def doo(self,blackboard:Blackboard):
-        if self.msgbuffer is not None:
-            self.bb_loc.update( [ e for e in zip(self.msgbuffer.names,self.msgbuffer.data) ] )
-        return TICKING
+#     def doo(self,blackboard:Blackboard):
+#         if self.msgbuffer is not None:
+#             self.bb_loc.update( [ e for e in zip(self.msgbuffer.names,self.msgbuffer.data) ] )
+#         return TICKING
 
-    def exit(self) -> str:
-        self.node.destroy_subscription(self.subscription)
-        return self.outcome
+#     def exit(self) -> str:
+#         self.node.destroy_subscription(self.subscription)
+#         return self.outcome
 
 
-class eTaSLEvent(TickingState):
-    """
-    !!! Error
-        This class is now obsolete, do **NOT** use. Use EventOutcome together 
-        with crospi_polling_func instead.  Additional posibilities using
-        EventSequential and EventConcurrent.
+# class eTaSLEvent(TickingState):
+#     """
+#     !!! Error
+#         This class is now obsolete, do **NOT** use. Use EventOutcome together 
+#         with crospi_polling_func instead.  Additional posibilities using
+#         EventSequential and EventConcurrent.
 
-    At every tick processes the latest message from the topic.
-    Node will CANCEL when it is ticked and no topic has been received.
-    """
-    def __init__(
-            self,
-            name: str,
-            topic: str = "/my_topic",
-            qos:QoSProfile=10,
-            mapping:Dict[str,tuple[int,str]]={"e_finished@crospi_node":(1,SUCCEED)},
-            node: Node = None,
-        ) -> None:
-        """
-        A node that waits until an event is received.
+#     At every tick processes the latest message from the topic.
+#     Node will CANCEL when it is ticked and no topic has been received.
+#     """
+#     def __init__(
+#             self,
+#             name: str,
+#             topic: str = "/my_topic",
+#             qos:QoSProfile=10,
+#             mapping:Dict[str,tuple[int,str]]={"e_finished@crospi_node":(1,SUCCEED)},
+#             node: Node = None,
+#         ) -> None:
+#         """
+#         A node that waits until an event is received.
         
-        Parameters:
-            name:
-                instance name
-            topic:
-                name of the topic.  Topics of type String are expected.
-            qos:
-                To be able to adapt the QoS
-            mapping:
-                maps the event string to a priority and outcome.  
-                When multiple messages are received, the event with lowest priority
-                will be used.  For events with the same priority the earliest
-                event will be selected.
-            node:
-                node or BeTFSMNode if node==None.
-        """
-        deprecated_msg("Use CheckOutcome with crospi_polling_func(...) instead")
-        if node==None:
-            self.node = BeTFSMNode.get_instance()
-        else:
-            self.node = node
-        outcomes=[]
-        for k,v in mapping.items():
-            outcomes.append( v[1]  )
-        super().__init__(name,outcomes)
-        self.topic = topic
-        self.qos = qos
-        self.mapping = mapping
-        self.buffer = None
-        self.count = 0
+#         Parameters:
+#             name:
+#                 instance name
+#             topic:
+#                 name of the topic.  Topics of type String are expected.
+#             qos:
+#                 To be able to adapt the QoS
+#             mapping:
+#                 maps the event string to a priority and outcome.  
+#                 When multiple messages are received, the event with lowest priority
+#                 will be used.  For events with the same priority the earliest
+#                 event will be selected.
+#             node:
+#                 node or BeTFSMNode if node==None.
+#         """
+#         deprecated_msg("Use CheckOutcome with crospi_polling_func(...) instead")
+#         if node==None:
+#             self.node = BeTFSMNode.get_instance()
+#         else:
+#             self.node = node
+#         outcomes=[]
+#         for k,v in mapping.items():
+#             outcomes.append( v[1]  )
+#         super().__init__(name,outcomes)
+#         self.topic = topic
+#         self.qos = qos
+#         self.mapping = mapping
+#         self.buffer = None
+#         self.count = 0
 
-    def cb_msg(self,msg) -> None:
-        r = self.mapping.get( msg.data)
-        newr =  (r[0],self.count,r[1]) 
-        self.count += 1
-        if self.buffer is not None:
-            if newr < self.buffer:
-                self.buffer = newr
-        else:
-            self.buffer = newr
+#     def cb_msg(self,msg) -> None:
+#         r = self.mapping.get( msg.data)
+#         newr =  (r[0],self.count,r[1]) 
+#         self.count += 1
+#         if self.buffer is not None:
+#             if newr < self.buffer:
+#                 self.buffer = newr
+#         else:
+#             self.buffer = newr
 
-    def entry(self,blackboard:Blackboard):   
-        self.buffer=None
-        self.count=0
-        self.subscription = self.node.create_subscription(String,self.topic,self.cb_msg,self.qos)
-        return TICKING
+#     def entry(self,blackboard:Blackboard):   
+#         self.buffer=None
+#         self.count=0
+#         self.subscription = self.node.create_subscription(String,self.topic,self.cb_msg,self.qos)
+#         return TICKING
         
-    def doo(self,blackboard:Blackboard):
-        # return the outcome belonging to the first message with an event in mapping.
-        if self.buffer is not None:
-            return self.buffer[2]
-        else:
-            return TICKING
+#     def doo(self,blackboard:Blackboard):
+#         # return the outcome belonging to the first message with an event in mapping.
+#         if self.buffer is not None:
+#             return self.buffer[2]
+#         else:
+#             return TICKING
 
-    def exit(self) -> str:
-        self.node.destroy_subscription(self.subscription)
-        return self.outcome
-
-
-class eTaSL_StateMachine(TickingStateMachine):
-    """
+#     def exit(self) -> str:
+#         self.node.destroy_subscription(self.subscription)
+#         return self.outcome
 
 
-    """
-    def __init__(self,
-                 name : str,
-                 task_name: str,
-                 srv_name: str = "/crospi_node",
-                 output_topic: str = "/my_topic",
-                 event_topic: str = "crospi_node/events",
-                 #display_in_viewer: bool= False, 
-                 cb:Callable=default_parameter_setter,
-                 timeout:Duration = Duration(seconds=1.0),
-                 node : Node = None,
-                 deactivate_last: bool = False
-                 ):
-        """
-        Configurable statemachine to execute an eTaSL task that:
+# class eTaSL_StateMachine(TickingStateMachine):
+#     """
+#     """
+#     def __init__(self,
+#                  name : str,
+#                  task_name: str,
+#                  srv_name: str = "/crospi_node",
+#                  output_topic: str = "/my_topic",
+#                  event_topic: str = "crospi_node/events",
+#                  #display_in_viewer: bool= False, 
+#                  cb:Callable=default_parameter_setter,
+#                  timeout:Duration = Duration(seconds=1.0),
+#                  node : Node = None,
+#                  deactivate_last: bool = False
+#                  ):
+#         """
+#         Configurable statemachine to execute an eTaSL task that:
 
-        - uses TickingStateMachine to provide callbacks for transtions and state changes and support TICKING;
-        - uses a feedback to set parameters;
-        - puts the last message from the output topic in the blackboard under `blackboard["output"][name]`.
+#         - uses TickingStateMachine to provide callbacks for transtions and state changes and support TICKING;
+#         - uses a feedback to set parameters;
+#         - puts the last message from the output topic in the blackboard under `blackboard["output"][name]`.
 
-        Parameters:
-            name:
-                name of this state machine (i.e. task instance)
-            task_name:
-                name of the task to be executed (i.e. task type) Will be looked up in the blackboard.
-            srv_name:
-                name of the eTaSL node, by default /crospi_node
-            output_topic:
-                name of the topic where to find the output of eTaSL. A topic with interface *crospi_interfaces/msg/Output* is expected.
-            cb:
-                callback that sets the parameters, with signature `def cb(blackboard) ->param`
-                where param is a Dict with the parameters of the task that will be used to update
-                the default parameters.
-            timeout:
-                [optional] returns TIMEOUT if the communication timeout of any of the substeps is exceeded. 
-                Uses a duration of 1 second otherwise.
-            node:
-                [optional] ROS2 node to be used. Uses BeTFSMNode.get_instance() otherwise.
+#         Parameters:
+#             name:
+#                 name of this state machine (i.e. task instance)
+#             task_name:
+#                 name of the task to be executed (i.e. task type) Will be looked up in the blackboard.
+#             srv_name:
+#                 name of the eTaSL node, by default /crospi_node
+#             output_topic:
+#                 name of the topic where to find the output of eTaSL. A topic with interface *crospi_interfaces/msg/Output* is expected.
+#             cb:
+#                 callback that sets the parameters, with signature `def cb(blackboard) ->param`
+#                 where param is a Dict with the parameters of the task that will be used to update
+#                 the default parameters.
+#             timeout:
+#                 [optional] returns TIMEOUT if the communication timeout of any of the substeps is exceeded. 
+#                 Uses a duration of 1 second otherwise.
+#             node:
+#                 [optional] ROS2 node to be used. Uses BeTFSMNode.get_instance() otherwise.
 
-        warning:            
-            TODO: default name of output topic needs to be changed.
-        """
-        deprecated_msg("Use CrospiTask instead")
-        super().__init__(name,outcomes=[SUCCEED, ABORT,TIMEOUT]) # removed parameters: ,transitioncb=transitioncb,statecb=statecb)
-        msg = Message(name="display_name", msg=f"cROSpi task {name}", logCategory="crospi")
-        self.add_state(msg,transitions={SUCCEED: "DEACTIVATE_ETASL"})
-        self.set_start_state(msg)
-        self.add_state(LifeCycle("DEACTIVATE_ETASL",srv_name,Transition.DEACTIVATE,timeout,node),
-                    transitions={SUCCEED: "CLEANUP_ETASL",
-                                ABORT: "CLEANUP_ETASL",
-                                TIMEOUT: ABORT}) 
-        self.add_state(LifeCycle("CLEANUP_ETASL",srv_name,Transition.CLEANUP,timeout,node),
-                    transitions={SUCCEED: "PARAMETER_CONFIG",
-                    ABORT: "PARAMETER_CONFIG"}) 
-        self.add_state(SetTaskParameters( "PARAMETER_CONFIG",task_name, srv_name, cb, timeout, node ),
-                       transitions={
-                           SUCCEED: "ROBOT_SPECIFICATION" })
-        self.add_state(ReadRobotSpecification("ROBOT_SPECIFICATION",task_name,srv_name,timeout,node),
-                transitions={
-                    SUCCEED: "TASK_SPECIFICATION"})
+#         warning:            
+#             TODO: default name of output topic needs to be changed.
+#         """
+#         deprecated_msg("Use CrospiTask instead")
+#         super().__init__(name,outcomes=[SUCCEED, ABORT,TIMEOUT]) # removed parameters: ,transitioncb=transitioncb,statecb=statecb)
+#         msg = Message(name="display_name", msg=f"cROSpi task {name}", logCategory="crospi")
+#         self.add_state(msg,transitions={SUCCEED: "DEACTIVATE_ETASL"})
+#         self.set_start_state(msg)
+#         self.add_state(LifeCycle("DEACTIVATE_ETASL",srv_name,Transition.DEACTIVATE,timeout,node),
+#                     transitions={SUCCEED: "CLEANUP_ETASL",
+#                                 ABORT: "CLEANUP_ETASL",
+#                                 TIMEOUT: ABORT}) 
+#         self.add_state(LifeCycle("CLEANUP_ETASL",srv_name,Transition.CLEANUP,timeout,node),
+#                     transitions={SUCCEED: "PARAMETER_CONFIG",
+#                     ABORT: "PARAMETER_CONFIG"}) 
+#         self.add_state(SetTaskParameters( "PARAMETER_CONFIG",task_name, srv_name, cb, timeout, node ),
+#                        transitions={
+#                            SUCCEED: "ROBOT_SPECIFICATION" })
+#         self.add_state(ReadRobotSpecification("ROBOT_SPECIFICATION",task_name,srv_name,timeout,node),
+#                 transitions={
+#                     SUCCEED: "TASK_SPECIFICATION"})
 
-        self.add_state(ReadTaskSpecification("TASK_SPECIFICATION",task_name,srv_name,timeout,node),
-                transitions={
-                    SUCCEED: "CONFIG_ETASL"})
+#         self.add_state(ReadTaskSpecification("TASK_SPECIFICATION",task_name,srv_name,timeout,node),
+#                 transitions={
+#                     SUCCEED: "CONFIG_ETASL"})
 
-        self.add_state(LifeCycle("CONFIG_ETASL",srv_name,Transition.CONFIGURE,timeout,node),
-                transitions={
-                    SUCCEED: "ACTIVATE_ETASL"})
+#         self.add_state(LifeCycle("CONFIG_ETASL",srv_name,Transition.CONFIGURE,timeout,node),
+#                 transitions={
+#                     SUCCEED: "ACTIVATE_ETASL"})
 
-        self.add_state(LifeCycle("ACTIVATE_ETASL",srv_name,Transition.ACTIVATE,timeout,node),
-                transitions={
-                    SUCCEED: "EXECUTING"})
+#         self.add_state(LifeCycle("ACTIVATE_ETASL",srv_name,Transition.ACTIVATE,timeout,node),
+#                 transitions={
+#                     SUCCEED: "EXECUTING"})
 
-        # executes until one returns SUCCEED,  eTaSLOutput only returns TICKING
-        mapping={"e_finished@{}".format(srv_name[1:]):(1,SUCCEED)}
-        if not deactivate_last:
-            transition_map_executing = {}
-        else:
-            transition_map_executing = {SUCCEED: "DEACTIVATE_ETASL_LAST"}
+#         # executes until one returns SUCCEED,  eTaSLOutput only returns TICKING
+#         mapping={"e_finished@{}".format(srv_name[1:]):(1,SUCCEED)}
+#         if not deactivate_last:
+#             transition_map_executing = {}
+#         else:
+#             transition_map_executing = {SUCCEED: "DEACTIVATE_ETASL_LAST"}
             
-        self.add_state(
-            ConcurrentFallback("EXECUTING",[
-                eTaSLEvent(name="check_event",topic=event_topic, mapping=mapping,node=node),
-                eTaSLOutput("output", topic=output_topic, bb_location=f"/output_param/{name}", node=node)
-            ]),
-            transitions=transition_map_executing
-        )
+#         self.add_state(
+#             ConcurrentFallback("EXECUTING",[
+#                 eTaSLEvent(name="check_event",topic=event_topic, mapping=mapping,node=node),
+#                 eTaSLOutput("output", topic=output_topic, bb_location=f"/output_param/{name}", node=node)
+#             ]),
+#             transitions=transition_map_executing
+#         )
 
-        if deactivate_last:
-            self.add_state(LifeCycle("DEACTIVATE_ETASL_LAST",srv_name,Transition.DEACTIVATE,timeout,node),
-                    transitions={SUCCEED: "CLEANUP_ETASL_LAST",
-                                ABORT: "CLEANUP_ETASL_LAST",
-                                TIMEOUT: ABORT})
-            self.add_state(LifeCycle("CLEANUP_ETASL_LAST",srv_name,Transition.CLEANUP,timeout,node),
-                    transitions={SUCCEED: SUCCEED,
-                                 ABORT: ABORT,
-                                 TIMEOUT: ABORT}) 
+#         if deactivate_last:
+#             self.add_state(LifeCycle("DEACTIVATE_ETASL_LAST",srv_name,Transition.DEACTIVATE,timeout,node),
+#                     transitions={SUCCEED: "CLEANUP_ETASL_LAST",
+#                                 ABORT: "CLEANUP_ETASL_LAST",
+#                                 TIMEOUT: ABORT})
+#             self.add_state(LifeCycle("CLEANUP_ETASL_LAST",srv_name,Transition.CLEANUP,timeout,node),
+#                     transitions={SUCCEED: SUCCEED,
+#                                  ABORT: ABORT,
+#                                  TIMEOUT: ABORT}) 
+# endregion
 
+#region  class CrospiDeactivate(Sequence):    
+#     def __init__(self, srv_name: str = "/crospi_node",
+#                  timeout:Duration = Duration(seconds=1.0),
+#                  node : Node = None, force_outcome:str=None):
+#         """ 
+#         Sets lifecycle cROSpi to UNCONFIGURED state (if not already in that state)
+        
+#         Always tries to go true the whole sequence, also in case of errors.  Depending
+#         on the context (cleanup, or initial check), you can use `force_outcome` to force the outcome to
+#         a given value.
 
-class CrospiDeactivate(Sequence):    
-    def __init__(self, srv_name: str = "/crospi_node",
-                 timeout:Duration = Duration(seconds=1.0),
-                 node : Node = None, force_outcome:str=None):
+#         Parameters:
+#             srv_name:
+#                 name of the crospi_node
+#             timeout:
+#                 duration of timeout
+#             node:
+#                 ROS2 node that BeTFSM uses (None: will get singleton instance)
+#             force_outcome:
+#                 the outcome of this statemachine (in all circumstances)
+#         """
+#         super().__init__("crospi_deactivate")
+        
+#         deactivate_end  = LifeCycle("DEACTIVATE_CROSPI",srv_name,Transition.DEACTIVATE,timeout,node,always_succeed=True)
+#         cleanup_end     = LifeCycle("CLEANUP_CROSPI",srv_name,Transition.CLEANUP,timeout,node,always_succeed=True)
+
+#         self.add_state(deactivate_end)
+#         self.add_state(cleanup_end) 
+#         if force_outcome is not None:
+#             self.add_state( AlwaysOutcome(force_outcome) )
+#endregion
+
+class CrospiDeactivate(ResetLifeCycleState):
+    """ 
+    Sets lifecycle cROSpi to UNCONFIGURED state (if not already in that state)
+    """
+    def __init__(self, 
+                 srv_name: str = "/crospi_node",
+                 timeout: Duration = Duration(seconds=1.0),
+                 node: BeTFSMNode=None,
+                 force_outcome:str=None):
         """ 
         Sets lifecycle cROSpi to UNCONFIGURED state (if not already in that state)
         
@@ -508,18 +549,23 @@ class CrospiDeactivate(Sequence):
             force_outcome:
                 the outcome of this statemachine (in all circumstances)
         """
-        super().__init__("crospi_deactivate")
-        
-        deactivate_end  = LifeCycle("DEACTIVATE_CROSPI",srv_name,Transition.DEACTIVATE,timeout,node,always_succeed=True)
-        cleanup_end     = LifeCycle("CLEANUP_CROSPI",srv_name,Transition.CLEANUP,timeout,node,always_succeed=True)
+        super().__init__("reset",srv_name,timeout,node)
+        self.force_outcome = force_outcome
 
-        self.add_state(deactivate_end)
-        self.add_state(cleanup_end) 
-        if force_outcome is not None:
-            self.add_state( AlwaysOutcome(force_outcome) )
+    def exit(self):
+        outcome= super().exit()
+        if self.force_outcome is None:
+            return outcome
+        else:
+            return self.force_outcome
         
 
 class CrospiTask(Fallback):
+
+    def cb_param(self, state, path:str):
+        return self.cb(self,path)
+
+
     def __init__(self, 
                  name : str,
                  task_name: str,
@@ -568,35 +614,40 @@ class CrospiTask(Fallback):
                 when false, just starts the crospi task but do not check for e_finished event or deactivate/cleanup crospi
                 otherwise wait while checking and deactivate/cleanup crospi afterwards.
 
-        """        
+        """       
+        # Adapt cb such that possible path local references are refering to CrospiTask and not the inner SetTaskParameters 
+        #def cb_parent(state,bb):
+            #print("cb_parent\nstate",state)
+            #print("state.parent ", state.parent)
+            #print("self: ",self)
+            #return cb(self,bb)
+        self.cb = cb
         # e_finished is always handled.  The rest should be handled outside
         event_mapping={ NO_EVENT: TICKING,f"e_finished@{srv_name[1:]}" : SUCCEED}
         # Note: outcomes in mapping will automatically be added to outcomes of checkevent and crospiRun node
         msg_start         = Message(name=name,msg=f"crospiTask {name} has started",logCategory="crospi")
         # not really needed, except for a previous run that leaves crospi in wrong state:
-        deactivate_start  = LifeCycle("DEACTIVATE_CROSPI",srv_name,Transition.DEACTIVATE,timeout,node,always_succeed=True) 
-        cleanup_start     = LifeCycle("CLEANUP_CROSPI",srv_name,Transition.CLEANUP,timeout,node,always_succeed=True)        
+        reset             = ResetLifeCycleState("Reset_Lifecycle", srv_name,timeout,node) 
         # set parameters, robot and task spec
-        settaskparam      = SetTaskParameters( "SetTaskParameters",task_name, srv_name, cb, timeout, node )
+        settaskparam      = SetTaskParameters( "SetTaskParameters",task_name, srv_name, self.cb_param, timeout, node )
         readrobotspec     = ReadRobotSpecification("ReadRobotSpec",task_name,srv_name,timeout,node)
         readtaskspec      = ReadTaskSpecification("ReadTaskSpec",task_name,srv_name,timeout,node)
-        configure         = LifeCycle("CONFIGURE_CROSPI",srv_name,Transition.CONFIGURE,timeout,node)
-        activate          = LifeCycle("ACTIVATE_CROSPI",srv_name,Transition.ACTIVATE,timeout,node)
+        configure         = LifeCycleTransition("Configure_Crospi",srv_name,Transition.CONFIGURE,timeout,node)
+        activate          = LifeCycleTransition("Activate_Crospi",srv_name,Transition.ACTIVATE,timeout,node)
 
         seq               = Sequence(name+"_seq",[
                                 msg_start, 
-                                deactivate_start,cleanup_start,
+                                reset,
+                                #deactivate_start,cleanup_start,
                                 settaskparam,readrobotspec,readtaskspec, 
                                 configure, activate
                             ])                
         if event_check:
             checkevent        = EventOutcome("checkevent",TopicEvent_Condition(node,event_topic,eventqueue_size,max_age),event_mapping)        
-            deactivate_end    = LifeCycle("DEACTIVATE_CROSPI",srv_name,Transition.DEACTIVATE,timeout,node,always_succeed=True)
-            cleanup_end       = LifeCycle("CLEANUP_CROSPI",srv_name,Transition.CLEANUP,timeout,node,always_succeed=True)
+            reset_end         = ResetLifeCycleState("Reset_Lifecycle", srv_name,timeout,node) 
             msg_end           = Message(name=name,msg=f"crospiTask {name} has finished, crospi is deactivated",logCategory="crospi")
             seq.add_state(checkevent)
-            seq.add_state(deactivate_end)
-            seq.add_state(cleanup_end)
+            seq.add_state(reset_end)
             seq.add_state(msg_end)
         else: 
             msg_end           = Message(name=name,msg=f"crospiTask {name} finished, crospi will keep running",logCategory="crospi")

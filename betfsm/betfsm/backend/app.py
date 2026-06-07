@@ -372,7 +372,7 @@ async def ws_stream(ws: WebSocket):
                 # Send current active states periodically to keep connection alive
                 active_ids = list(TickingState.global_publish_log.keys())
                 msg = {"type": "tick", "tick": int(time.time()*1000), "active": active_ids, "tree_version":tree_version}
-                await ws.send_text(json.dumps(msg,default=numpy_json_serializer))
+                await ws.send_text(json.dumps(msg))
             except (RuntimeError, WebSocketDisconnect):
                 # Client disconnected, break the loop
                 break

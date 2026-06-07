@@ -1456,7 +1456,7 @@ def dumps_blackboard(blackboard, indent_spaces: int = 4) -> str:
     Recursively constructs a  formatted, indented string 
     representing a hierarchical Python data structure.
     """
-    return json.dumps(blackboard,indent=indent_spaces,skipkeys=True,check_circular=True,default=lambda ob: ob.__repr__())
+    return json.dumps(blackboard,indent=indent_spaces,skipkeys=True,default=json_serializer,check_circular=True)
 
 
 class LogBlackboard(Generator):
