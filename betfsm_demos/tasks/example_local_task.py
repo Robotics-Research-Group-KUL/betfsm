@@ -161,6 +161,10 @@ def get_path(state: TickingState, blackboard: Blackboard, path: str,default: Any
 
 class ConfigCallback:
     """Class to provide run-time configuration information to BeTFSM nodes
+
+       Since these callbacks can fail until some data is ready, they should
+       preferably be "silent" and not pollute the log when they are called
+       repeatedly.
     """
     def __init__(self):
         pass
@@ -451,7 +455,7 @@ class MarkerPublisher(Generator):
         ----------
         name : str
             _description_
-        getter : Callable[[TickingState,dict],NDArray[Any]]
+        getter : ConfigCallback 
             _description_
         marker : Marker | int | None, optional
             _description_, by default None
@@ -466,7 +470,7 @@ class MarkerPublisher(Generator):
         """
         if node is None:
             node = BeTFSMNode.get_instance()
-        super().__init__(name,[])
+        super().__init__(name,[SUCCEED])
         self.node         = node
         self.getter       = getter 
         if marker is None or marker == Marker.LINE_STRIP:
@@ -507,9 +511,20 @@ class MarkerPublisher(Generator):
         if frame_id is not None:
             self.marker.header.frame_id = frame_id
         self.frequency    = frequency
+        self.publisher_created = False
     #.doc("type of the marker: \n ARROW=0,CUBE=1,SPHERE=2,CYLINDER=3,LINE_STRIP=4,LINE_LIST=5,CUBE_LIST=6,SPHERE_LIST=7,\n POINTS=8,TEXT=9,MESH_RESOURCE=10 (see ROS doc)")
     
     def co_execute(self, blackboard):
+        # this waits until the input for MarkerPublisher is available:
+        # or do nothing (MarkerPublisher is probably not a critical task, so we continue)
+        logged = False 
+        while not self.getter.reset(self,blackboard):
+            if not logged:
+                get_logger("crospi").warning(f"MarkerPublisher '{self.name}' configuration error in callback (ConfigCallback)")
+                msg_given=True
+            self.publisher_created = False
+            yield TICKING
+        self.publisher_created = True
         get_logger("crospi").info(f"MarkerPublisher '{self.name}' started publishing at frequency {self.frequency} Hz")
         self.publisher = self.node.create_publisher(Marker, '/visualization_marker', 10)
         sample_time = 0
@@ -533,9 +548,10 @@ class MarkerPublisher(Generator):
             yield TICKING
 
     def exit(self):
-        # this is also called when its externally reset or naturally finishes by itself
-        self.node.destroy_subscription(self.publisher)
-        get_logger("crospi").info(f"MarkerPublisher '{self.name}' stopped publishing")
+        # this is also called when its externally reset or naturally finishes by itself (don't forget to call super().exit())
+        if self.publisher_created:
+            self.node.destroy_subscription(self.publisher)
+            get_logger("crospi").info(f"MarkerPublisher '{self.name}' stopped publishing")
         return super().exit()
 
 class CrospiOutput_v2(Generator):
@@ -1012,8 +1028,6 @@ class MyApplication(Repeat):
 
 
 
-
-
 def wait_for(child:TickingState, blackboard:Blackboard):
     """ 
     Within a co_execute this can be called to wait for a child TickingState to finish.
@@ -1128,13 +1142,55 @@ class MyApplication_v3(GeneratorWithList):
         except UnexpectedOutcome as e:
             get_logger().warn(f"MyApplication_v2 failed: {e}")
             yield CANCEL
-   
+
+
+#
+#  An idea: put all the information of the scene and let it
+# be a base node of the application.
+#  It could e.g. do visualization or assembly information comming from vision.
+#  Some sensor are local and belong near or in the skill, some sensors are global and
+#  belong in the scene.
+#
+# class MyScene(GeneratorWithList):
+#     def __init__(self,my_app:TickingState):
+#         super().__init__("MyScene", [SUCCEED, CANCEL])
+
+#         self.scene = Concurrent("concurrent",[
+#             my_app,
+#             MarkerPublisher("marker_tgt",CC_bb_array('../../tgt'),marker=Marker.SPHERE_LIST,marker_id=100,
+#                             frequency=2,frame_id="world",lifetime_s=1,color=ColorRGBA(r=1.0,g=0.5,b=0.0))
+#         ])
+
+#         # IMPORTANT: do not forget to add all the executed nodes!
+#         # they need to be part of the tree, for cleanup/reset, and for get_path references
+#         self.add_state(self.scene)
+
+#     def co_execute(self, blackboard):
+#         try:
+#             local = get_path(self,blackboard,'.')
+#             N = 3
+#             x = np.linspace(-0.2,0.2,N)
+#             y = np.linspace(-0.2,0.2,N)
+#             X,Y = np.meshgrid(x,y)
+#             Z   = np.ones((N*N,))
+#             tgt = np.stack([X.ravel(), Y.ravel(),Z*0.3], axis=1) 
+#             print(tgt)
+#             local['tgt'] = tgt
+
+#             yield from wait_for_and_check(self.scene,blackboard)
+
+#             yield SUCCEED   #don't forget the report the outcome !
+#         except UnexpectedOutcome as e:
+#             get_logger().warn(f"MyScene failed: {e}")
+#             yield CANCEL
+
+
 
 class MyApplication_v4(GeneratorWithList):
     """ 
     """
     def __init__(self):
-        super().__init__("My_application_v2",[SUCCEED, CANCEL])
+        super().__init__("My_application_v4",[SUCCEED, CANCEL])
         # note that if we make references to a local blackboard, we make sure to go up
         # to the MyApplication_v4 local blackboard
 
@@ -1145,12 +1201,11 @@ class MyApplication_v4(GeneratorWithList):
         self.spline_motion =    Concurrent("concurrent",[
                 CrospiTask("MoveBSpline","MoveBSpline",cb=param_from_bb('../../spline')),
                 CrospiOutput_v2("output","/my_topic", queue_size=3000, path='../../output'),
-                MarkerPublisher("marker_traj",from_bb_table("../../output",["x_tf","y_tf","z_tf"],3000), marker=Marker.LINE_STRIP, frequency=10, marker_id=1,lifetime_s=6),
+                MarkerPublisher("marker_traj",CC_bb_table("../../output",["x_tf","y_tf","z_tf"],3000), marker=Marker.LINE_STRIP, frequency=10, marker_id=1,lifetime_s=6),
                 TF2Broadcaster("tfbroadcaster",[TFSpec("base_link","initial_tool0","../../initial_tool0",is_matrix=False)],frequency=10),
-                MarkerPublisher("marker_cp1",from_bb_array('../../cp'),marker=Marker.SPHERE_LIST,marker_id=2,frequency=10,frame_id="initial_tool0",lifetime_s=3),
-                MarkerPublisher("marker_cp2",from_bb_array('../../cp'),marker=Marker.LINE_STRIP,marker_id=3,frequency=10,frame_id="initial_tool0",lifetime_s=3,color=ColorRGBA(r=1.,g=1.,b=0.,a=1.)),
+                MarkerPublisher("marker_cp1",CC_bb_array('../../cp'),marker=Marker.SPHERE_LIST,marker_id=2,frequency=10,frame_id="initial_tool0",lifetime_s=3),
+                MarkerPublisher("marker_cp2",CC_bb_array('../../cp'),marker=Marker.LINE_STRIP,marker_id=3,frequency=10,frame_id="initial_tool0",lifetime_s=3,color=ColorRGBA(r=1.,g=1.,b=0.,a=1.))
             ])
-        
         # really, really important not to forget this:  
         self.add_state(self.move_home)
         self.add_state(self.moving_down)
@@ -1159,17 +1214,27 @@ class MyApplication_v4(GeneratorWithList):
 
     def co_execute(self, blackboard):
         try:
+            # this spline starts and ends straight and has no vel/acc in x and y
+            # the last three control points will have added the current tgt[i]
             cp = np.array([
-                [ 0., 0.05, 0.1, 0.15, 0.2, 0.25, 0.3],
-                [ 0., 0.0, 0.2, 0.2, 0.2, 0.0, 0.0],
-                [ 0., 0.0, 0.0, 0.0, 0.15, 0.15, 0.15]
+                [ 0., 0.0,  0.0, 0.0,  0.0, 0.0,    0  ],
+                [ 0., 0.0,  0.0, 0.0,  0.0, 0.0,    0  ],
+                [ 0., 0.05, 0.1, 0.15, 0.2, 0.25,   0.3]
             ])
+
             degree = 3
             knots = linspace_knots(7,3)
             local = get_path(self,blackboard,'.')
 
-
-            for i in range(10):
+            # make a mesh
+            N = 3
+            x = np.linspace(-0.2,0.2,N)
+            y = np.linspace(-0.2,0.2,N)
+            X,Y = np.meshgrid(x,y)
+            Z   = np.ones((N*N,))
+            tgt = np.stack([X.ravel(), Y.ravel(),Z*0], axis=1) 
+            print(tgt)
+            for i in range(tgt.shape[0]):
                 get_logger().info("====================== MOVING HOME ===========================")
                 yield from wait_for_and_check(self.move_home,blackboard)
 
@@ -1179,6 +1244,7 @@ class MyApplication_v4(GeneratorWithList):
                 p["delta_pos"] = [0, 0, r]
                 get_logger().info(f"moving down with {r} [m] in the z-direction")
                 yield from wait_for_and_check(self.moving_down,blackboard)
+
                 get_logger().info("====================== MOVING UP (randomly) ===========================")
                 p["delta_pos"] = [0, 0, -r]
                 get_logger().info(f"moving down with {r} [m] in the z-direction")
@@ -1190,19 +1256,19 @@ class MyApplication_v4(GeneratorWithList):
                     print("initial_tool0 ", local["initial_tool0"])
 
                 get_logger().info("====================== calling Bspline task ===========================")
-                cpx = cp[0,:]
-                cpy = cp[1,:].copy()
-                cpy[-2:] += 0.03*i
-                cpy[-3] += 0.02*i
-                cpz = cp[2,:]
-
+                cp_copy = cp.copy()
+                cp_copy[0,-3:]  += tgt[i,0] 
+                cp_copy[1,-3:]  += tgt[i,1]
+                cp_copy[2,-3:]  += tgt[i,2]
+                print(cp_copy)
                 local["spline"]={
-                    "cp_x":cpx, "cp_y":cpy , "cp_z":cpz, 
+                    "cp_x":cp_copy[0,:], "cp_y":cp_copy[1,:] , "cp_z":cp_copy[2,:], 
                     "degree":degree, "knots":knots }
-                local["cp"] = cp.T   # unfortunately the format for markers (full matrix) is different than the one for the CrospiTask (vector-by-vector)
-                #print(json.dumps(blackboard['local'],default=json_serializer, indent=4))
-                # print(json.dumps(blackboard,default=json_serializer, indent=4))
+
+                local["cp"] = cp_copy.T   # unfortunately the format for markers (full matrix) is different than the one for the CrospiTask (vector-by-vector)
+                #print(dumps_blackboard(local))
                 yield from wait_for_and_check(self.spline_motion,blackboard)
+
                 self.move_home.reset()
                 self.moving_down.reset()
                 self.listen_tf.reset()

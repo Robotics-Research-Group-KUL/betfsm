@@ -1,0 +1,125 @@
+{
+  "type":"object",
+  "description":"Parameters needed to the corresponding task specification in eTaSL",
+  "properties":{
+    "from-betfsm_demo_lib-version-0.1.0":{
+      "const":true,
+      "type":"boolean",
+      "description":"Library betfsm_demo_lib version 0.1.0.\n Set to true to indicate that task specification comes from the library above. \n Library description: Library with specific tasks for betfsm_demo.\nAuthors: Erwin Aertbeliën (KU Leuven)"
+    }
+  },
+  "$schema":"http://json-schema.org/draft-06/schema#",
+  "additionalProperties":true,
+  "dependencies":{
+    "from-betfsm_demo_lib-version-0.1.0":{
+      "required":["is-move_joint_space_trap"],
+      "properties":{
+        "is-move_joint_space_trap":{
+          "const":true,
+          "type":"boolean",
+          "description":"Task Specification: move_joint_space_trap.etasl.lua\nSet to true to indicate that the task uses the task specification mentioned above. \n Task description: Moves in joint space to a target pose specified using joint angles."
+        }
+      }
+    },
+    "is-move_joint_space_trap":{
+      "required":["file_path","parameters"],
+      "properties":{
+        "file_path":{
+          "const":"$[betfsm_demos]/tasks/betfsm_demos_lib/move_joint_space_trap.etasl.lua",
+          "type":"string",
+          "description":"File path of the corresponding task specification"
+        },
+        "parameters":{
+          "type":"object",
+          "description":"List of parameters needed to define an instance of the task specification",
+          "properties":{
+            "target_joints":{
+              "oneOf":[{
+                  "items":{
+                    "minimum":-360,
+                    "type":"number",
+                    "maximum":360
+                  },
+                  "type":"array",
+                  "minItems":1
+                },{
+                  "pattern":"^\\$blackboard(/[a-zA-Z0-9_\\-]+)+$",
+                  "type":"string"
+                },{
+                  "const":"$application_defined_parameter",
+                  "type":"string"
+                }],
+              "default":[0,0,0,0,0,0],
+              "examples":["$blackboard/output_param/my_task/target_joints","$application_defined_parameter"],
+              "description":"Array with target angles. Its values correspond to the defined robot.robot_joints in the same order. \nSet as a string beginning with $blackboard such as `$blackboard/output_param/my_task/my_param` if the value is not yet known and thus will be set externally at runtime (only once) depending on e.g. the outcome of a previous action or the outcome of another module.\nSet as $application_defined_parameter to indicate that the parameter is defined by the application and not by the skill specification."
+            },
+            "dwell_time":{
+              "oneOf":[{
+                  "minimum":0,
+                  "type":"number"
+                },{
+                  "pattern":"^\\$blackboard(/[a-zA-Z0-9_\\-]+)+$",
+                  "type":"string"
+                },{
+                  "const":"$application_defined_parameter",
+                  "type":"string"
+                }],
+              "default":0.1,
+              "examples":["$blackboard/output_param/my_task/dwell_time","$application_defined_parameter"],
+              "description":"time to remain still after motion is finished. \nSet as a string beginning with $blackboard such as `$blackboard/output_param/my_task/my_param` if the value is not yet known and thus will be set externally at runtime (only once) depending on e.g. the outcome of a previous action or the outcome of another module.\nSet as $application_defined_parameter to indicate that the parameter is defined by the application and not by the skill specification."
+            },
+            "maxacc":{
+              "oneOf":[{
+                  "type":"number",
+                  "maximum":0.5
+                },{
+                  "pattern":"^\\$blackboard(/[a-zA-Z0-9_\\-]+)+$",
+                  "type":"string"
+                },{
+                  "const":"$application_defined_parameter",
+                  "type":"string"
+                }],
+              "default":0.1,
+              "examples":["$blackboard/output_param/my_task/maxacc","$application_defined_parameter"],
+              "description":"Maximum acceleration rad/s^2. \nSet as a string beginning with $blackboard such as `$blackboard/output_param/my_task/my_param` if the value is not yet known and thus will be set externally at runtime (only once) depending on e.g. the outcome of a previous action or the outcome of another module.\nSet as $application_defined_parameter to indicate that the parameter is defined by the application and not by the skill specification."
+            },
+            "units":{
+              "oneOf":[{
+                  "enum":["degrees","radians"]
+                },{
+                  "pattern":"^\\$blackboard(/[a-zA-Z0-9_\\-]+)+$",
+                  "type":"string"
+                },{
+                  "const":"$application_defined_parameter",
+                  "type":"string"
+                }],
+              "default":"radians",
+              "examples":["$blackboard/output_param/my_task/units","$application_defined_parameter"],
+              "description":"Units to be used for specifying the joints. \nSet as a string beginning with $blackboard such as `$blackboard/output_param/my_task/my_param` if the value is not yet known and thus will be set externally at runtime (only once) depending on e.g. the outcome of a previous action or the outcome of another module.\nSet as $application_defined_parameter to indicate that the parameter is defined by the application and not by the skill specification."
+            },
+            "maxvel":{
+              "oneOf":[{
+                  "type":"number",
+                  "maximum":0.5
+                },{
+                  "pattern":"^\\$blackboard(/[a-zA-Z0-9_\\-]+)+$",
+                  "type":"string"
+                },{
+                  "const":"$application_defined_parameter",
+                  "type":"string"
+                }],
+              "default":0.1,
+              "examples":["$blackboard/output_param/my_task/maxvel","$application_defined_parameter"],
+              "description":"Maximum velocity rad/s. \nSet as a string beginning with $blackboard such as `$blackboard/output_param/my_task/my_param` if the value is not yet known and thus will be set externally at runtime (only once) depending on e.g. the outcome of a previous action or the outcome of another module.\nSet as $application_defined_parameter to indicate that the parameter is defined by the application and not by the skill specification."
+            }
+          },
+          "additionalProperties":false,
+          "required":["maxvel","maxacc","target_joints"]
+        }
+      }
+    }
+  },
+  "required":["from-betfsm_demo_lib-version-0.1.0"],
+  "$id":"move_joint_space_trap",
+  "title":"Task Specification Configuration"
+}
