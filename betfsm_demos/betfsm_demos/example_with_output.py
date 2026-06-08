@@ -28,9 +28,9 @@ from betfsm import (
     Sequence,  Repeat,
     CANCEL, NO_EVENT,
     set_logger,
-    EventSequential, Ctrl_C_Condition
+    EventSequential, Ctrl_C_Condition, Concurrent
 )
-from betfsm_crospi import load_task_list, CrospiTask, CrospiDeactivate,CrospiOutput
+from betfsm_crospi import load_task_list, CrospiTask, CrospiDeactivate,CrospiOutput_v2
 from betfsm_ros import BeTFSMNode,ROSRunner
 
 
@@ -41,13 +41,14 @@ class MySequence(Sequence):
             CrospiTask("MovingHome","MovingHome"),
             CrospiTask("MovingDown","MovingDown"),
             CrospiTask("MovingUp","MovingUp"),
-            CrospiOutput("output","/my_topic",CrospiTask("MovingSpline","MovingSpline"),queue_size=20 )
+            Concurrent("MovingSpline",[
+                CrospiOutput("output","/my_topic",queue_size=20,path="../output"),
+                CrospiTask("MovingSpline","MovingSpline")
+            ])
         ] )
 
 # main
-def main(args=None):
-    rclpy.init(args=args)    
-    my_node = BeTFSMNode.get_instance("example_with_output")
+def main(args=None): rclpy.init(args=args)    my_node = BeTFSMNode.get_instance("example_with_output")
 
     set_logger("default",my_node.get_logger())
     set_logger("crospi",my_node.get_logger())

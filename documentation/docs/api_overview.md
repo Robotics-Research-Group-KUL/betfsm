@@ -36,8 +36,6 @@ The API is split up in three parts:
 | [Adapt][betfsm.Adapt] | Adapts the outcome of a single child using a transition table |
 | [While][betfsm.While]                  |   |
 | [Repeat][betfsm.Repeat]                  |   |
-| [CheckCancel][betfsm.CheckCancel] | |
-| [Ctrl_C_Handler][betfsm.Ctrl_C_Handler] | |
 
 
 ### Concurrency:

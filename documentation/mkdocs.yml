@@ -30,6 +30,7 @@ nav:
       - "Running BeTFSM" : "runner.md"
       - "Event handling and conditions": "event.md"
       - "ROS2 Lifecycle" : "ros2lifecycle.md"
+      - "Local path references": "localref.md"
       - "Utilities" : 'utils.md'
       - "Logging" : "logger.md"
       - "Other references": "references.md"
@@ -67,11 +68,14 @@ nav:
         - "Timeout_Condition" : "timeout_condition.md"
         - "HTTPEvent_Condition" : "httpevent_condition.md"
         - "Ctrl_C_Condition"  : "ctrl_c_condition.md"
+        - "get_path" : "getpath.md"
+        - "ConfigCallback" : "configcallbacks.md"
+        
       
       - "BeTFSM ROS2":  
         - "ServiceClient" : 'serviceclient.md'
         - "ActionClient" : 'actionclient_ros.md'
-        - "LifeCycle" : 'lifecycle.md'
+       #- "LifeCycle" : 'lifecycle.md'
         - "TimedRepeat for ROS2" : timedrepeat_ros.md
         - "TimedWait for ROS2" : 'timedwait_ros2.md'
         - "Timeout" : "timeout.md"
@@ -82,7 +86,7 @@ nav:
         - "SetTaskParameters" : "settaskparameters.md"
         - "ReadRobotSpecification" : "readrobotspecification.md"
         - "ReadTaskSpecification" : "readtaskspecification.md"
-        - "eTaSLOutput" : "etasloutput.md"
+        #- "eTaSLOutput" : "etasloutput.md"
         #- "eTaSLEvent"  : "etaslevent.md"
         #- "eTaSL_StateMachine" : "etasl_statemachine.md"
         - "CrospiTask" : "crospi_task.md"

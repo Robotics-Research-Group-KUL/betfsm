@@ -18,7 +18,7 @@
 # endregion
 
 from __future__ import annotations
-from typing import Dict, List, Union, Callable,Type, TypeAlias,Iterable,Optional
+from typing import Dict, List, Union, Callable,Type, TypeAlias,Iterable,Optional, Any
 from enum import Enum
 import copy
 from threading import Lock
@@ -27,6 +27,7 @@ import traceback
 import uuid
 import time 
 import json
+import numpy as np
 from .logger import get_logger,add_logger_category,get_logger_categories
 
 import math
@@ -37,7 +38,6 @@ from colorama import Fore, Back, Style
 import inspect
 from collections import deque
 from .circularbuffer import CircularNumpyBuffer,json_serializer
-
 add_logger_category("state")
 add_logger_category("service")
 add_logger_category("constructor")
@@ -151,7 +151,7 @@ def get_path(state: TickingState, blackboard: Blackboard, path: str,default: Any
     can make sure that the blackboard is adapted (use "[:]" to change the content instead
     of the reference )
 
-    local context to a state are stored in blackboard["local"][state.uid]
+    local context to a state are stored in blackboard["local"] under the key state.uid
 
     Parameters
     ----------
@@ -225,22 +225,25 @@ def get_path(state: TickingState, blackboard: Blackboard, path: str,default: Any
 
 
 
-def get_path_value(blackboard, path, default=None):
+def get_path_value(blackboard:Blackboard, path:str, default=None):
     """
     Gets a value in the blackboard at the given path,.
 
-    Parameters:
-        blackboard:
+    Parameters
+    ----------
+        blackboard: Blackboard
             Blackboard Dict
-        path:
+        path: str
             path to get the value of
         default:
             value to use if not found, by default = None
-        delimiter:
-            for the path, default='/'
     Returns:
         value:
             the value at the given location
+
+    Note:
+        get_path is prefered since it allows local references.
+        (but it needs the blackboard)
 
     Note:
         See [Utilities](utils.md) for a more extensive explanation of the mini-language to specify and manipulate the path.
@@ -277,16 +280,17 @@ def get_path_value(blackboard, path, default=None):
     return current
 
 
-def set_path_value(blackboard, path, value):
+def set_path_value(blackboard:Blackboard, path:str, value:Any):
     """
     Sets a value in the blackboard at the given pat.
 
-    Parameters:
-        blackboard:
+    Parameters
+    ----------
+        blackboard: Blackboard
             Blackboard Dict
-        path:
+        path: str
             path to get the value of
-        value:
+        value: Any
             value to fill in.
 
     Warning:
@@ -361,12 +365,13 @@ def set_path_value(blackboard, path, value):
     current[last] = value
 
 
-def get_path_location(blackboard, path, create_missing=True, delimiter="/"):
+def get_path_location(blackboard:Blackboard, path:str, create_missing:bool=True, delimiter:str="/")->Any:
     """
     Finds the parent container and key/index for a given path in the blackboard.
     Optionally creates missing dictionaries (not lists!) along the way.
 
-    Parameters:
+    Parameters
+    ----------
         blackboard (dict/list): The root blackboard structure.
         path (str): The delimiter-separated path string.
         create_missing (bool): If True, missing intermediate dicts are created.
@@ -993,14 +998,14 @@ class ConcurrentSequence(GeneratorWithList):
         """
         super().__init__(name,[],children)
                
-    def co_execute(self,blackboard):
+    def co_execute(self,blackboard:Blackboard):
         """
         executes the underlying states in sequence, as much as possible concurrently.
         all outcomes except for SUCCEED and TICKING indicate failure.
         SUCCEEDs when all underlying states have returned SUCCEED.
 
         Parameters:
-            blackboard:
+            blackboard: Blackboard
         """
 
         for s in self.states:
@@ -2031,7 +2036,7 @@ class ConfigCallback:
         return None 
 
 
-class CC_SetState(ConfigCallback):
+class CC_set_state(ConfigCallback):
     """Overrides the state argument in __call__
 
        the state argument in __call__ is often used for a reference to a local

@@ -38,8 +38,8 @@ from betfsm import (
     SUCCEED,CANCEL,TIMEOUT, TICKING,ABORT,NO_EVENT,
     add_logger_category, get_logger,get_path_value,get_path_location,set_path_value,
     Blackboard, TickingState,Message,ConcurrentFallback, TickingStateMachine,
-    Fallback,Sequence, AlwaysOutcome,GeneratorWithState,
-    EventOutcome, json_serializer,
+    Fallback,Sequence, AlwaysOutcome,GeneratorWithState,Generator,
+    CircularNumpyBuffer,get_path, EventOutcome,json_serializer,
     deprecated_msg
 )
 
@@ -658,7 +658,7 @@ class CrospiTask(Fallback):
         super().__init__(name,[seq,cleanup_seq],lambda bb,oc: oc==ABORT or oc==TIMEOUT)
 
 
-class CrospiOutput(GeneratorWithState):
+class CrospiOutput(Generator):
     """
     Record output of Crospi in a topic while executing subtree
     """
@@ -666,32 +666,29 @@ class CrospiOutput(GeneratorWithState):
             self,
             name:str,
             topic: str,
-            subtree: TickingState = None,
             queue_size: int = 1_000_000,
-            path: str = "/output",            
+            path: str = "../output",            
             node: Node = None,
         ) -> None:
         """Record output of Crospi for a topic in a queue while executing subtree
            This queue is put in a specified location in the blackboard under two children "header" and "data".  The header is
            taken from the labels of the first message that arrives.
 
-        Parameters:
-            name : str
-                name of the node
-            topic : str
-                ROS2 topic to subscribe to, should be of message type Output
-            subtree : TickingState, optional
-                subtree to execute, None will be converted into AlwaysOutcome(TICKING), by default None            
-            queue_size : int, optional
-                maximum length of the buffer to record the data, by default 1_000_000
-            path : str, optional
-                path inside the blackboard, by default "/output"
-            node : Node, optional
-                ROS2 node, if None, BeTFSMNode.get_instance() will be used. by default None
+
+        Parameters
+        ----------
+        name : str
+            name of the node
+        topic : str
+            ROS2 topic to subscribe to, should be of message type Output
+        queue_size : int, optional
+            maximum length of the buffer to record the data, by default 1_000_000
+        path : str, optional
+            path inside the blackboard, by default "/output"
+        node : Node, optional
+            ROS2 node, if None, BeTFSMNode.get_instance() will be used. by default None
         """
-        if subtree==None:
-            subtree = AlwaysOutcome(TICKING)
-        super().__init__("eTaSLOutput",[SUCCEED, CANCEL],subtree)
+        super().__init__("eTaSLOutput",[SUCCEED, CANCEL])
         if node==None:
             self.node = BeTFSMNode.get_instance()
         else:
@@ -709,33 +706,36 @@ class CrospiOutput(GeneratorWithState):
     def cb_msg(self,msg) -> None:
         if len(msg.is_declared)>0 and all(msg.is_declared):
             if self.first_time:
-                self.header.append([n for n in msg.names ])
-                self.first_time = False
-            self.queue.append( [d for d in msg.data ])
+                #self.header.append([n for n in msg.names ])
+                self.header[:]   = [n for n in msg.names ]
+                self.queue               = CircularNumpyBuffer(self.queue_size,len(self.header))
+                self.path_ns['data']     = self.queue   # path_ns['data'] and queue point to the same data
+                self.first_time          = False
+            self.queue.add( [d for d in msg.data ])
+
             
 
     def co_execute(self,blackboard):
-        path_base, path_key           = get_path_location(blackboard,self.path)
-        self.queue                    = deque(maxlen=self.queue_size)
-        self.header                   = []        
-        path_base[path_key]           = dict()
-        path_base[path_key]["data"]   = self.queue
-        path_base[path_key]["header"] = self.header
-        self.first_time               = True
-        if path_base==None:
-            get_logger("crospi").warn("CrospiOutput: blackboard path is not valid")
-            return CANCEL
-        self.subscription = self.node.create_subscription(Output,self.topic,self.cb_msg,self.qos)
+        self.path_ns               = get_path(self,blackboard,self.path)
+        self.header           = []        
+        self.queue            = None         # don't know the number of columns yet
+        self.path_ns["data"]  = self.queue
+        self.path_ns["header"]= self.header
+        self.first_time       = True
+        self.subscription     = self.node.create_subscription(Output,self.topic,self.cb_msg,self.qos)
         while True:
-            outcome = self.state(blackboard)
-            if outcome!=TICKING:
-                break
             yield TICKING        
-        #self.queue = list(self.queue)
-        yield outcome
 
     def exit(self):
         # this is also called when its externally reset or naturally finishes by itself
         self.node.destroy_subscription(self.subscription)
+        if self.queue is not None and len(self.queue)>0:
+            loc = {}
+            self.path_ns["last"] = loc
+            self.path_ns["is-circularbuffer"] = True
+            self.path_ns["capacity"]          = self.queue.get_capacity() 
+            last = self.queue.peek_newest()
+            for lbl,val in zip(self.header, last):
+                loc[lbl] = val
         return super().exit()
 

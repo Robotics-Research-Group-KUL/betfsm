@@ -72,8 +72,6 @@ This sets the ROS2 logger for all of the above categories.
 
 
 ## blackboard related
-
-
 ### Hierarchical Path Syntax for Blackboard Access
 
 The blackboard is a nested structure composed of dictionaries and lists.
@@ -152,6 +150,8 @@ The following operators apply when the current node is a list:
 - Intermediate dictionaries or lists are created automatically when needed.
 - When replacing a list element by index, the list is auto‑extended with
   None values if the index is beyond the current length.
+
+
 
 
 ::: betfsm.dumps_blackboard

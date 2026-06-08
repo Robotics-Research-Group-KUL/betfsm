@@ -36,7 +36,7 @@ def find_ros2_package_root(start_file_path: str | Path) -> Path | None:
     """
     Crawls up the directory tree from a given file path to find the 
     root directory of the ROS 2 package.
-    
+
     Returns the Path to the root directory, or None if package.xml isn't found.
     """
     current_path = Path(start_file_path).resolve()
@@ -349,7 +349,7 @@ def generate_tasks_schema(tasks_schema_loc:Path|str,list_of_tasks:list[str], lis
     list_of_robot_refs : list[str]
         list of robot references (get_robot_specifications_from_.... )
     """    
-    jsonmodel = json.loads("""
+    jsonmodel = json.loads(r"""
         {
             "$schema":"http://json-schema.org/draft-06/schema",
             "$id":"task-schema.json",
@@ -375,7 +375,7 @@ def generate_tasks_schema(tasks_schema_loc:Path|str,list_of_tasks:list[str], lis
                             "robot_specification_file":{
                                 "description":"(optional) If overriding the default_robot_specification, provide the name of the etasl lua file containing the robot specification.",
                                 "type": "string",
-                                "pattern": ".*\\\.lua$",
+                                "pattern": ".*\\.lua$",
                                 "examples":  [] 
                             },
                             "task_specification":{

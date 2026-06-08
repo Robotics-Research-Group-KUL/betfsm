@@ -42,8 +42,9 @@ class Ctrl_C_Receiver:
             repeated (int, None): 
                 number of times to repeat ctrl-c before KeyboardInterrupt is raised
 
-        Returns:
-            Singleton instance of EventQueueSubscriber.
+        Returns: 
+            instance (Ctrl_C_Receiver):
+                Singleton instance of EventQueueSubscriber.
 
         Example:
             To start monitoring for Ctrl+C.  If ctrl-c is pressed, at the given path in the blackboard,
@@ -414,12 +415,12 @@ class Callback_Condition(Condition):
     checks wether a callback function returns True.
     """
 
-    def __init__(self, event, cb:Callable[ [Dict ],bool] ):
+    def __init__(self, event:str, cb:Callable[ [Dict ],bool] ):
         """
         Parameters:
-            event:
+            event: str
                 event to return when callback returns true
-            cb:
+            cb: Callable[ [Dict ],bool] 
                 callback fun(Blackboard) -> bool, will be called to check for the condition.
 
         callback_Condition does **never consumes** the event of cb(bb)==True
@@ -453,14 +454,15 @@ class Timeout_Condition(Condition):
     """
     def __init__(self, event:str,sec:float, repeat:int=1, consume=True):
         """
-        Parameters:
-            event:
+        Parameters
+        ----------
+            event: str
                 name of the event to send out
-            sec:
+            sec: float
                 send the event after `sec` seconds.
-            repeat:
+            repeat: int
                 the number of times to repeat this.  Negative to never stop.
-            consume:
+            consume: bool
                 whether to consume the event. Can be useful not to consume if you
                 just want to check whether you are before or after a given time.
         """
@@ -505,17 +507,18 @@ class HTTPEvent_Condition(Condition):
     def __init__(self,channel_name:str='betfsm', queue_size:int=10, max_age:float=0.5, consume=True):
             """
 
-            Parameters:
-                channel_name:
+            Parameters
+            ----------
+                channel_name: str
                     Name of the channel to listen to.
-                queue_size
+                queue_size: int
                     Size of the queue.  If the HTTPReceiver already exists, its queue_size
                     will be enlarged if required.  The queue size is shared with all
                     HTTPEvent_Conditions that use the same channel.
-                max_age:
+                max_age: float
                     only HTTP event with an age less than max_age will be taken into account.
                     The max_age is determined for each HTTPEvent_Condition separately.
-                consume:
+                consume: bool 
                     whether or not to consume the HTTP Event
             """            
             self.channel_name   = channel_name
@@ -547,13 +550,14 @@ class Ctrl_C_Condition(Condition):
     """ Check whether CTRL_C events come in """
     def __init__(self,event="CTRL_C", repeated=3, consume=True):          
             """
-            Parameters:
-                event:
+            Parameters
+            ----------
+                event: str
                     the name of the event to return if Ctrl-C was pressed
-                repeated:
+                repeated: int
                     if the users presses `repeated` times Ctrl-C, the original Ctrl-C handler will be
                     called and the program will be interrupted.  
-                consume:
+                consume: True
                     if true, the ctrl-c event will be consumed, i.e. if asked again this object will return None.
             """  
             self.event          = event
@@ -604,14 +608,15 @@ class EventOutcome(Generator):
                  event_poller: Condition,
                  event_map=Dict[str, str] ):
         """ 
-        Parameters:
-            name:
+        Parameters
+        ----------
+            name: str
                 name of the node
-            event_poller:
+            event_poller: Condition
                 evaluates conditions (i.e. subclasses of Condition),
                 conditions can be combined with operators `|` (or), `&` (and) 
                 and Not(...,"event")
-            event_map:
+            event_map: Dict[str, str] 
                 maps an event string to an outcome string.
         """
         assert(isinstance(event_poller,Condition))       
@@ -660,7 +665,7 @@ class EventConcurrent(GeneratorWithList):
     concurrently
 
     See Also:
-        [events](events.md) for a discussion on usage patterns.
+        [events](event.md) for a discussion on usage patterns.
 
     ```mermaid
     stateDiagram-v2     
@@ -813,18 +818,18 @@ class EventSequential(GeneratorWithList):
     def __init__(self, 
                  name:str, 
                  event_poller:Callable[[Dict, List[str]],str|None], 
-                 event_map=Dict[str, TickingState]
+                 event_map:Dict[str, TickingState]
                  ):
         """
 
         
 
         Parameters:
-            name:
+            name: str
                 name of this node
-            event_poller:
+            event_poller: Callable[[Dict, List[str]],str|None],
                 polling function from which we get the events.
-            event_map:
+            event_map: Dict[str, TickingState]
                 A map that maps events to BeTFSM subtrees.   The subtree
                 corresponding to the NO_EVENT entry is the nominal subtree.
                 If there is no NO_EVENT entry specified, EventSequential will

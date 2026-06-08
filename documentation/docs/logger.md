@@ -15,7 +15,7 @@ The logger for a given category can be specified using [set_logger(category, log
 
 
 !!! Note
-    If you use one of the [Runner][betfsm.Runner] or [RosRunner][betfsm.RosRunner] classes, you can activate categories from **the
+    If you use one of the [Runner][betfsm.Runner] or [RosRunner][betfsm_ros.ROSRunner] classes, you can activate categories from **the
     command-line**.
 
 !!! Warning    
