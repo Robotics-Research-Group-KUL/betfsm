@@ -24,6 +24,7 @@ nav:
 #      - "Action servers": "actionserver_ex.md" 
       - "Executing and visualizing a BeTFSM tree" : "tutorial_gui.md"
       - "BeTFSM with ROS2 and Crospi" : "tutorial_gui_ros.md"
+      - "Styles of programming": "styles_of_programming.md"
     - "Technical documentation" :
       - "Technical introduction" : "technical_intro.md"
       - "Overview of the API" : "api_overview.md"
@@ -31,6 +32,7 @@ nav:
       - "Event handling and conditions": "event.md"
       - "ROS2 Lifecycle" : "ros2lifecycle.md"
       - "Local path references": "localref.md"
+      - "Configuration callbacks": "configcallbacks.md"
       - "Utilities" : 'utils.md'
       - "Logging" : "logger.md"
       - "Other references": "references.md"
@@ -70,11 +72,18 @@ nav:
         - "Ctrl_C_Condition"  : "ctrl_c_condition.md"
         - "get_path" : "getpath.md"
         - "ConfigCallback" : "configcallbacks.md"
+        - "wait_for" : "wait_for.md"
+        - "wait_for_and_check" : "wait_for_and_check.md"
         
       
       - "BeTFSM ROS2":  
         - "ServiceClient" : 'serviceclient.md'
         - "ActionClient" : 'actionclient_ros.md'
+        - "LifeCycleTransition": "lifecycletransition.md"
+        - "ResetLifeCycleState": "resetlifecycle.md"
+        - "MarkerPublisher"    : "markerpublisher.md"
+        - "TF2Listener"        : "tf2listener.md"
+        - "TF2Broadcaster"     : "tf2broadcaster.md"
        #- "LifeCycle" : 'lifecycle.md'
         - "TimedRepeat for ROS2" : timedrepeat_ros.md
         - "TimedWait for ROS2" : 'timedwait_ros2.md'

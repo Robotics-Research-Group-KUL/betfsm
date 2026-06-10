@@ -1,7 +1,7 @@
 # Local references and get_path
 
 
-The function [get_path] knows about relative references such as ".", "./my_name>", "../my_name", etc...
+The function [get_path][betfsm.get_path] knows about relative references such as ".", "./my_name>", "../my_name", etc...
 The routine also has a TickingState as input, a unique identifier for this state is used
 as an index in a blackboard[local] table.   In this way we can have blackboard location that is private
 for a state and its children.  The ".." uses the state to lookup its parent and will store in the

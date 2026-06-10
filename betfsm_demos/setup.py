@@ -1,18 +1,9 @@
 from setuptools import find_packages, setup
-
 import glob
 
 package_name = 'betfsm_demos'
 
 import os
-
-# def package_files(install_base, source_base):
-#     """installs to **content** of source_base in the directory install_base (recursively)"""
-#     data = []
-#     for (path, directories, filenames) in os.walk(source_base):
-#         for filename in filenames:
-#             data.append((  os.path.normpath(os.path.join(install_base,path,"..")), os.path.normpath(os.path.join(path,filename)) ) )
-#     return data
 
 
 
@@ -38,7 +29,7 @@ def generate_data_files(source_dir, target_base):
 data_files = [
     ('share/ament_index/resource_index/packages',
         ['resource/' + package_name]),
-    ('share/' + package_name, ['package.xml']),
+    ('share/' + package_name, ['package.xml'])
 ]
 data_files.extend(generate_data_files('tasks', os.path.join('share', package_name)))
 

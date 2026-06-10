@@ -20,35 +20,25 @@
 """
 BeTFSM states related to eTaSL
 """
-from typing import Dict, Callable
+from typing import Callable
 import json
-from collections import deque
-from jsonschema import validate, exceptions
 import copy
-
-from rclpy.qos import QoSProfile,QoSDurabilityPolicy,QoSHistoryPolicy,QoSReliabilityPolicy,QoSLivelinessPolicy
-
-from crospi_interfaces.srv import TaskSpecificationFile
-from crospi_interfaces.srv import TaskSpecificationString
-from crospi_interfaces.msg import Output
-from std_msgs.msg import String
-
-
+from rclpy.qos import QoSProfile,QoSDurabilityPolicy,QoSHistoryPolicy,QoSReliabilityPolicy
 from betfsm import (
     SUCCEED,CANCEL,TIMEOUT, TICKING,ABORT,NO_EVENT,
-    add_logger_category, get_logger,get_path_value,get_path_location,set_path_value,
-    Blackboard, TickingState,Message,ConcurrentFallback, TickingStateMachine,
-    Fallback,Sequence, AlwaysOutcome,GeneratorWithState,Generator,
-    CircularNumpyBuffer,get_path, EventOutcome,json_serializer,
-    deprecated_msg
+    add_logger_category, get_logger,Blackboard, TickingState,Message,Fallback,Sequence, Generator,
+    CircularNumpyBuffer,get_path, EventOutcome,json_serializer
 )
-
 from betfsm_ros import (
     Node,Duration,
     BeTFSMNode,
     ServiceClient, Transition,ResetLifeCycleState,
     TopicEvent_Condition, LifeCycleTransition
 )
+from crospi_interfaces.srv import TaskSpecificationFile
+from crospi_interfaces.srv import TaskSpecificationString
+from crospi_interfaces.msg import Output
+
 
 
 

@@ -18,32 +18,30 @@
 # endregion
 
 import re
-from abc import abstractmethod
-from typing import Dict, List, Union, Callable,Type, TypeAlias, Iterable, Optional
 import os    
-import time
+from typing import List, Type
+import numpy as np
+from scipy.spatial.transform import Rotation as spR 
+
 
 from rclpy.node import Node
 import ament_index_python as aip
-from std_msgs.msg import String
 from lifecycle_msgs.srv import ChangeState,GetState
 #from lifecycle_msgs.msg import Transition
-from geometry_msgs.msg import TransformStamped
-from rclpy.qos import QoSHistoryPolicy, QoSProfile, QoSReliabilityPolicy, QoSDurabilityPolicy
 from rclpy.time import Duration
 from rclpy.action import ActionClient
-from visualization_msgs.msg import Marker
-from geometry_msgs.msg import Point
-from std_msgs.msg import ColorRGBA 
 from rclpy.time import Duration,Time
-import numpy as np
 
+from geometry_msgs.msg import TransformStamped
+from std_msgs.msg import ColorRGBA 
+from geometry_msgs.msg import Point
+from visualization_msgs.msg import Marker
 
 from dataclasses import dataclass
 from betfsm import (
     SUCCEED,ABORT,TIMEOUT,CANCEL, TICKING,
     add_logger_category, get_logger, 
-    Blackboard,TickingState, TickingStateMachine, Generator,GeneratorWithState,
+    Blackboard,TickingState, Generator,GeneratorWithState,
     ConfigCallback,get_path
 )
 from .betfsm_node import BeTFSMNode
@@ -554,6 +552,7 @@ class Transition(Enum):
     INACTIVE_SHUTDOWN = 6
     ACTIVE_SHUTDOWN = 7    
 
+#region LifeCycle
 # class LifeCycle(ServiceClient):
 #     """
 #     ROS2 lifecycle (simplified):
@@ -564,8 +563,6 @@ class Transition(Enum):
 #             classDef tickingClass  fill:yellow,color:black
 #             classDef otherClass  fill:darkorange,color:white
 #             classDef abortClass  fill:darkred,color:white
-
-            
 #             [*] --> unconfigured
 #             unconfigured --> inactive : CONFIGURE
 #             inactive --> active : ACTIVATE
@@ -575,7 +572,6 @@ class Transition(Enum):
 #             active --> finalized : ACTIVE_SHUTDOWN
 #             unconfigured --> finalized : UNCONFIGURED_SHUTDOWN
 #     ```
-
 #     ```python
 #         class Transition(Enum):
 #             CONFIGURE              = 1
@@ -639,6 +635,7 @@ class Transition(Enum):
 #             return SUCCEED
 #         else:
 #             return ABORT
+#endregion
 
 class LifeCycleTransition(Generator):
     def __init__(self,  name:str, srv_node:str, transition:Transition, timeout:Duration=Duration(seconds=1.0), node:BeTFSMNode=None):
@@ -704,12 +701,6 @@ class LifeCycleTransition(Generator):
             get_logger().error( f"LifeCycleTransition: request to {self.srv_node} failed: {str(e)}")
             yield CANCEL
         return
-
-
-
-
-
-
 
 
 class ResetLifeCycleState(Generator):
@@ -800,10 +791,6 @@ class ResetLifeCycleState(Generator):
             get_logger().error( f"ResetLifeCycleState: transition servie {self.srv_node} failed: {str(e)}")
             yield CANCEL
         return
-
-
-
-
 
 
 #################################################################
@@ -944,8 +931,21 @@ class TFSpec:
 
 
 class TF2Listener(Generator):
+    """Listens to TF2 
+    """
     def __init__(self, name:str, tf_list:List[TFSpec], desired_outcome=str,node:BeTFSMNode=None):
-        # tf_list: (tgt,src,path)
+        """listens to TF2
+
+        Parameters:
+          name : str
+            name of the node 
+          tf_list : List[TFSpec]
+            a list of TFSpecs that describes which tf's to listen to and where to store them. 
+          desired_outcome : _type_, optional
+            outcome that this node should return, by default str
+          node : BeTFSMNode, optional
+            node to use for the listener, by default it will use the BeTFSMNode singleton instance
+        """
         if not node:
             node = BeTFSMNode.get_instance()
         self.node = node

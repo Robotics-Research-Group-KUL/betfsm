@@ -18,26 +18,22 @@
 # endregion
 
 from __future__ import annotations
-from typing import Dict, List, Union, Callable,Type, TypeAlias,Iterable,Optional, Any
+from typing import Dict, List, Callable,TypeAlias,Any
 from enum import Enum
 import copy
-from threading import Lock
 from abc import ABC, abstractmethod
 import traceback
 import uuid
 import time 
 import json
 import numpy as np
-from .logger import get_logger,add_logger_category,get_logger_categories
+from .logger import get_logger,add_logger_category
 
-import math
-from collections import deque
-from dataclasses import dataclass
 
-from colorama import Fore, Back, Style
+from colorama import Fore, Style
 import inspect
-from collections import deque
 from .circularbuffer import CircularNumpyBuffer,json_serializer
+
 add_logger_category("state")
 add_logger_category("service")
 add_logger_category("constructor")
@@ -2177,7 +2173,7 @@ class CC_bb_array(ConfigCallback):
         return True 
 
     def __call__(self, state, blackboard)->NDArray[Any]:
-        return self.data[:,self.idx].copy()
+        return self.data[:,self.idx]
 
 class CC_array(ConfigCallback):
     """ConfigCallback class that creates a callback that 
@@ -2202,4 +2198,52 @@ class CC_bb_dict(ConfigCallback):
 
     def __call__(self, state, blackboard):
         return self.result 
+
+
+#################################################################
+#   Utilities for procedural programming-style
+#################################################################
+
+
+def wait_for(child:TickingState, blackboard:Blackboard)->str:
+    """ 
+    Within a co_execute this can be called to wait for a child TickingState to finish.
+
+    To be called as "result = yield from wait_for( child, blackboard)"
+
+    child nodes need to be registered for cleanup and reset to initial state when
+    the co_execute finishes.  Inheriting from GeneratorWithList takes care of that.
+    """
+    while True:
+        outcome = child(blackboard)
+        if outcome!=TICKING:
+            break
+        yield TICKING
+    return outcome  # should be return in order for yield from to finish
+
+class UnexpectedOutcome(ValueError):
+    """exception indicating that wait_for_and_check encountered an unexpected result """
+    def __init__(self,description:str, child:TickingState):
+        self.child = child
+        super().__init__(description)
+
+def wait_for_and_check(child:TickingState, blackboard:Blackboard, expected=[SUCCEED]):
+    """ 
+    Within a co_execute this can be called to wait for a child TickingState to finish.
+
+    To be called as "result = yield from wait_for( child, blackboard)"
+
+    Additionally raises an UnexpectedOutcome if the outcome is not expected.
+
+    child nodes need to be registered for cleanup and reset to initial state when
+    the co_execute finishes.  Inheriting from GeneratorWithList takes care of that.
+    """
+    while True:
+        outcome = child(blackboard)
+        if outcome!=TICKING:
+            break
+        yield TICKING
+    if outcome not in expected:
+        raise UnexpectedOutcome(f"wait_for_and_check of {child.name}: outcome '{outcome}' as not in expected={expected}", child)
+    return outcome
 

@@ -26,7 +26,8 @@ from betfsm import (
     Sequence,  Repeat, CANCEL, NO_EVENT,TICKING,SUCCEED,set_logger,get_logger,
     get_path, EventSequential, Ctrl_C_Condition, Generator, Concurrent,
     TickingState, Blackboard, GeneratorWithList, EventSequential,
-    Timeout_Condition, AlwaysOutcome, CC_array,CC_bb_array,CC_bb_table
+    Timeout_Condition, AlwaysOutcome, CC_array, CC_bb_array, CC_bb_table,
+    wait_for, wait_for_and_check, UnexpectedOutcome
 )
 
 
@@ -38,25 +39,18 @@ from betfsm_ros import (
     MarkerPublisher,Marker,ColorRGBA,TF2Broadcaster,TF2Listener,TFSpec
 )
 from betfsm_ros import BeTFSMNode,ROSRunner
-from rclpy.time import Duration,Time
 from typing import Callable,List,Dict
 from typing import Any, Dict
-from scipy.spatial.transform import Rotation as spR 
 import numpy as np
 
 
 #region Now obsolete functions:
-
 # def from_bb_table(path:str,lbls:List[str],nrows:int) -> Callable[[TickingState,dict], NDArray[Any]]:
 #     """
 #     Factory function that creates a callback that select from a table structure with heading, path points to a dict with:
-    
 #         "heading" key : [ "name1","name2",...]
 #         "data" key :    CircularNumpyBuffer or NDArray of numpy
-
-        
 #     Look at the newest values and do NOT consume. (default: True).
-
 #     Parameters
 #     ----------
 #     path : str
@@ -65,7 +59,6 @@ import numpy as np
 #         labels  you want to return
 #     nrows : int
 #         maximum number of rows to return (can be less if not available)
-
 #     Returns
 #     -------
 #     Callable[[TickingState,dict], NDArray[Any]]
@@ -93,17 +86,13 @@ import numpy as np
 #         else:
 #             return data[-min(nrows,data.shape[0]):,idx].copy()
 #     return getter
-
 # def consume_from_bb_table(path:str,lbls:List[str],nrows:int) -> Callable[[TickingState,dict], NDArray[Any]]:
 #     """
 #     Factory function that creates a callback that select from a table structure with heading, path points to a dict with:
-    
 #         "heading" key : [ "name1","name2",...]
 #         "data" key :    CircularNumpyBuffer
-
 #     Looks at OLDEST values and CONSUMES.  
 #     Only works with an underlying CicularNumpyBuffer (no direct NDArray allowed for the data key, in contrast to from_bb_table)
-
 #     Parameters
 #     ----------
 #     path : str
@@ -187,7 +176,7 @@ import numpy as np
 #     def getter(state:TickingState,blackboard:dict)->NDArray[Any]:
 #         return arr 
 #     return getter
-
+#endregion
 
 def param_from_bb(path: str):
     def getter(state:TickingState, blackboard:dict)->Dict[str,Any]:
@@ -334,53 +323,6 @@ class Compute_v2(Generator):
 #             yield CANCEL
 #         return
 #endregion
-
-
-#################################################################
-#   Utilities for procedural programming-style
-#################################################################
-
-
-def wait_for(child:TickingState, blackboard:Blackboard):
-    """ 
-    Within a co_execute this can be called to wait for a child TickingState to finish.
-
-    To be called as "result = yield from wait_for( child, blackboard)"
-
-    child nodes need to be registered for cleanup and reset to initial state when
-    the co_execute finishes.  Inheriting from GeneratorWithList takes care of that.
-    """
-    while True:
-        outcome = child(blackboard)
-        if outcome!=TICKING:
-            break
-        yield TICKING
-    return outcome  # should be return in order for yield from to finish
-
-class UnexpectedOutcome(ValueError):
-    def __init__(self,description:str, child:TickingState):
-        self.child = child
-        super().__init__(description)
-
-def wait_for_and_check(child:TickingState, blackboard:Blackboard, expected=[SUCCEED]):
-    """ 
-    Within a co_execute this can be called to wait for a child TickingState to finish.
-
-    To be called as "result = yield from wait_for( child, blackboard)"
-
-    Additionally throws an UnexpectedOutcome if the outcome is not expected.
-
-    child nodes need to be registered for cleanup and reset to initial state when
-    the co_execute finishes.  Inheriting from GeneratorWithList takes care of that.
-    """
-    while True:
-        outcome = child(blackboard)
-        if outcome!=TICKING:
-            break
-        yield TICKING
-    if outcome not in expected:
-        raise UnexpectedOutcome(f"wait_for_and_check of {child.name}: outcome '{outcome}' as not in expected={expected}", child)
-    return outcome
 
 #################################################################
 #   B-Spline related utilities
@@ -660,53 +602,6 @@ class MyApplication_v4(GeneratorWithList):
         except UnexpectedOutcome as e:
             get_logger().warn(f"MyApplication_v4 failed: {e}")
             yield CANCEL
-
-
-class MyApplication2_old(GeneratorWithList):
-    def __init__(self):
-        super().__init__("My_application_v2",[SUCCEED, CANCEL])
-
-        self.movehome   = Concurrent("MoveHome", [
-            CrospiTask("MoveHome","MoveHome"),
-            CrospiOutput_v2("output", "/my_topic", queue_size=1, path="../../output")   # in the context of MyApplication2
-        ])
-
-        self.listen_tf = TF2Listener("listen",[
-                TFSpec("tool0","base_link","../tool0",is_matrix=True)
-            ],SUCCEED) # once
-
-        spline=CrospiTask("MoveBSpline","MoveBSpline")
-
-        self.movespline = EventSequential("wait",
-                Timeout_Condition("finish",10.0),
-                event_map={"finish":AlwaysOutcome(CANCEL),NO_EVENT:spline}
-        )
-
-        # important to add to the list, e.g. for cleanup 
-        self.add_state(self.movehome)
-        self.add_state(self.listen_tf)
-        self.add_state(self.movespline)
-
-    def co_execute(self, blackboard):
-        while True:
-            print("MOVE_HOME")
-            retval=yield from wait_for(self.movehome,blackboard)
-            if retval!=SUCCEED:
-                break
-            loc = get_path(self,blackboard,"./output/last")
-            print(loc)
-            
-            retval=yield from wait_for(self.listen_tf, blackboard)
-            if retval!=SUCCEED:
-                break
-            loc = get_path(self,blackboard,"./tool0")
-            print(loc)
-            print("MOVESPLINE")
-            retval=yield from wait_for(self.movespline,blackboard)
-            if retval!=SUCCEED:
-                break
-            print("FINISHED")
-        print("there was an error")
 
 
 def main(args=None):

@@ -1,0 +1,121 @@
+{
+  "type":"object",
+  "description":"Parameters needed to the corresponding task specification in eTaSL",
+  "properties":{
+    "from-betfsm_demo_lib-version-0.1.0":{
+      "const":true,
+      "type":"boolean",
+      "description":"Library betfsm_demo_lib version 0.1.0.\n Set to true to indicate that task specification comes from the library above. \n Library description: Library with specific tasks for betfsm_demo.\nAuthors: Erwin Aertbeliën (KU Leuven)"
+    }
+  },
+  "$schema":"http://json-schema.org/draft-06/schema#",
+  "additionalProperties":true,
+  "dependencies":{
+    "from-betfsm_demo_lib-version-0.1.0":{
+      "required":["is-sinewave"],
+      "properties":{
+        "is-sinewave":{
+          "const":true,
+          "type":"boolean",
+          "description":"Task Specification: sinewave.etasl.lua\nSet to true to indicate that the task uses the task specification mentioned above. \n Task description: This task specification to generate a sine wave  w.r.t. current position"
+        }
+      }
+    },
+    "is-sinewave":{
+      "required":["file_path","parameters"],
+      "properties":{
+        "file_path":{
+          "const":"$[betfsm_demos]/tasks/betfsm_demos_lib/sinewave.etasl.lua",
+          "type":"string",
+          "description":"File path of the corresponding task specification"
+        },
+        "parameters":{
+          "type":"object",
+          "description":"List of parameters needed to define an instance of the task specification",
+          "properties":{
+            "direction":{
+              "oneOf":[{
+                  "items":{
+                    "type":"number"
+                  },
+                  "type":"array",
+                  "minItems":3,
+                  "maxItems":3
+                },{
+                  "pattern":"^\\$blackboard(/[a-zA-Z0-9_\\-]+)+$",
+                  "type":"string"
+                },{
+                  "const":"$application_defined_parameter",
+                  "type":"string"
+                }],
+              "default":[0,0,1],
+              "examples":["$blackboard/output_param/my_task/direction","$application_defined_parameter"],
+              "description":"Direction for the sine wave (will be normalized). \nSet as a string beginning with $blackboard such as `$blackboard/output_param/my_task/my_param` if the value is not yet known and thus will be set externally at runtime (only once) depending on e.g. the outcome of a previous action or the outcome of another module.\nSet as $application_defined_parameter to indicate that the parameter is defined by the application and not by the skill specification."
+            },
+            "amplitude":{
+              "oneOf":[{
+                  "type":"number"
+                },{
+                  "pattern":"^\\$blackboard(/[a-zA-Z0-9_\\-]+)+$",
+                  "type":"string"
+                },{
+                  "const":"$application_defined_parameter",
+                  "type":"string"
+                }],
+              "default":0.1,
+              "examples":["$blackboard/output_param/my_task/amplitude","$application_defined_parameter"],
+              "description":"Amplitude in [m] of the sine. \nSet as a string beginning with $blackboard such as `$blackboard/output_param/my_task/my_param` if the value is not yet known and thus will be set externally at runtime (only once) depending on e.g. the outcome of a previous action or the outcome of another module.\nSet as $application_defined_parameter to indicate that the parameter is defined by the application and not by the skill specification."
+            },
+            "task_frame":{
+              "oneOf":[{
+                  "type":"string"
+                },{
+                  "pattern":"^\\$blackboard(/[a-zA-Z0-9_\\-]+)+$",
+                  "type":"string"
+                },{
+                  "const":"$application_defined_parameter",
+                  "type":"string"
+                }],
+              "default":"tcp_frame",
+              "examples":["$blackboard/output_param/my_task/task_frame","$application_defined_parameter"],
+              "description":"Name of frame used to control the robot in cartesian space. \nSet as a string beginning with $blackboard such as `$blackboard/output_param/my_task/my_param` if the value is not yet known and thus will be set externally at runtime (only once) depending on e.g. the outcome of a previous action or the outcome of another module.\nSet as $application_defined_parameter to indicate that the parameter is defined by the application and not by the skill specification."
+            },
+            "execution_time":{
+              "oneOf":[{
+                  "type":"number"
+                },{
+                  "pattern":"^\\$blackboard(/[a-zA-Z0-9_\\-]+)+$",
+                  "type":"string"
+                },{
+                  "const":"$application_defined_parameter",
+                  "type":"string"
+                }],
+              "default":-1,
+              "examples":["$blackboard/output_param/my_task/execution_time","$application_defined_parameter"],
+              "description":"Duration of the motion, if negative, forever. \nSet as a string beginning with $blackboard such as `$blackboard/output_param/my_task/my_param` if the value is not yet known and thus will be set externally at runtime (only once) depending on e.g. the outcome of a previous action or the outcome of another module.\nSet as $application_defined_parameter to indicate that the parameter is defined by the application and not by the skill specification."
+            },
+            "frequency":{
+              "oneOf":[{
+                  "type":"number"
+                },{
+                  "pattern":"^\\$blackboard(/[a-zA-Z0-9_\\-]+)+$",
+                  "type":"string"
+                },{
+                  "const":"$application_defined_parameter",
+                  "type":"string"
+                }],
+              "default":0.25,
+              "examples":["$blackboard/output_param/my_task/frequency","$application_defined_parameter"],
+              "description":"Frequency of the sine. \nSet as a string beginning with $blackboard such as `$blackboard/output_param/my_task/my_param` if the value is not yet known and thus will be set externally at runtime (only once) depending on e.g. the outcome of a previous action or the outcome of another module.\nSet as $application_defined_parameter to indicate that the parameter is defined by the application and not by the skill specification."
+            }
+          },
+          "additionalProperties":false,
+          "required":[]
+        }
+      }
+    }
+  },
+  "required":["from-betfsm_demo_lib-version-0.1.0"],
+  "$id":"sinewave",
+  "title":"Task Specification Configuration"
+}

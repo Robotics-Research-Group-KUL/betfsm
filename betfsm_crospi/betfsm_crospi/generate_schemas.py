@@ -643,6 +643,10 @@ collection of task definitions in tasks-schema.json
 
 The "writelib" command writes a task_library.schema.json for the task_library.json 
 that describes your library or libraries.
+
+The generated tasks-schema.json file depends on your own development paths, but
+is not necessary for running.  It is necessary for easily developing a new task 
+instantiation list that you load into BeTFSM.
         """   
         print(txt)
  

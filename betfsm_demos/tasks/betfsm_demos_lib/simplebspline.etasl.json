@@ -1,0 +1,150 @@
+{
+  "type":"object",
+  "description":"Parameters needed to the corresponding task specification in eTaSL",
+  "properties":{
+    "from-betfsm_demo_lib-version-0.1.0":{
+      "const":true,
+      "type":"boolean",
+      "description":"Library betfsm_demo_lib version 0.1.0.\n Set to true to indicate that task specification comes from the library above. \n Library description: Library with specific tasks for betfsm_demo.\nAuthors: Erwin Aertbeliën (KU Leuven)"
+    }
+  },
+  "$schema":"http://json-schema.org/draft-06/schema#",
+  "additionalProperties":true,
+  "dependencies":{
+    "from-betfsm_demo_lib-version-0.1.0":{
+      "required":["is-simplebspline"],
+      "properties":{
+        "is-simplebspline":{
+          "const":true,
+          "type":"boolean",
+          "description":"Task Specification: simplebspline.etasl.lua\nSet to true to indicate that the task uses the task specification mentioned above. \n Task description: A first eB-spline executed w.r.t. the starting frame, only considers translations.\nAllows for arbitrary number of knots\nNote : in eTaSL: #knots = #cp + degree -1  (i.e. minus 1 <-> traditional definition)\n"
+        }
+      }
+    },
+    "is-simplebspline":{
+      "required":["file_path","parameters"],
+      "properties":{
+        "file_path":{
+          "const":"$[betfsm_demos]/tasks/betfsm_demos_lib/simplebspline.etasl.lua",
+          "type":"string",
+          "description":"File path of the corresponding task specification"
+        },
+        "parameters":{
+          "type":"object",
+          "description":"List of parameters needed to define an instance of the task specification",
+          "properties":{
+            "cp_x":{
+              "oneOf":[{
+                  "items":{
+                    "maximum":10,
+                    "type":"number"
+                  },
+                  "type":"array",
+                  "minItems":2
+                },{
+                  "pattern":"^\\$blackboard(/[a-zA-Z0-9_\\-]+)+$",
+                  "type":"string"
+                },{
+                  "const":"$application_defined_parameter",
+                  "type":"string"
+                }],
+              "default":[0,0.1],
+              "examples":["$blackboard/output_param/my_task/cp_x","$application_defined_parameter"],
+              "description":"Array with control points for x-coordinate. \nSet as a string beginning with $blackboard such as `$blackboard/output_param/my_task/my_param` if the value is not yet known and thus will be set externally at runtime (only once) depending on e.g. the outcome of a previous action or the outcome of another module.\nSet as $application_defined_parameter to indicate that the parameter is defined by the application and not by the skill specification."
+            },
+            "cp_y":{
+              "oneOf":[{
+                  "items":{
+                    "maximum":10,
+                    "type":"number"
+                  },
+                  "type":"array",
+                  "minItems":2
+                },{
+                  "pattern":"^\\$blackboard(/[a-zA-Z0-9_\\-]+)+$",
+                  "type":"string"
+                },{
+                  "const":"$application_defined_parameter",
+                  "type":"string"
+                }],
+              "default":[0,0.1],
+              "examples":["$blackboard/output_param/my_task/cp_y","$application_defined_parameter"],
+              "description":"Array with control points for y-coordinate. \nSet as a string beginning with $blackboard such as `$blackboard/output_param/my_task/my_param` if the value is not yet known and thus will be set externally at runtime (only once) depending on e.g. the outcome of a previous action or the outcome of another module.\nSet as $application_defined_parameter to indicate that the parameter is defined by the application and not by the skill specification."
+            },
+            "task_frame":{
+              "oneOf":[{
+                  "type":"string"
+                },{
+                  "pattern":"^\\$blackboard(/[a-zA-Z0-9_\\-]+)+$",
+                  "type":"string"
+                },{
+                  "const":"$application_defined_parameter",
+                  "type":"string"
+                }],
+              "default":"tcp_frame",
+              "examples":["$blackboard/output_param/my_task/task_frame","$application_defined_parameter"],
+              "description":"Name of frame used to control the robot in cartesian space. \nSet as a string beginning with $blackboard such as `$blackboard/output_param/my_task/my_param` if the value is not yet known and thus will be set externally at runtime (only once) depending on e.g. the outcome of a previous action or the outcome of another module.\nSet as $application_defined_parameter to indicate that the parameter is defined by the application and not by the skill specification."
+            },
+            "knots":{
+              "oneOf":[{
+                  "items":{
+                    "maximum":10,
+                    "type":"number"
+                  },
+                  "type":"array",
+                  "minItems":2
+                },{
+                  "pattern":"^\\$blackboard(/[a-zA-Z0-9_\\-]+)+$",
+                  "type":"string"
+                },{
+                  "const":"$application_defined_parameter",
+                  "type":"string"
+                }],
+              "default":[0,1],
+              "examples":["$blackboard/output_param/my_task/knots","$application_defined_parameter"],
+              "description":"Array with knots, #knots = #cp + degree. \nSet as a string beginning with $blackboard such as `$blackboard/output_param/my_task/my_param` if the value is not yet known and thus will be set externally at runtime (only once) depending on e.g. the outcome of a previous action or the outcome of another module.\nSet as $application_defined_parameter to indicate that the parameter is defined by the application and not by the skill specification."
+            },
+            "cp_z":{
+              "oneOf":[{
+                  "items":{
+                    "maximum":10,
+                    "type":"number"
+                  },
+                  "type":"array",
+                  "minItems":2
+                },{
+                  "pattern":"^\\$blackboard(/[a-zA-Z0-9_\\-]+)+$",
+                  "type":"string"
+                },{
+                  "const":"$application_defined_parameter",
+                  "type":"string"
+                }],
+              "default":[0,0.1],
+              "examples":["$blackboard/output_param/my_task/cp_z","$application_defined_parameter"],
+              "description":"Array with control points for z-coordinate. \nSet as a string beginning with $blackboard such as `$blackboard/output_param/my_task/my_param` if the value is not yet known and thus will be set externally at runtime (only once) depending on e.g. the outcome of a previous action or the outcome of another module.\nSet as $application_defined_parameter to indicate that the parameter is defined by the application and not by the skill specification."
+            },
+            "degree":{
+              "oneOf":[{
+                  "type":"number"
+                },{
+                  "pattern":"^\\$blackboard(/[a-zA-Z0-9_\\-]+)+$",
+                  "type":"string"
+                },{
+                  "const":"$application_defined_parameter",
+                  "type":"string"
+                }],
+              "default":1,
+              "examples":["$blackboard/output_param/my_task/degree","$application_defined_parameter"],
+              "description":"Degree of the B-splines. \nSet as a string beginning with $blackboard such as `$blackboard/output_param/my_task/my_param` if the value is not yet known and thus will be set externally at runtime (only once) depending on e.g. the outcome of a previous action or the outcome of another module.\nSet as $application_defined_parameter to indicate that the parameter is defined by the application and not by the skill specification."
+            }
+          },
+          "additionalProperties":false,
+          "required":["cp_x","cp_y","cp_z","knots"]
+        }
+      }
+    }
+  },
+  "required":["from-betfsm_demo_lib-version-0.1.0"],
+  "$id":"simplebspline",
+  "title":"Task Specification Configuration"
+}

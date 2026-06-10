@@ -5,7 +5,7 @@ require("context")
 require("geometric")
 -- worldmodel=require("worldmodel")
 require("math")
-reqs = require("task_requirements2")
+reqs = require("task_requirements")
 
 print("start")
 -- ========================================= PARAMETERS ===================================
