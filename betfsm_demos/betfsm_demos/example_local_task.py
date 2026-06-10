@@ -617,7 +617,7 @@ def main(args=None):
     blackboard["numpy"]     = np.array([1,2,3.0]).tolist()
     blackboard["numpy_mat"] = np.array( [[1,2,3.0],[2.0,1,2]] ).tolist()
 
-    load_task_list("betfsm_demos_tasks.json",blackboard)
+    load_task_list("$[betfsm_demos]/tasks/betfsm_demos_tasks.json",blackboard)
 
     # running MySequence() and cleaning up when CTRL_C is pressed        
     nominal_sm = MyApplication_v4()

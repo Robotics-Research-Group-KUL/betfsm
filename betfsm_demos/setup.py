@@ -52,7 +52,9 @@ setup(
             "skill_example_1  = betfsm_demos.skill_example_1:main",
             "skill_example_2  = betfsm_demos.skill_example_2:main",
             "skill_example_3  = betfsm_demos.skill_example_3:main",
-            "skill_example_4  = betfsm_demos.skill_example_4:main"
+            "skill_example_4  = betfsm_demos.skill_example_4:main",
+            "example_with_output = betfsm_demos.example_with_output:main",
+            "example_local_task  = betfsm_demos.example_local_task:main"
             #'test_ea = ' + package_name + ".test_ea:main",
             #'example_graphviz = ' +package_name + ".example_graphviz:main",
             #'example_action_server = ' +package_name + ".example_action_server:main",            

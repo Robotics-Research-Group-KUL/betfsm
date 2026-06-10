@@ -10,6 +10,7 @@ documentation/site
 obsolete
 .ilua_history
 *.swp
+*.bak
 betfsm_demos/tasks_old
 betfsm_demos/tasks/tasks-schema.json
 
