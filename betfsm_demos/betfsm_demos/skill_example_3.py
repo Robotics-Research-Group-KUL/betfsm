@@ -37,7 +37,7 @@ from betfsm import (
     EventSequential, Ctrl_C_Condition
 )
 from betfsm_crospi import load_task_list, CrospiTask, CrospiDeactivate
-from betfsm_ros import BeTFSMNode,ROSRunner,Node,Duration,LifeCycle,Transition
+from betfsm_ros import BeTFSMNode,ROSRunner,Node,Duration,Transition
 
 
 class MySequence(Sequence):

@@ -20,7 +20,6 @@ setup(
     maintainer='Erwin',
     description='ROS 2 wrapper for BeTFSM',
     license='LGPL-3.0-only',
-    tests_require=['pytest'],
     entry_points={
         'console_scripts': [
             'betfsm_node = betfsm_ros.betfsm_node:main',

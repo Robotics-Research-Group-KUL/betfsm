@@ -20,7 +20,6 @@ setup(
     maintainer='Erwin Aertbelien',
     description='ROS 2 wrapper for BeTFSM',
     license='LGPL-3.0-only',
-    tests_require=['pytest'],
     entry_points={
         'console_scripts': [
             "generate_schemas  = betfsm_crospi.generate_schemas:main",

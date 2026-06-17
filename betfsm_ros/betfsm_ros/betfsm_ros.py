@@ -334,7 +334,18 @@ class ServiceClient(Generator):
         else:
             self.srvclient = self.node.get_client(srv_type,srv_name)
 
-        self.request   = srv_type.Request()
+        # HACK:  TaskSpecificationString.srv uses "str" as variable and causes problem with python 3.14 native type str
+        # SOLUTION: PATCH CROSPI, THIS IS A TEMPORARY HACK:
+        # self.request   = srv_type.Request()
+        try:
+            self.request = srv_type.Request()
+        except TypeError:
+            # workaround: field named 'str' shadows builtin in generated code (Python 3.14)
+            req = object.__new__(srv_type.Request)
+            srv_type.Request.__init__(req, str='')
+            self.request = req
+        # END OF HACK
+
         self.timeout   = timeout
         self.always_succeed = always_succeed
 

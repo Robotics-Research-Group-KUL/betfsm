@@ -46,7 +46,6 @@ setup(
     maintainer_email='Erwin.Aertbelien@kuleuven.be',
     description='tutorial scripts for BeTFSM',
     license='LGPL-3.0-only',
-    tests_require=['pytest'],
     entry_points={
         'console_scripts': [
             "skill_example_1  = betfsm_demos.skill_example_1:main",
