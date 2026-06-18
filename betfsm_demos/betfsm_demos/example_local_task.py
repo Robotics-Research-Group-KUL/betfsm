@@ -600,7 +600,7 @@ class MyApplication_v4(GeneratorWithList):
                 self.spline_motion.reset()
             yield SUCCEED   #don't forget the report the outcome !
         except UnexpectedOutcome as e:
-            get_logger().warn(f"MyApplication_v4 failed: {e}")
+            get_logger().warning(f"MyApplication_v4 failed: {e}")
             yield CANCEL
 
 

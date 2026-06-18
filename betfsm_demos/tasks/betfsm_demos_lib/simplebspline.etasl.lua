@@ -105,7 +105,7 @@ ctx:setOutputExpression("z_tf",coord_z(origin(task_frame)))
 ctx:setOutputExpression("qx_tf",coord_x(vec(quat_tf)))
 ctx:setOutputExpression("qy_tf",coord_y(vec(quat_tf)))
 ctx:setOutputExpression("qz_tf",coord_z(vec(quat_tf)))
-ctx:setOutputExpression("qw_tf",w(quat_tf))
+ctx:setOutputExpression("qw_tf",scalar(quat_tf))
 ctx:setOutputExpression("tst",constant(1.0))
 ctx:setOutputExpression("base",T_base_taskframe)
 
