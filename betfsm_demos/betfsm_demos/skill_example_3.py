@@ -61,7 +61,7 @@ def main(args=None):
     get_logger().info("This example cleans up after a ctrl-c using a cleanup state machine")
     
     blackboard = {}
-    load_task_list("$[crospi_application_template]/skill_specifications/libraries/skill_lib_example/tasks/skill_example.json",blackboard)
+    load_task_list("$[betfsm_demos]/tasks/skill_example.json",blackboard)
     
 
     # running MySequence() and cleaning up when CTRL_C is pressed        
