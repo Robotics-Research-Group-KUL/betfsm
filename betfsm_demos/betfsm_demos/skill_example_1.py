@@ -75,7 +75,7 @@ def main(args=None):
     get_logger().info("skill_example_1 started")
     blackboard = {}
 
-    load_task_list("$[crospi_application_template]/skill_specifications/libraries/skill_lib_example/tasks/skill_example.json",blackboard)
+    load_task_list("$[betfsm_demos]/tasks/skill_example.json",blackboard)
     
     get_logger().info("Creating state machine: ")
     sm = MyStateMachine()

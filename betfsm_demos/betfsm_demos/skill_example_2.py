@@ -51,7 +51,7 @@ def main(args=None):
     set_logger("crospi",my_node.get_logger())
     get_logger().info("skill_example_2 started")
     blackboard = {}
-    load_task_list("$[crospi_application_template]/skill_specifications/libraries/skill_lib_example/tasks/skill_example.json",blackboard)
+    load_task_list("$[betfsm_demos]/tasks/skill_example.json",blackboard)
     sm = MySequence()
     runner = ROSRunner(my_node,sm,blackboard, frequency=100.0, publish_frequency=5.0, debug=True, display_active=True)
     try:

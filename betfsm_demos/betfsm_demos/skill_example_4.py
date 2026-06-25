@@ -65,7 +65,7 @@ def main(args=None):
     get_logger().info("skill_example_4 started")
     blackboard = {}
 
-    load_task_list("$[crospi_application_template]/skill_specifications/libraries/skill_lib_example/tasks/skill_example.json",blackboard)
+    load_task_list("$[betfsm_demos]/tasks/skill_example.json",blackboard)
     
     get_logger().info("Now cleaning up after a ctrl-c using a cleanup TickingState")
 

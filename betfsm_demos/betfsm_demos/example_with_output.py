@@ -56,7 +56,7 @@ def main(args=None):
     set_logger("crospi",my_node.get_logger())
     
     blackboard = {}
-    load_task_list("$[crospi_application_template]/skill_specifications/libraries/skill_lib_example/tasks/skill_example.json",blackboard)    
+    load_task_list("$[betfsm_demos]/tasks/skill_example.json",blackboard)
 
     # running MySequence() and cleaning up when CTRL_C is pressed        
     nominal_sm = Repeat("repeat",-1,MySequence())
