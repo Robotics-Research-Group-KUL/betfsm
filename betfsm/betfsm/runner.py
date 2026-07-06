@@ -251,6 +251,7 @@ class RunnerBase:
                 target=lambda: uvicorn.run(app, **uvicorn_kwargs),
                 daemon=True
             ).start()        
+            time.sleep(1.0)  # give it time to start-up
         self.stats = TimerStats()
 
         

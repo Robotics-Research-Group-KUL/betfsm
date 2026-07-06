@@ -18,6 +18,7 @@ if ! test -d "$BASE/venv"; then
     echo "creating virtual environment..."
     python3 -m venv "$BASE/venv"
     "$BASE/venv/bin/pip" install -r requirements.txt
+    touch "$BASE/venv/COLCON_IGNORE"
 else
     echo "reusing existing virtual environment"
 fi
