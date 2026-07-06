@@ -184,7 +184,7 @@ def generate_json_schema_for_task(filepath_task_lua, filepath_task_schema_json, 
     number
         returns error code, 0 means everything ok.
     """
-    arg=f"require('task_requirements2');\
+    arg=f"require('task_requirements');\
         _GENERATE=true; \
         _FILEPATH_TASK_SCHEMA_JSON='{filepath_task_schema_json}';\
         _URI_TASK_LUA='{uri_task_lua}';\
