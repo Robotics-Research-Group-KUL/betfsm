@@ -31,7 +31,7 @@ import time
 
 from betfsm import RunnerBase
 
-
+from rclpy.executors import MultiThreadedExecutor
 
 class ROSRunner(RunnerBase):
     """
@@ -50,6 +50,9 @@ class ROSRunner(RunnerBase):
                          select_name,type_filter,allow_generate_dot,allow_generate_sm_dot,allow_generate_json,serve,
                          host, port, workers, log_level,branding)
         args = self.args
+        # added june 15th:
+        self.executor = MultiThreadedExecutor()
+        self.executor.add_node(node)
 
         # ROS dependend: everything timer related, logger, node, clocks, synchronization primitives:
         self.frequency       = args.frequency
@@ -109,7 +112,9 @@ class ROSRunner(RunnerBase):
             the final outcome of the statemachine        
         """        
         self.first_time = True
-        rclpy.spin_until_future_complete(self.node, self.shutdown_future, executor=None,timeout_sec=None)
+        # replaced june 15th:
+        #rclpy.spin_until_future_complete(self.node, self.shutdown_future, executor=None,timeout_sec=None)
+        self.executor.spin_until_future_complete(self.shutdown_future)
         return self.get_outcome()
         
 
