@@ -944,7 +944,7 @@ class TFSpec:
 class TF2Listener(Generator):
     """Listens to TF2 
     """
-    def __init__(self, name:str, tf_list:List[TFSpec], desired_outcome=str,node:BeTFSMNode=None):
+    def __init__(self, name:str, tf_list:List[TFSpec], desired_outcome:str,node:BeTFSMNode=None, scalar_first:bool=False):
         """listens to TF2
 
         Parameters:
@@ -956,6 +956,8 @@ class TF2Listener(Generator):
             outcome that this node should return, by default str
           node : BeTFSMNode, optional
             node to use for the listener, by default it will use the BeTFSMNode singleton instance
+          scalar_first: bool, optional
+            if True, the quaternion is stored in the blackboard as [qw,qx,qy,qz], otherwise as [qx,qy,qz,qw] (default).  Default is False, which is the convention used in ROS2 and scipy.spatial.transform.Rotation.
         """
         if not node:
             node = BeTFSMNode.get_instance()
@@ -964,6 +966,7 @@ class TF2Listener(Generator):
         self.tf_buffer = node.get_transformListenerBuffer()
         self.tf_list   = tf_list
         self.desired_outcome = desired_outcome
+        self.scalar_first = scalar_first
 
     def co_execute(self, blackboard):
         default_quat = np.array([0,0,0,1,0,0,0],dtype=np.float64)
@@ -985,8 +988,13 @@ class TF2Listener(Generator):
                     loc[:3,3]  = [  T.transform.translation.x, T.transform.translation.y, T.transform.translation.z]
                 else:
                     # this still accesses the blackboard due to [:]
-                    loc[:] = [  T.transform.translation.x, T.transform.translation.y, T.transform.translation.z,
+                    if self.scalar_first==True:
+                        loc[:] = [  T.transform.translation.x, T.transform.translation.y, T.transform.translation.z,
                                         T.transform.rotation.w, T.transform.rotation.x, T.transform.rotation.y, T.transform.rotation.z]
+                    else:
+                        loc[:] = [  T.transform.translation.x, T.transform.translation.y, T.transform.translation.z,
+                                        T.transform.rotation.x, T.transform.rotation.y, T.transform.rotation.z, T.transform.rotation.w]
+                    
             if self.desired_outcome!=TICKING:
                 break 
             yield self.desired_outcome
