@@ -1,0 +1,138 @@
+{
+    "$schema":"tasks-schema.json",
+    "tasks": [
+        {
+            "name": "MovingHome",
+            "task_specification": {
+                "from-core_task_lib-version-0.1.0": true,
+                "is-move_jointspace_trap": true,
+                "file_path": "$[crospi_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_jointspace_trap.etasl.lua",
+                "parameters": {
+                    "maxacc": 0.1,
+                    "maxvel": 0.1,
+                    "target_joints": [1.5708, -1.5708, 2.0944, -2.0944, -1.5708, 0],
+                    "units": "radians"
+                }
+            }
+        },
+        {
+            "name": "MovingSpline",
+            "task_specification":{
+                "from-core_task_lib-version-0.1.0": true,
+                "is-follow_spline": true,
+                "file_path": "$[crospi_application_template]/task_specifications/libraries/core_task_lib/task_specifications/follow_spline.etasl.lua",
+                "parameters": {
+                    "csv_file_path": "$[crospi_application_template]/task_specifications/libraries/core_task_lib/task_specifications/misc/example_spline.csv",
+                    "maxacc": 0.1,
+                    "maxvel": 0.1,
+                    "task_frame": "tcp_frame"
+                }
+            }
+        },
+        {
+            "name": "MovingDown",
+            "task_specification": {
+                "from-core_task_lib-version-0.1.0": true,
+                "is-move_cartesianspace_relative": true,
+                "file_path": "$[crospi_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_cartesianspace_relative.etasl.lua",
+                "parameters": {
+                    "delta_pos": [0, 0, -0.2],
+                    "eq_r": 0.08,
+                    "maxacc": 0.1,
+                    "maxvel": 0.1,
+                    "delta_euler": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "task_frame": "tcp_frame",
+                    "wrt_frame": "world_frame"
+                }
+            }
+        },
+        {
+            "name": "MovingUp",
+            "task_specification": {
+                "from-core_task_lib-version-0.1.0": true,
+                "is-move_cartesianspace_relative": true,
+                "file_path": "$[crospi_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_cartesianspace_relative.etasl.lua",
+                "parameters": {
+                    "delta_pos": [0, 0, 0.2],
+                    "eq_r": 0.08,
+                    "maxacc": 0.1,
+                    "maxvel": 0.1,
+                    "delta_euler": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "task_frame": "tcp_frame",
+                    "wrt_frame": "world_frame"
+                }
+            }
+        },
+        {
+            "name": "MovingAdmittance",
+            "task_specification":{
+                "from-core_task_lib-version-0.1.0": true,
+                "is-move_admittance": true,
+                "file_path": "$[crospi_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_admittance.etasl.lua",
+                "parameters": {
+                    "activate_angular": false,
+                    "activate_linear": false,
+                    "K_r": 400,
+                    "K_t": 4000,
+                    "task_frame": "tcp_frame",
+                    "FT_sensor_frame": "FT_sensor_frame",
+                    "force_threshold": 0.5,
+                    "torque_threshold": 0.05,
+                    "tool_COG": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "tool_weight": 0
+                }
+            }
+        },
+        {
+            "name": "follow_tf",
+            "task_specification":{
+                "from-dummy_lib-version-0.1.0": true,
+                "is-follow_external_frame": true,
+                "file_path": "$[crospi_application_template]/task_specifications/libraries/dummy_lib/task_specifications/follow_external_frame.etasl.lua",
+                "parameters": {
+                    "task_frame": "tcp_frame",
+                    "tf_name_var": "tf_to_follow" 
+                }
+            }
+        },
+        {
+            "name": "follow_position_vector",
+            "task_specification":{
+                "from-dummy_lib-version-0.1.0": true,
+                "is-follow_external_vector": true,
+                "file_path": "$[crospi_application_template]/task_specifications/libraries/dummy_lib/task_specifications/follow_external_vector.etasl.lua",
+                "parameters": {
+                    "task_frame": "tcp_frame",
+                    "vector_name_var": "vector_to_follow"
+                }
+            }
+        },
+        {
+            "name": "keep_frame",
+            "task_specification":{
+                "from-core_task_lib-version-0.1.0": true,
+                "is-keep_relative_initial_pose": true,
+                "file_path": "$[crospi_application_template]/task_specifications/libraries/core_task_lib/task_specifications/keep_relative_initial_pose.etasl.lua",
+                "parameters": {
+                    "base_frame": "board_pose",
+                    "execution_time": 0,
+                    "task_frame": "tcp_frame",
+                    "activate_angular": false,
+                    "activate_linear": true
+                }
+            }
+        }
+    ]
+}
